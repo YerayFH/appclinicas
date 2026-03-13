@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APP GUÍAS CLÍNICAS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary-color: #8b5cf6; /* Morado principal */
+    --secondary-color: #ede9fe; /* Fondo pastel */
+    --card-bg: #ffffff;
+    --card-shadow: rgba(0,0,0,0.1);
+    --hover-shadow: rgba(0,0,0,0.2);
+    --accent-color: #d8b4fe; /* Para autor/contacto */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+
+body {
+    background-color: var(--secondary-color);
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header .hospital {
+    font-size: 1rem;
+    color: #4c1d95;
+    font-weight: 500;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+    font-weight: 700;
+}
+
+header .autor {
+    font-size: 1rem;
+    color: var(--accent-color);
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px var(--card-shadow);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--hover-shadow);
+}
+
+.card svg {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 0.8rem;
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    color: #4c1d95;
+    margin-bottom: 0.5rem;
+}
+
+.card a {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.card a:hover {
+    background-color: #6d28d9;
+}
+
+footer {
+    margin-top: 2rem;
+    color: #777;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    header h1 { font-size: 2rem; }
+    header .hospital, header .autor { font-size: 0.85rem; }
+    .card svg { height: 120px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="hospital">FARMACIA HOSPITALARIA. HOSPITAL UNIVERSITARIO PUERTO REAL</div>
+    <h1>APP GUÍAS CLÍNICAS</h1>
+    <div class="autor">Autor: Yeray Reyes de la Mata. <br>Contacto: ydelamata01@gmail.com</div>
+</header>
+
+<div class="grid">
+    <!-- Tarjeta App Sepsis -->
+    <div class="card">
+        <!-- Icono SVG bacteria cartoon -->
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="24" fill="#d8b4fe"/>
+          <circle cx="24" cy="24" r="4" fill="#f0abfc"/>
+          <circle cx="40" cy="24" r="4" fill="#f0abfc"/>
+          <circle cx="32" cy="40" r="4" fill="#f0abfc"/>
+          <path d="M32 8 L32 0 M32 64 L32 56 M8 32 L0 32 M64 32 L56 32 M12 12 L6 6 M52 12 L58 6 M12 52 L6 58 M52 52 L58 58" stroke="#a78bfa" stroke-width="2"/>
+        </svg>
+        <h2>Sepsis: diagnóstico y manejo terapéutico</h2>
+        <a href="sepsis/">Código Sepsis</a>
+    </div>
+
+    <!-- Tarjeta App Ictus -->
+    <div class="card">
+        <!-- Icono SVG cerebro cartoon -->
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 8 C20 8, 12 20, 12 32 C12 44, 20 56, 32 56 C44 56, 52 44, 52 32 C52 20, 44 8, 32 8 Z" fill="#d8b4fe"/>
+          <path d="M32 8 C28 8, 28 56, 32 56 C36 56, 36 8, 32 8 Z" fill="#c084fc"/>
+          <circle cx="32" cy="32" r="4" fill="#f0abfc"/>
+        </svg>
+        <h2>Ictus isquémico agudo: motor interactivo de manejo terapéutico</h2>
+        <a href="ictus/">Código Ictus</a>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 Mi Hub Clínico
+</footer>
+
+</body>
+</html>
