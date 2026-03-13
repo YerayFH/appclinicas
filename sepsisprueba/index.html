@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sepsis Decision Support</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1e293b;min-height:100vh;display:flex;flex-direction:column}
+a{color:#2563eb;text-decoration:none}
+/* BANNER */
+#top-banner{background:#0f2d5e;color:#fff;text-align:center;padding:10px 16px;border-bottom:3px solid #f0c040}
+#top-banner h1{font-size:clamp(13px,3.5vw,17px);font-weight:800;letter-spacing:1px;text-transform:uppercase}
+/* HEADER */
+#header{background:#1a3a5c;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#header-title{font-size:clamp(15px,4vw,20px);font-weight:700}
+#header-sub{font-size:11px;color:#93c5fd;margin-top:2px}
+#step-counter{color:#93c5fd;font-size:13px;white-space:nowrap}
+/* PROGRESS */
+#progress{background:#dbeafe;padding:8px 12px;display:flex;align-items:flex-start;gap:2px;overflow-x:auto;flex-wrap:nowrap}
+.prog-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
+.prog-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:#cbd5e1;color:#64748b}
+.prog-dot.active{background:#2563eb;color:#fff}
+.prog-dot.done{background:#16a34a;color:#fff}
+.prog-label{font-size:10px;color:#64748b;white-space:nowrap}
+.prog-label.active{color:#2563eb;font-weight:700}
+.prog-conn{width:12px;height:2px;background:#cbd5e1;margin-top:13px;flex-shrink:0}
+/* MAIN */
+#main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 4px}
+/* CARD */
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:22px;margin:16px 0}
+.card-title{font-size:17px;font-weight:700;color:#1a3a5c;margin-bottom:4px}
+.card-sub{font-size:12px;color:#64748b;margin-bottom:16px}
+/* BUTTONS */
+.btn{border:none;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:600;cursor:pointer;color:#fff;background:#2563eb;margin:4px 4px 4px 0;display:inline-block}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-outline{background:transparent;color:#2563eb;border:2px solid #2563eb;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;margin:4px 4px 4px 0}
+.btn-success{background:#16a34a}
+.btn-danger{background:#dc2626}
+.btn-warning{background:#d97706}
+.btn-grey{background:#e2e8f0;color:#1e293b}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+/* FORM */
+label.lbl{display:block;font-size:13px;font-weight:600;color:#1e293b;margin:12px 0 4px}
+input[type=number],select{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #cbd5e1;font-size:14px;background:#fff;outline:none}
+input[type=number]:focus,select:focus{border-color:#2563eb}
+.input-warn{border-color:#f87171!important}
+.warn-msg{font-size:11px;color:#dc2626;margin-top:2px}
+.row2col{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1;min-width:140px}
+/* SCORE BOX */
+.score-box{border-radius:10px;padding:14px;text-align:center;margin-top:4px}
+.score-num{font-size:38px;font-weight:800}
+.score-label{font-size:12px;font-weight:600;margin-top:2px}
+/* ALERTS */
+.alert{border-radius:10px;padding:14px 16px;margin-top:12px;font-size:13px;line-height:1.7;word-break:break-word}
+.alert-title{font-weight:700;font-size:14px;margin-bottom:4px}
+.alert-red{background:#fef2f2;border:1.5px solid #fca5a5}
+.alert-red .alert-title{color:#dc2626}
+.alert-yellow{background:#fffbeb;border:1.5px solid #fcd34d}
+.alert-yellow .alert-title{color:#d97706}
+.alert-green{background:#f0fdf4;border:1.5px solid #86efac}
+.alert-green .alert-title{color:#16a34a}
+.alert-blue{background:#eff6ff;border:1.5px solid #93c5fd}
+.alert-blue .alert-title{color:#2563eb}
+/* BADGE TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tag{border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600}
+.tag-pos{background:#fef2f2;border:1.5px solid #fca5a5;color:#dc2626}
+.tag-neg{background:#f0fdf4;border:1.5px solid #86efac;color:#16a34a}
+/* DIVIDER */
+.div{height:1px;background:#cbd5e1;margin:14px 0}
+/* SOFA breakdown */
+.sofa-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.sofa-row span{color:#64748b}
+/* MODULE ACCORDION */
+.mod-card{border-radius:10px;margin-bottom:10px;overflow:hidden}
+.mod-header{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;user-select:none}
+.mod-header-title{font-weight:700;color:#1a3a5c;font-size:14px;flex:1;min-width:0;word-break:break-word}
+.mod-arrow{color:#64748b;flex-shrink:0;font-size:14px}
+.mod-body{padding:14px 16px;font-size:13px;line-height:1.85;word-break:break-word;overflow-wrap:break-word}
+.mod-body ul{padding-left:18px}
+.mod-body li{margin-bottom:4px}
+/* ROW2 */
+.r2{display:flex;flex-wrap:wrap;gap:2px 8px;margin-bottom:7px}
+.r2-label{color:#64748b}
+.r2-val{font-weight:700;word-break:break-word}
+/* DX BOX */
+.dx-box{border-radius:12px;padding:20px;text-align:center;margin-top:12px}
+.dx-title{font-size:12px;color:#64748b;margin-bottom:4px}
+.dx-name{font-size:26px;font-weight:800}
+.dx-sub{font-size:13px;margin-top:6px}
+/* FOOTER */
+#footer{padding:14px 20px;border-top:1px solid #cbd5e1;background:#fff;font-size:12px;color:#64748b;line-height:1.8}
+/* WELCOME */
+#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:60vh}
+#welcome .card{max-width:560px;text-align:center}
+#welcome .icon{font-size:52px;margin-bottom:12px}
+#welcome h2{font-size:22px;font-weight:800;color:#1a3a5c;margin-bottom:6px}
+#welcome .sub{font-size:15px;color:#64748b;margin-bottom:8px}
+#welcome .badge{background:#dbeafe;border-radius:8px;padding:8px 14px;font-size:13px;color:#2563eb;margin-bottom:18px;display:inline-block}
+#welcome p{font-size:13px;color:#64748b;line-height:1.8;margin-bottom:20px}
+/* HIDDEN */
+.hidden{display:none!important}
+@media(max-width:480px){
+  .card{padding:16px}
+  .mod-header{padding:10px 12px}
+  .mod-body{padding:12px}
+  .score-num{font-size:30px}
+  .dx-name{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BANNER -->
+<div id="top-banner">
+  <h1>🏛 Farmacia Hospitalaria · Hospital Universitario Puerto Real</h1>
+</div>
+
+<!-- HEADER -->
+<div id="header">
+  <div>
+    <div id="header-title">🏥 SEPSIS DECISION SUPPORT</div>
+    <div id="header-sub">SSC 2021 · NICE 2025 · J-SSCG 2024 — Clinical Decision Aid</div>
+  </div>
+  <div id="step-counter" class="hidden"></div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div id="progress" class="hidden"></div>
+
+<!-- MAIN CONTENT -->
+<div id="main"></div>
+
+<!-- FOOTER -->
+<div id="footer">
+  <strong style="color:#1e293b">Autor:</strong> Yeray Reyes de la Mata<br>
+  <strong style="color:#1e293b">Contacto:</strong> <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a>
+</div>
+
+<script>
+// ─── STATE ─────────────────────────────────────────────────────────
+const STEPS = ["Sospecha","NEWS/SIRS","qSOFA","SOFA","Lactato","Clasificación","Manejo"];
+let state = { step: 0, data: {} };
+
+// ─── UTILS ─────────────────────────────────────────────────────────
+function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, Number(v) || 0)); }
+function $(id) { return document.getElementById(id); }
+function el(tag, attrs, ...children) {
+  const e = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => {
+    if (k === 'cls') e.className = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  });
+  children.flat().forEach(c => c != null && e.append(typeof c === 'string' ? c : c));
+  return e;
+}
+function div(cls, ...ch) { return el('div', {cls}, ...ch); }
+function alert_(color, title, html) {
+  const d = div(`alert alert-${color}`);
+  if (title) d.innerHTML = `<div class="alert-title">${title}</div>${html||''}`;
+  else d.innerHTML = html || '';
+  return d;
+}
+function r2(label, val) {
+  return div('r2', el('span',{cls:'r2-label'},label), el('strong',{cls:'r2-val'},val));
+}
+function divider() { return div('div'); }
+function numInput(label, id, value, min, max, step, unit, warnFn) {
+  const wrap = div('');
+  const lbl = el('label',{cls:'lbl', 'for':id}, label + (unit ? ` (${unit})` : ''));
+  const inp = el('input',{type:'number', id, value, min, max, step:'any'});
+  inp.value = value;
+  const warnEl = div('warn-msg hidden');
+  inp.addEventListener('input', () => {
+    const w = warnFn ? warnFn(Number(inp.value)) : null;
+    if (w) { warnEl.textContent = w; warnEl.classList.remove('hidden'); inp.classList.add('input-warn'); }
+    else { warnEl.classList.add('hidden'); inp.classList.remove('input-warn'); }
+  });
+  inp.addEventListener('blur', () => {
+    const n = clamp(Number(inp.value), min, max);
+    inp.value = n;
+  });
+  wrap.append(lbl, inp, warnEl);
+  return wrap;
+}
+function selInput(label, id, options, value) {
+  const wrap = div('');
+  const lbl = el('label',{cls:'lbl','for':id}, label);
+  const sel = el('select',{id});
+  options.forEach(([v,l]) => {
+    const o = el('option',{value:v},l);
+    if (v === value) o.selected = true;
+    sel.append(o);
+  });
+  wrap.append(lbl, sel);
+  return wrap;
+}
+function scoreBox(label, value, denom, positive, posLabel, negLabel) {
+  const bg = positive ? '#fef2f2' : '#f0fdf4';
+  const col = positive ? '#dc2626' : '#16a34a';
+  const d = div('score-box');
+  d.style.background = bg;
+  d.innerHTML = `<div class="score-num" style="color:${col}">${value}${denom?`<span style="font-size:18px">/${denom}</span>`:''}</div>
+    <div class="score-label" style="color:${col}">${positive ? posLabel : negLabel}</div>`;
+  return d;
+}
+
+// ─── SCALES ────────────────────────────────────────────────────────
+function calcNEWS(d) {
+  let s = 0;
+  const {spo2,fr,tas,fc,temp,conciencia,o2sup} = d;
+  if (spo2<=91) s+=3; else if (spo2<=93) s+=2; else if (spo2<=95) s+=1;
+  if (fr<=8) s+=3; else if (fr<=11) s+=1; else if (fr<=20) s+=0; else if (fr<=24) s+=2; else s+=3;
+  if (tas<=90) s+=3; else if (tas<=100) s+=2; else if (tas<=110) s+=1; else if (tas<=219) s+=0; else s+=3;
+  if (fc<=40) s+=3; else if (fc<=50) s+=1; else if (fc<=90) s+=0; else if (fc<=110) s+=1; else if (fc<=130) s+=2; else s+=3;
+  if (temp<=35.0) s+=3; else if (temp<=36.0) s+=1; else if (temp<=38.0) s+=0; else if (temp<=39.0) s+=1; else s+=2;
+  s += conciencia === 'Alerta' ? 0 : 3;
+  s += o2sup ? 2 : 0;
+  return s;
+}
+function calcSIRS(d) {
+  return ((d.temp>38||d.temp<36)?1:0) + (d.fc>90?1:0) + (d.fr>20?1:0) + ((d.leucos>12||d.leucos<4)?1:0);
+}
+function calcSOFABreakdown(d) {
+  const {pao2fio2,plaquetas,bili,cv,pam,glasgow,creat,diuresis} = d;
+  let resp=0,plaq=0,biliS=0,cvS=0,neuro=0,renal=0;
+  if (pao2fio2<=100) resp=4; else if (pao2fio2<=200) resp=3; else if (pao2fio2<=300) resp=2; else if (pao2fio2<=400) resp=1;
+  if (plaquetas<20) plaq=4; else if (plaquetas<50) plaq=3; else if (plaquetas<100) plaq=2; else if (plaquetas<150) plaq=1;
+  if (bili>=12) biliS=4; else if (bili>=6) biliS=3; else if (bili>=2) biliS=2; else if (bili>=1.2) biliS=1;
+  if (cv==='dopa15'||cv==='epi'||cv==='norepiAlta') cvS=4;
+  else if (cv==='dopa510'||cv==='norepiBaja') cvS=3;
+  else if (cv==='dopa5'||cv==='dobu') cvS=2;
+  else if (pam<70) cvS=1;
+  if (glasgow<6) neuro=4; else if (glasgow<10) neuro=3; else if (glasgow<13) neuro=2; else if (glasgow<15) neuro=1;
+  if (creat>=5.0||diuresis<200) renal=4;
+  else if ((creat>=3.5&&creat<5.0)||(diuresis>=200&&diuresis<500)) renal=3;
+  else if (creat>=2.0&&creat<3.5) renal=2;
+  else if (creat>=1.2&&creat<2.0) renal=1;
+  return {resp,plaq,bili:biliS,cv:cvS,neuro,renal};
+}
+function calcSOFA(d) { const b=calcSOFABreakdown(d); return b.resp+b.plaq+b.bili+b.cv+b.neuro+b.renal; }
+
+// ─── ROUTER ────────────────────────────────────────────────────────
+function render() {
+  updateChrome();
+  const main = $('main');
+  main.innerHTML = '';
+  const s = state.step;
+  if (s===0) main.append(renderWelcome());
+  else if (s===1) main.append(renderStep1());
+  else if (s===2) main.append(renderStep2());
+  else if (s===3) main.append(renderStep3());
+  else if (s===4) main.append(renderStep4());
+  else if (s===5) main.append(renderStep5());
+  else if (s===6) main.append(renderStep6());
+  else if (s===7) main.append(renderStep7());
+  window.scrollTo(0,0);
+}
+function go(step) { state.step = step; render(); }
+function save(obj) { state.data = {...state.data, ...obj}; }
+
+function updateChrome() {
+  const s = state.step;
+  const sc = $('step-counter');
+  const prog = $('progress');
+  if (s===0) { sc.classList.add('hidden'); prog.classList.add('hidden'); return; }
+  sc.classList.remove('hidden'); prog.classList.remove('hidden');
+  sc.textContent = `Paso ${s} / ${STEPS.length}`;
+  prog.innerHTML = '';
+  STEPS.forEach((lbl,i) => {
+    const dot = div('prog-dot'+(s===i+1?' active':s>i+1?' done':''), s>i+1?'✓':String(i+1));
+    const lab = el('span',{cls:'prog-label'+(s===i+1?' active':'')},lbl);
+    const item = div('prog-item',dot,lab);
+    prog.append(item);
+    if (i < STEPS.length-1) prog.append(div('prog-conn'));
+  });
+}
+
+// ─── STEP 0: WELCOME ───────────────────────────────────────────────
+function renderWelcome() {
+  const w = div(''); w.id='welcome';
+  const c = div('card');
+  c.innerHTML = `
+    <div class="icon">🩺</div>
+    <h2>Sistema de Soporte Clínico</h2>
+    <p class="sub">Sepsis y Shock Séptico</p>
+    <div class="badge">SSC 2021 · NICE 2025 · J-SSCG 2024</div>
+    <p>Guía paso a paso para diagnóstico y manejo terapéutico.<br>
+    Cálculo automático de NEWS · SIRS · qSOFA · SOFA.<br>
+    Lógica diagnóstica basada en Sepsis-3 y guías vigentes.<br><br>
+    <strong style="color:#dc2626">⚠ Solo apoyo clínico. No reemplaza el juicio médico.</strong></p>`;
+  const btn = el('button',{cls:'btn',onclick:()=>go(1)},'Iniciar Evaluación →');
+  c.append(btn);
+  w.append(c);
+  return w;
+}
+
+// ─── STEP 1 ────────────────────────────────────────────────────────
+function renderStep1() {
+  const d = state.data;
+  const wrap = div('card');
+  wrap.innerHTML = `<div class="card-title">🔍 Step 1 — Sospecha de Infección</div>
+    <div class="card-sub">Activación de protocolo de cribado multimodal (Nodo 0)</div>
+    <label class="lbl">¿Existe sospecha clínica de infección?</label>`;
+  const grp = div('btn-group');
+  ['Sí','No'].forEach(v => {
+    const b = el('button',{cls:'btn'+(d.sospecha===v?' btn-success':' btn-grey')}, v);
+    b.onclick = () => { save({sospecha:v}); render(); };
+    grp.append(b);
+  });
+  wrap.append(grp);
+  if (d.sospecha==='No') wrap.append(alert_('yellow','Sin sospecha de infección activa','No se activan los protocolos de cribado. Considere diagnósticos alternativos no infecciosos.'));
+  if (d.sospecha==='Sí') wrap.append(alert_('green','✓ Protocolos de cribado activados','Iniciar evaluación simultánea de NEWS/SIRS y Lactato. Continúe con el paso 2.'));
+  const nav = div('btn-group');
+  const nxt = el('button',{cls:'btn btn-success'},'Siguiente →');
+  if (!d.sospecha) nxt.disabled = true;
+  nxt.onclick = () => go(2);
+  nav.append(nxt);
+  wrap.append(el('div',{style:'margin-top:16px'},nav));
+  return wrap;
+}
+
+// ─── STEP 2 ────────────────────────────────────────────────────────
+function renderStep2() {
+  const d = state.data;
+  const nv = d.newsVars || {spo2:97,fr:16,tas:120,fc:80,temp:37.0,conciencia:'Alerta',o2sup:false};
+  const leuc = d.sirsLeuc !== undefined ? d.sirsLeuc : 8;
+  const wrap = div('card');
+  wrap.innerHTML = `<div class="card-title">📊 Step 2 — NEWS · SIRS</div>
+    <div class="card-sub">Tamizaje multimodal primario — NEWS (NICE 2025) y SIRS (SSC 2021) (Nodo 1)</div>`;
+
+  const row = div('row2col');
+  const c1 = div('col');
+  const c2 = div('col');
+  c1.append(
+    numInput('SpO₂','spo2',nv.spo2,50,100,1,'%'),
+    numInput('Frec. Respiratoria','fr2',nv.fr,1,70,1,'/min'),
+    numInput('TAS','tas2',nv.tas,40,270,1,'mmHg'),
+    numInput('FC','fc2',nv.fc,20,220,1,'/min')
+  );
+  c2.append(
+    numInput('Temperatura','temp2',nv.temp,30,43,0.1,'°C'),
+    selInput('Nivel de conciencia','conc2',[['Alerta','Alerta (A)'],['Alterada','Alterada (V/P/U)']],nv.conciencia),
+    selInput('O₂ suplementario','o2sup2',[['no','No'],['si','Sí (+2 puntos)']],nv.o2sup?'si':'no'),
+    numInput('Leucocitos (para SIRS)','leuc2',leuc,0,150,1,'×10³/µL')
+  );
+  row.append(c1,c2);
+  wrap.append(row);
+  wrap.append(divider());
+  wrap.append(div('','',el('p',{style:'font-size:12px;color:#64748b;margin-bottom:8px'},
+    '📋 Ref. NEWS (NICE 2025): FR ≤8→3|9-11→1|12-20→0|21-24→2|≥25→3 · TAS ≤90→3|91-100→2|101-110→1|111-219→0|≥220→3')));
+
+  const scoresRow = div('row2col');
+  const newsBox = div('col'); const sirsBox = div('col');
+  scoresRow.append(newsBox, sirsBox);
+  wrap.append(scoresRow);
+
+  const alertEl = div('');
+  wrap.append(alertEl);
+  wrap.append(el('div',{style:'margin-top:16px'}, div('btn-group',
+    el('button',{cls:'btn btn-outline',onclick:()=>go(1)},'← Anterior'),
+    el('button',{cls:'btn btn-success',onclick:submit2},'Siguiente →')
+  )));
+
+  function getVals() {
+    return {
+      spo2: clamp($('spo2').value,50,100), fr: clamp($('fr2').value,1,70),
+      tas: clamp($('tas2').value,40,270), fc: clamp($('fc2').value,20,220),
+      temp: clamp($('temp2').value,30,43), conciencia: $('conc2').value,
+      o2sup: $('o2sup2').value==='si', leucos: clamp($('leuc2').value,0,150)
+    };
+  }
+  function updateScores() {
+    const v = getVals();
+    const news = calcNEWS(v);
+    const sirs = calcSIRS(v);
+    const pos = news>=5||sirs>=2;
+    newsBox.innerHTML=''; sirsBox.innerHTML='';
+    newsBox.append(div('','',scoreBox('NEWS',news,null,news>=5,'≥5 — POSITIVO','<5 — Riesgo bajo')));
+    sirsBox.append(div('','',scoreBox('SIRS',sirs,4,sirs>=2,'≥2 — POSITIVO','<2 — Negativo')));
+    alertEl.innerHTML='';
+    alertEl.append(pos
+      ? alert_('red','⚠ Tamizaje POSITIVO — Alta sensibilidad para sepsis','Proceder a evaluación de riesgo de mortalidad (qSOFA) y disfunción orgánica (SOFA).')
+      : alert_('green','✓ Tamizaje negativo','Baja probabilidad actual. Vigilar y reevaluar si cambia la clínica.'));
+  }
+  function submit2() {
+    const v = getVals();
+    const news = calcNEWS(v); const sirs = calcSIRS(v);
+    save({newsVars:{...v}, sirsLeuc:v.leucos, news, sirs, newsPos:news>=5||sirs>=2});
+    go(3);
+  }
+  ['spo2','fr2','tas2','fc2','temp2','conc2','o2sup2','leuc2'].forEach(id => {
+    const el2 = $(id); if(el2) el2.addEventListener('input',updateScores);
+  });
+  updateScores();
+  return wrap;
+}
+
+// ─── STEP 3 ────────────────────────────────────────────────────────
+function renderStep3() {
+  const d = state.data;
+  const qv = d.qsofaVars || {pas: d.newsVars?.tas||120, fr: d.newsVars?.fr||16, glasgow:15};
+  const wrap = div('card');
+  wrap.innerHTML=`<div class="card-title">⚡ Step 3 — qSOFA</div>
+    <div class="card-sub">Predictor de mal pronóstico — no usar como cribado único (SSC 2021 · J-SSCG 2024) (Nodo 2)</div>`;
+  wrap.append(alert_('yellow','',`ℹ qSOFA evalúa riesgo de mortalidad elevada o estancia prolongada en UCI. Un resultado negativo <strong>no excluye</strong> sepsis.`));
+
+  const row = div('row2col');
+  const c1=div('col'),c2=div('col'),c3=div('col');
+  c1.append(numInput('TAS','qpas',qv.pas,40,270,1,'mmHg')); const pasTip=div(''); c1.append(pasTip);
+  c2.append(numInput('Frec. Respiratoria','qfr',qv.fr,1,70,1,'/min')); const frTip=div(''); c2.append(frTip);
+  c3.append(numInput('Glasgow','qgcs',qv.glasgow,3,15,1)); const gcsTip=div(''); c3.append(gcsTip);
+  row.append(c1,c2,c3);
+  wrap.append(row);
+  wrap.append(divider());
+  const scoreEl=div(''); wrap.append(scoreEl);
+  wrap.append(el('div',{style:'margin-top:16px'},div('btn-group',
+    el('button',{cls:'btn btn-outline',onclick:()=>go(2)},'← Anterior'),
+    el('button',{cls:'btn btn-success',onclick:submit3},'Siguiente →')
+  )));
+
+  function update3() {
+    const pas=clamp($('qpas').value,40,270), fr=clamp($('qfr').value,1,70), gcs=clamp($('qgcs').value,3,15);
+    const score=(pas<=100?1:0)+(fr>=22?1:0)+(gcs<15?1:0);
+    const pos=score>=2;
+    pasTip.innerHTML=`<span style="font-size:12px;color:${pas<=100?'#dc2626':'#16a34a'};font-weight:600">${pas<=100?'✓ ≤100 mmHg (+1)':'✗ >100 mmHg (0)'}</span>`;
+    frTip.innerHTML=`<span style="font-size:12px;color:${fr>=22?'#dc2626':'#16a34a'};font-weight:600">${fr>=22?'✓ ≥22/min (+1)':'✗ <22/min (0)'}</span>`;
+    gcsTip.innerHTML=`<span style="font-size:12px;color:${gcs<15?'#dc2626':'#16a34a'};font-weight:600">${gcs<15?'✓ <15 (+1)':'✗ =15 (0)'}</span>`;
+    scoreEl.innerHTML='';
+    const box=div('score-box');
+    box.style.background=pos?'#fef2f2':'#f0fdf4';
+    box.innerHTML=`<div class="score-num" style="color:${pos?'#dc2626':'#16a34a'}">${score}<span style="font-size:18px">/3</span></div>
+      <div class="score-label" style="color:${pos?'#dc2626':'#16a34a'}">${pos?'⚠ Riesgo elevado de mortalidad — Monitorización invasiva y SOFA urgente':'Riesgo bajo — Continuar con SOFA'}</div>`;
+    scoreEl.append(box);
+  }
+  function submit3() {
+    const pas=clamp($('qpas').value,40,270),fr=clamp($('qfr').value,1,70),gcs=clamp($('qgcs').value,3,15);
+    const score=(pas<=100?1:0)+(fr>=22?1:0)+(gcs<15?1:0);
+    save({qsofaVars:{pas,fr,glasgow:gcs},qsofa:score,qsofaPos:score>=2});
+    go(4);
+  }
+  ['qpas','qfr','qgcs'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',update3); });
+  update3();
+  return wrap;
+}
+
+// ─── STEP 4 ────────────────────────────────────────────────────────
+function renderStep4() {
+  const d = state.data;
+  const sv = d.sofaVars||{pao2fio2:400,plaquetas:200,bili:0.8,cv:'ninguno',pam:d.newsVars?.tas||80,glasgow:d.qsofaVars?.glasgow||15,creat:0.9,diuresis:1200};
+  const basal = d.sofaBasal||0;
+  const wrap = div('card');
+  wrap.innerHTML=`<div class="card-title">🧮 Step 4 — SOFA Score</div>
+    <div class="card-sub">Disfunción orgánica (Sepsis-3 / SSC 2021): ΔSOFA ≥2 vs. basal atribuible a infección (Nodo 4)</div>`;
+
+  const row=div('row2col'); const c1=div('col'),c2=div('col');
+  c1.append(numInput('PaO₂/FiO₂','spf',sv.pao2fio2,0,600,1,'mmHg',v=>v>600?'Valor inusualmente alto':null));
+  c1.append(numInput('Plaquetas','spla',sv.plaquetas,0,800,1,'×10³/µL'));
+  c1.append(numInput('Bilirrubina','sbili',sv.bili,0,40,0.1,'mg/dL'));
+  c1.append(numInput('Glasgow SOFA','sgcs',sv.glasgow,3,15,1));
+  c2.append(numInput('PAM','spam',sv.pam,20,200,1,'mmHg'));
+  c2.append(selInput('Soporte vasoactivo','scv',[
+    ['ninguno','Sin vasopresores'],['dobu','Dobutamina (cualquier dosis)'],
+    ['dopa5','Dopamina ≤5 µg/kg/min'],['dopa510','Dopamina 5.1–15 µg/kg/min'],
+    ['dopa15','Dopamina >15 µg/kg/min'],['norepiBaja','Norepinefrina ≤0.1 µg/kg/min'],
+    ['norepiAlta','Norepinefrina >0.1 µg/kg/min'],['epi','Epinefrina >0.1 µg/kg/min']
+  ],sv.cv));
+  c2.append(numInput('Creatinina','screat',sv.creat,0,25,0.1,'mg/dL'));
+  c2.append(numInput('Diuresis','sdiur',sv.diuresis,0,6000,50,'mL/24h'));
+  row.append(c1,c2);
+  wrap.append(row);
+  const bWrap=div('');
+  bWrap.innerHTML=`<label class="lbl">SOFA basal previo</label>`;
+  const bInp=el('input',{type:'number',id:'sbasal',min:0,max:24,style:'width:120px'});
+  bInp.value=basal; bWrap.append(bInp);
+  wrap.append(bWrap);
+  wrap.append(divider());
+  const bdEl=div(''), scEl=div('');
+  wrap.append(bdEl,scEl);
+  wrap.append(el('div',{style:'margin-top:16px'},div('btn-group',
+    el('button',{cls:'btn btn-outline',onclick:()=>go(3)},'← Anterior'),
+    el('button',{cls:'btn btn-success',onclick:submit4},'Siguiente →')
+  )));
+
+  function getSOFAVals() {
+    return {pao2fio2:clamp($('spf').value,0,600),plaquetas:clamp($('spla').value,0,800),
+      bili:clamp($('sbili').value,0,40),cv:$('scv').value,pam:clamp($('spam').value,20,200),
+      glasgow:clamp($('sgcs').value,3,15),creat:clamp($('screat').value,0,25),diuresis:clamp($('sdiur').value,0,6000)};
+  }
+  function update4() {
+    const v=getSOFAVals(), bas=clamp($('sbasal').value,0,24);
+    const score=calcSOFA(v), delta=score-bas, bd=calcSOFABreakdown(v);
+    bdEl.innerHTML=`<div style="background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:10px">
+      <div style="font-weight:600;font-size:13px;margin-bottom:6px">Desglose SOFA por órgano</div>
+      ${[['Respiratorio (PaO₂/FiO₂)',bd.resp],['Coagulación (Plaquetas)',bd.plaq],['Hepático (Bilirrubina)',bd.bili],
+        ['Cardiovascular',bd.cv],['Neurológico (Glasgow)',bd.neuro],['Renal',bd.renal]]
+        .map(([l,v2])=>`<div class="sofa-row"><span>${l}</span><strong style="color:${v2>0?'#dc2626':'#16a34a'}">${v2>0?`+${v2} pts`:'0 pts'}</strong></div>`).join('')}
+    </div>`;
+    scEl.innerHTML='';
+    const r=div('row2col');
+    const b1=div('col'), b2=div('col');
+    b1.innerHTML=`<div class="score-box" style="background:#eff6ff"><div style="font-size:13px;color:#64748b">SOFA actual</div>
+      <div class="score-num" style="color:#2563eb">${score}<span style="font-size:18px">/24</span></div></div>`;
+    const pos=delta>=2;
+    b2.innerHTML=`<div class="score-box" style="background:${pos?'#fef2f2':'#f0fdf4'}">
+      <div style="font-size:13px;color:#64748b">ΔSOFA vs. basal</div>
+      <div class="score-num" style="color:${pos?'#dc2626':'#16a34a'}">+${delta}</div>
+      <div class="score-label" style="color:${pos?'#dc2626':'#16a34a'}">${pos?'≥2 — Criterio SEPSIS cumplido':'<2 — Sin criterios'}</div></div>`;
+    r.append(b1,b2); scEl.append(r);
+  }
+  function submit4() {
+    const v=getSOFAVals(), bas=clamp($('sbasal').value,0,24);
+    const score=calcSOFA(v), delta=score-bas;
+    save({sofaVars:v,sofa:score,sofaBasal:bas,sofaDelta:delta,sofaPos:delta>=2});
+    go(5);
+  }
+  ['spf','spla','sbili','sgcs','spam','scv','screat','sdiur','sbasal'].forEach(id=>{ const e=$(id); if(e) e.addEventListener('input',update4); });
+  update4();
+  return wrap;
+}
+
+// ─── STEP 5 ────────────────────────────────────────────────────────
+function renderStep5() {
+  const d = state.data;
+  const lac = d.lactato !== undefined ? d.lactato : 1.0;
+  const wrap = div('card');
+  wrap.innerHTML=`<div class="card-title">🩸 Step 5 — Lactato Sérico</div>
+    <div class="card-sub">Prueba adjunta de hipoperfusión tisular oculta (SSC 2021 · NICE 2025 · J-SSCG 2024) (Nodo 3)</div>`;
+  wrap.append(numInput('Lactato sérico','lac5',lac,0,30,0.1,'mmol/L',v=>v>20?'Valor extremo — verificar muestra':null));
+  wrap.append(el('p',{style:'font-size:12px;color:#64748b;margin-top:4px'},'Umbral diagnóstico: >2 mmol/L · Umbral de gravedad: >4 mmol/L (SSC 2021)'));
+  wrap.append(divider());
+  const lacEl=div(''); wrap.append(lacEl);
+  wrap.append(el('div',{style:'margin-top:16px'},div('btn-group',
+    el('button',{cls:'btn btn-outline',onclick:()=>go(4)},'← Anterior'),
+    el('button',{cls:'btn btn-success',onclick:()=>{ save({lactato:clamp($('lac5').value,0,30),lacPos:Number($('lac5').value)>2}); go(6); }},'Siguiente →')
+  )));
+
+  function update5() {
+    const v=clamp($('lac5').value,0,30);
+    const bg=v>4?'#fef2f2':v>2?'#fffbeb':'#f0fdf4';
+    const bd=v>4?'#fca5a5':v>2?'#fcd34d':'#86efac';
+    const col=v>4?'#dc2626':v>2?'#d97706':'#16a34a';
+    const msg=v>4?'🔴 Lactato >4 mmol/L — Hipoperfusión grave · Mortalidad elevada · Resucitación urgente':
+      v>2?'🟡 Lactato 2–4 mmol/L — Hipoperfusión oculta · Iniciar metas de aclaramiento':'🟢 Lactato ≤2 mmol/L — Sin evidencia de hipoperfusión';
+    lacEl.innerHTML=`<div class="score-box" style="background:${bg};border:1.5px solid ${bd}">
+      <div class="score-num" style="color:${col}">${Number(v).toFixed(1)} <span style="font-size:18px">mmol/L</span></div>
+      <div class="score-label" style="color:${col}">${msg}</div>
+      ${v>2?'<div style="font-size:12px;color:#64748b;margin-top:6px">Meta: reducción ≥10% cada 2h durante resucitación (SSC 2021 · J-SSCG 2024)</div>':''}
+    </div>`;
+  }
+  $('lac5').addEventListener('input',update5);
+  update5();
+  return wrap;
+}
+
+// ─── STEP 6 ────────────────────────────────────────────────────────
+function renderStep6() {
+  const d = state.data;
+  const wrap = div('card');
+  wrap.innerHTML=`<div class="card-title">🏷 Step 6 — Clasificación Final</div>
+    <div class="card-sub">Criterios Sepsis-3 / SSC 2021 (Nodos 5-6): respuesta hemodinámica y clasificación de gravedad</div>`;
+
+  const tags = div('tags');
+  [['ΔSOFA ≥2',d.sofaDelta>=2],[`Lactato >2 (${Number(d.lactato||0).toFixed(1)})`,d.lacPos],
+   ['NEWS ≥5',d.newsPos],['qSOFA ≥2',d.qsofaPos]].forEach(([lbl,pos])=>{
+    tags.append(div(`tag ${pos?'tag-pos':'tag-neg'}`,`${pos?'✓':'✗'} ${lbl}`));
+  });
+  wrap.append(tags);
+
+  wrap.append(numInput('PAM actual','pam6',d.pamActual||65,20,200,1,'mmHg',v=>Number(v)<65?'PAM <65 mmHg — umbral de perfusión crítica':null));
+  wrap.append(el('label',{cls:'lbl'},'Respuesta a carga de cristaloides (30 mL/kg)'));
+  const rfGrp=div('btn-group');
+  const rfOpts=['Adecuada (PAM ≥65)','Refractaria (PAM <65 persiste)','No aplica / No administrada'];
+  let rfSel=d.respFluid||'';
+  rfOpts.forEach(v=>{
+    const b=el('button',{cls:'btn'+(rfSel===v?' btn-success':' btn-grey')},v);
+    b.onclick=()=>{ rfSel=v; renderRfBtns(); dxUpdate(); };
+    rfGrp.append(b);
+  });
+  function renderRfBtns(){ rfGrp.querySelectorAll('button').forEach((b,i)=>{ b.className='btn'+(rfSel===rfOpts[i]?' btn-success':' btn-grey'); }); }
+  wrap.append(rfGrp);
+
+  wrap.append(el('label',{cls:'lbl'},'¿Requiere vasopresores para mantener PAM ≥65 mmHg?'));
+  const vpGrp=div('btn-group');
+  let vpSel = d.vasoPresores !== undefined ? d.vasoPresores : null;
+  ['Sí','No'].forEach((v,i)=>{
+    const b=el('button',{cls:'btn'+(vpSel===(i===0)?` btn-${i===0?'danger':'success'}`:' btn-grey')},v);
+    b.onclick=()=>{ vpSel=(i===0); renderVpBtns(); dxUpdate(); };
+    vpGrp.append(b);
+  });
+  function renderVpBtns(){ vpGrp.querySelectorAll('button').forEach((b,i)=>{ b.className='btn'+(vpSel===(i===0)?` btn-${i===0?'danger':'success'}`:' btn-grey'); }); }
+  wrap.append(vpGrp);
+  wrap.append(divider());
+  const dxEl=div(''); wrap.append(dxEl);
+  const nxtBtn=el('button',{cls:'btn btn-success'},'Ver Plan Terapéutico →');
+  nxtBtn.onclick=()=>{
+    if(!rfSel) return;
+    const pam=clamp($('pam6').value,20,200);
+    const sep=d.sofaDelta>=2, shock=sep&&vpSel&&d.lacPos;
+    let dx,dxCol;
+    if(shock){dx='SHOCK SÉPTICO';dxCol='red';}
+    else if(sep){dx='SEPSIS';dxCol='yellow';}
+    else if(d.newsPos||d.qsofaPos||d.lacPos){dx='SOSPECHA DE SEPSIS';dxCol='yellow';}
+    else{dx='SEPSIS NO CONFIRMADA';dxCol='green';}
+    save({pamActual:pam,vasoPresores:vpSel,respFluid:rfSel,dx,shockSeptico:shock,sepsis:sep,dxCol});
+    go(7);
+  };
+  wrap.append(div('btn-group',
+    el('button',{cls:'btn btn-outline',onclick:()=>go(5)},'← Anterior'),
+    nxtBtn
+  ));
+
+  function dxUpdate(){
+    const pam=clamp(($('pam6')||{value:65}).value,20,200);
+    const sep=d.sofaDelta>=2, shock=sep&&vpSel&&d.lacPos;
+    let dx,bg,bd,col;
+    if(shock){dx='SHOCK SÉPTICO';bg='#fef2f2';bd='#fca5a5';col='#dc2626';}
+    else if(sep){dx='SEPSIS';bg='#fffbeb';bd='#fcd34d';col='#d97706';}
+    else if(d.newsPos||d.qsofaPos||d.lacPos){dx='SOSPECHA DE SEPSIS';bg='#fffbeb';bd='#fcd34d';col='#d97706';}
+    else{dx='SEPSIS NO CONFIRMADA';bg='#f0fdf4';bd='#86efac';col='#16a34a';}
+    const sub=shock?'Escalamiento terapéutico máximo — Traslado UCI en &lt;6h':
+      sep&&!shock?'Activar manejo terapéutico — Evaluar necesidad de UCI':'';
+    dxEl.innerHTML=`<div class="dx-box" style="background:${bg};border:2px solid ${bd}">
+      <div class="dx-title">DIAGNÓSTICO (Sepsis-3 / SSC 2021)</div>
+      <div class="dx-name" style="color:${col}">${dx}</div>
+      ${sub?`<div class="dx-sub" style="color:${col}">${sub}</div>`:''}
+    </div>`;
+    nxtBtn.disabled = !rfSel;
+  }
+  $('pam6').addEventListener('input',dxUpdate);
+  dxUpdate();
+  return wrap;
+}
+
+// ─── STEP 7 ────────────────────────────────────────────────────────
+function renderStep7() {
+  const d = state.data;
+  const wrap = div('card');
+  const col=d.shockSeptico?'#dc2626':d.dxCol==='yellow'?'#d97706':'#16a34a';
+  wrap.innerHTML=`<div class="card-title">💊 Step 7 — Manejo Terapéutico</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px">
+      <span style="font-size:13px;color:#64748b">Diagnóstico:</span>
+      <span style="background:${col};color:#fff;border-radius:6px;padding:4px 12px;font-size:14px;font-weight:700">${d.dx||'—'}</span>
+      <span style="font-size:12px;color:#64748b">Lactato: ${Number(d.lactato||0).toFixed(1)} mmol/L · SOFA: ${d.sofa||0} · NEWS: ${d.news||0}</span>
+    </div>`;
+
+  const abxTime=d.shockSeptico?'< 1 hora':'< 3 horas';
+  const mods = [
+    {id:'a1',title:'🏥 A1 — Nivel de Cuidados y Ubicación',color:'#1a3a5c',html:`
+      ${r2h('Indicación UCI:',d.shockSeptico?'Sí — INMEDIATO (SSC 2021)':d.qsofaPos||d.lacPos?'Evaluar ingreso UCI':'Sala con monitorización estrecha')}
+      ${r2h('Tiempo máximo ingreso UCI:','≤6h desde reconocimiento (SSC 2021 · J-SSCG 2024)')}
+      ${d.shockSeptico?alertH('red','Shock Séptico: ingreso UCI en ≤6h. Criterios absolutos: VM, vasopresores o lactato >4 mmol/L.'):''}
+    `},
+    {id:'b1',title:'💉 B1-B2 — Antibioticoterapia',color:'#2563eb',html:`
+      ${r2h('Tiempo máximo inicio ATB:',abxTime)}
+      ${r2h('Inicio guiado por Procalcitonina:','NO recomendado para inicio (SSC 2021)')}
+      <div class="div"></div>
+      <strong>Factores de riesgo — ampliar cobertura si presentes:</strong><br>
+      • <strong>MRSA:</strong> PCR nasal +, colonización previa → Vancomicina o Linezolid<br>
+      • <strong>BGN-MDR/BLEE/KPC:</strong> hospitalización reciente, ATB previos → Doble cobertura<br>
+      • <strong>Candida/fúngico:</strong> inmunosupresión, NP, candidemia previa → Equinocandina empírica<br><br>
+      • <strong>Optimización PK/PD:</strong> infusión prolongada de Beta-lactámicos tras dosis de carga
+      ${alertH('blue','<strong>Desescalada (Nodo E1):</strong> reducir espectro 48-72h según cultivos · Procalcitonina guía suspensión')}
+    `},
+    {id:'b3',title:'🔪 B3 — Control de Foco Anatómico',color:'#7c3aed',html:`
+      ${r2h('Intervención en:','6-12h desde diagnóstico (SSC 2021)')}
+      • Absceso, perforación, isquemia, fasciitis necrotizante, colangitis<br>
+      • Retirar CVC/dispositivos sospechosos del foco<br>
+      • Drenaje percutáneo guiado por imagen si factible
+    `},
+    {id:'c1',title:'💧 C1 — Fluidoterapia y Resucitación',color:'#0891b2',html:`
+      ${r2h('Fluido 1ª línea:','Cristaloides balanceados (Ringer Lactato / PlasmaLyte)')}
+      ${r2h('Volumen inicial:','30 mL/kg en hipoperfusión (SSC 2021)')}
+      ${r2h('Monitorización:','Medidas dinámicas: PLR, VVS, ecocardiografía')}
+      • <strong>Albúmina 4-5%:</strong> si se requieren volúmenes elevados de cristaloides<br>
+      <strong style="color:#dc2626">❌ EVITAR: Almidones (HES) — Gelatinas</strong>
+      ${d.respFluid?.includes('Refractaria')?alertH('red','Hipotensión refractaria a volumen → Iniciar vasopresores inmediatamente'):''}
+    `},
+    {id:'c2',title:'💊 C2 — Vasopresores',color:'#dc2626',html:`
+      ${r2h('Meta PAM:','≥65 mmHg (SSC 2021 · NICE 2025)')}
+      ${r2h('Primera línea:','Norepinefrina (NE)')}
+      <div class="div"></div>
+      <strong>Segunda línea (NE >0.25-0.5 µg/kg/min):</strong><br>
+      • Vasopresina 0.03 U/min — ahorro de catecolaminas (SSC 2021)<br>
+      • Angiotensina II en shock refractario (J-SSCG 2024 — condicional)<br><br>
+      • Vía central preferida · Periférica aceptable hasta ≤6h proximal a fosa antecubital
+      ${alertH('yellow','<strong>Retirada (Nodo E1):</strong> descenso progresivo cuando PAM estable y lactato normalizado')}
+    `},
+    {id:'c3',title:'❤️ C3 — Soporte Inotrópico',color:'#f59e0b',html:`
+      <span style="color:#64748b">Indicación: disfunción cardíaca + hipoperfusión pese a PAM ≥65 mmHg</span><br><br>
+      • <strong>Opción A:</strong> Dobutamina + Norepinefrina<br>
+      • <strong>Opción B:</strong> Epinefrina como agente único<br>
+      • <strong>Levosimendan:</strong> disfunción miocárdica por sepsis (J-SSCG 2024 — condicional)<br>
+      <span style="color:#dc2626">• Suspender si no hay mejora objetiva o aparecen arritmias</span>
+    `},
+    {id:'d1',title:'💊 D1 — Corticoterapia',color:'#16a34a',html:`
+      ${r2h('Indicación:',d.shockSeptico?'Shock refractario tras ≥4h con vasopresores':'No indicado sin shock séptico')}
+      ${d.shockSeptico?`${r2h('Fármaco:','Hidrocortisona IV')}
+        ${r2h('Dosis:','200 mg/día en perfusión continua o fraccionada')}
+        ${r2h('Pauta:','50 mg / 6h o 100 mg / 12h')}
+        ${alertH('green','Objetivo: acortar duración del shock y reducir tiempo en vasopresores')}` : ''}
+    `},
+    {id:'d2',title:'🫁 D2 — Protección Pulmonar (ARDS)',color:'#6366f1',html:`
+      ${r2h('Volumen tidal:','6 mL/kg (peso corporal ideal)')}
+      ${r2h('Presión meseta (Pplat):','< 30 cmH₂O')}
+      ${r2h('Presión de conducción:','< 15 cmH₂O (J-SSCG 2024)')}
+      ${r2h('Decúbito prono:','> 12h/día si PaO₂/FiO₂ < 150 mmHg')}
+      <strong style="color:#dc2626">Objetivo: prevenir VILI (Ventilator-Induced Lung Injury)</strong>
+    `},
+    {id:'d3',title:'🫀 D3 — Terapia de Reemplazo Renal (RRT)',color:'#0e7490',html:`
+      <span style="color:#64748b">Indicación: LRA con criterios de urgencia (SSC 2021 · NICE 2025)</span><br><br>
+      • Oliguria refractaria (&lt;200 mL/12h) · Hiperpotasemia &gt;6.5 mEq/L<br>
+      • Acidosis metabólica severa (pH &lt;7.1) · Sobrecarga hídrica<br><br>
+      • Modalidad preferida: CRRT en inestabilidad hemodinámica
+      ${alertH('yellow','SSC 2021 · NICE 2025: NO inicio temprano sin criterios de urgencia')}
+    `},
+    {id:'d4',title:'🩸 D4 — Control de Glucemia',color:'#b45309',html:`
+      ${r2h('Umbral de inicio:','Glucemia > 180 mg/dL (dos determinaciones)')}
+      ${r2h('Meta SSC 2021:','144–180 mg/dL')}
+      ${r2h('Meta NICE 2025:','108–180 mg/dL')}
+      <span style="color:#dc2626">• Evitar hipoglucemia &lt;70 mg/dL</span>
+    `},
+    {id:'e1',title:'🔄 E1 — Reevaluación y Desescalada',color:'#475569',html:`
+      <strong>Criterios para desescalada:</strong><br>
+      ✓ Estabilidad hemodinámica sostenida · ✓ Aclaramiento lactato ≥10%/2h<br>
+      ✓ Patógeno identificado → reducir espectro · ✓ Procalcitonina en descenso<br>
+      ${alertH('blue','<strong>Loops activos:</strong><br>• Shock recurre → C2 Vasopresores<br>• Hipoperfusión nueva → C1 Fluidos<br>• Nueva infección → B1 Antibióticos')}
+    `},
+  ];
+
+  const openState = {a1:true};
+  mods.forEach(m => {
+    const mc = div('mod-card');
+    mc.style.border=`1.5px solid ${m.color}`;
+    const hd = div('mod-header');
+    hd.style.background = m.color+'18';
+    const ht = div('mod-header-title',m.title);
+    const arr = div('mod-arrow','▼');
+    hd.append(ht,arr);
+    const body = div('mod-body');
+    body.innerHTML = m.html;
+    if (!openState[m.id]) body.style.display='none'; else arr.textContent='▲';
+    hd.onclick = () => {
+      openState[m.id]=!openState[m.id];
+      body.style.display=openState[m.id]?'':'none';
+      arr.textContent=openState[m.id]?'▲':'▼';
+    };
+    mc.append(hd,body);
+    wrap.append(mc);
+  });
+
+  wrap.append(div('btn-group',
+    el('button',{cls:'btn btn-warning',onclick:()=>{ $('reeval-panel').classList.toggle('hidden'); }},'🔄 Reevaluación'),
+    el('button',{cls:'btn btn-danger',onclick:()=>{ state={step:0,data:{}}; render(); }},'↩ Nueva Evaluación')
+  ));
+  const rp = div('alert alert-blue hidden'); rp.id='reeval-panel';
+  rp.innerHTML=`<div class="alert-title">Módulo de Reevaluación activo — Nodo E1</div>
+    <div class="btn-group" style="margin-top:8px">
+      <button class="btn btn-danger" onclick="openMod('c2')">↩ Vasopresores</button>
+      <button class="btn" onclick="openMod('c1')">↩ Fluidos</button>
+      <button class="btn" style="background:#7c3aed" onclick="openMod('b1')">↩ Antibióticos</button>
+    </div>`;
+  wrap.append(rp);
+
+  window.openMod = (id) => {
+    openState[id]=true;
+    const bodies = wrap.querySelectorAll('.mod-body');
+    const headers = wrap.querySelectorAll('.mod-header');
+    mods.forEach((m,i) => {
+      if (m.id===id) {
+        bodies[i].style.display='';
+        headers[i].querySelector('.mod-arrow').textContent='▲';
+        bodies[i].scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    });
+  };
+  return wrap;
+}
+
+// ─── HTML HELPERS ───────────────────────────────────────────────────
+function r2h(label,val){ return `<div class="r2"><span class="r2-label">${label}</span><strong class="r2-val">${val}</strong></div>`; }
+function alertH(color,html){ return `<div class="alert alert-${color}" style="margin-top:10px">${html}</div>`; }
+
+// ─── INIT ───────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
