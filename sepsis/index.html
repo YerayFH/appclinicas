@@ -1,0 +1,694 @@
+import { useState } from "react";
+
+const C = {
+  primary:"#1a3a5c", secondary:"#2563eb", danger:"#dc2626",
+  warning:"#d97706", success:"#16a34a", light:"#f0f4f8",
+  white:"#ffffff", border:"#cbd5e1", text:"#1e293b", muted:"#64748b",
+};
+
+const STEPS = ["Sospecha","NEWS/SIRS","qSOFA","SOFA","Lactato","Clasificación","Manejo"];
+
+function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, Number(v) || 0)); }
+
+/* ── NumInput con estado local para escritura libre ── */
+function NumInput({ label, value, onChange, unit, min=0, max=9999, step=1, warn }) {
+  const [local, setLocal] = useState(String(value));
+  return (
+    <div>
+      <label style={{ display:"block", fontSize:13, fontWeight:600, color:C.text, marginBottom:4, marginTop:12 }}>
+        {label}{unit && <span style={{ color:C.muted, fontWeight:400 }}> ({unit})</span>}
+      </label>
+      <input
+        style={{ width:"100%", padding:"10px 12px", borderRadius:8, border:`1.5px solid ${warn?"#f87171":C.border}`, fontSize:14, boxSizing:"border-box", outline:"none" }}
+        type="number" value={local} min={min} max={max} step={step}
+        onChange={e => {
+          setLocal(e.target.value);
+          const n = Number(e.target.value);
+          if (e.target.value !== "" && !isNaN(n)) onChange(n);
+        }}
+        onBlur={() => {
+          const n = Number(local);
+          const safe = isNaN(n) ? min : clamp(n, min, max);
+          setLocal(String(safe));
+          onChange(safe);
+        }}
+      />
+      {warn && <div style={{ fontSize:11, color:C.danger, marginTop:2 }}>{warn}</div>}
+    </div>
+  );
+}
+
+function Sel({ label, value, onChange, options }) {
+  return (
+    <div>
+      <label style={{ display:"block", fontSize:13, fontWeight:600, color:C.text, marginBottom:4, marginTop:12 }}>{label}</label>
+      <select style={{ width:"100%", padding:"10px 12px", borderRadius:8, border:`1.5px solid ${C.border}`, fontSize:14, boxSizing:"border-box", background:"#fff" }}
+        value={value} onChange={e => onChange(e.target.value)}>
+        {options.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function Row2({ label, val }) {
+  return (
+    <div style={{ display:"flex", flexWrap:"wrap", gap:"2px 8px", marginBottom:8 }}>
+      <span style={{ color:C.muted, flexShrink:0 }}>{label}</span>
+      <strong style={{ wordBreak:"break-word" }}>{val}</strong>
+    </div>
+  );
+}
+
+function Divider() { return <div style={{ height:1, background:C.border, margin:"16px 0" }} />; }
+
+function Alert({ color, title, children }) {
+  const bg = color==="red"?"#fef2f2":color==="yellow"?"#fffbeb":color==="green"?"#f0fdf4":"#eff6ff";
+  const bd = color==="red"?"#fca5a5":color==="yellow"?"#fcd34d":color==="green"?"#86efac":"#93c5fd";
+  const tc = color==="red"?C.danger:color==="yellow"?C.warning:color==="green"?C.success:C.secondary;
+  return (
+    <div style={{ background:bg, border:`1.5px solid ${bd}`, borderRadius:10, padding:"14px 18px", marginTop:12 }}>
+      {title && <div style={{ fontWeight:700, color:tc, fontSize:15 }}>{title}</div>}
+      <div style={{ fontSize:13, marginTop:title?6:0 }}>{children}</div>
+    </div>
+  );
+}
+
+function Card({ title, sub, children }) {
+  return (
+    <div style={{ background:C.white, borderRadius:12, boxShadow:"0 2px 12px rgba(0,0,0,.08)", padding:28, margin:"20px auto", maxWidth:720 }}>
+      <div style={{ fontSize:18, fontWeight:700, color:C.primary, marginBottom:6 }}>{title}</div>
+      {sub && <div style={{ fontSize:13, color:C.muted, marginBottom:20 }}>{sub}</div>}
+      {children}
+    </div>
+  );
+}
+
+function Btn({ label, onClick, color, outline, disabled, flex }) {
+  if (outline) return (
+    <button onClick={onClick} disabled={disabled}
+      style={{ background:"transparent", color:C.secondary, border:`2px solid ${C.secondary}`, borderRadius:8, padding:"10px 22px", fontSize:14, fontWeight:600, cursor:"pointer", marginRight:8, marginTop:8 }}>
+      {label}
+    </button>
+  );
+  return (
+    <button onClick={onClick} disabled={disabled}
+      style={{ background:color||C.secondary, color:"#fff", border:"none", borderRadius:8, padding:"12px 24px", fontSize:15, fontWeight:600, cursor:disabled?"not-allowed":"pointer", marginRight:8, marginTop:8, opacity:disabled?0.5:1, flex:flex||undefined }}>
+      {label}
+    </button>
+  );
+}
+
+/* ── SCALES ── */
+function calcNEWS(n) {
+  let sc = 0;
+  const { spo2, fr, tas, fc, temp, conciencia, o2sup } = n;
+  if (spo2 <= 91) sc += 3; else if (spo2 <= 93) sc += 2; else if (spo2 <= 95) sc += 1;
+  if (fr <= 8) sc += 3; else if (fr <= 11) sc += 1; else if (fr <= 20) sc += 0; else if (fr <= 24) sc += 2; else sc += 3;
+  if (tas <= 90) sc += 3; else if (tas <= 100) sc += 2; else if (tas <= 110) sc += 1; else if (tas <= 219) sc += 0; else sc += 3;
+  if (fc <= 40) sc += 3; else if (fc <= 50) sc += 1; else if (fc <= 90) sc += 0; else if (fc <= 110) sc += 1; else if (fc <= 130) sc += 2; else sc += 3;
+  if (temp <= 35.0) sc += 3; else if (temp <= 36.0) sc += 1; else if (temp <= 38.0) sc += 0; else if (temp <= 39.0) sc += 1; else sc += 2;
+  sc += conciencia === "Alerta" ? 0 : 3;
+  sc += o2sup ? 2 : 0;
+  return sc;
+}
+
+function calcSIRS({ temp, fc, fr, leucos }) {
+  return (temp > 38 || temp < 36 ? 1 : 0) + (fc > 90 ? 1 : 0) + (fr > 20 ? 1 : 0) + (leucos > 12 || leucos < 4 ? 1 : 0);
+}
+
+function calcSOFABreakdown(sv) {
+  const { pao2fio2, plaquetas, bili, cv, pam, glasgow, creat, diuresis } = sv;
+  let resp=0, plaq=0, biliS=0, cvS=0, neuro=0, renal=0;
+  if (pao2fio2 <= 100) resp=4; else if (pao2fio2 <= 200) resp=3; else if (pao2fio2 <= 300) resp=2; else if (pao2fio2 <= 400) resp=1;
+  if (plaquetas < 20) plaq=4; else if (plaquetas < 50) plaq=3; else if (plaquetas < 100) plaq=2; else if (plaquetas < 150) plaq=1;
+  if (bili >= 12) biliS=4; else if (bili >= 6) biliS=3; else if (bili >= 2) biliS=2; else if (bili >= 1.2) biliS=1;
+  if (cv==="dopa15"||cv==="epi"||cv==="norepiAlta") cvS=4;
+  else if (cv==="dopa510"||cv==="norepiBaja") cvS=3;
+  else if (cv==="dopa5"||cv==="dobu") cvS=2;
+  else if (pam < 70) cvS=1;
+  if (glasgow < 6) neuro=4; else if (glasgow < 10) neuro=3; else if (glasgow < 13) neuro=2; else if (glasgow < 15) neuro=1;
+  if (creat >= 5.0 || diuresis < 200) renal=4;
+  else if ((creat >= 3.5 && creat < 5.0) || (diuresis >= 200 && diuresis < 500)) renal=3;
+  else if (creat >= 2.0 && creat < 3.5) renal=2;
+  else if (creat >= 1.2 && creat < 2.0) renal=1;
+  return { resp, plaq, bili:biliS, cv:cvS, neuro, renal };
+}
+
+function calcSOFA(sv) {
+  const b = calcSOFABreakdown(sv);
+  return b.resp + b.plaq + b.bili + b.cv + b.neuro + b.renal;
+}
+
+/* ── HEADER ── */
+function Header({ step }) {
+  return (
+    <div>
+      <div style={{ background:"#0f2d5e", color:"#fff", textAlign:"center", padding:"10px 24px", borderBottom:"3px solid #f0c040" }}>
+        <div style={{ fontSize:16, fontWeight:800, letterSpacing:1.2, textTransform:"uppercase" }}>
+          🏛 Farmacia Hospitalaria · Hospital Universitario Puerto Real
+        </div>
+      </div>
+      <div style={{ background:C.primary, color:"#fff", padding:"12px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 2px 8px rgba(0,0,0,.2)" }}>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700 }}>🏥 SEPSIS DECISION SUPPORT</div>
+          <div style={{ fontSize:11, color:"#93c5fd", marginTop:2 }}>SSC 2021 · NICE 2025 · J-SSCG 2024 — Clinical Decision Aid</div>
+        </div>
+        {step > 0 && <div style={{ color:"#93c5fd", fontSize:13 }}>Paso {step} / {STEPS.length}</div>}
+      </div>
+      {step > 0 && (
+        <div style={{ background:"#dbeafe", padding:"8px 24px", display:"flex", gap:4, alignItems:"center", flexWrap:"wrap" }}>
+          {STEPS.map((lbl, i) => (
+            <div key={i} style={{ display:"flex", alignItems:"center" }}>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
+                <div style={{ width:28, height:28, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700,
+                  background: step > i+1 ? C.success : step === i+1 ? C.secondary : "#cbd5e1",
+                  color: step > i+1 || step === i+1 ? "#fff" : C.muted }}>
+                  {step > i+1 ? "✓" : i+1}
+                </div>
+                <div style={{ fontSize:11, color: step===i+1 ? C.secondary : C.muted, fontWeight: step===i+1 ? 700 : 400 }}>{lbl}</div>
+              </div>
+              {i < STEPS.length-1 && <div style={{ width:16, height:2, background:"#cbd5e1", marginBottom:12 }} />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── WELCOME ── */
+function Welcome({ onStart }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"calc(100vh - 120px)", padding:24 }}>
+      <div style={{ background:C.white, borderRadius:12, boxShadow:"0 2px 12px rgba(0,0,0,.08)", padding:28, maxWidth:580, textAlign:"center" }}>
+        <div style={{ fontSize:56, marginBottom:12 }}>🩺</div>
+        <div style={{ fontSize:24, fontWeight:800, color:C.primary, marginBottom:8 }}>Sistema de Soporte Clínico</div>
+        <div style={{ fontSize:16, color:C.muted, marginBottom:8 }}>Sepsis y Shock Séptico</div>
+        <div style={{ background:"#dbeafe", borderRadius:8, padding:"10px 16px", fontSize:13, color:C.secondary, marginBottom:20 }}>
+          SSC 2021 · NICE 2025 · J-SSCG 2024
+        </div>
+        <div style={{ fontSize:13, color:C.muted, marginBottom:24, lineHeight:1.8 }}>
+          Guía paso a paso para diagnóstico y manejo terapéutico.<br/>
+          Cálculo automático de NEWS · SIRS · qSOFA · SOFA.<br/>
+          Lógica diagnóstica basada en Sepsis-3 y guías vigentes.<br/><br/>
+          <strong style={{ color:C.danger }}>⚠ Solo apoyo clínico. No reemplaza el juicio médico.</strong>
+        </div>
+        <Btn label="Iniciar Evaluación →" onClick={onStart} />
+      </div>
+    </div>
+  );
+}
+
+/* ── STEP 1 ── */
+function Step1({ data, setData, onNext }) {
+  const sos = data.sospecha;
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="🔍 Step 1 — Sospecha de Infección" sub="Activación de protocolo de cribado multimodal (Nodo 0)">
+        <label style={{ display:"block", fontSize:13, fontWeight:600, color:C.text, marginBottom:8 }}>¿Existe sospecha clínica de infección?</label>
+        <div style={{ display:"flex", gap:12 }}>
+          {["Sí","No"].map(v => (
+            <button key={v} onClick={() => setData({ ...data, sospecha:v })}
+              style={{ flex:1, background: sos===v ? C.secondary : "#e2e8f0", color: sos===v ? "#fff" : C.text,
+                border:"none", borderRadius:8, padding:"12px 24px", fontSize:15, fontWeight:600, cursor:"pointer" }}>{v}</button>
+          ))}
+        </div>
+        {sos==="No" && <Alert color="yellow" title="Sin sospecha de infección activa">No se activan los protocolos de cribado. Considerar diagnósticos alternativos no infecciosos.</Alert>}
+        {sos==="Sí" && <Alert color="green" title="✓ Protocolos de cribado activados">Iniciar evaluación simultánea de NEWS/SIRS y Lactato. Continúe con el paso 2.</Alert>}
+        <div style={{ marginTop:20 }}><Btn label="Siguiente →" onClick={onNext} disabled={!sos} /></div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── STEP 2 ── */
+function Step2({ data, setData, onNext, onBack }) {
+  const [n, setN] = useState(data.newsVars || { spo2:97, fr:16, tas:120, fc:80, temp:37.0, conciencia:"Alerta", o2sup:false });
+  const [leuc, setLeuc] = useState(data.sirsLeuc ?? 8);
+  const news = calcNEWS(n);
+  const sirs = calcSIRS({ temp:n.temp, fc:n.fc, fr:n.fr, leucos:leuc });
+  const pos = news >= 5 || sirs >= 2;
+
+  function go() { setData({ ...data, newsVars:n, sirsLeuc:leuc, news, sirs, newsPos:pos }); onNext(); }
+
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="📊 Step 2 — NEWS · SIRS" sub="Tamizaje multimodal primario — NEWS (NICE 2025) y SIRS (SSC 2021) (Nodo 1)">
+        <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="SpO₂" value={n.spo2} onChange={v => setN({ ...n, spo2:v })} unit="%" min={50} max={100} />
+            <NumInput label="Frec. Respiratoria" value={n.fr} onChange={v => setN({ ...n, fr:v })} unit="/min" min={1} max={70} />
+            <NumInput label="TAS" value={n.tas} onChange={v => setN({ ...n, tas:v })} unit="mmHg" min={40} max={270} />
+            <NumInput label="FC" value={n.fc} onChange={v => setN({ ...n, fc:v })} unit="/min" min={20} max={220} />
+          </div>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="Temperatura" value={n.temp} onChange={v => setN({ ...n, temp:v })} unit="°C" min={30} max={43} step={0.1} />
+            <Sel label="Nivel de conciencia" value={n.conciencia} onChange={v => setN({ ...n, conciencia:v })}
+              options={[{ v:"Alerta", l:"Alerta (A)" }, { v:"Alterada", l:"Alterada (V/P/U)" }]} />
+            <Sel label="O₂ suplementario" value={n.o2sup ? "si" : "no"} onChange={v => setN({ ...n, o2sup:v==="si" })}
+              options={[{ v:"no", l:"No" }, { v:"si", l:"Sí (+2 puntos)" }]} />
+            <NumInput label="Leucocitos (para SIRS)" value={leuc} onChange={setLeuc} unit="×10³/µL" min={0} max={150} />
+          </div>
+        </div>
+        <Divider />
+        <div style={{ fontSize:12, color:C.muted, marginBottom:10 }}>
+          <strong>Referencia NEWS (NICE 2025):</strong> FR: ≤8→3 | 9-11→1 | 12-20→0 | 21-24→2 | ≥25→3 · TAS: ≤90→3 | 91-100→2 | 101-110→1 | 111-219→0 | ≥220→3
+        </div>
+        <div style={{ display:"flex", gap:16 }}>
+          <div style={{ flex:1, background:news>=5?"#fef2f2":"#f0fdf4", borderRadius:10, padding:"14px 18px", textAlign:"center" }}>
+            <div style={{ fontSize:13, color:C.muted }}>Puntuación NEWS</div>
+            <div style={{ fontSize:36, fontWeight:800, color:news>=5?C.danger:C.success }}>{news}</div>
+            <div style={{ fontSize:12, color:news>=5?C.danger:C.success, fontWeight:600 }}>{news>=5?"≥5 — POSITIVO":"<5 — Riesgo bajo"}</div>
+          </div>
+          <div style={{ flex:1, background:sirs>=2?"#fef2f2":"#f0fdf4", borderRadius:10, padding:"14px 18px", textAlign:"center" }}>
+            <div style={{ fontSize:13, color:C.muted }}>Criterios SIRS</div>
+            <div style={{ fontSize:36, fontWeight:800, color:sirs>=2?C.danger:C.success }}>{sirs}<span style={{ fontSize:20 }}>/4</span></div>
+            <div style={{ fontSize:12, color:sirs>=2?C.danger:C.success, fontWeight:600 }}>{sirs>=2?"≥2 — POSITIVO":"<2 — Negativo"}</div>
+          </div>
+        </div>
+        <Alert color={pos?"red":"green"} title={pos?"⚠ Tamizaje POSITIVO — Alta sensibilidad para sepsis":"✓ Tamizaje negativo"}>
+          {pos?"Proceder a evaluación de riesgo de mortalidad (qSOFA) y disfunción orgánica (SOFA).":"Baja probabilidad actual. Vigilar y reevaluar si cambia la clínica."}
+        </Alert>
+        <div style={{ marginTop:20 }}>
+          <Btn label="← Anterior" onClick={onBack} outline />
+          <Btn label="Siguiente →" onClick={go} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── STEP 3 ── */
+function Step3({ data, setData, onNext, onBack }) {
+  const [q, setQ] = useState(data.qsofaVars || { pas: data.newsVars?.tas||120, fr: data.newsVars?.fr||16, glasgow:15 });
+  const score = (q.pas <= 100 ? 1 : 0) + (q.fr >= 22 ? 1 : 0) + (q.glasgow < 15 ? 1 : 0);
+  function go() { setData({ ...data, qsofaVars:q, qsofa:score, qsofaPos:score>=2 }); onNext(); }
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="⚡ Step 3 — qSOFA" sub="Predictor de mal pronóstico — no usar como cribado único (SSC 2021 · J-SSCG 2024) (Nodo 2)">
+        <Alert color="yellow">ℹ qSOFA evalúa riesgo de mortalidad elevada o estancia prolongada en UCI. Un resultado negativo <strong>no excluye</strong> sepsis.</Alert>
+        <div style={{ display:"flex", gap:16, flexWrap:"wrap", marginTop:8 }}>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="TAS" value={q.pas} onChange={v => setQ({ ...q, pas:v })} unit="mmHg" min={40} max={270} />
+            <div style={{ fontSize:12, color:q.pas<=100?C.danger:C.success, marginTop:2, fontWeight:600 }}>{q.pas<=100?"✓ ≤100 mmHg (+1 punto)":"✗ >100 mmHg (0 puntos)"}</div>
+          </div>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="Frecuencia Respiratoria" value={q.fr} onChange={v => setQ({ ...q, fr:v })} unit="/min" min={1} max={70} />
+            <div style={{ fontSize:12, color:q.fr>=22?C.danger:C.success, marginTop:2, fontWeight:600 }}>{q.fr>=22?"✓ ≥22/min (+1 punto)":"✗ <22/min (0 puntos)"}</div>
+          </div>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="Glasgow" value={q.glasgow} onChange={v => setQ({ ...q, glasgow:v })} min={3} max={15} />
+            <div style={{ fontSize:12, color:q.glasgow<15?C.danger:C.success, marginTop:2, fontWeight:600 }}>{q.glasgow<15?"✓ <15 (+1 punto)":"✗ =15 (0 puntos)"}</div>
+          </div>
+        </div>
+        <Divider />
+        <div style={{ background:score>=2?"#fef2f2":"#f0fdf4", borderRadius:10, padding:"16px 20px", textAlign:"center" }}>
+          <div style={{ fontSize:13, color:C.muted }}>Puntuación qSOFA</div>
+          <div style={{ fontSize:48, fontWeight:800, color:score>=2?C.danger:C.success }}>{score}<span style={{ fontSize:20 }}>/3</span></div>
+          <div style={{ color:score>=2?C.danger:C.success, fontWeight:700 }}>
+            {score>=2?"⚠ Riesgo elevado de mortalidad — Monitorización invasiva y SOFA urgente":"Riesgo bajo — Continuar con SOFA"}
+          </div>
+        </div>
+        <div style={{ marginTop:20 }}>
+          <Btn label="← Anterior" onClick={onBack} outline />
+          <Btn label="Siguiente →" onClick={go} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── STEP 4 ── */
+function Step4({ data, setData, onNext, onBack }) {
+  const [sv, setSV] = useState(data.sofaVars || {
+    pao2fio2:400, plaquetas:200, bili:0.8,
+    cv:"ninguno", pam: data.newsVars?.tas||80,
+    glasgow: data.qsofaVars?.glasgow||15,
+    creat:0.9, diuresis:1200
+  });
+  const [basal, setBasal] = useState(data.sofaBasal || 0);
+  const score = calcSOFA(sv);
+  const delta = score - clamp(basal, 0, 24);
+  const bd = calcSOFABreakdown(sv);
+  function go() { setData({ ...data, sofaVars:sv, sofa:score, sofaBasal:basal, sofaDelta:delta, sofaPos:delta>=2 }); onNext(); }
+
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="🧮 Step 4 — SOFA Score" sub="Disfunción orgánica (Sepsis-3 / SSC 2021): ΔSOFA ≥2 vs. basal atribuible a infección (Nodo 4)">
+        <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="PaO₂/FiO₂" value={sv.pao2fio2} onChange={v => setSV({ ...sv, pao2fio2:v })} unit="mmHg" min={0} max={600} />
+            <NumInput label="Plaquetas" value={sv.plaquetas} onChange={v => setSV({ ...sv, plaquetas:v })} unit="×10³/µL" min={0} max={800} />
+            <NumInput label="Bilirrubina" value={sv.bili} onChange={v => setSV({ ...sv, bili:v })} unit="mg/dL" min={0} max={40} step={0.1} />
+            <NumInput label="Glasgow" value={sv.glasgow} onChange={v => setSV({ ...sv, glasgow:v })} min={3} max={15} />
+          </div>
+          <div style={{ flex:1, minWidth:160 }}>
+            <NumInput label="PAM" value={sv.pam} onChange={v => setSV({ ...sv, pam:v })} unit="mmHg" min={20} max={200} />
+            <Sel label="Soporte vasoactivo" value={sv.cv} onChange={v => setSV({ ...sv, cv:v })}
+              options={[
+                { v:"ninguno", l:"Sin vasopresores" },
+                { v:"dobu", l:"Dobutamina (cualquier dosis)" },
+                { v:"dopa5", l:"Dopamina ≤5 µg/kg/min" },
+                { v:"dopa510", l:"Dopamina 5.1–15 µg/kg/min" },
+                { v:"dopa15", l:"Dopamina >15 µg/kg/min" },
+                { v:"norepiBaja", l:"Norepinefrina ≤0.1 µg/kg/min" },
+                { v:"norepiAlta", l:"Norepinefrina >0.1 µg/kg/min" },
+                { v:"epi", l:"Epinefrina >0.1 µg/kg/min" },
+              ]} />
+            <NumInput label="Creatinina" value={sv.creat} onChange={v => setSV({ ...sv, creat:v })} unit="mg/dL" min={0} max={25} step={0.1} />
+            <NumInput label="Diuresis" value={sv.diuresis} onChange={v => setSV({ ...sv, diuresis:v })} unit="mL/24h" min={0} max={6000} step={50} />
+          </div>
+        </div>
+        <div style={{ marginTop:12 }}>
+          <label style={{ display:"block", fontSize:13, fontWeight:600, color:C.text, marginBottom:4 }}>SOFA basal previo</label>
+          <input style={{ width:120, padding:"10px 12px", borderRadius:8, border:`1.5px solid ${C.border}`, fontSize:14 }}
+            type="number" min={0} max={24} value={basal}
+            onChange={e => setBasal(clamp(Number(e.target.value), 0, 24))} />
+        </div>
+        <Divider />
+        <div style={{ background:"#f8fafc", borderRadius:8, padding:"12px 16px", marginBottom:12 }}>
+          <div style={{ fontWeight:600, fontSize:13, marginBottom:6 }}>Desglose SOFA por órgano</div>
+          {[["Respiratorio (PaO₂/FiO₂)", bd.resp], ["Coagulación (Plaquetas)", bd.plaq], ["Hepático (Bilirrubina)", bd.bili],
+            ["Cardiovascular", bd.cv], ["Neurológico (Glasgow)", bd.neuro], ["Renal", bd.renal]].map(([lbl, val]) => (
+            <div key={lbl} style={{ display:"flex", justifyContent:"space-between", fontSize:12, padding:"2px 0" }}>
+              <span style={{ color:C.muted }}>{lbl}</span>
+              <strong style={{ color:val>0?C.danger:C.success }}>{val>0?`+${val} pts`:"0 pts"}</strong>
+            </div>
+          ))}
+        </div>
+        <div style={{ display:"flex", gap:16 }}>
+          <div style={{ flex:1, background:"#eff6ff", borderRadius:10, padding:"14px 18px", textAlign:"center" }}>
+            <div style={{ fontSize:13, color:C.muted }}>SOFA actual</div>
+            <div style={{ fontSize:40, fontWeight:800, color:C.secondary }}>{score}<span style={{ fontSize:18 }}>/24</span></div>
+          </div>
+          <div style={{ flex:1, background:delta>=2?"#fef2f2":"#f0fdf4", borderRadius:10, padding:"14px 18px", textAlign:"center" }}>
+            <div style={{ fontSize:13, color:C.muted }}>ΔSOFA vs. basal</div>
+            <div style={{ fontSize:40, fontWeight:800, color:delta>=2?C.danger:C.success }}>+{delta}</div>
+            <div style={{ fontSize:12, color:delta>=2?C.danger:C.success, fontWeight:600 }}>
+              {delta>=2?"≥2 — Criterio SEPSIS cumplido":"<2 — Sin criterios de disfunción orgánica"}
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop:20 }}>
+          <Btn label="← Anterior" onClick={onBack} outline />
+          <Btn label="Siguiente →" onClick={go} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── STEP 5 ── */
+function Step5({ data, setData, onNext, onBack }) {
+  const [lac, setLac] = useState(data.lactato ?? 1.0);
+  function go() { setData({ ...data, lactato:lac, lacPos:lac>2 }); onNext(); }
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="🩸 Step 5 — Lactato Sérico" sub="Prueba adjunta de hipoperfusión tisular oculta (SSC 2021 · NICE 2025 · J-SSCG 2024) (Nodo 3)">
+        <NumInput label="Lactato sérico" value={lac} onChange={v => setLac(v)} unit="mmol/L" min={0} max={30} step={0.1}
+          warn={lac > 20 ? "Valor extremo — verificar muestra" : undefined} />
+        <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>Umbral diagnóstico: &gt;2 mmol/L · Umbral de gravedad: &gt;4 mmol/L (SSC 2021)</div>
+        <Divider />
+        <div style={{ background:lac>4?"#fef2f2":lac>2?"#fffbeb":"#f0fdf4", borderRadius:10, padding:"16px 20px", textAlign:"center",
+          border:`1.5px solid ${lac>4?"#fca5a5":lac>2?"#fcd34d":"#86efac"}` }}>
+          <div style={{ fontSize:40, fontWeight:800, color:lac>4?C.danger:lac>2?C.warning:C.success }}>
+            {Number(lac).toFixed(1)} <span style={{ fontSize:18 }}>mmol/L</span>
+          </div>
+          {lac > 4 && <div style={{ color:C.danger, fontWeight:700 }}>🔴 Lactato &gt;4 mmol/L — Hipoperfusión grave · Mortalidad elevada · Resucitación urgente</div>}
+          {lac > 2 && lac <= 4 && <div style={{ color:C.warning, fontWeight:700 }}>🟡 Lactato 2–4 mmol/L — Hipoperfusión oculta · Iniciar metas de aclaramiento</div>}
+          {lac <= 2 && <div style={{ color:C.success, fontWeight:700 }}>🟢 Lactato ≤2 mmol/L — Sin evidencia de hipoperfusión</div>}
+          {lac > 2 && <div style={{ fontSize:13, color:C.muted, marginTop:6 }}>Meta: reducción ≥10% cada 2h durante resucitación (SSC 2021 · J-SSCG 2024)</div>}
+        </div>
+        <div style={{ marginTop:20 }}>
+          <Btn label="← Anterior" onClick={onBack} outline />
+          <Btn label="Siguiente →" onClick={go} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── STEP 6 ── */
+function Step6({ data, setData, onNext, onBack }) {
+  const [pam, setPam] = useState(data.pamActual || 65);
+  const [vasoP, setVasoP] = useState(data.vasoPresores ?? false);
+  const [respFluid, setRespFluid] = useState(data.respFluid || "");
+  const sofaPos = data.sofaDelta >= 2;
+  const lacPos = data.lacPos;
+  const sepsis = sofaPos;
+  const shockSeptico = sepsis && vasoP && lacPos;
+  let dx, dxCol;
+  if (shockSeptico) { dx="SHOCK SÉPTICO"; dxCol="red"; }
+  else if (sepsis) { dx="SEPSIS"; dxCol="yellow"; }
+  else if (data.newsPos || data.qsofaPos || lacPos) { dx="SOSPECHA DE SEPSIS"; dxCol="yellow"; }
+  else { dx="SEPSIS NO CONFIRMADA"; dxCol="green"; }
+
+  function go() {
+    if (!respFluid) return;
+    setData({ ...data, pamActual:pam, vasoPresores:vasoP, respFluid, dx, shockSeptico, sepsis, dxCol });
+    onNext();
+  }
+
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="🏷 Step 6 — Clasificación Final" sub="Criterios Sepsis-3 / SSC 2021 (Nodos 5-6): respuesta hemodinámica y clasificación de gravedad">
+        <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16 }}>
+          {[["ΔSOFA ≥2", sofaPos], [`Lactato >2 (${Number(data.lactato||0).toFixed(1)})`, lacPos], ["NEWS ≥5", data.newsPos], ["qSOFA ≥2", data.qsofaPos]].map(([lbl, act]) => (
+            <div key={lbl} style={{ background:act?"#fef2f2":"#f0fdf4", border:`1.5px solid ${act?"#fca5a5":"#86efac"}`,
+              borderRadius:8, padding:"8px 14px", fontSize:13, fontWeight:600, color:act?C.danger:C.success }}>
+              {act?"✓":"✗"} {lbl}
+            </div>
+          ))}
+        </div>
+        <NumInput label="PAM actual" value={pam} onChange={v => setPam(v)} unit="mmHg" min={20} max={200}
+          warn={pam < 65 ? "PAM <65 mmHg — umbral de perfusión crítica" : undefined} />
+        <label style={{ display:"block", fontSize:13, fontWeight:600, color:C.text, marginTop:12, marginBottom:8 }}>
+          Respuesta a carga de cristaloides (30 mL/kg)
+        </label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {["Adecuada (PAM ≥65)", "Refractaria (PAM <65 persiste)", "No aplica / No administrada"].map(v => (
+            <button key={v} onClick={() => setRespFluid(v)}
+              style={{ background:respFluid===v?C.secondary:"#e2e8f0", color:respFluid===v?"#fff":C.text,
+                border:"none", borderRadius:8, padding:"10px 16px", fontSize:13, fontWeight:600, cursor:"pointer" }}>{v}</button>
+          ))}
+        </div>
+        <label style={{ display:"block", fontSize:13, fontWeight:600, color:C.text, marginTop:12, marginBottom:8 }}>
+          ¿Requiere vasopresores para mantener PAM ≥65 mmHg?
+        </label>
+        <div style={{ display:"flex", gap:8 }}>
+          {[true, false].map(v => (
+            <button key={String(v)} onClick={() => setVasoP(v)}
+              style={{ flex:1, background:vasoP===v?C.secondary:"#e2e8f0", color:vasoP===v?"#fff":C.text,
+                border:"none", borderRadius:8, padding:"12px 24px", fontSize:15, fontWeight:600, cursor:"pointer" }}>{v?"Sí":"No"}</button>
+          ))}
+        </div>
+        <Divider />
+        <div style={{ background:dxCol==="red"?"#fef2f2":dxCol==="yellow"?"#fffbeb":dxCol==="green"?"#f0fdf4":"#eff6ff",
+          borderRadius:12, padding:"20px 24px", textAlign:"center",
+          border:`2px solid ${dxCol==="red"?"#fca5a5":dxCol==="yellow"?"#fcd34d":dxCol==="green"?"#86efac":"#93c5fd"}` }}>
+          <div style={{ fontSize:13, color:C.muted, marginBottom:4 }}>DIAGNÓSTICO (Sepsis-3 / SSC 2021)</div>
+          <div style={{ fontSize:28, fontWeight:800, color:dxCol==="red"?C.danger:dxCol==="yellow"?C.warning:dxCol==="green"?C.success:C.secondary }}>{dx}</div>
+          {shockSeptico && <div style={{ fontSize:13, color:C.danger, marginTop:6 }}>Escalamiento terapéutico máximo — Traslado UCI en &lt;6h</div>}
+          {sepsis && !shockSeptico && <div style={{ fontSize:13, color:C.warning, marginTop:6 }}>Activar manejo terapéutico — Evaluar necesidad de UCI</div>}
+        </div>
+        <div style={{ marginTop:20 }}>
+          <Btn label="← Anterior" onClick={onBack} outline />
+          <Btn label="Ver Plan Terapéutico →" onClick={go} color={C.success} disabled={!respFluid} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── STEP 7 ── */
+function ModCard({ title, color, open, onToggle, children }) {
+  return (
+    <div style={{ border:`1.5px solid ${color||C.border}`, borderRadius:10, marginBottom:12, overflow:"hidden" }}>
+      <div onClick={onToggle} style={{ background:color?color+"18":"#f8fafc", padding:"12px 18px", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", gap:8 }}>
+        <span style={{ fontWeight:700, color:C.primary, fontSize:14, flexShrink:1, minWidth:0 }}>{title}</span>
+        <span style={{ color:C.muted, flexShrink:0 }}>{open?"▲":"▼"}</span>
+      </div>
+      {open && (
+        <div style={{ padding:"14px 18px", fontSize:13, lineHeight:1.85, wordBreak:"break-word", overflowWrap:"break-word", boxSizing:"border-box", width:"100%" }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Step7({ data, onRestart }) {
+  const [open, setOpen] = useState({ a1:true });
+  const [reeval, setReeval] = useState(false);
+  const tog = k => setOpen(p => ({ ...p, [k]:!p[k] }));
+  const { dx, shockSeptico, lacPos, qsofaPos, dxCol } = data;
+  const abxTime = shockSeptico ? "< 1 hora" : "< 3 horas";
+  const lac = Number(data.lactato || 0).toFixed(1);
+
+  return (
+    <div style={{ padding:20 }}>
+      <Card title="💊 Step 7 — Manejo Terapéutico">
+        <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap", marginBottom:16 }}>
+          <span style={{ fontSize:13, color:C.muted }}>Diagnóstico:</span>
+          <span style={{ display:"inline-block", background:shockSeptico?C.danger:dxCol==="yellow"?C.warning:C.success,
+            color:"#fff", borderRadius:6, padding:"4px 12px", fontSize:14, fontWeight:700 }}>{dx}</span>
+          <span style={{ fontSize:12, color:C.muted }}>Lactato: {lac} mmol/L · SOFA: {data.sofa} · NEWS: {data.news}</span>
+        </div>
+
+        <ModCard title="🏥 A1 — Nivel de Cuidados y Ubicación" color="#1a3a5c" open={open.a1} onToggle={() => tog("a1")}>
+          <Row2 label="Indicación UCI:" val={shockSeptico?"Sí — INMEDIATO (SSC 2021)":qsofaPos||lacPos?"Evaluar ingreso UCI":"Sala con monitorización estrecha"} />
+          <Row2 label="Tiempo máximo ingreso UCI:" val="≤6h desde reconocimiento (SSC 2021 · J-SSCG 2024)" />
+          {shockSeptico && <Alert color="red">Shock Séptico: ingreso UCI en ≤6h. Criterios absolutos: VM, vasopresores o lactato &gt;4 mmol/L.</Alert>}
+        </ModCard>
+
+        <ModCard title="💉 B1-B2 — Antibioticoterapia" color="#2563eb" open={open.b1} onToggle={() => tog("b1")}>
+          <Row2 label="Tiempo máximo inicio ATB:" val={abxTime} />
+          <Row2 label="Inicio guiado por Procalcitonina:" val="NO recomendado para inicio (SSC 2021)" />
+          <Divider />
+          <div style={{ fontWeight:600, marginBottom:6 }}>Factores de riesgo — ampliar cobertura si presentes:</div>
+          <div>• <strong>MRSA:</strong> PCR nasal +, colonización previa → Vancomicina o Linezolid</div>
+          <div>• <strong>BGN-MDR/BLEE/KPC:</strong> hospitalización reciente, ATB previos → Doble cobertura</div>
+          <div>• <strong>Candida/fúngico:</strong> inmunosupresión, NP, candidemia previa → Equinocandina empírica</div>
+          <div style={{ marginTop:10 }}>• <strong>Optimización PK/PD:</strong> infusión prolongada de Beta-lactámicos tras dosis de carga</div>
+          <Alert color="blue"><strong>Desescalada (Nodo E1):</strong> reducir espectro 48-72h según cultivos · Procalcitonina guía suspensión</Alert>
+        </ModCard>
+
+        <ModCard title="🔪 B3 — Control de Foco Anatómico" color="#7c3aed" open={open.b3} onToggle={() => tog("b3")}>
+          <Row2 label="Intervención en:" val="6-12h desde diagnóstico (SSC 2021)" />
+          <div>• Absceso, perforación, isquemia, fasciitis necrotizante, colangitis</div>
+          <div>• Retirar CVC/dispositivos sospechosos del foco</div>
+          <div>• Drenaje percutáneo guiado por imagen si factible</div>
+        </ModCard>
+
+        <ModCard title="💧 C1 — Fluidoterapia y Resucitación" color="#0891b2" open={open.c1} onToggle={() => tog("c1")}>
+          <Row2 label="Fluido 1ª línea:" val="Cristaloides balanceados (Ringer Lactato / PlasmaLyte)" />
+          <Row2 label="Volumen inicial:" val="30 mL/kg en hipoperfusión (SSC 2021)" />
+          <Row2 label="Monitorización:" val="Medidas dinámicas: PLR, VVS, ecocardiografía" />
+          <div style={{ marginTop:8 }}>• <strong>Albúmina 4-5%:</strong> si se requieren volúmenes elevados de cristaloides</div>
+          <div style={{ color:C.danger, marginTop:6, fontWeight:600 }}>❌ EVITAR: Almidones (HES) — Gelatinas</div>
+          {data.respFluid?.includes("Refractaria") && <Alert color="red">Hipotensión refractaria a volumen → Iniciar vasopresores inmediatamente</Alert>}
+        </ModCard>
+
+        <ModCard title="💊 C2 — Vasopresores" color="#dc2626" open={open.c2} onToggle={() => tog("c2")}>
+          <Row2 label="Meta PAM:" val="≥65 mmHg (SSC 2021 · NICE 2025)" />
+          <Row2 label="Primera línea:" val="Norepinefrina (NE)" />
+          <Divider />
+          <div><strong>Segunda línea (NE &gt;0.25-0.5 µg/kg/min):</strong></div>
+          <div>• Vasopresina 0.03 U/min — ahorro de catecolaminas (SSC 2021)</div>
+          <div>• Angiotensina II en shock refractario (J-SSCG 2024 — condicional)</div>
+          <div style={{ marginTop:8 }}>• Vía central preferida · Periférica aceptable hasta ≤6h proximal a fosa antecubital</div>
+          <Alert color="yellow"><strong>Retirada (Nodo E1):</strong> descenso progresivo cuando PAM estable y lactato normalizado</Alert>
+        </ModCard>
+
+        <ModCard title="❤️ C3 — Soporte Inotrópico" color="#f59e0b" open={open.c3} onToggle={() => tog("c3")}>
+          <div style={{ color:C.muted, marginBottom:8 }}>Indicación: disfunción cardíaca + hipoperfusión pese a PAM ≥65 mmHg</div>
+          <div>• <strong>Opción A:</strong> Dobutamina + Norepinefrina</div>
+          <div>• <strong>Opción B:</strong> Epinefrina como agente único</div>
+          <div>• <strong>Levosimendan:</strong> disfunción miocárdica por sepsis (J-SSCG 2024 — condicional)</div>
+          <div style={{ color:C.danger, marginTop:8 }}>• Suspender si no hay mejora objetiva o aparecen arritmias</div>
+        </ModCard>
+
+        <ModCard title="💊 D1 — Corticoterapia" color="#16a34a" open={open.d1} onToggle={() => tog("d1")}>
+          <Row2 label="Indicación:" val={shockSeptico?"Shock refractario tras ≥4h con vasopresores":"No indicado sin shock séptico"} />
+          {shockSeptico && <>
+            <Row2 label="Fármaco:" val="Hidrocortisona IV" />
+            <Row2 label="Dosis:" val="200 mg/día en perfusión continua o fraccionada" />
+            <Row2 label="Pauta:" val="50 mg / 6h o 100 mg / 12h" />
+            <Alert color="green">Objetivo: acortar duración del shock y reducir tiempo en vasopresores</Alert>
+          </>}
+        </ModCard>
+
+        <ModCard title="🫁 D2 — Protección Pulmonar (ARDS)" color="#6366f1" open={open.d2} onToggle={() => tog("d2")}>
+          <Row2 label="Volumen tidal:" val="6 mL/kg (peso corporal ideal)" />
+          <Row2 label="Presión meseta (Pplat):" val="< 30 cmH₂O" />
+          <Row2 label="Presión de conducción:" val="< 15 cmH₂O (J-SSCG 2024)" />
+          <Row2 label="Decúbito prono:" val="> 12h/día si PaO₂/FiO₂ < 150 mmHg" />
+          <div style={{ color:C.danger, fontWeight:600, marginTop:6 }}>Objetivo: prevenir VILI</div>
+        </ModCard>
+
+        <ModCard title="🫀 D3 — Terapia de Reemplazo Renal (RRT)" color="#0e7490" open={open.d3} onToggle={() => tog("d3")}>
+          <div style={{ color:C.muted, marginBottom:8 }}>Indicación: LRA con criterios de urgencia (SSC 2021 · NICE 2025)</div>
+          <div>• Oliguria refractaria (&lt;200 mL/12h) · Hiperpotasemia &gt;6.5 mEq/L</div>
+          <div>• Acidosis metabólica severa (pH &lt;7.1) · Sobrecarga hídrica</div>
+          <div style={{ marginTop:8 }}>• Modalidad preferida: CRRT en inestabilidad hemodinámica</div>
+          <Alert color="yellow">SSC 2021 · NICE 2025: NO inicio temprano sin criterios de urgencia</Alert>
+        </ModCard>
+
+        <ModCard title="🩸 D4 — Control de Glucemia" color="#b45309" open={open.d4} onToggle={() => tog("d4")}>
+          <Row2 label="Umbral de inicio:" val="Glucemia > 180 mg/dL (dos determinaciones)" />
+          <Row2 label="Meta SSC 2021:" val="144–180 mg/dL" />
+          <Row2 label="Meta NICE 2025:" val="108–180 mg/dL" />
+          <div style={{ color:C.danger, marginTop:6 }}>• Evitar hipoglucemia &lt;70 mg/dL</div>
+        </ModCard>
+
+        <ModCard title="🔄 E1 — Reevaluación y Desescalada" color="#475569" open={open.e1} onToggle={() => tog("e1")}>
+          <div style={{ fontWeight:600, marginBottom:8 }}>Criterios para desescalada:</div>
+          <div>✓ Estabilidad hemodinámica sostenida · ✓ Aclaramiento lactato ≥10%/2h</div>
+          <div>✓ Patógeno identificado → reducir espectro · ✓ Procalcitonina en descenso</div>
+          <Alert color="blue">
+            <strong>Loops activos:</strong><br/>
+            • Shock recurre → C2 Vasopresores<br/>
+            • Hipoperfusión nueva → C1 Fluidos<br/>
+            • Nueva infección → B1 Antibióticos
+          </Alert>
+        </ModCard>
+
+        <div style={{ marginTop:20, display:"flex", gap:10, flexWrap:"wrap" }}>
+          <button onClick={() => setReeval(v => !v)}
+            style={{ background:C.warning, color:"#fff", border:"none", borderRadius:8, padding:"12px 24px", fontSize:15, fontWeight:600, cursor:"pointer" }}>
+            🔄 {reeval?"Cerrar":"Iniciar"} Reevaluación
+          </button>
+          <button onClick={onRestart}
+            style={{ background:C.danger, color:"#fff", border:"none", borderRadius:8, padding:"12px 24px", fontSize:15, fontWeight:600, cursor:"pointer" }}>
+            ↩ Nueva Evaluación
+          </button>
+        </div>
+
+        {reeval && (
+          <Alert color="blue" title="Módulo de Reevaluación activo — Nodo E1">
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:8 }}>
+              <button onClick={() => setOpen(p => ({ ...p, c2:true }))}
+                style={{ background:C.danger, color:"#fff", border:"none", borderRadius:8, padding:"10px 18px", fontSize:13, fontWeight:600, cursor:"pointer" }}>↩ Vasopresores</button>
+              <button onClick={() => setOpen(p => ({ ...p, c1:true }))}
+                style={{ background:C.secondary, color:"#fff", border:"none", borderRadius:8, padding:"10px 18px", fontSize:13, fontWeight:600, cursor:"pointer" }}>↩ Fluidos</button>
+              <button onClick={() => setOpen(p => ({ ...p, b1:true }))}
+                style={{ background:"#7c3aed", color:"#fff", border:"none", borderRadius:8, padding:"10px 18px", fontSize:13, fontWeight:600, cursor:"pointer" }}>↩ Antibióticos</button>
+            </div>
+          </Alert>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+/* ── FOOTER ── */
+function Footer() {
+  return (
+    <div style={{ padding:"16px 24px", marginTop:8, borderTop:`1px solid ${C.border}`, background:C.white, fontSize:12, color:C.muted, lineHeight:1.7 }}>
+      <div><strong style={{ color:C.text }}>Autor:</strong> Yeray Reyes de la Mata</div>
+      <div><strong style={{ color:C.text }}>Contacto:</strong> <a href="mailto:ydelamata01@gmail.com" style={{ color:C.secondary, textDecoration:"none" }}>ydelamata01@gmail.com</a></div>
+    </div>
+  );
+}
+
+/* ── MAIN ── */
+export default function App() {
+  const [step, setStep] = useState(0);
+  const [data, setData] = useState({});
+  return (
+    <div style={{ fontFamily:"'Segoe UI',system-ui,sans-serif", minHeight:"100vh", background:C.light, color:C.text, display:"flex", flexDirection:"column" }}>
+      <Header step={step} />
+      <div style={{ maxWidth:760, margin:"0 auto", width:"100%", flex:1 }}>
+        {step===0 && <Welcome onStart={() => setStep(1)} />}
+        {step===1 && <Step1 data={data} setData={setData} onNext={() => setStep(2)} />}
+        {step===2 && <Step2 data={data} setData={setData} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
+        {step===3 && <Step3 data={data} setData={setData} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
+        {step===4 && <Step4 data={data} setData={setData} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
+        {step===5 && <Step5 data={data} setData={setData} onNext={() => setStep(6)} onBack={() => setStep(4)} />}
+        {step===6 && <Step6 data={data} setData={setData} onNext={() => setStep(7)} onBack={() => setStep(5)} />}
+        {step===7 && <Step7 data={data} onRestart={() => { setStep(0); setData({}); }} />}
+      </div>
+      <Footer />
+    </div>
+  );
+}
