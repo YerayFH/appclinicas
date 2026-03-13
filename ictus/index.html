@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ictus Isquémico Agudo — Motor de Decisión Terapéutica</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:#020817;color:#f1f5f9;font-family:'Inter',sans-serif;padding:24px 16px}
+.wrap{max-width:640px;margin:0 auto}
+h1{font-size:22px;font-weight:800;margin:0 0 4px;color:#f1f5f9}
+h2{font-size:20px;font-weight:800;color:#f1f5f9;margin:0}
+input,select{background:#1e293b;border:1px solid #334155;border-radius:8px;color:#f1f5f9;padding:10px 14px;width:100%;font-size:15px;outline:none}
+select option{background:#1e293b}
+button{cursor:pointer;font-family:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:#94a3b8;margin-bottom:6px;font-weight:500}
+.field .hint{font-size:11px;color:#64748b;margin-top:4px}
+.yesno{display:flex;gap:10px}
+.yesno button{flex:1;padding:10px;border-radius:8px;font-size:14px;font-weight:600;border:1px solid #334155;background:#1e293b;color:#94a3b8;transition:all .2s}
+.yesno button.sel-yes{background:#ef4444;border-color:#ef4444;color:#fff}
+.yesno button.sel-no{background:#22c55e;border-color:#22c55e;color:#fff}
+.section-box{background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.row-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e293b}
+.row-item span:first-child{color:#94a3b8;font-size:14px}
+.row-item span:last-child{font-weight:600;font-size:14px;text-align:right;max-width:60%}
+.alert-box{border-radius:8px;padding:9px 12px;margin-top:8px;font-size:12px;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.info-box{border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.chip{border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;display:inline-block}
+.motivo-box{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:12px;color:#94a3b8;line-height:1.6}
+.drug-list{border-radius:7px;padding:8px 12px;margin-top:6px;margin-bottom:4px}
+.drug-list .dl-title{font-size:11px;font-weight:700;margin-bottom:6px;letter-spacing:0.5px}
+.drug-list .dl-drugs{display:flex;flex-wrap:wrap;gap:4px 8px}
+.drug-list .dl-drugs span{font-size:11px;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:4px;padding:2px 7px}
+.progress-bar-wrap{margin-bottom:24px}
+.progress-steps{display:flex;justify-content:space-between;margin-bottom:8px}
+.progress-step{flex:1;text-align:center}
+.step-circle{width:28px;height:28px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.step-label{font-size:10px}
+.progress-track{height:3px;background:#1e293b;border-radius:4px}
+.progress-fill{height:100%;background:#0ea5e9;border-radius:4px;transition:width .3s}
+.nav-btns{display:flex;gap:12px;margin-top:24px}
+.nav-btns button{flex:2;padding:14px;border-radius:10px;font-size:15px;font-weight:700;border:none;transition:all .2s}
+.nav-btns .btn-prev{flex:1;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#94a3b8;font-size:15px;font-weight:600}
+.mode-btn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid #334155;background:#1e293b;color:#94a3b8;transition:all .2s}
+.mode-btn.active{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
+.nihss-item{margin-bottom:10px}
+.nihss-item-head{display:flex;align-items:center;gap:10px}
+.nihss-item-info{flex:1}
+.nihss-item-info .ni-label{font-size:12px;color:#94a3b8;margin-bottom:2px}
+.nihss-item-info .ni-hint{font-size:10px;color:#475569}
+.nihss-btns{display:flex;gap:4px}
+.nihss-btn{width:32px;height:32px;border-radius:6px;font-size:13px;font-weight:700;border:1px solid #334155;background:#1e293b;color:#64748b}
+.nihss-btn.active{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
+.nihss-total{margin-top:14px;padding:10px 12px;border-radius:8px;background:#0ea5e915;border:1px solid #0ea5e940;display:flex;justify-content:space-between;align-items:center}
+.radio-opt{display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px 14px;border-radius:8px;font-size:14px;border:1px solid #334155;background:#1e293b;color:#94a3b8;transition:all .2s}
+.radio-opt.active{background:#0ea5e915;border-color:#0ea5e9;color:#f1f5f9}
+.radio-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;border:2px solid #475569;background:transparent;transition:all .2s;display:inline-block}
+.radio-dot.active{border-color:#0ea5e9;background:#0ea5e9}
+.score-card{border-radius:10px;padding:14px}
+.footer-credit{margin-top:32px;padding-top:16px;border-top:1px solid #1e293b;text-align:center;line-height:1.8}
+.footer-app{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px;font-size:11px;color:#475569;text-align:center;line-height:1.7}
+.tags{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+a{color:#0ea5e9;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+// ═══════════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════════
+const INITIAL = {
+  edad:"", peso:"", lkw:"", llegada:"",
+  tiempoDesconocido:null, wakeUpDentro9h:null, sintomasReconocidos45h:null,
+  nihssMode:"manual", nihss:"",
+  nihssItems:{n1a:"",n1b:"",n1c:"",n2:"",n3:"",n4:"",n5a:"",n5b:"",n6a:"",n6b:"",n7:"",n8:"",n9:"",n10:"",n11:""},
+  deficitIncapacitante:null,
+  hemorragia:null, sospechaHSA:null, signosExtensosInfarto:null,
+  aspects:"", lvo:null, territorioLVO:"",
+  core:"", penumbra:"",
+  dwiFlarMismatch:null, mismatchMode:null, mismatchAutoConfirm:false,
+  pas:"", pad:"", plaquetas:"", glucemia:"", inr:"", ttpa:"",
+  anticoagulante:"",
+  heparina:null, heparinaIV:null,
+  doacMenos48h:null, antiXaDisponible:null, antiXaNormal:null, idarucizumab:null,
+  ictusReciente:null, cirugiaReciente:null, hemorragiaActiva:null,
+  hicPrevio:null, hicPrevioReciente:null,
+  embarazo:null, crisisEpileptica:null, iamReciente:null,
+  neoplasiaCraneal:null, sangradoGIReciente:null, endocarditisActiva:null,
+  aasPrevia:null, etiologiaCardioembólica:null,
+  antecedenteHIC:null, hepatopatiaGrave:null,
+  inhibidorCYP2C19:null, inhibidorCYP3A4:null,
+  bradicardiaSignificativa:null, bloqueoAV:null,
+  disneaGrave:null, hiperuricemia:null, stentIntracraneal:null
+};
+
+let step = 0;
+let d = JSON.parse(JSON.stringify(INITIAL));
+
+// Campos de texto libres — NO disparan render completo, solo actualizan estado
+const TEXT_FIELDS = new Set(["edad","peso","lkw","llegada","nihss","aspects","core","penumbra","pas","pad","plaquetas","glucemia","inr","ttpa"]);
+
+const STEPS = ["Datos del Paciente","Gravedad Neurológica","Neuroimagen","Perfusión / Mismatch","Contraindicaciones","Recomendación Final"];
+
+const NIHSS_ITEMS = [
+  {key:"n1a",label:"1a. Nivel de conciencia",max:3,hint:"0=alerta · 1=somnoliento · 2=estuporoso · 3=coma"},
+  {key:"n1b",label:"1b. Preguntas (mes/edad)",max:2,hint:"0=ambas correctas · 1=una · 2=ninguna"},
+  {key:"n1c",label:"1c. Órdenes (cerrar ojos/mano)",max:2,hint:"0=ambas correctas · 1=una · 2=ninguna"},
+  {key:"n2",label:"2. Mirada conjugada",max:2,hint:"0=normal · 1=paresia parcial · 2=desviación forzada"},
+  {key:"n3",label:"3. Campos visuales",max:3,hint:"0=normal · 1=hemianopsia parcial · 2=completa · 3=ceguera bilateral"},
+  {key:"n4",label:"4. Parálisis facial",max:3,hint:"0=normal · 1=leve · 2=parcial · 3=completa"},
+  {key:"n5a",label:"5a. Motor brazo izquierdo",max:4,hint:"0=sin caída · 1=caída <5s · 2=caída <10s · 3=sin vs gravedad · 4=sin movimiento"},
+  {key:"n5b",label:"5b. Motor brazo derecho",max:4,hint:"0=sin caída · 1=caída <5s · 2=caída <10s · 3=sin vs gravedad · 4=sin movimiento"},
+  {key:"n6a",label:"6a. Motor pierna izquierda",max:4,hint:"0=sin caída · 1=caída <5s · 2=caída <10s · 3=sin vs gravedad · 4=sin movimiento"},
+  {key:"n6b",label:"6b. Motor pierna derecha",max:4,hint:"0=sin caída · 1=caída <5s · 2=caída <10s · 3=sin vs gravedad · 4=sin movimiento"},
+  {key:"n7",label:"7. Ataxia de extremidades",max:2,hint:"0=ausente · 1=una extremidad · 2=dos extremidades"},
+  {key:"n8",label:"8. Sensibilidad",max:2,hint:"0=normal · 1=leve-moderada · 2=grave o ausente"},
+  {key:"n9",label:"9. Lenguaje / Afasia",max:3,hint:"0=normal · 1=afasia leve · 2=afasia grave · 3=mudo/afasia global"},
+  {key:"n10",label:"10. Disartria",max:2,hint:"0=normal · 1=leve-moderada · 2=grave/anartria"},
+  {key:"n11",label:"11. Extinción / Negligencia",max:2,hint:"0=normal · 1=negligencia en una modalidad · 2=negligencia profunda"}
+];
+
+const ANTICOAGULANTES = [
+  {value:"",label:"— Seleccionar —"},
+  {value:"ninguno",label:"Ninguno"},
+  {value:"warfarina",label:"Warfarina / Acenocumarol (AVK)"},
+  {value:"dabigatran",label:"Dabigatrán (Pradaxa®)"},
+  {value:"rivaroxaban",label:"Rivaroxabán (Xarelto®)"},
+  {value:"apixaban",label:"Apixabán (Eliquis®)"},
+  {value:"edoxaban",label:"Edoxabán (Lixiana®)"}
+];
+
+const LVO_OPTIONS = [
+  {value:"",label:"— Seleccionar —"},
+  {value:"ICA",label:"ACI / ICA"},
+  {value:"M1",label:"M1 (ACM segmento 1)"},
+  {value:"M2_proximal",label:"M2 proximal (ACM segmento 2)"},
+  {value:"basilar",label:"Arteria basilar"},
+  {value:"ACP",label:"ACP (arteria cerebral posterior)"}
+];
+
+const CYP2C19_DRUGS = ["Omeprazol","Esomeprazol","Fluoxetina","Fluvoxamina","Ketoconazol","Voriconazol","Claritromicina","Amiodarona","Cimetidina"];
+const CYP3A4_DRUGS = ["Claritromicina","Eritromicina","Ketoconazol","Itraconazol","Voriconazol","Ritonavir","Cobicistat","Diltiazem","Verapamilo","Amiodarona"];
+
+// ═══════════════════════════════════════════════════════
+// HANDLERS — los inputs de texto solo guardan el valor;
+// el render completo se dispara solo con blur o con
+// acciones de botón (yesno, selects, etc.)
+// ═══════════════════════════════════════════════════════
+function onTextInput(el) {
+  const key = el.dataset.key;
+  d[key] = el.value;
+  // Solo actualizamos el botón Siguiente sin re-renderizar el DOM
+  updateNextBtn();
+}
+
+function onTextBlur(el) {
+  const key = el.dataset.key;
+  d[key] = el.value;
+  render();
+}
+
+function onSelectChange(el) {
+  const key = el.dataset.key;
+  d[key] = el.value;
+  if (key === "anticoagulante") {
+    d.doacMenos48h = null; d.antiXaDisponible = null;
+    d.antiXaNormal = null; d.idarucizumab = null;
+  }
+  render();
+}
+
+function handleYesNo(key, val) {
+  d[key] = val;
+  if (key === "tiempoDesconocido") { d.lkw = ""; d.llegada = ""; }
+  if (key === "heparina" && !val) d.heparinaIV = null;
+  if (key === "hicPrevio" && !val) d.hicPrevioReciente = null;
+  if (key === "lvo" && !val) d.territorioLVO = "";
+  render();
+}
+
+function handleMismatchMode(val) {
+  d.mismatchMode = val;
+  if (val !== "auto") d.mismatchAutoConfirm = false;
+  render();
+}
+
+function handleNihssMode(mode) {
+  d.nihssMode = mode;
+  render();
+}
+
+function handleNihssBtn(key, val) {
+  d.nihssItems[key] = String(val);
+  render();
+}
+
+function handleMismatchCheck(checked) {
+  d.mismatchAutoConfirm = checked;
+  render();
+}
+
+function nextStep() { if (canNext() && step < 5) { step++; render(); } }
+function prevStep() { if (step > 0) { step--; render(); } }
+function resetAll() { step = 0; d = JSON.parse(JSON.stringify(INITIAL)); render(); }
+
+function updateNextBtn() {
+  const btn = document.getElementById("btn-next");
+  if (!btn) return;
+  const ok = canNext();
+  btn.disabled = !ok;
+  btn.style.background = ok ? "linear-gradient(135deg,#0ea5e9,#6366f1)" : "#1e293b";
+  btn.style.color = ok ? "#fff" : "#475469";
+  btn.style.cursor = ok ? "pointer" : "not-allowed";
+}
+
+// ═══════════════════════════════════════════════════════
+// LÓGICA CLÍNICA
+// ═══════════════════════════════════════════════════════
+function nihssCategory(n) {
+  if (n===0)  return {label:"Sin déficit",color:"#22c55e"};
+  if (n<=3)   return {label:"Ictus menor",color:"#84cc16"};
+  if (n<=5)   return {label:"Leve",color:"#eab308"};
+  if (n<=14)  return {label:"Moderado",color:"#f97316"};
+  if (n<=24)  return {label:"Grave",color:"#ef4444"};
+  return            {label:"Muy grave",color:"#dc2626"};
+}
+
+function calcNihssAuto() {
+  return NIHSS_ITEMS.reduce((acc,item) => {
+    const v = parseInt(d.nihssItems[item.key]) || 0;
+    return acc + Math.min(v, item.max);
+  }, 0);
+}
+
+function nihssAllFilled() {
+  return NIHSS_ITEMS.every(item => d.nihssItems[item.key] !== "");
+}
+
+function getNihssN() {
+  if (d.nihssMode === "auto") return nihssAllFilled() ? calcNihssAuto() : 0;
+  return parseInt(d.nihss) || 0;
+}
+
+function getVentanaInfo() {
+  if (d.tiempoDesconocido === true) return {label:"Tiempo desconocido / Wake-up",color:"#a855f7",zona:"desconocido"};
+  if (!d.lkw || !d.llegada) return null;
+  const a = new Date("2000-01-01T"+d.lkw), b = new Date("2000-01-01T"+d.llegada);
+  let diff = (b-a)/60000; if (diff < 0) diff += 1440;
+  const vh = diff/60;
+  if (vh<=4.5)  return {label:"≤4.5 h",color:"#22c55e",zona:"temprana",h:vh};
+  if (vh<=9)    return {label:"4.5–9 h",color:"#eab308",zona:"extendida",h:vh};
+  if (vh<=24)   return {label:"9–24 h",color:"#f97316",zona:"tardia",h:vh};
+  return              {label:">24 h",color:"#ef4444",zona:"fuera",h:vh};
+}
+
+function getMismatch() {
+  if (d.mismatchMode==="auto" && d.mismatchAutoConfirm===true) return true;
+  if (d.mismatchMode==="manual" && d.core!=="" && d.penumbra!=="") {
+    const c = parseFloat(d.core), p = parseFloat(d.penumbra);
+    if (c>70) return false;
+    return (c>0 ? p/c : Infinity)>=1.8 && (p-c)>=15;
+  }
+  return false;
+}
+
+function calcAll() {
+  const nihssN = getNihssN();
+  const vi = getVentanaInfo();
+  const pesoN = parseFloat(d.peso)||0;
+  const edadN = parseFloat(d.edad)||0;
+  const aspectsN = d.aspects!=="" ? (parseInt(d.aspects)??null) : null;
+  const pasN = parseFloat(d.pas)||0;
+  const padN = parseFloat(d.pad)||0;
+  const plaqN = parseFloat(d.plaquetas)||999;
+  const glucN = parseFloat(d.glucemia)||100;
+  const inrN = parseFloat(d.inr)||1;
+  const ttpaE = parseFloat(d.ttpa)||0;
+  const aspectsIntroducido = d.aspects!=="" && aspectsN!==null;
+
+  const isDoac = ["dabigatran","rivaroxaban","apixaban","edoxaban"].includes(d.anticoagulante);
+  const isAntiXa = ["rivaroxaban","apixaban","edoxaban"].includes(d.anticoagulante);
+  const isDabigatran = d.anticoagulante==="dabigatran";
+  const isWarfarina = d.anticoagulante==="warfarina";
+  const avkActivo = isWarfarina, doacActivo = isDoac;
+
+  const avkContraFib = avkActivo && inrN>1.7;
+  const hepContraFib = d.heparina===true && d.heparinaIV===true && (ttpaE>40||ttpaE===0);
+  const doacContraFib = doacActivo && d.doacMenos48h===true &&
+    (d.antiXaDisponible===false||(d.antiXaDisponible===true&&d.antiXaNormal===false));
+
+  const nihssAptoFib = nihssN>=4||(nihssN<4&&d.deficitIncapacitante===true);
+  const altoRiesgoHem = d.hemorragiaActiva===true||d.antecedenteHIC===true||
+    d.hepatopatiaGrave===true||plaqN<100||d.cirugiaReciente===true;
+
+  const aspectsMuyExtenso = aspectsIntroducido&&aspectsN!==null&&aspectsN<=5;
+  const hicPrevioAbsoluta = d.hicPrevio===true&&(d.hicPrevioReciente===true||d.hicPrevioReciente===null);
+
+  const contraAbsolutas = [
+    d.hemorragia===true && "Hemorragia intracraneal confirmada en TAC",
+    d.sospechaHSA===true && "Sospecha de hemorragia subaracnoidea (HSA)",
+    aspectsMuyExtenso && "ASPECTS ≤5 — contraindicación absoluta",
+    hicPrevioAbsoluta && "Hemorragia intracraneal previa (reciente o antigüedad desconocida)",
+    d.ictusReciente===true && "Ictus isquémico en los últimos 3 meses",
+    d.cirugiaReciente===true && "Cirugía mayor o TCE grave reciente (<14 días)",
+    d.hemorragiaActiva===true && "Hemorragia activa o coagulopatía grave",
+    avkContraFib && "AVK activo con INR >1.7",
+    doacContraFib && "DOAC <48 h sin confirmación de aclaramiento",
+    hepContraFib && "Heparina IV con TTPa prolongado (>40 s)",
+    (pasN>185||padN>110) && "PA >185/110 mmHg no controlable",
+    plaqN<100 && "Plaquetas <100.000/μL",
+    (glucN<60||glucN>400) && "Glucemia fuera de rango (60–400 mg/dL)",
+    inrN>1.7 && "INR >1.7"
+  ].filter(Boolean);
+
+  const sinContra = contraAbsolutas.length===0 && d.hemorragia===false;
+  const mismatchPositivo = getMismatch();
+  const mismatchAuto = mismatchPositivo||(d.core!==""&&d.penumbra!==""&&(()=>{
+    const c=parseFloat(d.core),p=parseFloat(d.penumbra);
+    return c<=70&&(c===0?p>15:(p/c>=1.8&&(p-c)>=15));
+  })());
+
+  const needPerfusion = vi?.zona==="tardia"||vi?.zona==="desconocido";
+  const showMismatchExtendida = vi?.zona==="extendida";
+
+  const candFibEstandar = vi?.zona==="temprana"&&nihssAptoFib&&sinContra;
+  const candFibCondicional = vi?.zona==="extendida"&&nihssAptoFib&&sinContra;
+  const fibExtendidaMismatch = candFibCondicional&&mismatchPositivo;
+  const fibCondicionalViable = candFibCondicional&&nihssN>=4;
+  const candFibWakeUpA = vi?.zona==="desconocido"&&nihssAptoFib&&sinContra&&d.dwiFlarMismatch===true;
+  const candFibWakeUpB = vi?.zona==="desconocido"&&nihssAptoFib&&sinContra&&d.wakeUpDentro9h===true&&mismatchPositivo;
+  const candFibWakeUpC = vi?.zona==="desconocido"&&nihssAptoFib&&sinContra&&d.sintomasReconocidos45h===true;
+  const candFibWakeUp = candFibWakeUpA||candFibWakeUpB||candFibWakeUpC;
+  const candFib = candFibEstandar||fibCondicionalViable||candFibWakeUp;
+
+  const lvoConDeficit = d.lvo===true&&nihssN<6&&d.deficitIncapacitante===true;
+  const nihssAptoTromb = nihssN>=6||lvoConDeficit;
+  const nihssBasilarApto = d.territorioLVO==="basilar"&&nihssN>=10;
+  const vh = vi?.h ?? null;
+  const basilarDentro24h = nihssBasilarApto&&(vh!==null?vh<=24:d.tiempoDesconocido===true||vi?.zona!=="fuera");
+  const aspectsAptoTromb = aspectsN!==null?aspectsN>=3:true;
+  const aspectsTrombCond = aspectsN!==null&&aspectsN>=3&&aspectsN<=5;
+  const candTromb = d.lvo===true&&(nihssAptoTromb||nihssBasilarApto)&&aspectsAptoTromb&&(
+    (vi?.zona==="temprana"||vi?.zona==="extendida")||
+    basilarDentro24h||
+    ((vi?.zona==="tardia"||vi?.zona==="desconocido")&&(mismatchPositivo||mismatchAuto))
+  );
+
+  const altDosis = pesoN>0?Math.min(0.9*pesoN,90).toFixed(1):"—";
+  const altBolo = pesoN>0?Math.min(0.9*pesoN*0.1,9).toFixed(1):"—";
+  const altInf = pesoN>0?(Math.min(0.9*pesoN,90)*0.9).toFixed(1):"—";
+  const tncDosis = pesoN>0?Math.min(0.25*pesoN,25).toFixed(1):"—";
+
+  const scoreHemItems = [edadN>80,nihssN>15,glucN>180,pasN>180,aspectsIntroducido&&aspectsN!==null&&aspectsN<7&&aspectsN>0];
+  const scoreHem = scoreHemItems.filter(Boolean).length;
+  const riesgoHem = scoreHem<=1?{label:"Bajo",color:"#22c55e"}:scoreHem<=3?{label:"Moderado",color:"#eab308"}:{label:"Alto",color:"#ef4444"};
+
+  let pronoScore=0;
+  if(edadN>80) pronoScore+=2; else if(edadN>70) pronoScore+=1;
+  if(nihssN>15) pronoScore+=3; else if(nihssN>10) pronoScore+=2; else if(nihssN>5) pronoScore+=1;
+  if(aspectsIntroducido&&aspectsN!==null){if(aspectsN<6) pronoScore+=2; else if(aspectsN<8) pronoScore+=1;}
+  if(d.lvo===true) pronoScore+=1;
+  if(vh!==null&&vh>9) pronoScore+=1;
+  if(vi?.zona==="desconocido") pronoScore+=1;
+  const pronostico = pronoScore<=3
+    ?{label:"Bueno",color:"#22c55e",desc:"Alta probabilidad de independencia funcional (mRS 0–2)"}
+    :pronoScore<=6
+    ?{label:"Intermedio",color:"#eab308",desc:"Pronóstico funcional moderado. Depende de respuesta al tratamiento."}
+    :{label:"Malo",color:"#ef4444",desc:"Alta probabilidad de dependencia severa o muerte (mRS 4–6)"};
+
+  const hicPrevioAntigua = d.hicPrevio===true&&d.hicPrevioReciente===false;
+  const aspectsRelativo = aspectsIntroducido&&aspectsN!==null&&aspectsN===6;
+  const contraRel = [
+    d.signosExtensosInfarto===true&&(!aspectsIntroducido||(aspectsN!==null&&aspectsN>6))&&"Signos precoces de infarto extenso en TAC",
+    aspectsRelativo&&"ASPECTS 6 — alto riesgo hemorrágico. Fibrinólisis posible con precaución (ESO 2023)",
+    hicPrevioAntigua&&"HIC previa >3 meses — contraindicación relativa (ESO 2023)",
+    avkActivo&&inrN<=1.7&&inrN>1&&"AVK con INR 1.0–1.7 — mayor riesgo hemorrágico",
+    d.heparina===true&&d.heparinaIV===false&&"Heparina SC profiláctica — no contraindica (ESO 2023)",
+    d.embarazo===true&&"Embarazo — contraindicación relativa",
+    d.crisisEpileptica===true&&"Crisis epiléptica al inicio del ictus — valorar Todd",
+    d.iamReciente===true&&"IAM reciente (<3 meses) — riesgo de rotura miocárdica",
+    d.neoplasiaCraneal===true&&"Neoplasia intracraneal — contraindicación relativa",
+    d.sangradoGIReciente===true&&"Sangrado GI/urinario reciente (<21 días)",
+    d.endocarditisActiva===true&&"Endocarditis bacteriana activa",
+    edadN>80&&"Edad >80 años — NO es contraindicación (Clase I AHA/ASA 2026)"
+  ].filter(Boolean);
+
+  let inicioAC = null;
+  if(d.etiologiaCardioembólica===true){
+    if(nihssN===0) inicioAC="Día 1 (AIT — inicio inmediato o tras 24h de TAC)";
+    else if(nihssN<8) inicioAC="Día 3 (ictus leve, NIHSS <8)";
+    else if(nihssN<=15) inicioAC="Día 6–8 (ictus moderado, NIHSS 8–15)";
+    else inicioAC="Día 12–14 (ictus grave, NIHSS >15)";
+  }
+
+  const contraClopidogrel = d.hepatopatiaGrave===true||d.hemorragiaActiva===true;
+  const contraTicagrelor = d.antecedenteHIC===true||d.hepatopatiaGrave===true||
+    d.inhibidorCYP3A4===true||d.bradicardiaSignificativa===true||d.bloqueoAV===true||d.disneaGrave===true;
+  const preferirTicagrelor = d.inhibidorCYP2C19===true;
+  const forzarDAPT = nihssN<4&&d.deficitIncapacitante===false;
+
+  let estrategiaAA;
+  if(candFib){
+    estrategiaAA={tipo:"AAS",motivo:"Tras fibrinólisis IV: AAS en monoterapia. No iniciar hasta TAC control a las 24h sin hemorragia (AHA/ASA 2026, ESO 2023).",alt:null,trasFibrinolisis:true};
+  } else if(candTromb&&d.stentIntracraneal===true){
+    estrategiaAA={tipo:"CLOPI",motivo:"Stent intracraneal → DAPT obligatoria para prevenir trombosis de stent.",alt:null,stent:true};
+  } else if(altoRiesgoHem){
+    const mot=[d.hemorragiaActiva&&"hemorragia activa",d.antecedenteHIC&&"antecedente HIC",d.hepatopatiaGrave&&"hepatopatía grave",plaqN<100&&"plaquetas <100.000",d.cirugiaReciente&&"cirugía reciente"].filter(Boolean).join(", ");
+    estrategiaAA={tipo:"AAS",motivo:`Alto riesgo hemorrágico (${mot}) → AAS en monoterapia.`,alt:null};
+  } else if(forzarDAPT){
+    if(contraClopidogrel&&contraTicagrelor) estrategiaAA={tipo:"AAS",motivo:"NIHSS <4 sin déficit incapacitante. DAPT indicada pero ambos contraindicados → AAS monoterapia.",alt:null};
+    else if(contraClopidogrel||preferirTicagrelor){
+      if(contraTicagrelor) estrategiaAA={tipo:"AAS",motivo:"NIHSS <4. Ticagrelor contraindicado y clopidogrel no disponible → AAS monoterapia.",alt:null};
+      else estrategiaAA={tipo:"TICA",motivo:"NIHSS <4 sin déficit incapacitante. DAPT (AHA/ASA 2026). Inhibidor CYP2C19 → ticagrelor+AAS (THALES).",alt:null};
+    } else estrategiaAA={tipo:"CLOPI",motivo:"NIHSS <4 sin déficit incapacitante — DAPT AAS+Clopidogrel según CHANCE/POINT (AHA/ASA 2026).",alt:contraTicagrelor?null:"AAS+Ticagrelor (THALES) como alternativa"};
+  } else if(nihssN>5){
+    const carga=d.aasPrevia===true?"Continuar AAS 100 mg/día (sin recarga)":"AAS 160–300 mg carga → 100 mg/día";
+    estrategiaAA={tipo:"AAS",motivo:`NIHSS >5. Monoterapia AAS. ${carga}.`,alt:null};
+  } else if(nihssN>=4&&nihssN<=5){
+    if(contraTicagrelor) estrategiaAA={tipo:"AAS",motivo:"NIHSS 4–5. Ticagrelor contraindicado → AAS en monoterapia.",alt:null};
+    else estrategiaAA={tipo:"TICA",motivo:"NIHSS 4–5. DAPT con ticagrelor según THALES (NEJM 2020) — 30 días.",alt:contraClopidogrel?null:"AAS+Clopidogrel si ticagrelor no tolerado"};
+  } else {
+    if(contraClopidogrel||preferirTicagrelor){
+      if(contraTicagrelor) estrategiaAA=contraClopidogrel?{tipo:"AAS",motivo:"NIHSS ≤3. Ambos contraindicados → AAS monoterapia.",alt:null}:{tipo:"CLOPI",motivo:"NIHSS ≤3. Ticagrelor contraindicado → clopidogrel.",alt:null};
+      else estrategiaAA={tipo:"TICA",motivo:`NIHSS ≤3. ${contraClopidogrel?"Clopidogrel contraindicado.":"Inhibidor CYP2C19."} Preferible ticagrelor.`,alt:"AAS+Clopidogrel si ticagrelor no tolerado"};
+    } else estrategiaAA={tipo:"CLOPI",motivo:"NIHSS ≤3. DAPT AAS+Clopidogrel según CHANCE/POINT — 21 días.",alt:contraTicagrelor?null:"AAS+Ticagrelor (THALES) como alternativa"};
+  }
+
+  let motivoFib;
+  if(d.hemorragia===true) motivoFib="Contraindicada: hemorragia intracraneal en TAC.";
+  else if(d.sospechaHSA===true) motivoFib="Contraindicada: sospecha de HSA.";
+  else if(vi?.zona==="fuera") motivoFib="Fuera de ventana terapéutica (>24h).";
+  else if(vi?.zona==="tardia") motivoFib="Ventana 9–24h: fibrinólisis IV no indicada de rutina. Valorar trombectomía si mismatch.";
+  else if(vi?.zona==="desconocido"){
+    if(candFibWakeUpC) motivoFib=`Wake-up con reconocimiento de síntomas <4.5h → fibrinólisis indicada (AHA/ASA 2026 Clase IIa). NIHSS ${nihssN}.`;
+    else if(candFibWakeUpA) motivoFib=`Wake-up con DWI-FLAIR mismatch confirmado → fibrinólisis indicada (WAKE-UP trial / ESO 2023 Clase IIa). NIHSS ${nihssN}.`;
+    else if(candFibWakeUpB) motivoFib=`Wake-up dentro de 9h desde punto medio sueño con mismatch → fibrinólisis indicada (AHA/ASA 2026 Clase IIa). NIHSS ${nihssN}.`;
+    else if(d.dwiFlarMismatch===false&&!mismatchPositivo&&d.wakeUpDentro9h===false) motivoFib="Wake-up sin mismatch confirmado ni criterio de 9h → fibrinólisis no indicada.";
+    else motivoFib="Tiempo desconocido / wake-up: evaluar DWI-FLAIR, mismatch de perfusión o reconocimiento <4.5h.";
+  } else if(contraAbsolutas.length>0){
+    motivoFib=`Contraindicada: ${contraAbsolutas[0]}${contraAbsolutas.length>1?" (y "+(contraAbsolutas.length-1)+" más)":""}`;
+  } else if(!nihssAptoFib){
+    if(d.deficitIncapacitante===false) motivoFib="NIHSS <4 sin déficit incapacitante — fibrinólisis no recomendada (AHA/ASA 2026). DAPT indicada.";
+    else motivoFib="NIHSS <4 y déficit incapacitante no confirmado.";
+  } else if(vi?.zona==="extendida"){
+    if(fibExtendidaMismatch) motivoFib=`Ventana 4.5–9h con mismatch confirmado → fibrinólisis indicada (EXTEND/ECASS-4/EPITHET, AHA/ASA 2026 Clase IIa). NIHSS ${nihssN}.`;
+    else if(fibCondicionalViable) motivoFib=`Ventana 4.5–9h, NIHSS ${nihssN} ≥4, sin mismatch documentado. Fibrinólisis condicional (Clase IIb).`;
+    else motivoFib="Ventana 4.5–9h con NIHSS <4 sin déficit incapacitante. Fibrinólisis no recomendada.";
+  } else if(candFibEstandar) motivoFib=`Cumple criterios estándar: ventana ≤4.5h, NIHSS ${nihssN}${nihssN<4?" con déficit incapacitante":""}, TAC sin hemorragia, sin contraindicaciones absolutas.`;
+  else motivoFib="No cumple criterios para fibrinólisis en el contexto clínico actual.";
+
+  let motivoTromb;
+  if(d.lvo===false||d.lvo===null) motivoTromb="Sin oclusión de gran vaso (LVO) confirmada.";
+  else if(!nihssAptoTromb&&!nihssBasilarApto) motivoTromb=`NIHSS ${nihssN} <6 sin déficit incapacitante. Requiere NIHSS ≥6, LVO con déficit incapacitante, u oclusión basilar con NIHSS ≥10.`;
+  else if(aspectsN!==null&&aspectsN<=2) motivoTromb=`ASPECTS ${d.aspects} ≤2. Infarto devastador; trombectomía no recomendada.`;
+  else if(vi?.zona==="fuera"&&!basilarDentro24h) motivoTromb="Fuera de ventana terapéutica (>24h). Trombectomía no indicada.";
+  else if((vi?.zona==="tardia"||vi?.zona==="desconocido")&&!mismatchPositivo&&!mismatchAuto&&!basilarDentro24h) motivoTromb="Ventana tardía / tiempo desconocido sin mismatch ni criterio basilar. No cumple DAWN/DEFUSE-3.";
+  else if(candTromb){
+    const extra=lvoConDeficit?` (LVO con déficit incapacitante, NIHSS ${nihssN} <6 — ESO 2023 Clase B)`:"";
+    const basilarMsg=basilarDentro24h?" ★ Basilar con NIHSS ≥10 — Clase I AHA/ASA 2026.":"";
+    const aspMsg=aspectsTrombCond?` ASPECTS ${d.aspects} (3–5): decisión individualizada — SELECT2/TENSION/ANGEL-ASPECT.`:"";
+    motivoTromb=`Cumple criterios: LVO (${d.territorioLVO}), NIHSS ${nihssN}, ventana ${vi?.label}.${extra}${basilarMsg}${aspMsg}`;
+  } else motivoTromb="No cumple todos los criterios para trombectomía en el contexto clínico actual.";
+
+  const advertencias = [
+    d.inhibidorCYP2C19===true&&"Inhibidor CYP2C19 → menor respuesta a clopidogrel. Considerar ticagrelor.",
+    d.antecedenteHIC===true&&"Antecedente HIC → ticagrelor contraindicado.",
+    d.hepatopatiaGrave===true&&"Hepatopatía grave → contraindicación para clopidogrel y ticagrelor.",
+    d.inhibidorCYP3A4===true&&"Inhibidor potente CYP3A4 → ticagrelor contraindicado.",
+    d.bradicardiaSignificativa===true&&"Bradicardia significativa → evitar ticagrelor.",
+    d.bloqueoAV===true&&"Bloqueo AV avanzado → evitar ticagrelor.",
+    d.disneaGrave===true&&"Disnea grave → ticagrelor contraindicado.",
+    d.hiperuricemia===true&&"Hiperuricemia / gota → ticagrelor puede elevar ácido úrico. Vigilar.",
+    candFib&&"🛑 No iniciar antiagregación hasta TAC de control a las 24h sin hemorragia.",
+    doacActivo&&d.doacMenos48h===true&&d.antiXaDisponible===true&&d.antiXaNormal===true&&"DOAC <48h pero nivel normal confirmado → no contraindica fibrinólisis.",
+    doacActivo&&d.doacMenos48h===false&&"DOAC con última dosis ≥48h → no contraindica fibrinólisis.",
+    altoRiesgoHem&&!candFib&&"Alto riesgo hemorrágico → DAPT contraindicada; AAS en monoterapia.",
+    isAntiXa&&d.doacMenos48h===true&&"AntiXa reciente: confirmar aclaramiento con anti-Xa calibrado.",
+    scoreHem>=4&&"🔴 Score hemorrágico ALTO — riesgo elevado de transformación hemorrágica.",
+    candFib&&candTromb&&"🔗 Estrategia puente: iniciar fibrinólisis IV y activar simultáneamente sala de trombectomía.",
+    vi?.zona==="desconocido"&&!candFibWakeUp&&"⏰ Wake-up: evaluar DWI-FLAIR, mismatch de perfusión o reconocimiento <4.5h.",
+    contraRel.length>0&&"ℹ️ Contraindicación/situación relativa presente — ver sección de scores.",
+    lvoConDeficit&&"ℹ️ LVO + NIHSS <6 con déficit incapacitante: trombectomía puede estar indicada (ESO 2023 Clase B).",
+    d.aasPrevia===true&&nihssN>5&&"ℹ️ Paciente en AAS previo: no administrar dosis de carga. Continuar mantenimiento 100 mg/día.",
+    forzarDAPT&&!candFib&&"ℹ️ NIHSS <4 sin déficit incapacitante: fibrinólisis no indicada (AHA/ASA 2026). DAPT es la estrategia de elección.",
+    basilarDentro24h&&"🔴 Oclusión basilar + NIHSS ≥10 dentro de 24h → trombectomía CLASE I fuerte (AHA/ASA 2026).",
+    aspectsTrombCond&&d.lvo===true&&"⚠️ ASPECTS 3–5: EVT condicional en centros expertos (SELECT2/TENSION/ANGEL-ASPECT — AHA/ASA 2026)."
+  ].filter(Boolean);
+
+  return {
+    nihssN,vi,pesoN,edadN,aspectsN,pasN,padN,plaqN,glucN,inrN,ttpaE,
+    aspectsIntroducido,isDoac,isAntiXa,isDabigatran,isWarfarina,avkActivo,doacActivo,
+    avkContraFib,hepContraFib,doacContraFib,nihssAptoFib,altoRiesgoHem,
+    aspectsMuyExtenso,hicPrevioAbsoluta,contraAbsolutas,sinContra,
+    mismatchPositivo,mismatchAuto,needPerfusion,showMismatchExtendida,
+    candFibEstandar,candFibCondicional,fibExtendidaMismatch,fibCondicionalViable,
+    candFibWakeUpA,candFibWakeUpB,candFibWakeUpC,candFibWakeUp,candFib,
+    lvoConDeficit,nihssAptoTromb,nihssBasilarApto,basilarDentro24h,
+    aspectsAptoTromb,aspectsTrombCond,candTromb,
+    altDosis,altBolo,altInf,tncDosis,
+    scoreHem,riesgoHem,pronostico,pronoScore,contraRel,inicioAC,
+    estrategiaAA,motivoFib,motivoTromb,advertencias,
+    contraClopidogrel,contraTicagrelor,forzarDAPT,vh
+  };
+}
+
+function canNext() {
+  const c = calcAll();
+  if(step===0) return d.edad&&d.peso&&(d.tiempoDesconocido===true||(d.lkw&&d.llegada));
+  if(step===1){
+    const nihssOk = d.nihssMode==="manual"?d.nihss!=="":nihssAllFilled();
+    return nihssOk&&d.deficitIncapacitante!==null;
+  }
+  if(step===2) return d.hemorragia!==null&&d.aspects&&d.lvo!==null&&(d.lvo===false||d.territorioLVO);
+  if(step===3){
+    if(!c.needPerfusion&&!c.showMismatchExtendida) return true;
+    if(d.mismatchMode===null) return false;
+    if(d.mismatchMode==="manual"&&(d.core===""||d.penumbra==="")) return false;
+    if(c.vi?.zona==="desconocido"&&d.dwiFlarMismatch===null&&d.wakeUpDentro9h===null&&d.sintomasReconocidos45h===null) return false;
+    return true;
+  }
+  if(step===4){
+    const doacOk = c.doacActivo?(d.doacMenos48h!==null&&(d.doacMenos48h===false||(d.antiXaDisponible!==null&&(d.antiXaDisponible===false||d.antiXaNormal!==null)))):true;
+    const hepOk = d.heparina===true?d.heparinaIV!==null:true;
+    const hicOk = d.hicPrevio===true?d.hicPrevioReciente!==null:true;
+    const aaOk = d.antecedenteHIC!==null&&d.hepatopatiaGrave!==null&&d.inhibidorCYP2C19!==null&&d.inhibidorCYP3A4!==null&&d.bradicardiaSignificativa!==null&&d.bloqueoAV!==null&&d.disneaGrave!==null&&d.hiperuricemia!==null;
+    const crOk = d.embarazo!==null&&d.crisisEpileptica!==null&&d.iamReciente!==null&&d.neoplasiaCraneal!==null&&d.sangradoGIReciente!==null&&d.endocarditisActiva!==null;
+    return d.pas&&d.pad&&d.plaquetas&&d.glucemia&&d.inr&&d.anticoagulante!==""&&doacOk&&d.heparina!==null&&hepOk&&d.ictusReciente!==null&&d.cirugiaReciente!==null&&d.hemorragiaActiva!==null&&d.hicPrevio!==null&&hicOk&&d.etiologiaCardioembólica!==null&&aaOk&&crOk;
+  }
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS HTML
+// ═══════════════════════════════════════════════════════
+function fld(label,content,hint=""){
+  return `<div class="field"><label>${label}</label>${content}${hint?`<p class="hint">${hint}</p>`:""}</div>`;
+}
+
+// Input de texto: oninput solo guarda en estado, onblur dispara render
+function inp(key,type="text",extra=""){
+  const val = d[key]||"";
+  return `<input type="${type}" value="${val}" data-key="${key}" oninput="onTextInput(this)" onblur="onTextBlur(this)" ${extra}/>`;
+}
+
+function sel(key,options){
+  const val = d[key]||"";
+  const opts = options.map(o=>`<option value="${o.value}"${val===o.value?" selected":""}>${o.label}</option>`).join("");
+  return `<select data-key="${key}" onchange="onSelectChange(this)">${opts}</select>`;
+}
+
+function yn(key){
+  const val = d[key];
+  const yes = val===true?"sel-yes":"";
+  const no  = val===false?"sel-no":"";
+  return `<div class="yesno"><button class="${yes}" onclick="handleYesNo('${key}',true)">Sí</button><button class="${no}" onclick="handleYesNo('${key}',false)">No</button></div>`;
+}
+
+function chip(color,text){
+  return `<span class="chip" style="background:${color}22;color:${color};border:1px solid ${color}55">${text}</span>`;
+}
+
+function ab(content,color="#f97316",icon="⚠️"){
+  return `<div class="alert-box" style="background:${color}15;border:1px solid ${color}40;color:${color}"><span style="flex-shrink:0">${icon}</span><span>${content}</span></div>`;
+}
+
+function ib(content,color="#0ea5e9"){
+  return `<div class="info-box" style="background:${color}15;border:1px solid ${color}40;color:${color}">${content}</div>`;
+}
+
+function ri(label,value,color="#f1f5f9"){
+  return `<div class="row-item"><span>${label}</span><span style="color:${color}">${value}</span></div>`;
+}
+
+function mb(ok,motivo){
+  const col=ok?"#22c55e":"#f97316";
+  return `<div class="motivo-box"><span style="color:${col};font-weight:700;margin-right:6px">${ok?"✔ Motivo:":"✖ Motivo:"}</span>${motivo}</div>`;
+}
+
+function dl(title,drugs,color){
+  return `<div class="drug-list" style="background:${color}10;border:1px solid ${color}30"><div class="dl-title" style="color:${color}">${title}</div><div class="dl-drugs">${drugs.map(x=>`<span>${x}</span>`).join("")}</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER PASOS
+// ═══════════════════════════════════════════════════════
+function renderStep0(){
+  const c=calcAll(), vi=c.vi;
+  let h=`<div style="font-size:18px;font-weight:700;margin-bottom:20px;color:#e2e8f0">📋 Datos del Paciente</div>`;
+  h+=`<div class="grid2">${fld("Edad (años)",inp("edad","number","min=0 max=120"))}${fld("Peso (kg)",inp("peso","number","min=0 max=250"))}</div>`;
+  h+=fld("¿Tiempo de inicio desconocido o wake-up stroke?",yn("tiempoDesconocido"),"Selecciona Sí si el paciente despertó con déficit o no se conoce la hora exacta");
+  if(d.tiempoDesconocido===false){
+    h+=fld("Hora última vez visto bien (LKW)",inp("lkw","time"),"Formato HH:MM");
+    h+=fld("Hora llegada al hospital",inp("llegada","time"),"Formato HH:MM");
+  }
+  if(d.tiempoDesconocido===true)
+    h+=ab("<strong>Wake-up stroke / tiempo desconocido</strong> — Elegibilidad para fibrinólisis basada en: (A) DWI-FLAIR mismatch en RM, (B) ≤9h desde el punto medio del sueño + mismatch de perfusión (AHA/ASA 2026 nueva Clase IIa), o (C) reconocimiento de síntomas hace menos de 4.5h. Trombectomía según DAWN/DEFUSE-3.","#a855f7","⏰");
+  if(vi&&d.tiempoDesconocido!==true){
+    const vh=vi.h, hh=Math.floor(vh), mm=Math.round((vh%1)*60);
+    const msgs={temprana:"✅ Ventana estándar ≤4.5h — fibrinólisis indicada si sin contraindicaciones",extendida:"🟡 Ventana extendida 4.5–9h — fibrinólisis con mismatch (EXTEND/ECASS-4/EPITHET, AHA/ASA 2026 Clase IIa); condicional sin mismatch",tardia:"🟠 Ventana tardía 9–24h — fibrinólisis NO indicada; trombectomía si mismatch de perfusión",fuera:"🔴 >24h — fibrinólisis contraindicada; trombectomía no indicada"};
+    h+=`<div style="background:#0f172a;border:1px solid ${vi.color}44;border-radius:10px;padding:14px">
+      <div style="font-size:13px;color:#64748b;margin-bottom:4px">Tiempo desde inicio de síntomas</div>
+      <div style="font-size:22px;font-weight:800;color:${vi.color}">${hh}h ${mm}min <span style="font-size:13px;font-weight:500;color:#94a3b8">(${vi.label})</span></div>
+      <div style="margin-top:10px;font-size:13px;padding:8px 10px;border-radius:7px;background:${vi.color}15;color:${vi.color};font-weight:600">${msgs[vi.zona]||""}</div>
+    </div>`;
+  }
+  return h;
+}
+
+function renderStep1(){
+  const c=calcAll(), nihssN=c.nihssN, cat=nihssCategory(nihssN);
+  let h=`<div style="font-size:18px;font-weight:700;margin-bottom:20px;color:#e2e8f0">🔢 Gravedad Neurológica — NIHSS</div>`;
+  h+=`<div style="display:flex;gap:10px;margin-bottom:20px">
+    <button class="mode-btn ${d.nihssMode==="manual"?"active":""}" onclick="handleNihssMode('manual')">✏️ NIHSS Manual</button>
+    <button class="mode-btn ${d.nihssMode==="auto"?"active":""}" onclick="handleNihssMode('auto')">🧮 NIHSS Automático por ítems</button>
+  </div>`;
+  if(d.nihssMode==="manual"){
+    h+=fld("Puntuación NIHSS (0–42)",inp("nihss","number","min=0 max=42"),"Introducir valor numérico total");
+  } else {
+    h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:#0ea5e9;margin-bottom:14px;letter-spacing:1px">ÍTEMS NIHSS</div>`;
+    NIHSS_ITEMS.forEach(item=>{
+      h+=`<div class="nihss-item"><div class="nihss-item-head"><div class="nihss-item-info"><div class="ni-label">${item.label}</div><div class="ni-hint">${item.hint}</div></div><div class="nihss-btns">`;
+      for(let i=0;i<=item.max;i++){
+        const active=d.nihssItems[item.key]===String(i)?"active":"";
+        h+=`<button class="nihss-btn ${active}" onclick="handleNihssBtn('${item.key}',${i})">${i}</button>`;
+      }
+      h+=`</div></div></div>`;
+    });
+    const total=nihssAllFilled()?calcNihssAuto():"—";
+    h+=`<div class="nihss-total"><span style="font-size:13px;color:#0ea5e9;font-weight:700">NIHSS Total calculado</span><span style="font-size:24px;font-weight:800;color:#0ea5e9">${total}</span></div>`;
+    if(!nihssAllFilled()) h+=`<div style="font-size:11px;color:#64748b;margin-top:6px;text-align:center">Completa todos los ítems para obtener el total</div>`;
+    h+=`</div>`;
+  }
+  if((d.nihssMode==="manual"&&d.nihss!="")||(d.nihssMode==="auto"&&nihssAllFilled())){
+    const msgs=["Sin déficit detectable. Si déficit incapacitante (afasia, hemianopsia...) → fibrinólisis puede indicarse igualmente.","Ictus menor. Si sin déficit incapacitante → DAPT indicada (AHA/ASA 2026). Evaluar incapacidad para decidir fibrinólisis.","Ictus leve. Fibrinólisis indicada en ventana ≤4.5h. Estrategia THALES para antiagregación.","Ictus moderado. Fibrinólisis indicada. Evaluar LVO para trombectomía.","Ictus grave. Sin límite superior de NIHSS para fibrinólisis (Clase I). Trombectomía si LVO."];
+    const idx=nihssN===0?0:nihssN<=3?1:nihssN<=5?2:nihssN<=14?3:4;
+    const emoji=nihssN===0?"✅":nihssN<=3?"🟢":nihssN<=5?"🟡":nihssN<=14?"🟠":"🔴";
+    h+=`<div style="background:#0f172a;border:1px solid ${cat.color}44;border-radius:10px;padding:16px;margin-top:8px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:13px;color:#64748b">Clasificación automática</div><div style="font-size:24px;font-weight:800;color:${cat.color}">${nihssN} — ${cat.label}</div></div>
+        <div style="font-size:38px">${emoji}</div>
+      </div>
+      <div style="margin-top:12px;padding:8px 10px;border-radius:7px;background:${cat.color}15;font-size:12px;color:${cat.color}">${msgs[idx]}</div>
+    </div>`;
+  }
+  h+=fld("¿El déficit neurológico es incapacitante?",yn("deficitIncapacitante"),"Afasia, hemianopsia, paresia u otro déficit que impida actividades básicas aunque NIHSS sea bajo");
+  if(nihssN<4&&d.deficitIncapacitante===true) h+=ab(`NIHSS ${nihssN} con déficit incapacitante → fibrinólisis indicable (ESO 2023). Trombectomía posible si LVO.`,"#22c55e","ℹ️");
+  if(nihssN<4&&d.deficitIncapacitante===false) h+=ab(`NIHSS ${nihssN} sin déficit incapacitante → fibrinólisis NO recomendada (AHA/ASA 2026). DAPT indicada. Monitorizar.`,"#0ea5e9","ℹ️");
+  return h;
+}
+
+function renderStep2(){
+  const c=calcAll();
+  let h=`<div style="font-size:18px;font-weight:700;margin-bottom:20px;color:#e2e8f0">🖥️ Neuroimagen</div>`;
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:16px">
+    <div class="section-title" style="color:#0ea5e9">TAC CRANEAL URGENTE</div>`;
+  h+=fld("¿Hemorragia intracraneal en TAC?",yn("hemorragia"));
+  if(d.hemorragia===true) h+=ab("Hemorragia intracraneal confirmada — fibrinólisis y trombectomía contraindicadas. Manejo hemostático urgente. Consulta neurocirugía.","#ef4444","🛑");
+  h+=fld("¿Signos precoces de infarto extenso (hipodensidad >1/3 ACM)?",yn("signosExtensosInfarto"));
+  h+=fld("ASPECTS (0–10)",inp("aspects","number","min=0 max=10"),"Alberta Stroke Program Early CT Score");
+  if(d.aspects!==""){
+    const a=parseInt(d.aspects)??0;
+    const col=a>=7?"#22c55e":a===6?"#eab308":a>=3?"#f97316":"#ef4444";
+    const lbl=a>=8?"Favorable ≥8":a===7?"Moderado 7 — valorar":a===6?"Alto riesgo 6 — relativa":a>=3?"3–5 — condicional para EVT":"≤2 — contraindicación absoluta";
+    h+=`<div style="margin-top:8px">${chip(col,"ASPECTS "+d.aspects+" — "+lbl)}</div>`;
+    if(a<=2) h+=ab(`ASPECTS ${a} ≤2 — contraindicación ABSOLUTA para fibrinólisis y trombectomía.`,"#ef4444","🛑");
+    else if(a<=5&&a>=3) h+=ab(`ASPECTS ${a} (3–5) — contraindicación ABSOLUTA para fibrinólisis. EVT condicional en centros expertos con mismatch (SELECT2, TENSION, ANGEL-ASPECT — AHA/ASA 2026).`,"#f97316","⚠️");
+    else if(a===6) h+=ab("ASPECTS 6 — contraindicación RELATIVA (no absoluta). Fibrinólisis posible con precaución (ESO 2023).","#eab308","⚠️");
+    else h+=ab(`ASPECTS ${a} — favorable. No contraindica fibrinólisis ni trombectomía.`,"#22c55e","ℹ️");
+  }
+  h+=`</div><div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px">
+    <div class="section-title" style="color:#0ea5e9">ANGIOTAC / ANGIOTRM</div>`;
+  h+=fld("¿Oclusión de gran vaso (LVO)?",yn("lvo"));
+  if(d.lvo===true){
+    h+=fld("Territorio afectado",sel("territorioLVO",LVO_OPTIONS));
+    if(d.territorioLVO==="basilar"&&c.nihssN>=10) h+=ab("<strong>Oclusión basilar + NIHSS ≥10:</strong> Trombectomía FUERTEMENTE RECOMENDADA dentro de 24h (AHA/ASA 2026 Clase I, fuerte). Ventana de 24h sin necesidad de mismatch.","#22c55e","🔴");
+    if(c.nihssN<6&&d.deficitIncapacitante===true) h+=ab("LVO con NIHSS <6 y déficit incapacitante — trombectomía puede estar indicada (ESO 2023 Clase B). Valorar individualmente.","#eab308","ℹ️");
+  }
+  if(d.lvo===false) h+=ab("Sin LVO — trombectomía no indicada. Continuar con evaluación de fibrinólisis y tratamiento médico óptimo.","#64748b","ℹ️");
+  h+=`</div>`;
+  return h;
+}
+
+function renderStep3(){
+  const c=calcAll(), vi=c.vi;
+  let h=`<div style="font-size:18px;font-weight:700;margin-bottom:8px;color:#e2e8f0">🩻 Evaluación de Mismatch</div>`;
+  if(!c.needPerfusion&&!c.showMismatchExtendida){
+    h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:20px;text-align:center">
+      <div style="font-size:32px;margin-bottom:8px">⏱️</div>
+      <div style="color:#94a3b8;font-size:15px">Ventana temporal: <strong style="color:${vi?.color}">${vi?.label}</strong></div>
+      <div style="color:#64748b;font-size:13px;margin-top:8px">En ventana estándar ≤4.5h no es necesario el mismatch para decidir fibrinólisis. Puedes continuar sin este paso.</div>
+    </div>`;
+    return h;
+  }
+  const ibCol=vi?.zona==="desconocido"?"#a855f7":vi?.zona==="extendida"?"#eab308":"#f97316";
+  const ibMsg=vi?.zona==="desconocido"?"⏰ Wake-up / tiempo desconocido — El mismatch determina elegibilidad para fibrinólisis y trombectomía.":vi?.zona==="extendida"?"🟡 Ventana 4.5–9h — Con mismatch: evidencia Clase IIa (EXTEND/ECASS-4/EPITHET, AHA/ASA 2026). Sin mismatch: Clase IIb, decisión individualizada.":`⚠️ Ventana tardía (${vi?.label}) — Trombectomía solo si mismatch positivo (DAWN/DEFUSE-3). Fibrinólisis IV no indicada de rutina.`;
+  h+=ib(ibMsg,ibCol);
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#0ea5e9">EVALUACIÓN DE MISMATCH</div>`;
+  [{value:"auto",label:"Mismatch conocido",hint:"Core pequeño y penumbra grande confirmados por radiólogo"},{value:"manual",label:"Cálculo manual de mismatch",hint:"Introducir volúmenes de core y penumbra"},{value:"ninguno",label:"No hay mismatch",hint:"Sin penumbra salvable significativa o estudio no disponible"}].forEach(opt=>{
+    const active=d.mismatchMode===opt.value?"active":"";
+    h+=`<button class="radio-opt ${active}" onclick="handleMismatchMode('${opt.value}')"><div style="display:flex;align-items:center;gap:10px"><div class="radio-dot ${active}"></div><div><div style="font-weight:600">${opt.label}</div><div style="font-size:11px;color:#64748b;margin-top:2px">${opt.hint}</div></div></div></button>`;
+  });
+  h+=`</div>`;
+  if(d.mismatchMode==="auto"){
+    h+=`<div style="background:#22c55e10;border:1px solid #22c55e40;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div class="section-title" style="color:#22c55e">MISMATCH CONOCIDO — CONFIRMACIÓN</div>
+      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer">
+        <input type="checkbox" ${d.mismatchAutoConfirm?"checked":""} onchange="handleMismatchCheck(this.checked)" style="width:18px;height:18px;margin-top:2px;cursor:pointer;accent-color:#22c55e"/>
+        <span style="font-size:14px;color:#e2e8f0;line-height:1.5">✔ Core pequeño y penumbra grande confirmados (TC-perfusión, RM-DWI/PWI o criterio radiológico)</span>
+      </label>
+      ${d.mismatchAutoConfirm?ab("Mismatch confirmado → tratamiento en ventana extendida indicado.","#22c55e","✅"):ab("Marca el checkbox para confirmar el mismatch.","#64748b","ℹ️")}
+    </div>`;
+  }
+  if(d.mismatchMode==="manual"){
+    h+=`<div style="background:#0ea5e910;border:1px solid #0ea5e930;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div class="section-title" style="color:#0ea5e9">CÁLCULO MANUAL DE MISMATCH</div>
+      <div class="grid2">${fld("Volumen de core (mL)",inp("core","number","min=0"),"Tejido infartado (DWI o CBF <30%)")}${fld("Volumen de penumbra (mL)",inp("penumbra","number","min=0"),"Tejido en riesgo salvable (Tmax >6s o PWI)")}</div>`;
+    if(d.core!==""&&d.penumbra!==""){
+      const cv=parseFloat(d.core),pv=parseFloat(d.penumbra),diff=pv-cv,ratio=cv>0?pv/cv:Infinity;
+      const cOK=cv<=70,rOK=ratio>=1.8,dOK=diff>=15,ok=cOK&&rOK&&dOK;
+      const topCol=ok?"#22c55e":"#ef4444";
+      const topMsg=cv>70?"❌ Core ≥70 mL — fuera de criterios":ok?"✅ Mismatch compatible":"❌ Mismatch no significativo";
+      h+=`<div style="background:${topCol}11;border:1px solid ${topCol}44;border-radius:8px;padding:12px;margin-top:4px">
+        <div style="font-size:13px;font-weight:700;color:${topCol};margin-bottom:8px">${topMsg}</div>
+        <div class="grid3">`;
+      [{label:"Core",ok:cOK,txt:`${cv.toFixed(0)} mL ${cOK?"≤70":"— excede 70 mL"}`},{label:"Ratio",ok:rOK,txt:`${cv>0?ratio.toFixed(2):"∞"} ${rOK?"≥1.8":"— <1.8"}`},{label:"Dif.",ok:dOK,txt:`${diff.toFixed(0)} mL ${dOK?"≥15":"— <15"}`}].forEach(it=>{
+        const c2=it.ok?"#22c55e":"#ef4444";
+        h+=`<div style="background:${c2}15;border:1px solid ${c2}30;border-radius:6px;padding:6px 10px;font-size:12px;color:#94a3b8"><div style="color:${c2};font-weight:700;margin-bottom:2px">${it.ok?"✓":"✗"} ${it.label}</div><div>${it.txt}</div></div>`;
+      });
+      h+=`</div><div style="font-size:11px;color:#64748b;margin-top:8px">Criterios DAWN/DEFUSE-3: core ≤70 mL · ratio ≥1.8 · diferencia ≥15 mL</div></div>`;
+    }
+    h+=`</div>`;
+  }
+  if(d.mismatchMode==="ninguno") h+=ab("Sin mismatch — terapias en ventana extendida no indicadas por criterio de perfusión.","#ef4444","🛑");
+  if(vi?.zona==="desconocido"){
+    h+=`<div style="background:#a855f715;border:1px solid #a855f740;border-radius:10px;padding:14px;margin-top:12px">
+      <div class="section-title" style="color:#a855f7">CRITERIOS ADICIONALES PARA FIBRINÓLISIS EN WAKE-UP / TIEMPO DESCONOCIDO</div>`;
+    if(!c.mismatchPositivo) h+=fld("Opción A — RM: ¿DWI positivo con FLAIR negativo?",yn("dwiFlarMismatch"),"Indica ictus probable <4.5h. Criterio WAKE-UP trial (Lancet 2018, ESO 2023 Clase IIa)");
+    if(d.dwiFlarMismatch===true) h+=ab("DWI-FLAIR mismatch → fibrinólisis indicada en wake-up (ESO 2023 / AHA/ASA 2026 Clase IIa).","#22c55e","✅");
+    h+=fld("Opción B — ¿Síntomas reconocidos hace ≤9h desde el punto medio del sueño estimado?",yn("wakeUpDentro9h"),"Ej: dormido a medianoche, despertó a las 7h → punto medio 3:30h. Si los síntomas se reconocieron hace ≤9h desde ese punto, puede optar a fibrinólisis si hay mismatch de perfusión (AHA/ASA 2026 nueva Clase IIa)");
+    if(d.wakeUpDentro9h===true&&c.mismatchPositivo) h+=ab("≤9h desde punto medio sueño + mismatch de perfusión → fibrinólisis indicada (AHA/ASA 2026 nueva Clase IIa).","#22c55e","✅");
+    if(d.wakeUpDentro9h===true&&!c.mismatchPositivo) h+=ab("≤9h desde punto medio sueño pero sin mismatch documentado → se requiere mismatch. Confirmar con TC-perfusión o RM-DWI/PWI.","#eab308","⚠️");
+    h+=fld("Opción C — ¿El reconocimiento de síntomas fue hace menos de 4.5h?",yn("sintomasReconocidos45h"),"Si el paciente notó los síntomas hace menos de 4.5h (aunque LKW sea desconocido), es candidato a fibrinólisis si la lesión DWI es <1/3 ACM y FLAIR es negativo (AHA/ASA 2026 Clase IIa)");
+    if(d.sintomasReconocidos45h===true) h+=ab("Reconocimiento de síntomas <4.5h → candidato a fibrinólisis (AHA/ASA 2026 Clase IIa). Verificar lesión DWI <1/3 ACM y FLAIR negativo.","#22c55e","✅");
+    if(d.dwiFlarMismatch===false&&!c.mismatchPositivo&&d.wakeUpDentro9h===false&&d.sintomasReconocidos45h===false) h+=ab("Ningún criterio de fibrinólisis wake-up cumplido → fibrinólisis no indicada. Valorar trombectomía si LVO.","#ef4444","🛑");
+    h+=`</div>`;
+  }
+  return h;
+}
+
+function renderStep4(){
+  const c=calcAll();
+  let h=`<div style="font-size:18px;font-weight:700;margin-bottom:20px;color:#e2e8f0">⚠️ Contraindicaciones y Evaluación Farmacológica</div>`;
+  // Hemodinámica
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#f97316">HEMODINÁMICA</div>
+    <div class="grid2">${fld("PAS (mmHg)",inp("pas","number","min=0"))}${fld("PAD (mmHg)",inp("pad","number","min=0"))}</div>`;
+  if(d.pas&&d.pad&&(c.pasN>185||c.padN>110)) h+=ab(`PA ${d.pas}/${d.pad} mmHg — supera umbral para fibrinólisis (185/110 mmHg). Controlar con: Labetalol 10–20 mg IV · Nicardipino 5 mg/h IV · Urapidilo 25 mg IV.`);
+  h+=`</div>`;
+  // Laboratorio
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#f97316">LABORATORIO</div>
+    <div class="grid3">${fld("Plaquetas (×10³/μL)",inp("plaquetas","number","min=0"))}${fld("Glucemia (mg/dL)",inp("glucemia","number","min=0"))}${fld("INR",inp("inr","number","min=0 step=0.1"))}</div>`;
+  if(c.plaqN<100&&d.plaquetas) h+=ab(`Plaquetas ${d.plaquetas} ×10³/μL — contraindicación absoluta (<100.000).`);
+  if((c.glucN<60||c.glucN>400)&&d.glucemia) h+=ab(`Glucemia ${d.glucemia} mg/dL — fuera de rango seguro (60–400). Corregir antes de fibrinólisis.`);
+  if(c.inrN>1.7&&d.inr) h+=ab(`INR ${d.inr} — contraindicación absoluta para fibrinólisis si >1.7.${c.avkActivo?" Considerar reversión con vitamina K + CCP.":""}`);
+  if(c.avkActivo&&c.inrN<=1.7&&c.inrN>1&&d.inr) h+=ab(`INR ${d.inr} con AVK — dentro del rango permisivo (≤1.7). Fibrinólisis posible con mayor vigilancia hemorrágica.`,"#eab308");
+  h+=`</div>`;
+  // Anticoagulación
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#f97316">ANTICOAGULACIÓN PREVIA</div>
+    ${fld("Anticoagulante actual",sel("anticoagulante",ANTICOAGULANTES),"Selecciona el anticoagulante que está tomando el paciente.")}`;
+  if(c.isWarfarina) h+=ab("Warfarina activa — contraindica fibrinólisis si INR >1.7. Si INR ≤1.7 puede proceder. Vitamina K + CCP disponibles para reversión urgente.","#eab308","⚠️");
+  if(c.isDoac){
+    h+=`<div style="background:#0ea5e910;border:1px solid #0ea5e930;border-radius:8px;padding:10px 12px;margin-top:4px;margin-bottom:8px">
+      <div style="font-size:11px;color:#0ea5e9;font-weight:700;margin-bottom:10px;letter-spacing:1px">EVALUACIÓN ${d.anticoagulante.toUpperCase()} — RIESGO FIBRINÓLISIS</div>
+      ${fld("¿Última dosis hace <48h?",yn("doacMenos48h"))}`;
+    if(d.doacMenos48h===true){
+      if(c.isDabigatran){
+        h+=`<div style="background:#a855f715;border:1px solid #a855f740;border-radius:8px;padding:8px 12px;margin-bottom:8px">
+          <div style="font-size:11px;color:#a855f7;font-weight:700;margin-bottom:6px">DABIGATRÁN — ANTÍDOTO IDARUCIZUMAB (Praxbind® 5g IV)</div>
+          ${fld("¿Administrar idarucizumab antes de fibrinólisis?",yn("idarucizumab"))}`;
+        if(d.idarucizumab===true) h+=ab("Idarucizumab indicado → administrar y confirmar reversión antes de rtPA.","#22c55e","✓");
+        if(d.idarucizumab===false) h+=ab("Sin idarucizumab → confirmar aclaramiento con TT/ECT calibrado.","#f97316","⚠️");
+        h+=`</div>`;
+      }
+      if(c.isAntiXa) h+=ab(`${d.anticoagulante==="rivaroxaban"?"Rivaroxabán":d.anticoagulante==="apixaban"?"Apixabán":"Edoxabán"} reciente — Andexanet alfa disponible en centros seleccionados. Confirmar aclaramiento con anti-Xa calibrado.`,"#f97316","⚠️");
+      h+=fld("¿Nivel anti-Xa / TT disponible?",yn("antiXaDisponible"),c.isDabigatran?"TT o ECT calibrado para dabigatrán":"Anti-Xa calibrado para el fármaco específico");
+      if(d.antiXaDisponible===true) h+=fld("¿Nivel dentro de rango normal (actividad anticoagulante descartada)?",yn("antiXaNormal"));
+      if(d.antiXaDisponible===false) h+=ab("Nivel no disponible → actividad no descartable. DOAC contraindica fibrinólisis.","#ef4444");
+      if(d.antiXaDisponible===true&&d.antiXaNormal===false) h+=ab("Nivel anormal → actividad anticoagulante presente. Fibrinólisis contraindicada.","#ef4444");
+      if(d.antiXaDisponible===true&&d.antiXaNormal===true) h+=ab("Nivel normal → actividad descartada. DOAC no contraindica fibrinólisis.","#22c55e","✓");
+    }
+    if(d.doacMenos48h===false) h+=ab("Última dosis ≥48h → DOAC no contraindica fibrinólisis por este motivo.","#22c55e","✓");
+    h+=`</div>`;
+  }
+  h+=fld("¿Heparina reciente?",yn("heparina"));
+  if(d.heparina===true){
+    h+=`<div style="margin-left:8px">${fld("¿Heparina IV a dosis terapéutica (no solo SC profiláctica)?",yn("heparinaIV"),"Heparina SC profiláctica NO contraindica fibrinólisis (ESO 2023)")}`;
+    if(d.heparinaIV===true) h+=fld("TTPa actual (segundos)",inp("ttpa","number","min=0"),"Normal: 25–35 s. >40 s indica anticoagulación significativa");
+    if(d.heparinaIV===false) h+=ab("Heparina SC profiláctica — NO contraindica fibrinólisis (ESO 2023).","#22c55e","✓");
+    if(d.heparinaIV===true&&c.ttpaE>40) h+=ab(`TTPa ${d.ttpa}s >40 — anticoagulación activa. Contraindicación para fibrinólisis.`,"#ef4444");
+    if(d.heparinaIV===true&&c.ttpaE<=40&&c.ttpaE>0) h+=ab(`TTPa ${d.ttpa}s — dentro de rango. No contraindica fibrinólisis.`,"#22c55e","✓");
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+  // Antecedentes
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#f97316">ANTECEDENTES RELEVANTES</div>
+    ${fld("¿Ictus isquémico en los últimos 3 meses?",yn("ictusReciente"))}
+    ${fld("¿Cirugía mayor o TCE grave reciente (<14 días)?",yn("cirugiaReciente"))}
+    ${fld("¿Hemorragia activa o coagulopatía grave?",yn("hemorragiaActiva"))}
+    ${fld("¿Hemorragia intracraneal previa?",yn("hicPrevio"))}`;
+  if(d.hicPrevio===true){
+    h+=`<div style="margin-left:8px">${fld("¿Fue hace menos de 3 meses o en localización de alto riesgo?",yn("hicPrevioReciente"),"Localización de alto riesgo: ganglios basales, tronco, cerebelo")}`;
+    if(d.hicPrevioReciente===true) h+=ab("HIC previa reciente — contraindicación ABSOLUTA para fibrinólisis.","#ef4444");
+    if(d.hicPrevioReciente===false) h+=ab("HIC previa antigua (>3 meses) — contraindicación RELATIVA. Valoración individualizada (ESO 2023).","#eab308");
+    h+=`</div>`;
+  }
+  h+=fld("¿Estaba el paciente en AAS antes del ictus?",yn("aasPrevia"));
+  h+=`</div>`;
+  // Contraindicaciones relativas
+  h+=`<div style="background:#0f172a;border:1px solid #eab30844;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#eab308">CONTRAINDICACIONES RELATIVAS PARA FIBRINÓLISIS</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:14px">Ninguna contraindica automáticamente. Se recogen para facilitar la decisión individualizada (ESO 2023, AHA/ASA 2026).</div>
+    ${fld("¿Embarazo actual?",yn("embarazo"),"Contraindicación relativa — valorar riesgo vital materno")}
+    ${fld("¿Crisis epiléptica al inicio del ictus?",yn("crisisEpileptica"),"Valorar diagnóstico diferencial con Todd postcrítico")}
+    ${fld("¿IAM reciente (<3 meses)?",yn("iamReciente"),"Riesgo de rotura miocárdica o hemopericardio")}
+    ${fld("¿Neoplasia intracraneal conocida?",yn("neoplasiaCraneal"),"Sin metástasis hemorrágicas = relativa")}
+    ${fld("¿Sangrado GI o urinario reciente (<21 días)?",yn("sangradoGIReciente"),"Mayor riesgo hemorrágico sistémico")}
+    ${fld("¿Endocarditis bacteriana activa?",yn("endocarditisActiva"),"Riesgo de hemorragia en infartos sépticos")}
+  </div>`;
+  // Antiagregantes
+  h+=`<div style="background:#0f172a;border:1px solid #7c3aed44;border-radius:10px;padding:14px;margin-bottom:14px">
+    <div class="section-title" style="color:#a855f7">EVALUACIÓN PARA ANTIAGREGANTES</div>
+    ${fld("¿Antecedente de hemorragia intracraneal?",yn("antecedenteHIC"))}
+    ${fld("¿Insuficiencia hepática grave?",yn("hepatopatiaGrave"))}
+    ${fld("¿Bradicardia significativa (<50 lpm)?",yn("bradicardiaSignificativa"))}
+    ${fld("¿Bloqueo AV avanzado (2.º–3.er grado sin marcapasos)?",yn("bloqueoAV"))}
+    ${fld("¿Disnea grave (EPOC grave u otra causa)?",yn("disneaGrave"))}
+    ${fld("¿Hiperuricemia conocida o antecedente de gota?",yn("hiperuricemia"),"Ticagrelor puede elevar ácido úrico")}
+    ${fld("¿Stent intracraneal implantado durante trombectomía?",yn("stentIntracraneal"))}
+    ${fld("¿Uso de inhibidores CYP2C19?",yn("inhibidorCYP2C19"),"Reducen eficacia de clopidogrel")}
+    ${dl("Fármacos inhibidores CYP2C19 — reducen eficacia de clopidogrel",CYP2C19_DRUGS,"#eab308")}
+    ${fld("¿Uso de inhibidores potentes CYP3A4?",yn("inhibidorCYP3A4"),"Contraindicados con ticagrelor")}
+    ${dl("Fármacos inhibidores potentes CYP3A4 — contraindicados con ticagrelor",CYP3A4_DRUGS,"#a855f7")}
+  </div>`;
+  // Etiología
+  h+=`<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px">
+    <div class="section-title" style="color:#0ea5e9">ETIOLOGÍA</div>
+    ${fld("¿Etiología cardioembólica confirmada o probable? (FA, trombo intracardiaco, valvulopatía, IAM reciente...)",yn("etiologiaCardioembólica"))}
+  </div>`;
+  return h;
+}
+
+function renderStep5(){
+  const c=calcAll(), vi=c.vi, nihssN=c.nihssN, cat=nihssCategory(nihssN);
+  const nihssDisplay=d.nihssMode==="auto"?(nihssAllFilled()?calcNihssAuto():"—"):(d.nihss||"—");
+  const tL={CLOPI:"AAS + Clopidogrel",TICA:"AAS + Ticagrelor",AAS:"Aspirina en monoterapia"};
+  const tC={CLOPI:"#0ea5e9",TICA:"#a855f7",AAS:"#22c55e"};
+  const ea=c.estrategiaAA;
+
+  let h=`<div style="text-align:center;margin-bottom:24px">
+    <div style="font-size:13px;color:#64748b;margin-bottom:4px">RECOMENDACIÓN TERAPÉUTICA PERSONALIZADA</div>
+    <h2>Paciente ${d.edad}a · ${d.peso}kg · NIHSS ${nihssDisplay}</h2>
+    <div class="tags">
+      ${chip(cat.color,cat.label)}
+      ${vi?chip(vi.color,vi.label):""}
+      ${d.lvo===true?chip("#a855f7","LVO "+d.territorioLVO):""}
+      ${d.aspects?chip(c.aspectsN>=7?"#22c55e":c.aspectsN===6?"#eab308":c.aspectsN>=3?"#f97316":"#ef4444","ASPECTS "+d.aspects):""}
+      ${d.deficitIncapacitante===true&&nihssN<4?chip("#eab308","Déficit incapacitante"):""}
+      ${c.candFib?chip("#ef4444","⏰ TAC 24h obligatorio"):""}
+      ${vi?.zona==="desconocido"?chip("#a855f7","⏰ Wake-up"):""}
+      ${c.candFibWakeUp?chip("#22c55e","Mismatch wake-up ✓"):""}
+      ${c.fibExtendidaMismatch?chip("#22c55e","Mismatch extendida ✓"):""}
+      ${c.basilarDentro24h?chip("#22c55e","Basilar Clase I"):""}
+      ${c.aspectsTrombCond&&d.lvo===true?chip("#f97316","ASPECTS condicional"):""}
+    </div>
+  </div>`;
+
+  // Scores
+  h+=`<div class="section-box"><div class="section-title" style="color:#0ea5e9">📊 Scores Clínicos</div>
+    <div class="grid2">
+      <div class="score-card" style="background:${c.riesgoHem.color}11;border:1px solid ${c.riesgoHem.color}40">
+        <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Riesgo Hemorrágico</div>
+        <div style="font-size:20px;font-weight:800;color:${c.riesgoHem.color}">${c.riesgoHem.label}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:4px">Score ${c.scoreHem}/5</div>
+        <div style="margin-top:8px;font-size:11px;color:#94a3b8">
+          ${c.edadN>80?"<div>⚠ Edad >80</div>":""}${nihssN>15?"<div>⚠ NIHSS >15</div>":""}${c.glucN>180?"<div>⚠ Glucosa >180 mg/dL</div>":""}${c.pasN>180?"<div>⚠ PAS >180 mmHg</div>":""}${c.aspectsIntroducido&&c.aspectsN!==null&&c.aspectsN<7&&c.aspectsN>0?"<div>⚠ ASPECTS <7</div>":""}${c.scoreHem===0?"<div style='color:#22c55e'>✓ Sin factores de riesgo adicionales</div>":""}
+        </div>
+      </div>
+      <div class="score-card" style="background:${c.pronostico.color}11;border:1px solid ${c.pronostico.color}40">
+        <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Pronóstico Funcional</div>
+        <div style="font-size:20px;font-weight:800;color:${c.pronostico.color}">${c.pronostico.label}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:4px">Score ${c.pronoScore} pts</div>
+        <div style="margin-top:6px;font-size:11px;color:#94a3b8;line-height:1.5">${c.pronostico.desc}</div>
+      </div>
+    </div>
+    ${c.scoreHem>=4?ab(`Score hemorrágico ALTO (${c.scoreHem}/5) — Riesgo elevado de transformación hemorrágica sintomática post-fibrinólisis.`,"#ef4444","🔴"):""}
+    ${c.contraRel.length>0?`<div style="margin-top:8px"><div style="font-size:11px;color:#eab308;font-weight:700;margin-bottom:4px;letter-spacing:0.5px">SITUACIONES RELATIVAS PRESENTES</div>${c.contraRel.map(cr=>ab(cr,"#eab308","ℹ️")).join("")}</div>`:""}
+  </div>`;
+
+  // Reperfusión
+  const fC=c.candFib?"#22c55e":c.candFibCondicional||vi?.zona==="desconocido"?"#eab308":"#ef4444";
+  const fE=c.candFib?"✅":c.candFibCondicional||vi?.zona==="desconocido"?"🟡":"❌";
+  const tC2=c.candTromb?"#22c55e":c.aspectsTrombCond&&d.lvo===true?"#f97316":"#ef4444";
+  const tE=c.candTromb?"✅":c.aspectsTrombCond&&d.lvo===true?"🟡":"❌";
+  let fibLabel="No candidato";
+  if(c.candFibEstandar) fibLabel="Candidato (ventana estándar ≤4.5h)";
+  else if(c.candFibWakeUpA) fibLabel="Candidato wake-up (DWI-FLAIR ✓)";
+  else if(c.candFibWakeUpB) fibLabel="Candidato wake-up (≤9h+mismatch ✓)";
+  else if(c.candFibWakeUpC) fibLabel="Candidato wake-up (reconoc. <4.5h ✓)";
+  else if(c.fibExtendidaMismatch) fibLabel="Candidato extendido (mismatch ✓)";
+  else if(c.fibCondicionalViable) fibLabel="Condicional (4.5–9h)";
+  else if(c.candFibCondicional) fibLabel="Valorar individualmente";
+  else if(vi?.zona==="desconocido") fibLabel="Requiere criterio wake-up";
+  const trombLabel=c.candTromb?(c.basilarDentro24h?"Candidato (basilar Clase I)":c.aspectsTrombCond?"Condicional (ASPECTS 3–5)":"Candidato"):"No candidato";
+
+  h+=`<div class="section-box"><div class="section-title" style="color:#22c55e">1️⃣ Reperfusión Cerebral</div>
+    <div class="grid2" style="margin-bottom:4px">
+      <div style="background:${fC}11;border:1px solid ${fC}44;border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:28px;margin-bottom:4px">${fE}</div>
+        <div style="font-weight:700;font-size:14px;color:${fC}">Fibrinólisis IV</div>
+        <div style="font-size:11px;color:#64748b;margin-top:4px">${fibLabel}</div>
+      </div>
+      <div style="background:${tC2}11;border:1px solid ${tC2}44;border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:28px;margin-bottom:4px">${tE}</div>
+        <div style="font-weight:700;font-size:14px;color:${tC2}">Trombectomía</div>
+        <div style="font-size:11px;color:#64748b;margin-top:4px">${trombLabel}</div>
+      </div>
+    </div>
+    ${mb(c.candFib,c.motivoFib)}
+    ${mb(c.candTromb,c.motivoTromb)}
+    ${c.candFib?`<div style="background:#ef444415;border:1px solid #ef444444;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px;color:#ef4444;font-weight:600">🛑 No iniciar antiagregación hasta TAC de control a las 24h sin hemorragia</div>`:""}
+    ${c.candFib&&c.candTromb?ab("<strong>Estrategia puente:</strong> Iniciar fibrinólisis IV y activar simultáneamente la sala de trombectomía. No retrasar fibrinólisis por esperar trombectomía.","#a855f7","🔗"):""}
+    ${c.basilarDentro24h?ab("<strong>Oclusión basilar + NIHSS ≥10:</strong> Trombectomía FUERTEMENTE RECOMENDADA dentro de 24h (AHA/ASA 2026 Clase I). Sin necesidad de mismatch.","#22c55e","🔴"):""}
+    ${c.aspectsTrombCond&&d.lvo===true?ab(`<strong>ASPECTS ${d.aspects} (3–5):</strong> EVT condicional. Considerar en centros expertos con mismatch (SELECT2, TENSION, ANGEL-ASPECT — AHA/ASA 2026). Decisión multidisciplinar.`,"#f97316","⚠️"):""}
+    ${vi?.zona==="extendida"?`<div style="background:#eab30815;border:1px solid #eab30844;border-radius:8px;padding:10px 14px;margin-top:8px;font-size:13px;color:#eab308;line-height:1.6"><strong>🟡 Ventana 4.5–9h:</strong> ${c.fibExtendidaMismatch?"Mismatch confirmado → fibrinólisis Clase IIa (EXTEND/ECASS-4/EPITHET, AHA/ASA 2026).":"Sin mismatch documentado → fibrinólisis condicional (Clase IIb). Decisión individualizada."}</div>`:""}
+    ${vi?.zona==="tardia"?`<div style="background:#f9731615;border:1px solid #f9731640;border-radius:8px;padding:10px 14px;margin-top:8px;font-size:13px;color:#f97316;line-height:1.6"><strong>🟠 Ventana 9–24h:</strong> Fibrinólisis IV no indicada de rutina. Trombectomía si mismatch (DAWN/DEFUSE-3)${c.basilarDentro24h?" o basilar con NIHSS ≥10 (AHA/ASA 2026 Clase I)":""}.</div>`:""}
+    ${c.doacActivo&&d.doacMenos48h===true?ab(`<strong>DOAC reciente (${d.anticoagulante})</strong> — Confirmar aclaramiento antes de fibrinólisis.${c.isDabigatran?" Idarucizumab (5g IV) como antídoto específico.":""}${c.isAntiXa?" Andexanet alfa en centros seleccionados.":""}`,"#ef4444","💊"):""}
+    ${c.contraAbsolutas.length>0?`<div style="background:#ef444411;border:1px solid #ef444433;border-radius:8px;padding:12px;margin-top:12px"><div style="font-size:12px;font-weight:700;color:#ef4444;margin-bottom:8px">CONTRAINDICACIONES ABSOLUTAS PRESENTES</div>${c.contraAbsolutas.map(ca=>`<div style="font-size:13px;color:#fca5a5;padding:3px 0">• ${ca}</div>`).join("")}</div>`:""}
+    ${c.candFib?`<div style="background:#0f172a;border:1px solid #22c55e33;border-radius:10px;padding:14px;margin-top:12px">
+      <div style="font-size:12px;font-weight:700;color:#22c55e;margin-bottom:4px">DOSIS CALCULADAS (${d.peso} kg)</div>
+      <div style="margin-bottom:12px"><div style="font-size:13px;color:#22c55e;font-weight:700;margin-bottom:6px">★ Tenecteplasa — 0.25 mg/kg, máx 25 mg (PREFERIDA)</div>${ri("Bolo IV único (5–10 segundos)",c.tncDosis+" mg","#22c55e")}</div>
+      <div style="margin-bottom:12px"><div style="font-size:13px;color:#0ea5e9;font-weight:700;margin-bottom:6px">Alteplasa (rtPA) — 0.9 mg/kg, máx 90 mg (alternativa)</div>${ri("Dosis total",c.altDosis+" mg","#22c55e")}${ri("Bolo IV 10% (1–2 min)",c.altBolo+" mg")}${ri("Infusión continua 90% (60 min)",c.altInf+" mg")}</div>
+      <div style="font-size:11px;color:#64748b;margin-top:10px">Mantener PA &lt;185/110 mmHg durante infusión y &lt;180/105 mmHg las primeras 24h. No reducir a &lt;140 mmHg (AHA/ASA 2026 Clase III). Monitorización neurológica continua.</div>
+    </div>`:""}
+    ${c.candTromb?`<div style="background:#0f172a;border:1px solid #a855f733;border-radius:10px;padding:14px;margin-top:12px">
+      <div style="font-size:12px;font-weight:700;color:#a855f7;margin-bottom:10px">TROMBECTOMÍA MECÁNICA</div>
+      ${ri("Territorio",d.territorioLVO,"#c084fc")}${ri("Ventana",vi?.label||"")}${ri("Estrategia",c.candFib?"Puente: Fibrinólisis → Trombectomía":"Trombectomía directa","#c084fc")}
+      ${c.needPerfusion&&!c.basilarDentro24h?ri("Criterio perfusión",(c.mismatchPositivo||c.mismatchAuto)?"Mismatch confirmado ✓":"Sin mismatch",(c.mismatchPositivo||c.mismatchAuto)?"#22c55e":"#ef4444"):""}
+      ${c.basilarDentro24h?ri("Indicación basilar","NIHSS ≥10 + ≤24h — Clase I AHA/ASA 2026 (sin mismatch obligatorio)","#22c55e"):""}
+      ${c.aspectsTrombCond?ri("ASPECTS",d.aspects+" — condicional centros expertos","#f97316"):""}
+      ${c.lvoConDeficit?ri("Indicación","LVO con déficit incapacitante (NIHSS <6) — ESO 2023 Clase B","#eab308"):""}
+      ${d.stentIntracraneal===true?ri("Stent intracraneal","Sí → DAPT obligatoria","#f97316"):""}
+      <div style="font-size:11px;color:#64748b;margin-top:10px">Activar código ictus. Neurointervencionismo urgente. Tiempo aguja-ingle &lt;60 min (objetivo).</div>
+    </div>`:""}
+    ${!c.candFib&&!c.candFibCondicional&&!c.candTromb&&vi?.zona!=="desconocido"?`<div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px;margin-top:12px;text-align:center;color:#94a3b8;font-size:14px">No procede tratamiento de reperfusión.<br>Tratamiento médico óptimo: antiagregación, estatinas, control PA, glucemia, temperatura.</div>`:""}
+  </div>`;
+
+  // Antiagregación
+  h+=`<div class="section-box" style="border-color:${tC[ea.tipo]}33"><div class="section-title" style="color:${tC[ea.tipo]}">2️⃣ Antiagregación</div>
+    <div style="background:${tC[ea.tipo]}15;border:1px solid ${tC[ea.tipo]}40;border-radius:10px;padding:14px 16px;margin-bottom:14px">
+      <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Estrategia recomendada</div>
+      <div style="font-size:22px;font-weight:800;color:${tC[ea.tipo]};margin-bottom:10px">${tL[ea.tipo]}</div>
+      <div style="font-size:13px;margin-bottom:${ea.alt?6:0}px"><span style="color:#64748b">Motivo: </span><span style="color:#e2e8f0">${ea.motivo}</span></div>
+      ${ea.alt?`<div style="font-size:13px"><span style="color:#64748b">Alternativa: </span><span style="color:#94a3b8">${ea.alt}</span></div>`:""}
+    </div>
+    ${ea.tipo==="CLOPI"?ri("Carga",ea.stent?"AAS 300 mg + Clopidogrel 300 mg (urgente)":"AAS 300 mg + Clopidogrel 300 mg","#0ea5e9")+ri("Mantenimiento","AAS 100 mg/día + Clopidogrel 75 mg/día")+ri("Duración",ea.stent?"≥3–6 meses (stent intracraneal), luego monoterapia":"21 días, luego monoterapia"):""}
+    ${ea.tipo==="TICA"?ri("Carga","AAS 300 mg + Ticagrelor 180 mg","#a855f7")+ri("Mantenimiento","AAS 100 mg/día + Ticagrelor 90 mg/12h")+ri("Duración ticagrelor","30 días (THALES), luego monoterapia"):""}
+    ${ea.tipo==="AAS"?ri("Carga",d.aasPrevia===true?"No recargar — continuar mantenimiento":"160–300 mg VO o IV","#22c55e")+ri("Mantenimiento","100 mg/día"):""}
+    ${ri("Inicio",c.candFib?"Tras TAC 24h sin hemorragia":"Primeras 24h",c.candFib?"#ef4444":"#22c55e")}
+    ${c.advertencias.length>0?`<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Advertencias clínicas</div>${c.advertencias.map(a=>ab(a)).join("")}</div>`:""}
+  </div>`;
+
+  // Anticoagulación
+  h+=`<div class="section-box"><div class="section-title" style="color:#0ea5e9">3️⃣ Anticoagulación</div>`;
+  if(d.etiologiaCardioembólica===true){
+    h+=ib("Etiología cardioembólica → Anticoagulación oral indicada. Inicio según regla 1-3-6-12 (ESO/EHRA 2023).");
+    h+=ri("Inicio recomendado",c.inicioAC||"","#22c55e");
+    h+=`<div style="margin-top:10px"><div style="font-size:12px;color:#64748b;margin-bottom:8px">DOAC DE ELECCIÓN (superioridad sobre AVK en FA)</div>`;
+    h+=ri("Apixabán","5 mg/12h (2.5 mg/12h si ≥2 criterios reducción)")+ri("Rivaroxabán","20 mg/día con cena (15 mg si FGe 15–49)")+ri("Dabigatrán","150 mg/12h (110 mg si ≥80 años o riesgo hem. alto)")+ri("Edoxabán","60 mg/día (30 mg si ≤60 kg o FGe 15–50)");
+    h+=`</div><div style="font-size:11px;color:#64748b;margin-top:8px">TAC de control antes de iniciar. Si infarto extenso o HT hemorrágica, esperar hasta ausencia de transformación hemorrágica significativa.</div>`;
+  } else {
+    h+=`<div style="color:#64748b;font-size:14px;text-align:center;padding:8px">No indicada (etiología no cardioembólica o no confirmada). Completar estudio etiológico.</div>`;
+  }
+  h+=`</div>`;
+
+  // Estatinas
+  h+=`<div class="section-box"><div class="section-title" style="color:#0ea5e9">4️⃣ Estatinas de Alta Intensidad</div>
+    ${ri("Atorvastatina","80 mg/día","#0ea5e9")}${ri("Rosuvastatina","20–40 mg/día","#0ea5e9")}${ri("Inicio","Primeras 24–48h","#22c55e")}
+    <div style="font-size:11px;color:#64748b;margin-top:8px">Inicio independiente del LDL basal. Clase I (ESC 2021, AHA/ASA 2026). Objetivo LDL &lt;55 mg/dL a largo plazo.</div>
+  </div>`;
+
+  // Control hemodinámico
+  const pasAlerta=c.candFib&&(c.pasN>185||c.padN>110);
+  const paOK=!c.candFib&&c.pasN<=220&&c.padN<=120&&d.pas;
+  const paAlta=!c.candFib&&(c.pasN>220||c.padN>120)&&d.pas;
+  h+=`<div class="section-box"><div class="section-title" style="color:#0ea5e9">5️⃣ Control Hemodinámico y Metabólico</div>
+    ${ri("PA antes fibrinólisis","< 185/110 mmHg",c.candFib?"#f97316":"#64748b")}
+    ${ri("PA después fibrinólisis (24h)","< 180/105 mmHg (objetivo permisivo)",c.candFib?"#0ea5e9":"#64748b")}
+    ${ri("⚠ Objetivo PA < 140 mmHg","CONTRAINDICADO tras fibrinólisis (AHA/ASA 2026 Clase III)","#ef4444")}
+    ${ri("PA sin fibrinólisis","Tratar solo si > 220/120 mmHg (permisiva)")}
+    ${ri("PA tras trombectomía exitosa","< 180/105 mmHg (primeras 24h)",c.candTromb?"#0ea5e9":"#64748b")}
+    ${ri("⚠ PA < 140 mmHg post-EVT","No reducir en primeras 72h (AHA/ASA 2026 Clase III)","#ef4444")}
+    ${ri("Antihipertensivos IV","Labetalol · Nicardipino · Urapidilo","#0ea5e9")}
+    ${ri("Glucemia objetivo","140–180 mg/dL","#0ea5e9")}
+    ${ri("⚠ Control intensivo glucosa","NO recomendado (AHA/ASA 2026 Clase III)","#ef4444")}
+    ${ri("Temperatura","Tratar fiebre > 37.5 °C con paracetamol 1 g")}
+    ${ri("Saturación O₂","Mantener SpO₂ ≥ 94%")}
+    ${pasAlerta?ab(`PA actual ${d.pas}/${d.pad} mmHg — controlar con labetalol/nicardipino/urapidilo IV antes de iniciar fibrinólisis.`,"#ef4444","🛑"):""}
+    ${paOK?ab(`PA ${d.pas}/${d.pad} mmHg — rango permisivo. No requiere tratamiento urgente.`,"#22c55e","✓"):""}
+    ${paAlta?ab(`PA ${d.pas}/${d.pad} mmHg — supera 220/120 mmHg. Tratar con antihipertensivo IV gradual.`,"#ef4444","⚠️"):""}
+  </div>`;
+
+  // Justificación
+  h+=`<div class="section-box"><div class="section-title" style="color:#0ea5e9">6️⃣ Justificación Clínica</div>
+    <div style="font-size:13px;color:#94a3b8;line-height:1.8">
+      ${c.candFibEstandar?`<p style="margin:0 0 8px">✅ <strong style="color:#f1f5f9">Fibrinólisis estándar</strong> — ${c.motivoFib}</p>`:""}
+      ${c.candFibWakeUp?`<p style="margin:0 0 8px">✅ <strong style="color:#f1f5f9">Fibrinólisis wake-up</strong> — ${c.motivoFib}</p>`:""}
+      ${c.fibCondicionalViable&&!c.candFibEstandar&&!c.candFibWakeUp?`<p style="margin:0 0 8px">🟡 <strong style="color:#f1f5f9">Fibrinólisis condicional/extendida</strong> — ${c.motivoFib}</p>`:""}
+      ${!c.candFib&&!c.candFibCondicional?`<p style="margin:0 0 8px">❌ <strong style="color:#f1f5f9">Fibrinólisis no indicada</strong> — ${c.motivoFib}</p>`:""}
+      ${c.candTromb?`<p style="margin:0 0 8px">✅ <strong style="color:#f1f5f9">Trombectomía indicada</strong> — ${c.motivoTromb}</p>`:""}
+      ${!c.candTromb?`<p style="margin:0 0 8px">❌ <strong style="color:#f1f5f9">Trombectomía no indicada</strong> — ${c.motivoTromb}</p>`:""}
+      <p style="margin:0 0 8px">✅ <strong style="color:#f1f5f9">Antiagregación</strong> — ${ea.motivo}</p>
+      ${d.etiologiaCardioembólica===true?`<p style="margin:0 0 8px">✅ <strong style="color:#f1f5f9">Anticoagulación</strong> — Fuente cardioembólica identificada. ${c.inicioAC||""} (ESO/EHRA 2023, NIHSS ${nihssN}).</p>`:""}
+      <p style="margin:0 0 8px">📊 <strong style="color:#f1f5f9">Riesgo hemorrágico</strong> — ${c.riesgoHem.label} (${c.scoreHem}/5).${c.scoreHem>=4?" ⚠️ Alerta: riesgo alto.":""}</p>
+      <p style="margin:0 0 8px">🎯 <strong style="color:#f1f5f9">Pronóstico funcional</strong> — ${c.pronostico.label}. ${c.pronostico.desc}</p>
+      <p style="margin:0">📋 <strong style="color:#f1f5f9">Estatinas</strong> — inicio precoz independiente del LDL. Objetivo &lt;55 mg/dL (ESC 2021, AHA/ASA 2026).</p>
+    </div>
+  </div>`;
+
+  h+=`<div class="footer-app">⚕️ Herramienta de apoyo a la decisión clínica para profesionales sanitarios.<br>
+    Validada según Guías ESO 2021/2023 · AHA/ASA 2026 · WAKE-UP · EXTEND · DAWN/DEFUSE-3 · SEN · SEMES<br>
+    No sustituye el juicio clínico del facultativo responsable. Verificar datos antes de prescribir.<br>
+    Farmacia Hospitalaria · Hospital Universitario Puerto Real</div>`;
+  h+=`<button onclick="resetAll()" style="width:100%;margin-top:16px;padding:14px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#94a3b8;font-size:15px;font-weight:600">🔄 Nuevo Paciente</button>`;
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER PRINCIPAL
+// ═══════════════════════════════════════════════════════
+function render(){
+  const app = document.getElementById("app");
+  const pct = (step/4)*100;
+  let h = "";
+
+  h+=`<div style="text-align:center;font-weight:bold;margin-bottom:16px;color:#e2e8f0;line-height:1.6;letter-spacing:0.5px">
+    <div style="font-size:20px;letter-spacing:2px;color:#f1f5f9">FARMACIA HOSPITALARIA</div>
+    <div style="font-size:16px;letter-spacing:1px;color:#94a3b8">HOSPITAL UNIVERSITARIO PUERTO REAL</div>
+  </div>
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="display:inline-flex;align-items:center;gap:10px;background:#0f172a;border:1px solid #1e293b;border-radius:40px;padding:8px 20px;margin-bottom:12px">
+      <span style="font-size:18px">🧠</span>
+      <span style="font-size:13px;font-weight:700;color:#0ea5e9;letter-spacing:1px">ICTUS ISQUÉMICO AGUDO</span>
+    </div>
+    <h1>Motor de Decisión Terapéutica</h1>
+    <p style="font-size:13px;color:#64748b;margin:0">Herramienta clínica para profesionales sanitarios · Guías ESO 2023 / AHA-ASA 2026</p>
+  </div>`;
+
+  if(step<5){
+    h+=`<div class="progress-bar-wrap"><div class="progress-steps">`;
+    for(let i=0;i<5;i++){
+      const circ=i<step?"✓":(i+1).toString();
+      const bg=i<=step?"#0ea5e9":"#1e293b", bc=i<=step?"#0ea5e9":"#334155", fc=i<=step?"#fff":"#64748b";
+      h+=`<div class="progress-step"><div class="step-circle" style="background:${bg};border:2px solid ${bc};color:${fc}">${circ}</div>${step<2?`<div class="step-label" style="color:${i===step?"#0ea5e9":"#64748b"}">${STEPS[i]}</div>`:""}</div>`;
+    }
+    h+=`</div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
+  }
+
+  if(step===0) h+=renderStep0();
+  else if(step===1) h+=renderStep1();
+  else if(step===2) h+=renderStep2();
+  else if(step===3) h+=renderStep3();
+  else if(step===4) h+=renderStep4();
+  else h+=renderStep5();
+
+  if(step<5){
+    const ok=canNext();
+    const btnStyle=ok?"background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;cursor:pointer":"background:#1e293b;color:#475469;cursor:not-allowed";
+    h+=`<div class="nav-btns">
+      ${step>0?`<button class="btn-prev" onclick="prevStep()">← Anterior</button>`:""}
+      <button id="btn-next" onclick="nextStep()" ${ok?"":"disabled"} style="${btnStyle};flex:2;padding:14px;border-radius:10px;font-size:15px;font-weight:700;border:none;transition:all .2s">
+        ${step===4?"Ver Recomendación →":"Siguiente →"}
+      </button>
+    </div>`;
+  }
+
+  h+=`<div class="footer-credit">
+    <div style="font-size:13px;color:#64748b;font-weight:600">Autor: <span style="color:#94a3b8">Yeray Reyes de la Mata</span></div>
+    <div style="font-size:12px;color:#475569">Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+  </div>`;
+
+  app.innerHTML = h;
+}
+
+render();
+</script>
+</body>
+</html>
