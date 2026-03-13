@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Apps clínicas. Yeray Reyes de la Mata. Contacto: ydelamata01@gmail.com</title>
+</head>
+<body>
+
+<h1>Aplicaciones clínicas</h1>
+
+<ul>
+    <li><a href="sepsisClaude/">App Sepsis</a></li>
+    <li><a href="IctusClaude/">App Ictus</a></li>
+</ul>
+
+</body>
+</html>
