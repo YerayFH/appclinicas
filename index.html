@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APP YRM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary-color: #8b5cf6; /* Morado principal */
+    --secondary-color: #ede9fe; /* Fondo del body */
+    --accent-color: #d8b4fe; /* Para autor/contacto */
+    --card-shadow: rgba(0,0,0,0.1);
+    --hover-shadow: rgba(0,0,0,0.2);
+}
+
+/* Reset y fuente */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+
+body {
+    background-color: var(--secondary-color);
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+header .hospital {
+    font-size: 1rem;
+    color: #4c1d95;
+    font-weight: 500;
+}
+header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+    font-weight: 700;
+}
+header .autor {
+    font-size: 1rem;
+    color: var(--accent-color);
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+/* Grid de tarjetas */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Tarjeta */
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px var(--card-shadow);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--hover-shadow);
+}
+
+/* Contenedor del icono con fondo pastel */
+.icon-container {
+    width: 100%;
+    height: 150px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+}
+
+/* Fondo pastel por aplicación */
+.icon-sepsis { background-color: #f3e8ff; } /* lila pastel */
+.icon-ictus { background-color: #fce7f3; } /* rosa pastel */
+
+/* Icono en sí */
+.card img {
+    max-width: 80%;
+    max-height: 80%;
+}
+
+/* Título y botón */
+.card h2 {
+    font-size: 1.1rem;
+    color: #4c1d95;
+    margin-bottom: 0.5rem;
+}
+.card a {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+.card a:hover {
+    background-color: #6d28d9;
+}
+
+/* Footer */
+footer {
+    margin-top: 2rem;
+    color: #777;
+    font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 { font-size: 2rem; }
+    header .hospital, header .autor { font-size: 0.85rem; }
+    .icon-container { height: 120px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="hospital">FARMACIA HOSPITALARIA. HOSPITAL UNIVERSITARIO PUERTO REAL</div>
+    <h1>APP GUÍAS CLÍNICAS</h1>
+    <div class="autor">Autor: Yeray Reyes de la Mata. <br>Contacto: ydelamata01@gmail.com</div>
+</header>
+
+<div class="grid">
+    <!-- Tarjeta App Sepsis -->
+    <div class="card">
+        <div class="icon-container icon-sepsis">
+            <img src="appclinicas/img/bacteria.png" alt="Sepsis Cartoon Bacteria">
+        </div>
+        <h2>Sepsis: diagnóstico y manejo terapéutico</h2>
+        <a href="sepsis/">Código Sepsis</a>
+    </div>
+
+    <!-- Tarjeta App Ictus -->
+    <div class="card">
+        <div class="icon-container icon-ictus">
+            <img src="appclinicas/img/cerebro.png" alt="Ictus Cartoon Cerebro">
+        </div>
+        <h2>Ictus isquémico agudo: motor interactivo de manejo terapéutico</h2>
+        <a href="ictus/">Código Ictus</a>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 Yeray Reyes de la Mata
+</footer>
+
+</body>
+</html>
