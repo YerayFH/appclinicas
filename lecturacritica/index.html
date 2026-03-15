@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lectura Crítica · MBE · HUPR</title>
+<style>
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#222636;
+  --border:#2e3348;--accent:#4f8ef7;--accent2:#7c6af7;
+  --green:#22c55e;--yellow:#f59e0b;--red:#ef4444;
+  --text:#e2e8f0;--muted:#7c8db5;--card:#1e2235;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* BANNER */
+.inst-banner{background:linear-gradient(135deg,#0d1b3e,#1a2f6e);border-bottom:2px solid #2e4a9e;padding:12px 16px;text-align:center;}
+.inst-banner .inst-name{font-size:clamp(12px,3.5vw,15px);font-weight:700;color:#c8d8ff;text-transform:uppercase;letter-spacing:.3px;}
+.inst-banner .inst-sub{font-size:clamp(11px,3vw,13px);color:#8aa4d8;margin-top:4px;}
+.inst-banner a{color:#7eb3f7;text-decoration:none;}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.header-text h1{font-size:clamp(13px,4vw,16px);font-weight:600;}
+.header-text span{font-size:clamp(10px,3vw,12px);color:var(--muted);}
+.back-btn{margin-left:auto;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13px;display:none;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;}
+.back-btn:hover{background:var(--border);}
+
+/* SCREENS */
+.screen{display:none;padding:20px 16px;max-width:860px;margin:0 auto;}
+.screen.active{display:block;}
+
+/* RESUME BANNER */
+#resume-banner{display:none;background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.35);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+#resume-banner p{font-size:13px;color:#7eb3f7;line-height:1.4;}
+#resume-banner .rb-btns{display:flex;gap:8px;flex-shrink:0;}
+#resume-banner button{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;}
+.rb-continue{background:var(--accent);color:#fff;}
+.rb-discard{background:transparent;border:1px solid var(--border)!important;color:var(--muted);}
+
+/* HOME */
+.home-hero{text-align:center;padding:28px 0 22px;}
+.home-hero h2{font-size:clamp(20px,6vw,27px);font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.home-hero p{color:var(--muted);margin-top:10px;font-size:clamp(13px,3.5vw,14px);max-width:500px;margin-inline:auto;line-height:1.6;}
+.study-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px;}
+.study-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 18px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;}
+.study-card:hover,.study-card:active{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 6px 24px rgba(79,142,247,.15);}
+.card-icon{font-size:28px;margin-bottom:10px;}
+.study-card h3{font-size:clamp(14px,4vw,15px);font-weight:600;margin-bottom:6px;}
+.study-card p{font-size:clamp(12px,3vw,13px);color:var(--muted);line-height:1.5;}
+.card-badge{display:inline-block;margin-top:10px;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.badge-blue{background:rgba(79,142,247,.15);color:var(--accent);}
+.badge-purple{background:rgba(124,106,247,.15);color:#a78bfa;}
+.badge-teal{background:rgba(20,184,166,.15);color:#2dd4bf;}
+
+/* STUDY TITLE INPUT */
+.title-input-block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;}
+.title-input-block label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;}
+.title-input-block input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:9px;font-size:14px;outline:none;transition:border-color .2s;}
+.title-input-block input:focus{border-color:var(--accent);}
+.title-input-block input::placeholder{color:var(--muted);}
+
+/* CHECKLIST HEADER */
+.cl-header{margin-bottom:20px;}
+.cl-header h2{font-size:clamp(17px,5vw,21px);font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cl-header p{color:var(--muted);font-size:clamp(12px,3.5vw,13px);margin-top:6px;line-height:1.5;}
+.progress-bar-wrap{background:var(--surface2);border-radius:8px;height:7px;margin-top:12px;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:8px;transition:width .4s;}
+.progress-label{font-size:12px;color:var(--muted);margin-top:5px;}
+
+/* STICKY SUBNAV */
+#section-subnav{display:none;position:sticky;top:58px;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+#section-subnav::-webkit-scrollbar{display:none;}
+.subnav-inner{display:inline-flex;gap:4px;padding:8px 0;}
+.subnav-btn{background:transparent;border:1px solid transparent;color:var(--muted);padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.subnav-btn:hover{background:var(--surface2);color:var(--text);}
+.subnav-btn.active-sec{background:rgba(79,142,247,.15);border-color:var(--accent);color:var(--accent);}
+
+/* SECTION */
+.section-block{margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.section-title{padding:12px 16px;background:var(--surface2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+.section-warn{font-size:11px;color:var(--red);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:6px 12px;margin:10px 14px 4px;line-height:1.4;}
+
+/* ITEM */
+.cl-item{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;transition:background .2s,border-left .2s;}
+.cl-item:hover{background:rgba(255,255,255,.02);}
+.cl-item.critical-fail{background:rgba(239,68,68,.07);border-left:3px solid var(--red);}
+.item-text{flex:1;min-width:0;}
+.item-q{font-size:clamp(13px,3.8vw,14px);line-height:1.5;font-weight:500;display:flex;align-items:flex-start;gap:6px;}
+.item-critical-tag{font-size:10px;color:var(--red);font-weight:700;letter-spacing:.3px;white-space:nowrap;margin-top:3px;display:inline-block;}
+
+/* HINT TOOLTIP */
+.hint-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:0 2px;flex-shrink:0;line-height:1;transition:color .15s;position:relative;}
+.hint-btn:hover{color:var(--accent);}
+.hint-popup{display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(100% + 6px);background:#2a2f47;border:1px solid var(--border);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--muted);line-height:1.5;width:260px;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.hint-popup::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;background:#2a2f47;border-left:1px solid var(--border);border-top:1px solid var(--border);rotate:45deg;}
+.hint-btn.open .hint-popup{display:block;}
+@media(max-width:480px){.hint-popup{left:auto;right:0;transform:none;width:220px;}}
+
+/* TOGGLE BUTTONS */
+.toggle-wrap{display:flex;gap:5px;flex-shrink:0;margin-top:2px;}
+.tog-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .1s;background:transparent;color:var(--muted);white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.tog-btn:active{transform:scale(.94);}
+.tog-btn.yes.active{background:rgba(34,197,94,.18);border-color:var(--green);color:var(--green);box-shadow:0 0 0 1px rgba(34,197,94,.25);}
+.tog-btn.no.active{background:rgba(239,68,68,.18);border-color:var(--red);color:var(--red);box-shadow:0 0 0 1px rgba(239,68,68,.25);}
+.tog-btn.nc.active{background:rgba(124,106,247,.18);border-color:var(--accent2);color:#a78bfa;box-shadow:0 0 0 1px rgba(124,106,247,.25);}
+.tog-btn:hover:not(.active){background:var(--surface2);border-color:#4a5278;}
+
+/* SUBGROUP */
+.sg-gate{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.sg-gate-inner{padding:14px 16px;display:flex;align-items:flex-start;gap:10px;}
+.sg-score-block-wrap{background:var(--card);border:1px solid var(--border);border-radius:0 0 14px 14px;overflow:hidden;margin-bottom:16px;border-top:none;}
+.sg-score-title{padding:12px 16px;background:var(--surface2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);}
+.sg-table{width:100%;border-collapse:collapse;}
+.sg-table th{text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 16px;border-bottom:1px solid var(--border);}
+.sg-table td{padding:8px 16px;border-bottom:1px solid var(--border);font-size:clamp(12px,3vw,13px);vertical-align:middle;}
+.sg-table tr:last-child td{border-bottom:none;}
+.sg-dim-header td{padding:7px 16px;font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.sg-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:8px;font-size:clamp(12px,3vw,13px);cursor:pointer;width:100%;}
+.sg-score-total{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);font-weight:700;font-size:clamp(12px,3.5vw,14px);flex-wrap:wrap;gap:8px;border-top:1px solid var(--border);}
+.sg-result-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.sg-interp{padding:10px 16px;font-size:12px;color:var(--muted);line-height:1.5;border-top:1px solid var(--border);}
+
+/* RESULTS */
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+.result-card h3{font-size:clamp(15px,4.5vw,17px);font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.meter-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.meter-label{font-size:clamp(10px,3vw,12px);color:var(--muted);width:130px;flex-shrink:0;line-height:1.3;}
+.meter-bar-wrap{flex:1;background:var(--surface2);border-radius:6px;height:8px;overflow:hidden;min-width:40px;}
+.meter-bar{height:100%;border-radius:6px;transition:width .6s;}
+.meter-pct{font-size:12px;font-weight:700;width:34px;text-align:right;flex-shrink:0;}
+.verdict-box{border-radius:11px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:flex-start;gap:12px;}
+.verdict-icon{font-size:30px;flex-shrink:0;}
+.verdict-label{font-size:clamp(17px,5vw,21px);font-weight:800;}
+.verdict-desc{font-size:clamp(12px,3.2vw,13px);margin-top:4px;line-height:1.5;}
+.verdict-high{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);}
+.verdict-med{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);}
+.verdict-low{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);}
+.sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+.sw-card{background:var(--surface2);border-radius:10px;padding:13px;}
+.sw-card h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.sw-card h4.str{color:var(--green);}
+.sw-card h4.weak{color:var(--red);}
+.sw-card h4.nc-h{color:#a78bfa;}
+.sw-item{font-size:clamp(11px,3vw,12px);color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border);line-height:1.4;display:flex;gap:5px;}
+.sw-item:last-child{border-bottom:none;}
+
+/* ACTIONS */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;padding-bottom:32px;}
+.btn{padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-size:clamp(13px,3.5vw,14px);font-weight:600;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.btn-primary:hover{opacity:.9;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--surface2);}
+.btn-danger{background:transparent;border:1px solid rgba(239,68,68,.4);color:var(--red);}
+.btn-danger:hover{background:rgba(239,68,68,.1);}
+
+/* MOBILE */
+@media(max-width:520px){
+  .study-cards{grid-template-columns:1fr;}
+  .sw-grid{grid-template-columns:1fr;}
+  .sg-table thead{display:none;}
+  .sg-table td{display:block;border-bottom:none;padding:5px 14px;}
+  .sg-table tr{border-bottom:1px solid var(--border);display:block;padding:6px 0;}
+  .sg-table tr:last-child{border-bottom:none;}
+}
+@media(max-width:380px){.tog-btn{padding:5px 7px;font-size:11px;}}
+
+@media print{
+  .inst-banner,header,#section-subnav,.back-btn,.action-row,.tog-btn,.sg-select,#screen-home,#screen-checklist{display:none!important;}
+  body{background:#fff;color:#000;}
+  .screen{display:none!important;}
+  #screen-results{display:block!important;padding:0;max-width:100%;}
+  .result-card{border:1px solid #ccc;background:#fff;break-inside:avoid;}
+  .verdict-box{border:1px solid #ccc;}
+  .sw-card{background:#f5f5f5;}
+}
+</style>
+</head>
+<body>
+
+<div class="inst-banner">
+  <div class="inst-name">🏥 Farmacia Hospitalaria · Hospital Universitario Puerto Real</div>
+  <div class="inst-sub">Autor: Yeray Reyes de la Mata &nbsp;·&nbsp; <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+</div>
+
+<header>
+  <div class="logo">🔬</div>
+  <div class="header-text">
+    <h1>Lectura Crítica · MBE</h1>
+    <span id="header-sub">Evaluación de Literatura Médica</span>
+  </div>
+  <button class="back-btn" id="backBtn" onclick="goHome()">← Inicio</button>
+</header>
+
+<div id="section-subnav"><div class="subnav-inner" id="subnav-inner"></div></div>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+
+  <div class="home-hero">
+    <h2>Evaluación de Evidencia Clínica</h2>
+    <p>Selecciona el tipo de estudio a evaluar. Se cargará el checklist basado en los estándares de lectura crítica en MBE.</p>
+  </div>
+  <div class="study-cards">
+    <div class="study-card" onclick="loadChecklist('rct')">
+      <div class="card-icon">🧪</div>
+      <h3>Ensayo Clínico Aleatorizado</h3>
+      <p>Validez interna, relevancia clínica, validez externa y análisis de subgrupos según criterios MBE.</p>
+      <span class="card-badge badge-blue">ECA + Subgrupos</span>
+    </div>
+    <div class="study-card" onclick="loadChecklist('nma')">
+      <div class="card-icon">🕸️</div>
+      <h3>Metanálisis en Red</h3>
+      <p>Auditoría completa según PRISMA-NMA: geometría, transitividad, consistencia y modelado estadístico.</p>
+      <span class="card-badge badge-purple">PRISMA-NMA</span>
+    </div>
+    <div class="study-card" onclick="loadChecklist('genesis')">
+      <div class="card-icon">🔗</div>
+      <h3>Comparación Indirecta</h3>
+      <p>Checklist GENESIS para comparaciones indirectas ajustadas: similitud, transitividad e inconsistencia.</p>
+      <span class="card-badge badge-teal">GENESIS</span>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="screen" id="screen-checklist">
+  <div class="cl-header">
+    <h2 id="cl-title"></h2>
+    <p id="cl-desc"></p>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0 de 0 ítems respondidos</div>
+  </div>
+  <div class="title-input-block">
+    <label for="studyTitleInput">📄 Título del estudio evaluado</label>
+    <input type="text" id="studyTitleInput" placeholder="Introduce el título del artículo o estudio..." autocomplete="off" oninput="saveState()">
+  </div>
+  <div id="checklist-body"></div>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="showResults()">Ver Resultados →</button>
+    <button class="btn btn-outline" onclick="resetChecklist()">Reiniciar</button>
+    <button class="btn btn-danger" onclick="clearSaved()">🗑 Limpiar evaluación</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div id="results-body"></div>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="exportHTML()">💾 Descargar informe HTML</button>
+    <button class="btn btn-outline" onclick="copyReport()">📋 Copiar resumen</button>
+    <button class="btn btn-outline" onclick="showChecklist()">← Volver al checklist</button>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const CHECKLISTS={
+rct:{title:"🧪 Ensayo Clínico Aleatorizado",icon:"🧪",
+  desc:"Checklist de lectura crítica para ECA con evaluación de validez interna, relevancia clínica y validez externa (MBE estándar).",
+  sections:[
+    {id:"s0",title:"Bloque I — Validez Interna",icon:"🏗️",
+     warn:"⚠️ CRÍTICO: Una respuesta 'No' en los ítems marcados invalida el estudio según los estándares MBE.",
+     items:[
+      {q:"¿Es un ensayo clínico aleatorizado y controlado (ECA)?",hint:"Debe existir asignación aleatoria y un grupo control activo o placebo.",critical:true},
+      {q:"¿La pregunta de investigación está claramente definida con formato PICO?",hint:"Población, Intervención, Comparador y Outcome deben estar explicitados.",critical:true},
+      {q:"¿La asignación fue verdaderamente aleatoria con ocultamiento adecuado de la secuencia?",hint:"El ocultamiento previene el sesgo de selección. Verificar método (tabla de números aleatorios, informático, etc.).",critical:true},
+      {q:"¿El seguimiento de pacientes fue completo hasta el final del estudio?",hint:"Pérdidas >20% o diferencial entre grupos compromete la validez. Verificar diagrama de flujo CONSORT.",critical:true},
+      {q:"¿Se realizó cegamiento del paciente, investigador y evaluador?",hint:"El cegamiento previene el sesgo de información y expectativas. Declarar quién fue cegado."},
+      {q:"¿Están balanceadas las características basales entre los grupos al inicio?",hint:"Verificar tabla de características basales; diferencias sistemáticas sugieren fallo en la aleatorización."},
+      {q:"¿Recibieron ambos grupos el mismo trato excepto en la intervención evaluada?",hint:"Cointervenciones asimétricas o diferencias en seguimiento constituyen amenazas a la validez interna."},
+      {q:"¿Se realizó análisis por intención de tratar (ITT)?",hint:"El análisis ITT preserva la aleatorización. Verificar manejo de pérdidas (LOCF, imputación múltiple, etc.)."},
+    ]},
+    {id:"s1",title:"Bloque II — Relevancia Clínica",icon:"📊",items:[
+      {q:"¿La variable principal es una variable dura clínicamente relevante (mortalidad, morbilidad grave)?",hint:"Preferir variables duras sobre subrogadas. Si es subrogada, verificar validación como sustituta."},
+      {q:"¿Es relevante la magnitud del efecto obtenido (no solo la significación estadística)?",hint:"Distinguir entre significación estadística (p<0.05) y relevancia clínica. Calcular NNT."},
+      {q:"¿Los resultados se presentan con medidas de precisión adecuadas (intervalos de confianza)?",hint:"IC que rozan la unidad (ratios) o el cero (diferencias absolutas) sugieren beneficio marginal."},
+      {q:"¿Se midieron y reportaron variables de seguridad (efectos adversos, eventos serios)?",hint:"La seguridad es tan importante como la eficacia. Verificar duración de seguimiento para capturar eventos tardíos."},
+      {q:"¿Se calcula o puede calcularse el NNT (Número Necesario a Tratar)?",hint:"NNT = 1/RAR (Reducción Absoluta del Riesgo). Permite cuantificar el esfuerzo terapéutico."},
+      {q:"¿Se reportan resultados secundarios de manera coherente con el objetivo principal?",hint:"Multiplicidad de variables secundarias sin corrección puede generar falsos positivos."},
+    ]},
+    {id:"s2",title:"Bloque III — Validez Externa",icon:"🌍",items:[
+      {q:"¿Son los pacientes del estudio similares a los de mi práctica clínica habitual?",hint:"Verificar criterios de inclusión/exclusión. Estudios muy restrictivos tienen limitada generalización."},
+      {q:"¿Está descrito el flujo de pacientes y la proporción excluida antes de la aleatorización?",hint:"Una alta proporción de excluidos reduce la representatividad de la muestra."},
+      {q:"¿El tratamiento del grupo control es el estándar de cuidado actual en mi entorno?",hint:"Un comparador obsoleto infla artificialmente el beneficio de la intervención."},
+      {q:"¿El balance beneficio/riesgo es favorable para la población específica analizada?",hint:"Evaluar NNT vs NNH (Número Necesario para Daño). El balance depende del contexto clínico."},
+      {q:"¿Se declaran transparentemente las fuentes de financiación (potencial conflicto de interés)?",hint:"Los ensayos financiados por la industria muestran resultados positivos con mayor frecuencia."},
+    ]},
+  ],
+  hasSubgroupGate:true
+},
+nma:{title:"🕸️ Metanálisis en Red (NMA)",icon:"🕸️",
+  desc:"Auditoría científica basada en PRISMA-NMA: metodología, geometría de red, transitividad, consistencia, modelado estadístico e integridad del reporte.",
+  sections:[
+    {id:"n0",title:"Módulo 1 — Identificación y Rigor",icon:"📋",items:[
+      {q:"¿Se identifica explícitamente el estudio como Metanálisis en Red en el título y resumen?",hint:"Transparencia en la identificación según Ítem 1 PRISMA-NMA."},
+      {q:"¿Existe un protocolo registrado previamente (PROSPERO u otro registro)?",hint:"El registro previo previene el sesgo de confirmación y el cherry-picking de outcomes."},
+      {q:"¿Se describe el PICOS completo y se justifica por qué se realiza un NMA?",hint:"La justificación del NMA debe basarse en la ausencia de comparaciones directas suficientes."},
+      {q:"¿La estrategia de búsqueda es exhaustiva, multi-base y reproducible?",hint:"Mínimo: MEDLINE, EMBASE, Cochrane CENTRAL. Verificar búsqueda de literatura gris."},
+      {q:"¿Los criterios de elegibilidad de estudios son claros y reproducibles?",hint:"Criterios de inclusión/exclusión bien definidos para población, intervención, comparadores y outcomes."},
+      {q:"¿Se justifica clínicamente la definición y agrupación de nodos (fusión de dosis o fármacos)?",hint:"⚠️ Fusionar nodos sin justificación clínica sólida introduce heterogeneidad artificial.",critical:true},
+      {q:"¿Se aborda explícitamente el manejo de ensayos de múltiples brazos (multi-arm trials)?",hint:"La omisión del manejo correcto de correlaciones en multi-arm trials compromete la validez del modelo."},
+    ]},
+    {id:"n1",title:"Módulo 2 — Geometría de Red",icon:"🗺️",items:[
+      {q:"¿Se presenta un gráfico de la red (network graph) que visualice su geometría?",hint:"El nodo representa el tratamiento; la arista representa la comparación directa disponible."},
+      {q:"¿Se describen métricas de la red: diversidad, co-ocurrencia y conectividad?",hint:"Una red con baja diversidad o pocas conexiones depende excesivamente de comparaciones indirectas."},
+      {q:"¿Se identifican y discuten explícitamente las brechas de evidencia (evidence gaps) en la red?",hint:"La ausencia de bucles cerrados en pares clave limita la capacidad de evaluar consistencia."},
+      {q:"¿Se evalúa la homofilia (tendencia a comparar fármacos de la misma clase)?",hint:"Alta homofilia puede sesgar los comparadores seleccionados y afectar la jerarquía de tratamientos."},
+    ]},
+    {id:"n2",title:"Módulo 3 — Transitividad y Consistencia",icon:"⚖️",
+     warn:"⚠️ CRÍTICO: El fallo en transitividad o consistencia invalida los resultados del NMA para uso clínico.",
+     items:[
+      {q:"¿Se evalúa explícitamente la transitividad (equilibrio de modificadores de efecto entre comparaciones)?",hint:"Verificar que los modificadores del efecto (severidad, edad, comorbilidades, dosis) estén balanceados.",critical:true},
+      {q:"¿Se usan métodos locales (node-splitting) para evaluar la inconsistencia en comparaciones específicas?",hint:"El node-splitting separa la evidencia directa e indirecta y testa si son estadísticamente compatibles.",critical:true},
+      {q:"¿Se usan métodos globales para evaluar la consistencia de toda la red?",hint:"Test de inconsistencia global (Q de Cochran para NMA, diseño-diagnóstico de incoherencia)."},
+      {q:"¿Se reportan y justifican las discrepancias entre evidencia directa e indirecta detectadas?",hint:"Una inconsistencia significativa no explicada invalida los rankings del NMA para ese par."},
+    ]},
+    {id:"n3",title:"Módulo 4 — Modelado Estadístico",icon:"🧮",items:[
+      {q:"¿Se especifica claramente el modelo estadístico (frecuentista o bayesiano) y se justifica la elección?",hint:"Los modelos bayesianos requieren declarar y justificar las distribuciones a priori (priors)."},
+      {q:"¿Se detalla la estructura de varianza (heterogeneidad τ² asumida)?",hint:"La asunción de τ² común puede ser inadecuada si existe gran variabilidad entre comparaciones."},
+      {q:"¿Los rankings (SUCRA/P-scores) incluyen medidas de incertidumbre (intervalos de credibilidad)?",hint:"⚠️ Un ranking sin IC es inutilizable: si el IC del 'número 1' se solapa con el 'número 5', la superioridad no está demostrada."},
+      {q:"¿Se presentan League Tables y/o Forest Plots para visualizar la magnitud del efecto?",hint:"Las League Tables permiten ver todos los pares de comparaciones con sus estimados e IC de forma simultánea."},
+      {q:"¿Se realizaron análisis de sensibilidad que testaran la robustez de los resultados?",hint:"Mínimo: análisis excluyendo estudios de alto riesgo de sesgo y análisis de sensibilidad a los priors."},
+      {q:"¿Se evalúa y reporta la heterogeneidad estadística del NMA (τ², I²)?",hint:"Alta heterogeneidad inexplicada obliga a usar modelos de efectos aleatorios."},
+    ]},
+    {id:"n4",title:"Módulo 5 — Integridad del Reporte",icon:"🔐",items:[
+      {q:"¿La discusión aborda explícitamente las limitaciones de la geometría y los supuestos del NMA?",hint:"Un NMA que no critica su propia red no puede considerarse un reporte de alta integridad."},
+      {q:"¿Se evalúa el sesgo de publicación de la red (funnel plots asimétricos o pruebas estadísticas)?",hint:"El sesgo de publicación en redes complejas es difícil de detectar pero obligatorio intentarlo."},
+      {q:"¿Se declaran transparentemente las fuentes de financiación y los potenciales conflictos de interés?",hint:"⚠️ NMA financiados por fabricantes tienen riesgo elevado de sesgo en la construcción de nodos."},
+      {q:"¿Los autores son autocríticos respecto a las brechas de evidencia y la extrapolabilidad?",hint:"Una discusión que solo presenta fortalezas y minimiza limitaciones es una señal de alerta."},
+    ]},
+  ],
+  hasSubgroupGate:false
+},
+genesis:{title:"🔗 Comparación Indirecta Ajustada (GENESIS)",icon:"🔗",
+  desc:"Checklist de lectura crítica para comparaciones indirectas ajustadas basado en la guía GENESIS.",
+  sections:[
+    {id:"g0",title:"Fase I — Triaje y Justificación",icon:"🚦",
+     warn:"⚠️ PARAR si: el método NO es ajustado, falta información metodológica esencial, o las medidas de resultado no son comparables.",
+     items:[
+      {q:"¿Se ha valorado la existencia de comparaciones directas (head-to-head) y se justifica su ausencia?",hint:"Si existen comparaciones directas, la CI debe actuar como control de coherencia. Una discrepancia no explicada es señal roja mayor.",critical:true},
+      {q:"¿El método de comparación es ajustado por comparador común (Bucher, NMA) y NO una comparación naïve?",hint:"Las comparaciones no ajustadas (entre brazos aislados de distintos estudios) carecen de validez metodológica.",critical:true},
+      {q:"¿El PICO está claramente definido (Población, Intervención, Comparador, Outcome)?",hint:"La ausencia de un PICO explícito impide evaluar la pertinencia y reproducibilidad del análisis."},
+      {q:"¿La medida de resultado es el outcome principal más relevante para la toma de decisiones?",hint:"Variables subrogadas sin evidencia de correlación con outcomes clínicos no deben usarse para decisiones de financiación."},
+      {q:"¿La comparación incluye la alternativa terapéutica más relevante para el entorno clínico/sanitario local?",hint:"Una CI que excluye el principal competidor real del fármaco en el mercado local tiene aplicabilidad limitada."},
+    ]},
+    {id:"g1",title:"Fase II — Búsqueda y Selección",icon:"🔎",items:[
+      {q:"¿Se utilizaron métodos sistemáticos y reproducibles para localizar estudios relevantes?",hint:"Mínimo: MEDLINE, EMBASE, Cochrane. Verificar fecha de búsqueda y ausencia de restricciones de idioma."},
+      {q:"¿La estrategia de búsqueda está descrita con suficiente detalle para ser reproducida?",hint:"La reproducibilidad es el estándar de oro. Ausencia de la estrategia completa reduce la confianza."},
+      {q:"¿Los criterios de inclusión/exclusión de estudios están predefinidos y son razonables?",hint:"Criterios definidos post hoc o que excluyen estudios desfavorables sugieren cherry-picking de evidencia."},
+      {q:"¿Se presenta un diagrama de flujo (PRISMA) que muestre la selección de estudios?",hint:"El diagrama de flujo permite auditar la selección y detectar exclusiones injustificadas."},
+      {q:"¿El número de comparadores intermedios entre A y B es ≤ 2?",hint:"Más de dos comparadores intermedios genera IC excesivamente amplios que reducen la fiabilidad a BAJA."},
+      {q:"¿Los datos de eficacia provienen exclusivamente de ECA bien diseñados?",hint:"La inclusión de estudios observacionales para inferir eficacia relativa reduce la fiabilidad automáticamente a BAJA."},
+    ]},
+    {id:"g2",title:"Fase III — Similitud y Transitividad",icon:"⚖️",
+     warn:"⚠️ CRÍTICO: El fallo en transitividad invalida los resultados de la comparación indirecta.",
+     items:[
+      {q:"¿Son similares los criterios de inclusión/exclusión y los modificadores del efecto entre los estudios combinados?",hint:"Los modificadores de efecto (severidad basal, edad, comorbilidades, línea de tratamiento) deben estar balanceados.",critical:true},
+      {q:"¿La variable de resultado se mide con la misma definición y en el mismo horizonte temporal en todos los estudios?",hint:"Comparar respuesta a 12 semanas vs 24 semanas o definiciones diferentes de remisión invalida la variable común.",critical:true},
+      {q:"¿El comparador común tiene la misma posología, duración y cointervenciones en todos los estudios?",hint:"El uso de 'fármacos equivalentes' como comparador común eleva drásticamente el riesgo de sesgo."},
+      {q:"¿El efecto observado en los grupos control es cuantitativamente similar entre los estudios combinados?",hint:"Diferencias importantes en la tasa de eventos del grupo placebo/control sugieren poblaciones no comparables."},
+      {q:"¿Se realizaron análisis de subgrupos o metarregresión para explorar fuentes de heterogeneidad?",hint:"Ante diferencias en modificadores de efecto, los análisis de sensibilidad y metarregresión son obligatorios."},
+    ]},
+    {id:"g3",title:"Fase IV — Rigor Estadístico",icon:"📐",items:[
+      {q:"¿Se comparan los efectos relativos respecto al grupo control de cada estudio (ajuste correcto)?",hint:"El ajuste por comparador común preserva la aleatorización. No hacerlo equivale a una comparación naïve.",critical:true},
+      {q:"¿Se testa la inconsistencia con evidencia directa disponible (node-splitting u otra prueba formal)?",hint:"Si existen comparaciones directas, la inconsistencia entre evidencia directa e indirecta debe testarse formalmente."},
+      {q:"¿Se usan modelos de efectos aleatorios cuando existe heterogeneidad estadística significativa?",hint:"Ignorar la heterogeneidad y usar efectos fijos produce IC artificialmente estrechos."},
+      {q:"¿Se presentan análisis de sensibilidad que exploren escenarios alternativos?",hint:"La robustez de los resultados ante variaciones en los supuestos del análisis es fundamental."},
+      {q:"¿Los resultados se presentan con IC que reflejen adecuadamente la incertidumbre?",hint:"La interpretación nunca debe basarse en solapamiento visual de IC; requiere la estimación formal del efecto relativo."},
+      {q:"¿Se ha descartado manipulación o extrapolación inadecuada de los datos de partida?",hint:"Verificar que los datos extraídos de los estudios fuente sean los correctos y no hayan sido transformados sin justificación."},
+    ]},
+    {id:"g4",title:"Fase V — Validez Externa",icon:"🌐",items:[
+      {q:"¿Son los resultados generalizables a la población local del sistema de salud que los evalúa?",hint:"Considerar diferencias en práctica clínica local, etnias, estándares de cuidado y disponibilidad de alternativas."},
+      {q:"¿Se discuten explícitamente las limitaciones metodológicas de la comparación indirecta?",hint:"Un informe que no reconoce sus propias limitaciones tiene integridad cuestionable."},
+      {q:"¿Se declaran las fuentes de financiación y los conflictos de interés de los autores?",hint:"Las CI financiadas por fabricantes tienen alto riesgo de sesgo en la construcción del análisis."},
+    ]},
+  ],
+  hasSubgroupGate:false
+}
+};
+
+const SG_ASSOC=[
+  {label:"1. Interacción (p de interacción)",opts:[["probable","Probable — p < 0,05"],["dudosa","Dudosa — p ≥ 0,05 pero < 0,1"],["nula","Nula — sin diferencia significativa"]]},
+  {label:"2. Preespecificación en protocolo original",opts:[["probable","Probable — Sí, preespecificado"],["nula","Nula — Post hoc o desconocido"]]},
+  {label:"3. Tamaño muestral del subgrupo",opts:[["probable","Probable — N > 50 por rama (>100 total)"],["dudosa","Dudosa — N < 50 en alguna rama"]]},
+  {label:"4. Multiplicidad de factores analizados",opts:[["probable","Probable — 1-9 factores preespecificados"],["dudosa","Dudosa — 10 o más factores"]]},
+  {label:"5. Resultado global del ensayo",opts:[["probable","Probable — Ensayo global positivo"],["dudosa","Dudosa — Solo positivo en subgrupo"]]},
+];
+const SG_PLAUSI=[{label:"II. Plausibilidad biológica previa",opts:[["probable","Probable — Hipótesis sólida en literatura previa"],["posible","Posible — Hipótesis sin base previa clara"],["nula","Nula — Sin hipótesis o hipótesis dudosa"]]}];
+const SG_CONSIS=[{label:"III. Consistencia con otros estudios/metanálisis",opts:[["probable","Probable — Confirmado en estudios similares o metaanálisis"],["posible","Posible — Resultados compatibles (mismo sentido)"],["nula","Nula — Sin estudios disponibles o inconsistencia interna"]]}];
+const SG_PTS={probable:3,posible:2,dudosa:0,nula:-3};
+
+// ===================== STATE =====================
+let currentType=null,answers={},sgGateAnswer=null,sgAssoc={},sgPlausi={},sgConsis={};
+const LS_KEY='mbe_lc_state';
+
+// ===================== PERSISTENCE =====================
+function saveState(){
+  if(!currentType)return;
+  const state={
+    type:currentType,
+    answers,
+    studyTitle:document.getElementById('studyTitleInput').value||'',
+    sgGateAnswer,sgAssoc,sgPlausi,sgConsis,
+    sgResult:window._sgResult||null
+  };
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw)return null;
+    return JSON.parse(raw);
+  }catch(e){return null;}
+}
+
+function clearSaved(){
+  if(!confirm('¿Seguro que quieres limpiar la evaluación? Se borrarán todos los datos guardados.'))return;
+  try{localStorage.removeItem(LS_KEY);}catch(e){}
+  resetChecklist();
+}
+
+function resumeSaved(){
+  const state=loadState();
+  if(!state||!state.type)return;
+  document.getElementById('resume-banner').style.display='none';
+  loadChecklist(state.type,state);
+}
+
+function discardSaved(){
+  try{localStorage.removeItem(LS_KEY);}catch(e){}
+  document.getElementById('resume-banner').style.display='none';
+}
+
+// ===================== NAV =====================
+function goHome(){
+  showScreen('home');
+  document.getElementById('backBtn').style.display='none';
+  document.getElementById('header-sub').textContent='Evaluación de Literatura Médica';
+  document.getElementById('section-subnav').style.display='none';
+}
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+n).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showChecklist(){showScreen('checklist');}
+function showResults(){buildResults();showScreen('results');}
+
+// ===================== SUBNAV =====================
+let _subnavThrottle=false;
+function buildSubnav(sections){
+  const nav=document.getElementById('section-subnav');
+  const inner=document.getElementById('subnav-inner');
+  inner.innerHTML='';
+  sections.forEach(sec=>{
+    const btn=document.createElement('button');
+    btn.className='subnav-btn';
+    btn.id='snb_'+sec.id;
+    btn.textContent=`${sec.icon} ${sec.title.replace(/^[^—]+—\s*/,'').split('(')[0].trim()}`;
+    btn.onclick=()=>{
+      const el=document.getElementById('section_'+sec.id);
+      if(el){const y=el.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top:y,behavior:'smooth'});}
+    };
+    inner.appendChild(btn);
+  });
+  nav.style.display='block';
+}
+
+function updateSubnavActive(){
+  if(_subnavThrottle)return;
+  _subnavThrottle=true;
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{_subnavThrottle=false;},100);
+    const secs=CHECKLISTS[currentType]?.sections||[];
+    let lastVisible=null;
+    secs.forEach(sec=>{
+      const el=document.getElementById('section_'+sec.id);
+      if(el){const top=el.getBoundingClientRect().top;if(top<=120)lastVisible=sec.id;}
+    });
+    document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.remove('active-sec'));
+    if(lastVisible){const btn=document.getElementById('snb_'+lastVisible);if(btn)btn.classList.add('active-sec');}
+  });
+}
+
+// ===================== LOAD =====================
+function loadChecklist(type,savedState=null){
+  currentType=type;
+  answers={};sgGateAnswer=null;sgAssoc={};sgPlausi={};sgConsis={};window._sgResult=null;
+  const cl=CHECKLISTS[type];
+  document.getElementById('cl-title').textContent=cl.title;
+  document.getElementById('cl-desc').textContent=cl.desc;
+  document.getElementById('header-sub').textContent=cl.title;
+  document.getElementById('backBtn').style.display='flex';
+  document.getElementById('studyTitleInput').value='';
+  const body=document.getElementById('checklist-body');
+  body.innerHTML='';
+
+  cl.sections.forEach((sec,si)=>{
+    const block=document.createElement('div');
+    block.className='section-block';
+    block.id='section_'+sec.id;
+    let html=`<div class="section-title"><span>${sec.icon}</span>${sec.title}</div>`;
+    if(sec.warn)html+=`<div class="section-warn">${sec.warn}</div>`;
+    sec.items.forEach((item,ii)=>{
+      const id=`${si}_${ii}`;
+      html+=`<div class="cl-item" id="item_${id}">
+        <div class="item-text">
+          <div class="item-q">
+            <span>${item.q}</span>
+            ${item.hint?`<button class="hint-btn" onclick="toggleHint(this)" aria-label="Ver explicación técnica" aria-expanded="false">ⓘ<div class="hint-popup" role="tooltip">💡 ${item.hint}</div></button>`:''}
+          </div>
+          ${item.critical?`<span class="item-critical-tag">🔴 ÍTEM CRÍTICO</span>`:''}
+        </div>
+        <div class="toggle-wrap">
+          <button class="tog-btn yes" onclick="setAnswer('${id}','yes',this)">Sí</button>
+          <button class="tog-btn no" onclick="setAnswer('${id}','no',this)">No</button>
+          <button class="tog-btn nc" onclick="setAnswer('${id}','nc',this)">NC</button>
+        </div>
+      </div>`;
+    });
+    block.innerHTML=html;
+    body.appendChild(block);
+  });
+
+  if(cl.hasSubgroupGate){body.appendChild(buildSGGate());}
+  buildSubnav(cl.sections);
+
+  // Restore saved state
+  if(savedState){
+    if(savedState.studyTitle)document.getElementById('studyTitleInput').value=savedState.studyTitle;
+    if(savedState.answers){
+      answers=savedState.answers;
+      Object.entries(answers).forEach(([id,val])=>{
+        const itemEl=document.getElementById('item_'+id);
+        if(itemEl){
+          const btn=itemEl.querySelector('.tog-btn.'+val);
+          if(btn){
+            btn.classList.add('active');
+            const secIdx=parseInt(id.split('_')[0]);
+            const itmIdx=parseInt(id.split('_')[1]);
+            const item=cl.sections[secIdx]?.items[itmIdx];
+            if(val==='no'&&item?.critical)itemEl.classList.add('critical-fail');
+          }
+        }
+      });
+    }
+    if(savedState.sgGateAnswer&&cl.hasSubgroupGate){
+      sgAssoc=savedState.sgAssoc||{};
+      sgPlausi=savedState.sgPlausi||{};
+      sgConsis=savedState.sgConsis||{};
+      window._sgResult=savedState.sgResult||null;
+      setSGGate(savedState.sgGateAnswer,true);
+      // Restore sg selects after a tick
+      setTimeout(()=>{
+        document.querySelectorAll('.sg-select').forEach((sel,i)=>{
+          const prefix=sel.getAttribute('data-prefix');
+          const idx=parseInt(sel.getAttribute('data-idx'));
+          if(prefix==='a'&&sgAssoc[idx])sel.value=sgAssoc[idx];
+          else if(prefix==='p'&&sgPlausi[idx])sel.value=sgPlausi[idx];
+          else if(prefix==='c'&&sgConsis[idx])sel.value=sgConsis[idx];
+        });
+        calcSG();
+      },50);
+    }
+  }
+
+  updateProgress();
+  showScreen('checklist');
+  window.addEventListener('scroll',updateSubnavActive,{passive:true});
+}
+
+// ===================== HINT TOGGLE =====================
+function toggleHint(btn){
+  document.querySelectorAll('.hint-btn.open').forEach(b=>{if(b!==btn){b.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+  const isOpen=btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded',isOpen?'true':'false');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.hint-btn'))document.querySelectorAll('.hint-btn.open').forEach(b=>{b.classList.remove('open');b.setAttribute('aria-expanded','false');});
+});
+
+// ===================== ANSWER =====================
+function setAnswer(id,val,btn){
+  answers[id]=val;
+  const itemEl=document.getElementById('item_'+id);
+  btn.parentElement.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // Critical fail highlight
+  if(itemEl){
+    const idParts=id.split('_');
+    const si=parseInt(idParts[0]),ii=parseInt(idParts[1]);
+    const item=CHECKLISTS[currentType]?.sections[si]?.items[ii];
+    if(item?.critical&&val==='no') itemEl.classList.add('critical-fail');
+    else itemEl.classList.remove('critical-fail');
+  }
+  updateProgress();
+  saveState();
+}
+
+function updateProgress(){
+  const cl=CHECKLISTS[currentType];
+  let total=0;
+  cl.sections.forEach(s=>total+=s.items.length);
+  const answered=Object.keys(answers).filter(k=>{
+    const [si]=k.split('_').map(Number);
+    return si<cl.sections.length&&answers[k];
+  }).length;
+  const pct=total>0?Math.round(answered/total*100):0;
+  document.getElementById('progressBar').style.width=pct+'%';
+  const yesN=Object.values(answers).filter(v=>v==='yes').length;
+  const noN=Object.values(answers).filter(v=>v==='no').length;
+  const ncN=Object.values(answers).filter(v=>v==='nc').length;
+  document.getElementById('progressLabel').textContent=`${answered} de ${total} ítems respondidos (Sí:${yesN} No:${noN} NC:${ncN}) — ${pct}%`;
+}
+
+function resetChecklist(){
+  answers={};sgGateAnswer=null;sgAssoc={};sgPlausi={};sgConsis={};window._sgResult=null;
+  document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.cl-item').forEach(el=>el.classList.remove('critical-fail'));
+  document.querySelectorAll('.sg-select').forEach(s=>s.value='');
+  const sb=document.getElementById('sg-score-block');if(sb)sb.style.display='none';
+  document.getElementById('studyTitleInput').value='';
+  updateProgress();
+  saveState();
+}
+
+// ===================== SUBGROUP GATE =====================
+function buildSGGate(){
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`
+    <div class="sg-gate" id="sg-gate-wrap">
+      <div class="section-title"><span>🔍</span>Análisis de Subgrupos — ¿Aplica este bloque?</div>
+      <div class="sg-gate-inner">
+        <div class="item-text">
+          <div class="item-q"><span>¿El ensayo realiza análisis de subgrupos?</span></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Si se responde Sí, se desplegará el bloque de validación crítica de subgrupos según criterios MBE.</div>
+        </div>
+        <div class="toggle-wrap">
+          <button class="tog-btn yes" id="sgGateYes" onclick="setSGGate('yes')">Sí</button>
+          <button class="tog-btn no" id="sgGateNo" onclick="setSGGate('no')">No</button>
+        </div>
+      </div>
+    </div>
+    <div id="sg-score-block" style="display:none"></div>`;
+  return wrap;
+}
+
+function setSGGate(val,silent=false){
+  sgGateAnswer=val;
+  document.getElementById('sgGateYes').classList.toggle('active',val==='yes');
+  document.getElementById('sgGateNo').classList.toggle('active',val==='no');
+  const sb=document.getElementById('sg-score-block');
+  if(val==='yes'){
+    sb.style.display='block';
+    if(!sb.innerHTML.trim())sb.innerHTML=buildSGHTML();
+    setTimeout(()=>{const y=sb.getBoundingClientRect().top+window.scrollY-110;window.scrollTo({top:y,behavior:'smooth'});},120);
+  }else{sb.style.display='none';sgAssoc={};sgPlausi={};sgConsis={};window._sgResult=null;}
+  if(!silent)saveState();
+}
+
+function buildSGHTML(){
+  let html=`<div class="sg-score-block-wrap">
+    <div class="sg-score-title">📊 Puntuación de Validez de Subgrupos (MBE)</div>
+    <table class="sg-table"><thead><tr><th>Dimensión</th><th>Criterio</th><th>Valoración</th></tr></thead><tbody>`;
+  html+=`<tr class="sg-dim-header"><td colspan="3">I. Asociación Estadística — se toma el criterio más desfavorable</td></tr>`;
+  SG_ASSOC.forEach((c,i)=>{
+    html+=`<tr><td style="color:var(--muted);font-size:12px">Asociación</td><td>${c.label}</td>
+      <td><select class="sg-select" data-prefix="a" data-idx="${i}" onchange="updSGA(${i},this.value)"><option value="">-- Seleccionar --</option>
+      ${c.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></td></tr>`;
+  });
+  html+=`<tr class="sg-dim-header"><td colspan="3">II. Plausibilidad Biológica</td></tr>`;
+  SG_PLAUSI.forEach((c,i)=>{
+    html+=`<tr><td style="color:var(--muted);font-size:12px">Plausibilidad</td><td>${c.label}</td>
+      <td><select class="sg-select" data-prefix="p" data-idx="${i}" onchange="updSGP(${i},this.value)"><option value="">-- Seleccionar --</option>
+      ${c.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></td></tr>`;
+  });
+  html+=`<tr class="sg-dim-header"><td colspan="3">III. Consistencia</td></tr>`;
+  SG_CONSIS.forEach((c,i)=>{
+    html+=`<tr><td style="color:var(--muted);font-size:12px">Consistencia</td><td>${c.label}</td>
+      <td><select class="sg-select" data-prefix="c" data-idx="${i}" onchange="updSGC(${i},this.value)"><option value="">-- Seleccionar --</option>
+      ${c.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></td></tr>`;
+  });
+  html+=`</tbody></table>
+    <div class="sg-score-total">
+      <span>Total: <strong id="sg-total">--</strong> &nbsp;|&nbsp;
+        Asoc: <span id="sg-a">--</span> &nbsp;
+        Plausi: <span id="sg-p">--</span> &nbsp;
+        Consis: <span id="sg-c">--</span>
+      </span>
+      <span id="sg-verdict" class="sg-result-badge" style="background:rgba(100,100,100,.15);color:var(--muted)">Pendiente</span>
+    </div>
+    <div class="sg-interp" id="sg-interp">Complete todos los criterios para obtener la valoración global.</div>
+  </div>`;
+  return html;
+}
+
+function updSGA(i,v){sgAssoc[i]=v;calcSG();saveState();}
+function updSGP(i,v){sgPlausi[i]=v;calcSG();saveState();}
+function updSGC(i,v){sgConsis[i]=v;calcSG();saveState();}
+
+function calcSG(){
+  const tEl=document.getElementById('sg-total'),vEl=document.getElementById('sg-verdict');
+  const aEl=document.getElementById('sg-a'),pEl=document.getElementById('sg-p'),cEl=document.getElementById('sg-c');
+  const iEl=document.getElementById('sg-interp');
+  if(!tEl)return;
+  const aFull=Object.keys(sgAssoc).length===SG_ASSOC.length&&Object.values(sgAssoc).every(v=>v);
+  const pFull=Object.keys(sgPlausi).length===SG_PLAUSI.length&&Object.values(sgPlausi).every(v=>v);
+  const cFull=Object.keys(sgConsis).length===SG_CONSIS.length&&Object.values(sgConsis).every(v=>v);
+  if(!aFull||!pFull||!cFull){tEl.textContent='--';return;}
+  const aScore=Math.min(...Object.values(sgAssoc).map(v=>SG_PTS[v]??0));
+  const pScore=SG_PTS[sgPlausi[0]]??0;
+  const cScore=SG_PTS[sgConsis[0]]??0;
+  const total=aScore+pScore+cScore;
+  const lbl={probable:'Probable',posible:'Posible',dudosa:'Dudosa',nula:'Nula'};
+  const col={probable:'#22c55e',posible:'#f59e0b',dudosa:'#ef4444',nula:'#6b7280'};
+  const aLbl=Object.keys(SG_PTS).find(k=>SG_PTS[k]===aScore)||'?';
+  if(aEl){aEl.textContent=lbl[aLbl]||aLbl;aEl.style.color=col[aLbl]||'var(--muted)';}
+  if(pEl){pEl.textContent=lbl[sgPlausi[0]];pEl.style.color=col[sgPlausi[0]]||'var(--muted)';}
+  if(cEl){cEl.textContent=lbl[sgConsis[0]];cEl.style.color=col[sgConsis[0]]||'var(--muted)';}
+  let verdict,color,interp;
+  if(total>=7){verdict='PROBABLE';color='#22c55e';interp='✅ Considerar en la práctica clínica mientras no existan ensayos específicos en el subgrupo.';}
+  else if(total>=5){verdict='POSIBLE';color='#f59e0b';interp='⚠️ Aplicar con prudencia. Considerar especialmente si la intervención es tóxica o costosa.';}
+  else if(total>=0){verdict='DUDOSA';color='#ef4444';interp='❌ No debe tenerse en cuenta, salvo excepciones de toxicidad extrema en el comparador.';}
+  else{verdict='NULA';color='#6b7280';interp='🚫 No utilizar. El único resultado válido para estos pacientes es el resultado global del estudio.';}
+  window._sgResult={total,verdict,aLbl,pLbl:sgPlausi[0],cLbl:sgConsis[0]};
+  tEl.textContent=`${total>0?'+':''}${total} / 9`;
+  if(vEl){vEl.textContent=verdict;vEl.style.background=color+'20';vEl.style.color=color;}
+  if(iEl)iEl.textContent=interp;
+}
+
+// ===================== RESULTS =====================
+function getStudyTitle(){return(document.getElementById('studyTitleInput').value||'').trim()||'Sin título especificado';}
+
+function buildResults(){
+  const cl=CHECKLISTS[currentType];
+  const studyTitle=getStudyTitle();
+  let totalItems=0,yesCount=0,noCount=0,ncCount=0,critFails=0;
+  let strengths=[],weaknesses=[],ncItems=[];
+  let sectionData=[];
+  cl.sections.forEach((sec,si)=>{
+    let sYes=0,sNo=0,sNC=0;
+    sec.items.forEach((item,ii)=>{
+      totalItems++;
+      const ans=answers[`${si}_${ii}`];
+      if(ans==='yes'){yesCount++;sYes++;strengths.push({q:item.q});}
+      else if(ans==='no'){noCount++;sNo++;weaknesses.push({q:item.q,critical:item.critical});if(item.critical)critFails++;}
+      else{ncCount++;sNC++;ncItems.push({q:item.q});}
+    });
+    sectionData.push({title:sec.title,icon:sec.icon,yes:sYes,no:sNo,nc:sNC,total:sec.items.length});
+  });
+  const evaluated=yesCount+noCount;
+  const pct=evaluated>0?Math.round(yesCount/evaluated*100):null;
+  let verdict,vClass,vIcon,vDesc;
+  if(evaluated===0){
+    verdict='INFORMACIÓN INSUFICIENTE';vClass='verdict-med';vIcon='❓';
+    vDesc='No se han registrado respuestas Sí/No en ningún ítem. Sin datos suficientes no es posible emitir un juicio sobre la calidad metodológica del estudio.';
+  }else if(critFails>0){verdict='INVALIDADO';vClass='verdict-low';vIcon='🚫';vDesc=`El estudio presenta ${critFails} ítem(s) crítico(s) fallido(s). Esto invalida los resultados independientemente de los demás hallazgos.`;}
+  else if(pct>=75){verdict='CALIDAD ALTA';vClass='verdict-high';vIcon='✅';vDesc=`El estudio cumple el ${pct}% de los criterios evaluados (Sí/No) sin fallos críticos.`;}
+  else if(pct>=50){verdict='CALIDAD MODERADA';vClass='verdict-med';vIcon='⚠️';vDesc=`El estudio cumple el ${pct}% de los criterios evaluados (Sí/No). Presenta debilidades metodológicas a considerar.`;}
+  else{verdict='CALIDAD BAJA';vClass='verdict-low';vIcon='❌';vDesc=`El estudio cumple solo el ${pct}% de los criterios evaluados (Sí/No). Las limitaciones metodológicas son significativas.`;}
+
+  let html=`<div class="result-card">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📄 Estudio evaluado</div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:16px;line-height:1.4;">${studyTitle}</div>
+    <h3>📊 Resumen — ${cl.icon} ${cl.title.replace(/^[^\s]+\s/,'')}</h3>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Fecha: ${new Date().toLocaleDateString('es-ES')} &nbsp;·&nbsp; Evaluado por: Yeray Reyes de la Mata</div>
+    <div class="verdict-box ${vClass}">
+      <div class="verdict-icon">${vIcon}</div>
+      <div><div class="verdict-label">${verdict}</div><div class="verdict-desc">${vDesc}</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Sí: <strong style="color:var(--green)">${yesCount}</strong> &nbsp;·&nbsp; No: <strong style="color:var(--red)">${noCount}</strong> &nbsp;·&nbsp; NC: <strong style="color:#a78bfa">${ncCount}</strong> &nbsp;·&nbsp; Total: ${totalItems} &nbsp;·&nbsp; Sin responder: ${totalItems-yesCount-noCount-ncCount}</div>
+    ${(ncCount/totalItems)>0.5&&evaluated>0?`<div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:9px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#f59e0b;">⚠️ <strong>Nota de fiabilidad:</strong> El ${Math.round(ncCount/totalItems*100)}% de los ítems están marcados como NC. Aunque el veredicto refleja los ítems evaluados, la alta proporción de datos no constatados limita la solidez de las conclusiones.</div>`:''}
+`;
+
+  sectionData.forEach(sd=>{
+    const ev=sd.yes+sd.no;const sp=ev>0?Math.round(sd.yes/ev*100):null;
+    const col=sp===null?'var(--muted)':sp>=75?'var(--green)':sp>=50?'var(--yellow)':'var(--red)';
+    const shortT=sd.title.replace(/^[^—]+—\s*/,'').substring(0,32);
+    html+=`<div class="meter-row">
+      <div class="meter-label">${sd.icon} ${shortT}</div>
+      <div class="meter-bar-wrap"><div class="meter-bar" style="width:${sp??0}%;background:${col}"></div></div>
+      <div class="meter-pct" style="color:${col}">${sp!==null?sp+'%':'NC'}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  const cols=weaknesses.length>0&&strengths.length>0?'1fr 1fr':'1fr';
+  html+=`<div class="result-card"><h3>📋 Fortalezas y Debilidades</h3><div class="sw-grid" style="grid-template-columns:${cols}">`;
+  if(strengths.length>0){
+    html+=`<div class="sw-card"><h4 class="str">✅ Fortalezas (${strengths.length})</h4>`;
+    strengths.forEach(s=>{html+=`<div class="sw-item"><span style="color:var(--green);flex-shrink:0">✓</span>${s.q}</div>`;});
+    html+=`</div>`;
+  }
+  if(weaknesses.length>0){
+    html+=`<div class="sw-card"><h4 class="weak">❌ Debilidades (${weaknesses.length})</h4>`;
+    weaknesses.forEach(w=>{html+=`<div class="sw-item"><span style="color:${w.critical?'var(--red)':'var(--yellow)'};flex-shrink:0">✗</span>${w.critical?'🔴 ':''}${w.q}</div>`;});
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  if(ncItems.length>0){
+    html+=`<div style="margin-top:12px"><div class="sw-card"><h4 class="nc-h">? NC / Sin responder (${ncItems.length})</h4>`;
+    ncItems.forEach(n=>{html+=`<div class="sw-item"><span style="color:#a78bfa;flex-shrink:0">?</span>${n.q}</div>`;});
+    html+=`</div></div>`;
+  }
+  if(!strengths.length&&!weaknesses.length)html+=`<div style="color:var(--muted);font-size:14px;padding:8px 0">No se han respondido ítems con Sí o No.</div>`;
+  html+=`</div>`;
+
+  if(cl.hasSubgroupGate){
+    if(sgGateAnswer==='yes'&&window._sgResult){
+      const r=window._sgResult;
+      const sgCol={PROBABLE:'#22c55e',POSIBLE:'#f59e0b',DUDOSA:'#ef4444',NULA:'#6b7280'}[r.verdict]||'#6b7280';
+      const interps={PROBABLE:'Considerar en la práctica clínica mientras no existan ensayos específicos.',POSIBLE:'Aplicar con prudencia. Especialmente si la intervención es tóxica o costosa.',DUDOSA:'No debe tenerse en cuenta, salvo excepciones de toxicidad extrema.',NULA:'No utilizar. Solo el resultado global del estudio es válido.'};
+      const lbl={probable:'Probable',posible:'Posible',dudosa:'Dudosa',nula:'Nula'};
+      html+=`<div class="result-card"><h3>🔬 Validez del Análisis de Subgrupos</h3>
+        <div class="verdict-box" style="background:${sgCol}15;border:1px solid ${sgCol}40">
+          <div class="verdict-icon">🧩</div>
+          <div><div class="verdict-label" style="color:${sgCol}">${r.verdict}</div>
+          <div class="verdict-desc">Puntuación: ${r.total>0?'+':''}${r.total}/9 &nbsp;·&nbsp; Asoc: ${lbl[r.aLbl]||r.aLbl} | Plausi: ${lbl[r.pLbl]||r.pLbl} | Consis: ${lbl[r.cLbl]||r.cLbl}<br>${interps[r.verdict]}</div>
+          </div>
+        </div></div>`;
+    }else if(sgGateAnswer==='no'){
+      html+=`<div class="result-card"><h3>🔬 Análisis de Subgrupos</h3><div style="color:var(--muted);font-size:14px">El estudio no realiza análisis de subgrupos. No aplica.</div></div>`;
+    }
+  }
+
+  html+=`<div class="result-card"><h3>📝 Conclusión del Evaluador</h3>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+      ${['Recomendado','Recomendado con reservas','No recomendado'].map(opt=>`
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px">
+          <input type="radio" name="conclusion" value="${opt}" style="accent-color:var(--accent)"> ${opt}
+        </label>`).join('')}
+    </div>
+    <textarea id="conclusion-text" placeholder="Justificación técnica del evaluador..."
+      style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px;font-size:13px;resize:vertical;min-height:80px;line-height:1.5;font-family:inherit"></textarea>
+  </div>`;
+
+  document.getElementById('results-body').innerHTML=html;
+}
+
+// ===================== EXPORT HTML =====================
+function exportHTML(){
+  const cl=CHECKLISTS[currentType];
+  const studyTitle=getStudyTitle();
+  const conclusionEl=document.getElementById('conclusion-text');
+  const conclusionText=conclusionEl?conclusionEl.value:'';
+  const conclusionRadio=document.querySelector('input[name="conclusion"]:checked');
+  const conclusionVerdict=conclusionRadio?conclusionRadio.value:'No especificado';
+  let totalItems=0,yesCount=0,noCount=0,ncCount=0,critFails=0;
+  let sectionData=[];
+  let detailRows='';
+  cl.sections.forEach((sec,si)=>{
+    let sYes=0,sNo=0,sNC=0;
+    detailRows+=`<tr><td colspan="2" style="background:#1a2040;color:#7c8db5;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 14px;font-weight:700;">${sec.icon} ${sec.title}</td></tr>`;
+    sec.items.forEach((item,ii)=>{
+      totalItems++;
+      const ans=answers[`${si}_${ii}`];
+      if(ans==='yes'){yesCount++;sYes++;}
+      else if(ans==='no'){noCount++;sNo++;if(item.critical)critFails++;}
+      else{ncCount++;sNC++;}
+      const label=ans==='yes'?'Sí':ans==='no'?'No':'NC';
+      const col=ans==='yes'?'#22c55e':ans==='no'?'#ef4444':'#a78bfa';
+      const bg=ans==='no'&&item.critical?'rgba(239,68,68,.08)':'transparent';
+      detailRows+=`<tr style="background:${bg}"><td style="padding:9px 14px;font-size:13px;border-bottom:1px solid #2e3348;line-height:1.4;">${item.critical?'🔴 ':''}${item.q}</td>
+        <td style="padding:9px 14px;text-align:center;border-bottom:1px solid #2e3348;font-weight:700;color:${col};white-space:nowrap;">${label}</td></tr>`;
+    });
+    sectionData.push({title:sec.title,icon:sec.icon,yes:sYes,no:sNo,nc:sNC});
+  });
+  const evaluated=yesCount+noCount;
+  const pct=evaluated>0?Math.round(yesCount/evaluated*100):null;
+  const pctLabel=pct!==null?pct+'%':'N/A';
+  let verdict,vColor;
+  if(evaluated===0){verdict='INFORMACIÓN INSUFICIENTE';vColor='#f59e0b';}
+  else if(critFails>0){verdict='INVALIDADO';vColor='#ef4444';}
+  else if(pct>=75){verdict='CALIDAD ALTA';vColor='#22c55e';}
+  else if(pct>=50){verdict='CALIDAD MODERADA';vColor='#f59e0b';}
+  else{verdict='CALIDAD BAJA';vColor='#ef4444';}
+
+  let sgSection='';
+  if(cl.hasSubgroupGate){
+    if(sgGateAnswer==='yes'&&window._sgResult){
+      const r=window._sgResult;
+      const sgCol={PROBABLE:'#22c55e',POSIBLE:'#f59e0b',DUDOSA:'#ef4444',NULA:'#6b7280'}[r.verdict]||'#6b7280';
+      const interps={PROBABLE:'Considerar en la práctica clínica mientras no existan ensayos específicos.',POSIBLE:'Aplicar con prudencia. Considerar si la intervención es tóxica o costosa.',DUDOSA:'No debe tenerse en cuenta, salvo toxicidad extrema en el comparador.',NULA:'No utilizar. Solo el resultado global del estudio es válido.'};
+      const lbl={probable:'Probable',posible:'Posible',dudosa:'Dudosa',nula:'Nula'};
+      sgSection=`<div style="background:#1e2235;border:1px solid #2e3348;border-radius:12px;padding:20px;margin-bottom:18px;">
+        <h3 style="font-size:16px;margin-bottom:12px;color:#e2e8f0;">🔬 Validez del Análisis de Subgrupos</h3>
+        <div style="background:${sgCol}15;border:1px solid ${sgCol}40;border-radius:9px;padding:14px 16px;">
+          <div style="font-size:20px;font-weight:800;color:${sgCol};margin-bottom:6px;">${r.verdict}</div>
+          <div style="font-size:13px;color:#b0bcd8;line-height:1.5;">Puntuación: ${r.total>0?'+':''}${r.total}/9 &nbsp;·&nbsp; Asoc: ${lbl[r.aLbl]||r.aLbl} | Plausi: ${lbl[r.pLbl]||r.pLbl} | Consis: ${lbl[r.cLbl]||r.cLbl}<br>${interps[r.verdict]}</div>
+        </div></div>`;
+    }else if(sgGateAnswer==='no'){
+      sgSection=`<div style="background:#1e2235;border:1px solid #2e3348;border-radius:12px;padding:20px;margin-bottom:18px;">
+        <h3 style="font-size:16px;margin-bottom:8px;color:#e2e8f0;">🔬 Análisis de Subgrupos</h3>
+        <p style="color:#7c8db5;font-size:14px;">El estudio no realiza análisis de subgrupos. No aplica.</p></div>`;
+    }
+  }
+
+  const htmlContent=`<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Informe Lectura Crítica — ${studyTitle}</title>
+<style>
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;margin:0;padding:0;}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 20px;}
+  @media print{body{background:#fff;color:#000;}.print-hint{display:none;}.card{background:#fff!important;border:1px solid #ccc!important;}.banner{background:#1a2f6e!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+</style>
+</head><body>
+<div style="background:linear-gradient(135deg,#0d1b3e,#1a2f6e);border-bottom:2px solid #2e4a9e;padding:14px 20px;text-align:center;" class="banner">
+  <div style="font-size:14px;font-weight:700;color:#c8d8ff;text-transform:uppercase;letter-spacing:.3px;">🏥 Farmacia Hospitalaria · Hospital Universitario Puerto Real</div>
+  <div style="font-size:12px;color:#8aa4d8;margin-top:4px;">Autor: Yeray Reyes de la Mata &nbsp;·&nbsp; ydelamata01@gmail.com</div>
+</div>
+<div class="wrap">
+  <div style="text-align:center;padding:20px 0 10px;border-bottom:1px solid #2e3348;margin-bottom:20px;">
+    <div style="font-size:11px;color:#7c8db5;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Informe de Lectura Crítica · MBE</div>
+    <div style="font-size:22px;font-weight:800;color:#e2e8f0;line-height:1.3;margin-bottom:8px;">${studyTitle}</div>
+    <div style="font-size:13px;color:#7c8db5;">Tipo: ${cl.title} &nbsp;·&nbsp; Fecha: ${new Date().toLocaleDateString('es-ES')}</div>
+  </div>
+  <div class="print-hint" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.3);border-radius:9px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#7eb3f7;">
+    💡 Para guardar como PDF: <strong>Ctrl+P</strong> → "Guardar como PDF" → Imprimir
+  </div>
+  <div style="background:#1e2235;border:1px solid #2e3348;border-radius:12px;padding:20px;margin-bottom:18px;" class="card">
+    <h3 style="font-size:16px;margin-bottom:14px;color:#e2e8f0;">📊 Veredicto Global</h3>
+    <div style="background:${vColor}15;border:1px solid ${vColor}40;border-radius:9px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-size:22px;font-weight:800;color:${vColor};">${verdict}</div>
+      <div style="font-size:13px;color:#b0bcd8;margin-top:4px;">
+        Sí: <strong style="color:#22c55e">${yesCount}</strong> &nbsp;·&nbsp;
+        No: <strong style="color:#ef4444">${noCount}</strong> &nbsp;·&nbsp;
+        NC: <strong style="color:#a78bfa">${ncCount}</strong> &nbsp;·&nbsp;
+        Sin responder: <strong style="color:#7c8db5">${totalItems-yesCount-noCount-ncCount}</strong> &nbsp;·&nbsp;
+        Cumplimiento (Sí/No): <strong style="color:${vColor}">${pctLabel}</strong>
+        ${critFails>0?`<br>⚠️ <strong style="color:#ef4444">Ítems críticos fallidos: ${critFails}</strong>`:''}
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="background:#222636;">
+        <th style="padding:8px 14px;text-align:left;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;">Bloque/Módulo</th>
+        <th style="padding:8px 14px;text-align:center;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;">Sí</th>
+        <th style="padding:8px 14px;text-align:center;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;">No</th>
+        <th style="padding:8px 14px;text-align:center;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;">NC</th>
+        <th style="padding:8px 14px;text-align:center;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;">%</th>
+      </tr></thead><tbody>
+      ${sectionData.map(sd=>{const ev=sd.yes+sd.no;const sp=ev>0?Math.round(sd.yes/ev*100):null;const c=sp===null?'#7c8db5':sp>=75?'#22c55e':sp>=50?'#f59e0b':'#ef4444';
+        return`<tr><td style="padding:9px 14px;border-bottom:1px solid #2e3348;color:#e2e8f0;">${sd.icon} ${sd.title.replace(/^[^—]+—\s*/,'')}</td>
+          <td style="padding:9px 14px;text-align:center;border-bottom:1px solid #2e3348;color:#22c55e;font-weight:600;">${sd.yes}</td>
+          <td style="padding:9px 14px;text-align:center;border-bottom:1px solid #2e3348;color:#ef4444;font-weight:600;">${sd.no}</td>
+          <td style="padding:9px 14px;text-align:center;border-bottom:1px solid #2e3348;color:#a78bfa;font-weight:600;">${sd.nc}</td>
+          <td style="padding:9px 14px;text-align:center;border-bottom:1px solid #2e3348;color:${c};font-weight:700;">${sp!==null?sp+'%':'—'}</td></tr>`;}).join('')}
+      </tbody></table>
+  </div>
+  <div style="background:#1e2235;border:1px solid #2e3348;border-radius:12px;overflow:hidden;margin-bottom:18px;" class="card">
+    <div style="padding:14px 20px;background:#222636;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7c8db5;">📋 Detalle de Ítems Evaluados</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr style="background:#222636;">
+        <th style="padding:8px 14px;text-align:left;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;">Ítem</th>
+        <th style="padding:8px 14px;text-align:center;font-size:11px;color:#7c8db5;text-transform:uppercase;border-bottom:1px solid #2e3348;width:60px;">Resp.</th>
+      </tr></thead>
+      <tbody>${detailRows}</tbody>
+    </table>
+  </div>
+  ${sgSection}
+  <div style="background:#1e2235;border:1px solid #2e3348;border-radius:12px;padding:20px;margin-bottom:18px;" class="card">
+    <h3 style="font-size:16px;margin-bottom:12px;color:#e2e8f0;">📝 Conclusión del Evaluador</h3>
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px;color:#e2e8f0;">Decisión: <span style="color:${vColor}">${conclusionVerdict}</span></div>
+    ${conclusionText?`<div style="background:#222636;border-radius:8px;padding:12px;font-size:13px;color:#b0bcd8;line-height:1.6;white-space:pre-wrap;">${conclusionText}</div>`:'<div style="color:#7c8db5;font-size:13px;">Sin justificación adicional.</div>'}
+  </div>
+  <div style="text-align:center;padding:16px 0;font-size:11px;color:#7c8db5;border-top:1px solid #2e3348;">
+    Generado con la herramienta de Lectura Crítica MBE · Farmacia Hospitalaria HUPR · ${new Date().toLocaleDateString('es-ES')}
+  </div>
+</div></body></html>`;
+
+  const blob=new Blob([htmlContent],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const safeTitle=studyTitle.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g,'').substring(0,50).trim()||'informe';
+  a.href=url;a.download=`Lectura_Critica_${safeTitle.replace(/\s+/g,'_')}.html`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function copyReport(){
+  const cl=CHECKLISTS[currentType];
+  const studyTitle=getStudyTitle();
+  let totalItems=0,yesCount=0,noCount=0,ncCount=0,critFails=0;
+  cl.sections.forEach((sec,si)=>{sec.items.forEach((item,ii)=>{totalItems++;const a=answers[`${si}_${ii}`];if(a==='yes')yesCount++;else if(a==='no'){noCount++;if(item.critical)critFails++;}else if(a==='nc')ncCount++;});});
+  const evaluated=yesCount+noCount;
+  const pct=evaluated>0?Math.round(yesCount/evaluated*100):0;
+  const verdict=critFails>0?'INVALIDADO':pct>=75?'CALIDAD ALTA':pct>=50?'CALIDAD MODERADA':'CALIDAD BAJA';
+  let text=`INFORME DE LECTURA CRÍTICA — MBE\nFarmacia Hospitalaria · Hospital Universitario Puerto Real\nAutor: Yeray Reyes de la Mata\n${'='.repeat(55)}\n`;
+  text+=`Estudio: ${studyTitle}\nTipo: ${cl.title}\nFecha: ${new Date().toLocaleDateString('es-ES')}\n\n`;
+  text+=`VEREDICTO: ${verdict} (${pct}% Sí/No | Sí:${yesCount} No:${noCount} NC:${ncCount} Sin resp:${totalItems-yesCount-noCount-ncCount})\n`;
+  if(critFails>0)text+=`⚠️ Ítems críticos fallidos: ${critFails}\n`;
+  cl.sections.forEach((sec,si)=>{
+    text+=`\n[${sec.title}]\n`;
+    sec.items.forEach((item,ii)=>{const a=answers[`${si}_${ii}`];text+=`  ${a==='yes'?'✓':a==='no'?'✗':a==='nc'?'NC':'—'} ${item.q}\n`;});
+  });
+  if(cl.hasSubgroupGate){
+    text+=`\nANÁLISIS DE SUBGRUPOS: ${sgGateAnswer==='yes'?'Sí':sgGateAnswer==='no'?'No':'No respondido'}\n`;
+    if(sgGateAnswer==='yes'&&window._sgResult){const r=window._sgResult;text+=`Validez: ${r.verdict} (${r.total>0?'+':''}${r.total}/9) — Asoc:${r.aLbl} Plausi:${r.pLbl} Consis:${r.cLbl}\n`;}
+  }
+  const c=document.getElementById('conclusion-text');if(c?.value)text+=`\nCONCLUSIÓN: ${c.value}\n`;
+  navigator.clipboard.writeText(text).then(()=>alert('✅ Resumen copiado al portapapeles')).catch(()=>alert('No se pudo copiar. Use el botón de descarga HTML.'));
+}
+
+// ===================== INIT =====================
+window.onload=()=>{
+  // No mostrar banner de sesión guardada al inicio
+};
+</script>
+</body>
+</html>
