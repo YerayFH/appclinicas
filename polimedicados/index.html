@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Optimizador Terapéutico Geriátrico – CDSS v3.2</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   BASE RESET & TOKENS
+═══════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c-navy:#1e3a5f;--c-blue:#2563a8;--c-blue-lt:#dbeafe;--c-blue-dk:#1d4ed8;
+  --c-amber:#b45309;--c-amber-lt:#fef3c7;--c-amber-md:#f59e0b;
+  --c-red:#b91c1c;--c-red-lt:#fee2e2;--c-red-dk:#7f1d1d;
+  --c-green:#155e2e;--c-green-lt:#d1fae5;
+  --c-purple:#5b21b6;--c-purple-lt:#ede9fe;
+  --c-slate:#475569;--c-slate-lt:#f8fafc;--c-border:#e2e8f0;
+  --radius:10px;--radius-sm:7px;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
+
+/* ═══════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════ */
+.app-header{background:linear-gradient(135deg,var(--c-navy) 0%,var(--c-blue) 100%);color:#fff;padding:16px 24px;text-align:center;border-bottom:3px solid var(--c-amber-md)}
+.app-header h1{font-size:17px;letter-spacing:.02em;margin-bottom:3px}
+.app-header .sub{font-size:13px;opacity:.88;line-height:1.8}
+.app-header a{color:#fde68a}
+.badge{background:var(--c-amber-md);color:var(--c-navy);font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+
+/* ═══════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════ */
+.wrap{max-width:1180px;margin:0 auto;padding:18px 14px}
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--c-border);margin-bottom:16px;overflow:hidden}
+.card-hd{background:var(--c-slate-lt);border-bottom:1px solid var(--c-border);padding:11px 18px;display:flex;align-items:center;gap:9px}
+.card-hd h2{font-size:14px;font-weight:700;color:var(--c-navy)}
+.card-bd{padding:16px 18px}
+.ico{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ico-b{background:var(--c-blue-lt);color:var(--c-blue-dk)}
+.ico-r{background:var(--c-red-lt);color:var(--c-red)}
+.ico-a{background:var(--c-amber-lt);color:var(--c-amber)}
+.ico-g{background:var(--c-green-lt);color:var(--c-green)}
+.ico-p{background:var(--c-purple-lt);color:var(--c-purple)}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+@media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr}}
+@media(min-width:680px) and (max-width:900px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+
+/* ═══════════════════════════════════════════════════
+   FORMS
+═══════════════════════════════════════════════════ */
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:12px;font-weight:700;color:var(--c-slate);text-transform:uppercase;letter-spacing:.04em}
+input[type=number],input[type=text],select,textarea{
+  width:100%;padding:8px 11px;border:1.5px solid #cbd5e1;border-radius:var(--radius-sm);
+  font-size:14px;font-family:inherit;color:#1a1a2e;background:#fff;outline:none;transition:border .15s
+}
+input:focus,select:focus,textarea:focus{border-color:var(--c-blue);box-shadow:0 0 0 3px rgba(37,99,168,.12)}
+input.err{border-color:#ef4444}
+textarea{resize:vertical;min-height:96px;line-height:1.6}
+.cbs{display:flex;flex-wrap:wrap;gap:9px;margin-top:2px}
+.cbs label{display:flex;align-items:center;gap:5px;font-size:13px;color:#334155;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400}
+.cbs input[type=checkbox]{width:14px;height:14px;accent-color:var(--c-blue)}
+.sorpresa-wrap{font-size:13px;color:#334155;display:flex;align-items:flex-start;gap:7px;margin-top:6px;text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer}
+.sorpresa-wrap input{width:15px;height:15px;margin-top:2px;accent-color:#dc2626;flex-shrink:0}
+.sarcopenia-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:9px 13px;margin-top:10px;font-size:13px;color:#78350f;line-height:1.5}
+.sarcopenia-note strong{font-weight:700}
+
+/* ═══════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════ */
+.btn-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 18px;border-radius:var(--radius-sm);border:1.5px solid transparent;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn-pri{background:var(--c-blue);color:#fff;border-color:var(--c-blue)}.btn-pri:hover{background:#1e4d8c}
+.btn-sec{background:#f1f5f9;color:#334155;border-color:#cbd5e1}.btn-sec:hover{background:#e2e8f0}
+.btn-del{background:#fff;color:#dc2626;border-color:#fca5a5}.btn-del:hover{background:#fee2e2}
+.btn-exp{background:#059669;color:#fff;border-color:#059669}.btn-exp:hover{background:#047857}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+#val-msg{color:#dc2626;font-size:13px;margin-top:7px;min-height:16px}
+
+/* ═══════════════════════════════════════════════════
+   METRICS
+═══════════════════════════════════════════════════ */
+.mc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:700px){.mc-grid{grid-template-columns:1fr 1fr}}
+.mc{border-radius:9px;padding:13px 10px;text-align:center;border:1px solid transparent}
+.mc .v{font-size:26px;font-weight:700;line-height:1}
+.mc .l{font-size:12px;margin-top:4px;font-weight:600}
+.mc-r{background:var(--c-red-lt);border-color:#fca5a5}.mc-r .v{color:var(--c-red)}.mc-r .l{color:var(--c-red-dk)}
+.mc-a{background:var(--c-amber-lt);border-color:#fcd34d}.mc-a .v{color:var(--c-amber)}.mc-a .l{color:#78350f}
+.mc-b{background:var(--c-blue-lt);border-color:#93c5fd}.mc-b .v{color:var(--c-blue-dk)}.mc-b .l{color:var(--c-navy)}
+.mc-g{background:var(--c-green-lt);border-color:#6ee7b7}.mc-g .v{color:var(--c-green)}.mc-g .l{color:#064e3b}
+.mc-n{background:#f1f5f9;border-color:#cbd5e1}.mc-n .v{color:#334155}.mc-n .l{color:var(--c-slate)}
+
+/* ═══════════════════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════════════════ */
+.alrt{border-radius:9px;padding:11px 14px;margin-bottom:9px;border-left:4px solid;display:flex;gap:9px;align-items:flex-start}
+.alrt-ico{font-size:16px;flex-shrink:0;padding-top:1px}
+.alrt-t{font-size:13px;font-weight:700;margin-bottom:2px}
+.alrt-b{font-size:13px;line-height:1.55}
+.alrt-crit{background:var(--c-red-lt);border-color:#ef4444}.alrt-crit .alrt-t{color:var(--c-red)}.alrt-crit .alrt-b{color:var(--c-red-dk)}
+.alrt-warn{background:var(--c-amber-lt);border-color:var(--c-amber-md)}.alrt-warn .alrt-t{color:var(--c-amber)}.alrt-warn .alrt-b{color:#78350f}
+.alrt-info{background:var(--c-blue-lt);border-color:#3b82f6}.alrt-info .alrt-t{color:var(--c-blue-dk)}.alrt-info .alrt-b{color:var(--c-navy)}
+.alrt-start{background:var(--c-green-lt);border-color:#059669}.alrt-start .alrt-t{color:var(--c-green)}.alrt-start .alrt-b{color:#064e3b}
+
+/* ═══════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════ */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:13px}
+.tab{padding:5px 13px;border-radius:6px;font-size:13px;font-weight:600;border:1.5px solid var(--c-border);background:var(--c-slate-lt);color:var(--c-slate);cursor:pointer;transition:all .15s}
+.tab.on{background:var(--c-blue);color:#fff;border-color:var(--c-blue)}
+
+/* ═══════════════════════════════════════════════════
+   TABLE  — min 12px everywhere
+═══════════════════════════════════════════════════ */
+.tw{overflow-x:auto;border-radius:8px;border:1px solid var(--c-border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--c-slate-lt);padding:8px 9px;text-align:left;font-size:12px;font-weight:700;color:var(--c-slate);text-transform:uppercase;letter-spacing:.04em;border-bottom:1.5px solid var(--c-border);white-space:nowrap}
+td{padding:8px 9px;border-bottom:1px solid #f1f5f9;vertical-align:top;line-height:1.45;font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--c-slate-lt)}
+
+/* ═══════════════════════════════════════════════════
+   PILLS / TAGS
+═══════════════════════════════════════════════════ */
+.pill{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;border:1px solid}
+.p-r{background:var(--c-red-lt);color:var(--c-red);border-color:#fca5a5}
+.p-a{background:var(--c-amber-lt);color:var(--c-amber);border-color:#fcd34d}
+.p-g{background:var(--c-green-lt);color:var(--c-green);border-color:#6ee7b7}
+.p-b{background:var(--c-blue-lt);color:var(--c-blue-dk);border-color:#93c5fd}
+.p-n{background:#f1f5f9;color:var(--c-slate);border-color:#cbd5e1}
+.gtag{display:inline-block;font-size:12px;padding:2px 6px;border-radius:4px;background:var(--c-purple-lt);color:var(--c-purple);border:1px solid #c4b5fd;margin:1px;font-weight:600}
+.gtag-s{background:var(--c-green-lt);color:var(--c-green);border:1px solid #6ee7b7}
+
+/* ═══════════════════════════════════════════════════
+   AC DOTS
+═══════════════════════════════════════════════════ */
+.acd{display:inline-flex;gap:3px;align-items:center}
+.ad{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+.ad0{background:#d1d5db}.ad1{background:#fbbf24}.ad2{background:#f97316}.ad3{background:#dc2626}
+
+/* ═══════════════════════════════════════════════════
+   CFS BAR
+═══════════════════════════════════════════════════ */
+.cfs-bar{display:flex;gap:3px;margin:7px 0 5px}
+.cfs-seg{flex:1;height:10px;border-radius:3px}
+
+/* ═══════════════════════════════════════════════════
+   DEPRESCRIBING STEPS
+═══════════════════════════════════════════════════ */
+.dep-item{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f1f5f9}
+.dep-item:last-child{border-bottom:none}
+.dep-num{min-width:27px;height:27px;border-radius:50%;background:var(--c-blue-lt);color:var(--c-blue-dk);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dep-t{font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.dep-a{font-size:13px;color:#334155;margin-bottom:5px}
+.dep-steps{font-size:13px;line-height:1.65;color:var(--c-slate)}
+.dep-steps li{margin-left:16px;margin-bottom:2px}
+.dep-mon{font-size:13px;color:var(--c-blue-dk);background:var(--c-blue-lt);padding:4px 9px;border-radius:6px;margin-top:5px;display:inline-block}
+
+/* ═══════════════════════════════════════════════════
+   UNRECOGNIZED MEDS
+═══════════════════════════════════════════════════ */
+.unrec-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#78350f}
+.unrec-box strong{display:block;margin-bottom:4px}
+
+/* ═══════════════════════════════════════════════════
+   HIDDEN / PRINT
+═══════════════════════════════════════════════════ */
+.hidden{display:none!important}
+#results{display:none}
+@media print{.app-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.btn-row,.tabs{display:none}body{background:#fff}.card{border:1px solid #ccc;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>OPTIMIZADOR TERAPÉUTICO GERIÁTRICO <span class="badge">CDSS v3.2</span></h1>
+  <div class="sub">
+    FARMACIA HOSPITALARIA · HOSPITAL UNIVERSITARIO PUERTO REAL<br>
+    Autor: Yeray Reyes de la Mata &nbsp;·&nbsp;
+    <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+<div class="card">
+  <div class="card-hd"><div class="ico ico-b">👤</div><h2>Datos del paciente</h2></div>
+  <div class="card-bd">
+
+    <div class="g4" style="margin-bottom:13px">
+      <div class="fg"><label>Edad (años)</label><input type="number" id="age" placeholder="82" min="18" max="115"></div>
+      <div class="fg"><label>Sexo biológico</label><select id="sex"><option value="male">Hombre</option><option value="female">Mujer</option></select></div>
+      <div class="fg"><label>Peso (kg)</label><input type="number" id="weight" placeholder="65" min="20" max="300" step=".5"></div>
+      <div class="fg"><label>PA sistólica (mmHg)</label><input type="number" id="sbp" placeholder="145" min="60" max="300"></div>
+    </div>
+
+    <div class="g3" style="margin-bottom:4px">
+      <div class="fg"><label>FG directo (mL/min) — opcional</label><input type="number" id="fg_d" placeholder="Si no: calcular desde creatinina" min="1" max="200"></div>
+      <div class="fg"><label>Creatinina sérica (mg/dL)</label><input type="number" id="crea" placeholder="1.2" min=".1" max="25" step=".01"></div>
+      <div class="fg"><label>HbA1c (%) — si diabético</label><input type="number" id="hba1c" placeholder="7.8" min="3" max="20" step=".1"></div>
+    </div>
+
+    <div class="sarcopenia-note" style="margin-bottom:13px">
+      ⚠️ <strong>Nota clínica:</strong> En pacientes ancianos frágiles con sarcopenia, la creatinina sérica puede ser falsamente baja, sobreestimando el FG calculado por Cockcroft-Gault. Considere usar CKD-EPI o FG directo de laboratorio cuando haya sospecha de masa muscular reducida.
+    </div>
+
+    <div class="g2" style="margin-bottom:13px">
+      <div class="fg">
+        <label>Clinical Frailty Scale (CFS 1–9)</label>
+        <select id="cfs">
+          <option value="">-- Seleccionar --</option>
+          <option value="1">1 – Muy activo</option><option value="2">2 – Bien</option>
+          <option value="3">3 – Manejando bien</option><option value="4">4 – Vulnerable</option>
+          <option value="5">5 – Fragilidad leve</option><option value="6">6 – Fragilidad moderada</option>
+          <option value="7">7 – Fragilidad severa</option><option value="8">8 – Muy severamente frágil</option>
+          <option value="9">9 – Terminal (&lt;6 meses)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Pregunta Sorpresa</label>
+        <label class="sorpresa-wrap">
+          <input type="checkbox" id="sorpresa">
+          <span>"¿<strong>No</strong> me sorprendería que este paciente falleciera en el próximo año?" — marcar si la respuesta es <strong style="color:#dc2626">SÍ</strong></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="fg" style="margin-bottom:13px">
+      <label>Comorbilidades relevantes</label>
+      <div class="cbs">
+        <label><input type="checkbox" id="ch_dem"> Demencia/BPSD</label>
+        <label><input type="checkbox" id="ch_cai"> Alto riesgo caídas</label>
+        <label><input type="checkbox" id="ch_dia"> Diabetes mellitus</label>
+        <label><input type="checkbox" id="ch_fa"> FA/Anticoagulado</label>
+        <label><input type="checkbox" id="ch_hta"> HTA</label>
+        <label><input type="checkbox" id="ch_erc"> ERC documentada</label>
+        <label><input type="checkbox" id="ch_dep"> Depresión</label>
+        <label><input type="checkbox" id="ch_ins"> Insomnio crónico</label>
+        <label><input type="checkbox" id="ch_par"> Parkinson/Parkinsonismo</label>
+        <label><input type="checkbox" id="ch_cv"> Enf. CV establecida (IC/ictus/EAP)</label>
+        <label><input type="checkbox" id="ch_ost"> Osteoporosis</label>
+      </div>
+    </div>
+
+    <div class="fg" style="margin-bottom:14px">
+      <label>Medicación actual (un fármaco por línea, nombre + dosis)</label>
+      <textarea id="meds" placeholder="Ejemplo:&#10;Diazepam 5mg&#10;Omeprazol 40mg&#10;Amitriptilina 25mg&#10;Glibenclamida 5mg&#10;Atorvastatina 40mg"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-pri" onclick="runAnalysis()">▶ Analizar medicación</button>
+      <button class="btn btn-sec" onclick="loadExample()">📋 Cargar ejemplo</button>
+      <button class="btn btn-del" onclick="clearAll()">✕ Limpiar</button>
+      <button class="btn btn-exp" id="btn-exp" disabled onclick="exportReport()">⬇ Exportar informe</button>
+    </div>
+    <div id="val-msg"></div>
+
+  </div>
+</div>
+
+<div id="results">
+  <div class="card">
+    <div class="card-hd"><div class="ico ico-b">📊</div><h2>Resumen clínico</h2></div>
+    <div class="card-bd"><div id="r-metrics"></div><div id="r-cfs" style="margin-top:13px"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="ico ico-r">⚠</div><h2>Alertas clínicas</h2></div>
+    <div class="card-bd" id="r-alerts"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="ico ico-a">💊</div><h2>Fármacos potencialmente inapropiados (PIM)</h2></div>
+    <div class="card-bd"><div class="tabs" id="r-tabs"></div><div id="r-table"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="ico ico-p">📉</div><h2>Plan de deprescribing priorizado</h2></div>
+    <div class="card-bd" id="r-dep"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="ico ico-g">🔍</div><h2>Monitorización programada</h2></div>
+    <div class="card-bd" id="r-mon"></div>
+  </div>
+</div>
+</div><!-- /wrap -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 1 ░░  DRUG DATABASE
+   FIX v3.2: Alias duplicados eliminados (Dabigatrán, Codeína, Nitrofurantoína)
+═══════════════════════════════════════════════════════════════════════ */
+const DRUG_DB = [
+  /* ── ANTIDIABÉTICOS ── */
+  {name:"Glibenclamida",aliases:["glibenclamida"],group:"ADO",risk:"Hipoglucemia grave y prolongada; daño neurológico.",renal:"Contraindicada FG<50",priority:"Alta",ac:0,guias:["Beers","PRISCUS 2.0","STOPP","EU7PIM"],note:"PRISCUS 2.0 categoría D. Cambiar a Gliclazida o Metformina.",action:"Suspender inmediatamente. Alt: Gliclazida 30-60mg o Metformina 500mg (si FG>45).",taper:null,monitor:"Glucemia capilar diaria 2 semanas. HbA1c a 3 meses.",sorpresa:false,cfs_min:1},
+  {name:"Glimepirida",aliases:["glimepirida"],group:"ADO",risk:"Hipoglucemia (menor que Glibenclamida). Riesgo real en fragilidad.",renal:"Ajustar; precaución FG<30",priority:"Media",ac:0,guias:["Beers","STOPP"],note:"Objetivo HbA1c <8.5% en frágiles. Menos riesgo que Glibenclamida.",action:"Valorar sustitución por DPP-4i o Gliclazida MR.",taper:null,monitor:"HbA1c cada 3 meses.",sorpresa:false,cfs_min:1},
+  {name:"Insulina escala móvil",aliases:["insulina escala","escala movil","sliding scale","rapida","s pauta","segun glucemia","actrapid","lispro"],group:"ADO",risk:"Hipoglucemia recurrente sin beneficio glucémico demostrado.",renal:"Monitorizar",priority:"Alta",ac:0,guias:["Beers"],note:"PIM Mayor. Sustituir por insulina basal pautada.",action:"Cambiar a insulina basal (Glargina/Detemir) a dosis fija.",taper:null,monitor:"Glucemia capilar diaria.",sorpresa:false,cfs_min:1},
+  /* ── BZRA ── */
+  {name:"Diazepam",aliases:["diazepam"],group:"BZRA",risk:"Caídas, fracturas, deterioro cognitivo, dependencia. Vida media muy larga.",renal:"No requiere",priority:"Alta",ac:1,guias:["Beers","PRISCUS 2.0","STOPP","EU7PIM"],note:"BZD vida media larga. Evitar ≥65 años. Tapering obligatorio.",action:"Tapering gradual. No suspender abruptamente.",taper:{steps:["Sem 1-2: Reducir 25% dosis actual.","Sem 3-4: Reducir otro 25% si no hay abstinencia.","Fase final (<5mg equiv.): reducir 12.5% o días libres de fármaco.","Si abstinencia: mantener 1-2 semanas antes de continuar.","Alt: CBT-I, higiene del sueño, melatonina LP 2mg."]},monitor:"Sueño y ansiedad cada 1-2 semanas durante tapering.",sorpresa:false,cfs_min:1},
+  {name:"Lorazepam",aliases:["lorazepam"],group:"BZRA",risk:"Caídas, sedación diurna, deterioro cognitivo. Vida media intermedia.",renal:"No requiere",priority:"Alta",ac:1,guias:["Beers","STOPP","PRISCUS 2.0"],note:"PRISCUS 2.0 incluye BZD vida media intermedia como PIM.",action:"Tapering: reducir 25% cada 2 semanas.",taper:{steps:["Reducir 25% cada 2 semanas.","Fase final: 12.5% o días alternos.","Monitorizar ansiedad y sueño semanalmente."]},monitor:"Semanal: sueño, ansiedad, caídas.",sorpresa:false,cfs_min:1},
+  {name:"Oxazepam",aliases:["oxazepam"],group:"BZRA",risk:"Caídas (PRISCUS 2.0: BZD vida media intermedia como PIM).",renal:"No requiere",priority:"Alta",ac:1,guias:["PRISCUS 2.0"],note:"Incluida como PIM en PRISCUS 2.0 a pesar de vida media más corta.",action:"Tapering igual que otras BZRA.",taper:{steps:["Reducir 25% cada 2 semanas.","Últimas etapas: 12.5%.","Monitorizar sueño y ansiedad."]},monitor:"Semanal: sueño, ansiedad, caídas.",sorpresa:false,cfs_min:1},
+  {name:"Alprazolam",aliases:["alprazolam"],group:"BZRA",risk:"Alta potencia, dependencia rápida, caídas, deterioro cognitivo.",renal:"No requiere",priority:"Alta",ac:1,guias:["Beers","STOPP"],note:"Alta potencia relativa. Riesgo de dependencia elevado. Tapering muy lento.",action:"Tapering muy gradual (alta potencia = síndrome de abstinencia intenso).",taper:{steps:["Reducir 10% cada 2 semanas (ritmo más lento por alta potencia).","Considerar cambio a diazepam equivalente para facilitar reducción.","Fase final: 5% quincenal."]},monitor:"Semanal: ansiedad, PA, caídas.",sorpresa:false,cfs_min:1},
+  {name:"Zolpidem",aliases:["zolpidem"],group:"BZRA",risk:"Caídas nocturnas, amnesia anterógrada, comportamientos complejos del sueño.",renal:"No requiere",priority:"Alta",ac:1,guias:["Beers","STOPP","EU7PIM"],note:"Mismos riesgos que BZD en ancianos.",action:"Tapering: reducir a mitad de dosis 2 semanas, luego noches alternas.",taper:{steps:["Sem 1-2: reducir a la mitad (ej: 10→5mg).","Sem 3-4: noches alternas.","Sem 5: suspender. Alt: melatonina LP 2mg."]},monitor:"Calidad del sueño y caídas cada 2 semanas.",sorpresa:false,cfs_min:1},
+  {name:"Clonazepam",aliases:["clonazepam"],group:"BZRA",risk:"Alta potencia, sedación prolongada, caídas, deterioro cognitivo.",renal:"No requiere",priority:"Alta",ac:1,guias:["Beers","STOPP"],note:"Alta potencia. Vida media larga. Tapering muy lento.",action:"Tapering muy gradual. Reducción del 10% cada 2-4 semanas.",taper:{steps:["Reducir 10% cada 2-4 semanas.","Evitar suspensión abrupta (riesgo de convulsiones).","Alt: revisar indicación epilepsia vs ansiedad."]},monitor:"Semanal: sedación, caídas, FC.",sorpresa:false,cfs_min:1},
+  /* ── ANTIDEPRESIVOS ── */
+  {name:"Amitriptilina",aliases:["amitriptilina"],group:"Antidepresivo",risk:"Carga AC=3: delirio, retención urinaria, hipotensión ortostática, síncope, caídas.",renal:"Evitar IR severa",priority:"Alta",ac:3,guias:["Beers","PRISCUS 2.0","STOPP","EU7PIM"],note:"AC=3. Evitar absolutamente en ancianos. Alt: Sertralina o Mirtazapina.",action:"Sustituir con tapering lento. Iniciar alternativa solapada si hay depresión activa.",taper:{steps:["Reducir 25% cada 2-3 semanas.","Monitorizar rebote colinérgico (náuseas, hiperhidrosis).","Iniciar Sertralina 25-50mg en paralelo si depresión activa.","No suspender abruptamente."]},monitor:"Mensual: cognición, PA ortostática, retención urinaria.",sorpresa:false,cfs_min:1},
+  {name:"Paroxetina",aliases:["paroxetina"],group:"Antidepresivo",risk:"AC=3. Caídas, hiponatremia. Síndrome de discontinuación grave.",renal:"Ajustar FG<30",priority:"Alta",ac:3,guias:["Beers","STOPP","PRISCUS 2.0"],note:"AC=3 a pesar de ser ISRS. Cambiar a Sertralina.",action:"Tapering MUY lento (riesgo alto discontinuación). Sustituir por Sertralina.",taper:{steps:["Reducir 10mg cada 4 semanas (muy gradual).","Si discontinuación (mareos, brain zaps): mantener 2 semanas más.","Puente: Fluoxetina 10mg para facilitar cese.","Objetivo: Sertralina 25-50mg/día."]},monitor:"Mensual: Na+ sérico, cognición, discontinuación.",sorpresa:false,cfs_min:1},
+  {name:"Imipramina",aliases:["imipramina"],group:"Antidepresivo",risk:"AC=3. Mismo perfil que Amitriptilina. Cardiotóxico.",renal:"Evitar IR",priority:"Alta",ac:3,guias:["Beers","EU7PIM"],note:"Tricíclico con alta carga AC. Riesgo cardíaco adicional.",action:"Suspender con tapering. Sustituir por ISRS moderno.",taper:{steps:["Reducir 25% cada 2-3 semanas.","Monitorizar ECG (QTc) durante reducción."]},monitor:"Mensual: ECG, PA, cognición.",sorpresa:false,cfs_min:1},
+  {name:"Fluoxetina",aliases:["fluoxetina"],group:"Antidepresivo",risk:"Vida media muy larga → acumulación. Hiponatremia, confusión.",renal:"No requiere",priority:"Media",ac:1,guias:["Beers","EU7PIM"],note:"Acumulación en anciano. Máximo 20mg/día. Monitorizar Na+.",action:"Valorar sustitución por Sertralina o Citalopram.",taper:{steps:["Puede suspenderse directamente (vida media larga).","Monitorizar Na+ al mes."]},monitor:"Na+ sérico mensual.",sorpresa:false,cfs_min:1},
+  {name:"Mirtazapina",aliases:["mirtazapina"],group:"Antidepresivo",risk:"Sedación (útil para insomnio/depresión). Ganancia peso.",renal:"No requiere",priority:"Baja",ac:0,guias:[],note:"Alternativa segura en anciano deprimido con insomnio. No es PIM.",action:"Mantener. Revisar sedación y caídas.",taper:null,monitor:"Mensual: caídas, peso.",sorpresa:false,cfs_min:9},
+  {name:"Sertralina",aliases:["sertralina"],group:"Antidepresivo",risk:"Hiponatremia (monitorizar). Bien tolerada en anciano.",renal:"No requiere",priority:"Baja",ac:0,guias:[],note:"ISRS de referencia en anciano. No PIM. Máx 100mg/día.",action:"Mantener. Verificar Na+ al inicio.",taper:null,monitor:"Na+ sérico al inicio del tratamiento.",sorpresa:false,cfs_min:9},
+  /* ── ANTIPSICÓTICOS ── */
+  {name:"Risperidona",aliases:["risperidona"],group:"Antipsicótico",risk:"ACV (×3), muerte en demencia (>6 semanas). EPS.",renal:"FG<30: reducir 50%",priority:"Alta",ac:1,guias:["Beers","STOPP","EU7PIM"],note:"Mínimo 2 intentos documentados de retirada.",action:"Tapering 25-50% cada 1-2 semanas tras estabilidad >3 meses.",taper:{steps:["Reducir 25-50% semanas 1-2.","Si BPSD controlado: continuar reducción quincenal.","Si recaída: estabilizar y reintentar en 3 meses.","Documentar cada intento (mínimo 2 antes de mantener)."]},monitor:"Cada 1-2 semanas: agitación, PA, ECG (QTc).",sorpresa:false,cfs_min:1},
+  {name:"Haloperidol",aliases:["haloperidol"],group:"Antipsicótico",risk:"EPS severos, QT largo, mortalidad aumentada. PIM si >5mg/día.",renal:"No requiere",priority:"Alta",ac:2,guias:["Beers","STOPP"],note:"Dosis mínima el menor tiempo posible. Máx 3 meses sin revisión.",action:"Tapering 25% cada 1-2 semanas. Mínimo 2 intentos de retirada.",taper:{steps:["Reducir 25% cada semana.","Monitorizar EPS (rigidez, temblor) y BPSD.","2 intentos obligatorios antes de catalogar como esencial."]},monitor:"Semanal: EPS, conducta, QTc.",sorpresa:false,cfs_min:1},
+  {name:"Quetiapina",aliases:["quetiapina"],group:"Antipsicótico",risk:"Sedación (>100mg/día), caídas, hipotensión ortostática.",renal:"No requiere",priority:"Alta",ac:2,guias:["Beers","STOPP"],note:"Revisar cada 3 meses. 2 intentos de retirada obligatorios.",action:"Tapering 25-50% cada 1-2 semanas tras ≥3 meses estabilidad.",taper:{steps:["Reducir 25% cada semana si síntomas controlados.","2 intentos obligatorios antes de mantener.","Si recaída: estabilizar 3 meses."]},monitor:"Cada 1-2 semanas: sedación, PA, conducta.",sorpresa:false,cfs_min:1},
+  {name:"Olanzapina",aliases:["olanzapina"],group:"Antipsicótico",risk:"Síndrome metabólico, sedación severa, mortalidad en demencia. Alta carga AC.",renal:"No requiere",priority:"Alta",ac:2,guias:["Beers","EU7PIM"],note:"Elevada carga AC y metabólica. 2 intentos de retirada.",action:"Tapering 25% cada 1-2 semanas.",taper:{steps:["Reducir 25% dosis cada 1-2 semanas.","Monitorizar glucemia, peso y BPSD.","2 intentos antes de mantener."]},monitor:"Quincenal: glucemia, peso, PA, conducta.",sorpresa:false,cfs_min:1},
+  /* ── AINEs ── */
+  {name:"Diclofenaco",aliases:["diclofenaco"],group:"AINE",risk:"Hemorragia GI, nefrotoxicidad, eventos CV. Alto riesgo en ERC.",renal:"Contraindicado FG<30",priority:"Alta",ac:0,guias:["Beers","STOPP","PRISCUS 2.0","EU7PIM"],note:"Evitar uso crónico. Máx 3 días con PPI. Alt: Paracetamol.",action:"Suspender. Alt: Paracetamol ≤3g/día o AINE tópico.",taper:null,monitor:"FG y PA en 1 semana.",sorpresa:false,cfs_min:1},
+  {name:"Ibuprofeno",aliases:["ibuprofeno"],group:"AINE",risk:"Sangrado GI, nefrotoxicidad. PIM si >1200mg/día o >1 semana.",renal:"Evitar FG<30",priority:"Media",ac:0,guias:["Beers","PRISCUS 2.0","STOPP"],note:"Máx 1200mg/día y máx 1 semana con PPI.",action:"Limitar a uso puntual ≤1 semana. Si crónico: suspender.",taper:null,monitor:"FG semanal si uso prolongado.",sorpresa:false,cfs_min:1},
+  {name:"Naproxeno",aliases:["naproxeno"],group:"AINE",risk:"Sangrado GI (mayor que ibuprofeno). PIM si >500mg/día.",renal:"Evitar FG<30",priority:"Media",ac:0,guias:["STOPP","EU7PIM"],note:"Máx ≤500mg/día y 1 semana con PPI.",action:"Suspender si uso crónico. Alt: Paracetamol.",taper:null,monitor:"FG.",sorpresa:false,cfs_min:1},
+  {name:"Ketorolaco",aliases:["ketorolaco","ketorolac"],group:"AINE",risk:"Hemorragia GI grave. Máximo 5 días. Alto riesgo en anciano.",renal:"Contraindicado FG<30",priority:"Alta",ac:0,guias:["Beers","EU7PIM"],note:"Máximo 5 días en cualquier caso. No usar en anciano frágil.",action:"Suspender. Alt: Paracetamol o metamizol (precaución).",taper:null,monitor:"FG y signos de sangrado.",sorpresa:false,cfs_min:1},
+  /* ── IBP ── */
+  {name:"Omeprazol",aliases:["omeprazol"],group:"IBP",risk:"C. difficile, déficit B12, fracturas (>4 años), hipomagnesemia.",renal:"No requiere",priority:"Media",ac:0,guias:["Beers","PRISCUS 2.0","EU7PIM"],note:"PIM si >8 semanas sin indicación endoscópica.",action:"Revisar indicación. Si no válida: reducir progresivamente.",taper:{steps:["Reducir a mitad de dosis 2 semanas.","Días alternos 2 semanas.","Suspender. Si dispepsia rebote: alginato puntual."]},monitor:"Síntomas digestivos al mes.",sorpresa:false,cfs_min:1},
+  {name:"Pantoprazol",aliases:["pantoprazol"],group:"IBP",risk:"Mismo perfil que omeprazol en uso prolongado.",renal:"No requiere",priority:"Media",ac:0,guias:["PRISCUS 2.0","EU7PIM"],note:"Límite 8 semanas sin indicación.",action:"Revisar indicación. Reducir o suspender si >8 semanas.",taper:{steps:["Mitad dosis 2 semanas.","Días alternos 2 semanas.","Suspender."]},monitor:"Síntomas digestivos al mes.",sorpresa:false,cfs_min:1},
+  {name:"Lansoprazol",aliases:["lansoprazol","esomeprazol","rabeprazol"],group:"IBP",risk:"Mismo perfil. Límite 8 semanas.",renal:"No requiere",priority:"Media",ac:0,guias:["PRISCUS 2.0"],note:"Reducción progresiva igual que omeprazol.",action:"Revisar indicación. Suspender si >8 semanas sin causa.",taper:{steps:["Mitad dosis 2 semanas.","Días alternos.","Suspender."]},monitor:"Síntomas digestivos.",sorpresa:false,cfs_min:1},
+  /* ── ESTATINAS ── */
+  {name:"Atorvastatina",aliases:["atorvastatina","atorvastatin"],group:"Estatina",risk:"Mialgias, miopatía. Riesgo/beneficio desfavorable en prevención primaria.",renal:"No requiere",priority:"Media",ac:0,guias:["Beers","STOPP"],note:"Suspender en CFS≥7 o prevención primaria con esperanza de vida limitada.",action:"Si CFS≥7 o Pregunta Sorpresa: suspender. No precisa tapering formal.",taper:{steps:["Suspender directamente.","Si aprensión: 80→40→20mg cada 4 semanas.","Sin necesidad de analíticas post-suspensión."]},monitor:"Síntomas musculares al mes.",sorpresa:true,cfs_min:4},
+  {name:"Simvastatina",aliases:["simvastatina"],group:"Estatina",risk:"Mialgias. Mayor riesgo miopatía a dosis altas. Interacciones CYP3A4.",renal:"No requiere",priority:"Media",ac:0,guias:["STOPP"],note:"Suspender en fragilidad severa o prevención primaria limitada.",action:"Suspender si CFS≥7 o Pregunta Sorpresa.",taper:{steps:["Suspender directamente o reducir dosis 4 semanas."]},monitor:"Síntomas musculares al mes.",sorpresa:true,cfs_min:4},
+  {name:"Rosuvastatina",aliases:["rosuvastatina"],group:"Estatina",risk:"Mismo perfil. Menos interacciones CYP.",renal:"Ajustar FG<30 (máx 10mg)",priority:"Media",ac:0,guias:["STOPP"],note:"Si se mantiene estatina: Rosuvastatina tiene menor riesgo interacciones.",action:"Valorar suspensión en CFS≥7 o prevención primaria.",taper:{steps:["Suspender directamente."]},monitor:"Síntomas musculares al mes.",sorpresa:true,cfs_min:4},
+  /* ── iAchE / ANTIDEMENCIA ── */
+  {name:"Donepezilo",aliases:["donepezilo"],group:"iAchE",risk:"Síncope vagal, bradicardia, náuseas. GI significativo.",renal:"No requiere",priority:"Media",ac:0,guias:["STOPP"],note:"Sydney Algorithm: cese si GDS>6, sin beneficio 6 meses, bradicardia.",action:"Si criterios de cese: Sydney Algorithm (escalones de 4 semanas).",taper:{steps:["E1: 10→5mg. Mantener 4 semanas.","E2: 5→2.5mg (si disponible). 4 semanas.","E3: Suspender. Monitorizar cognición y conducta cada 4 semanas."]},monitor:"Cada 4 semanas: MMSE/MoCA, conducta, FC, función GI.",sorpresa:false,cfs_min:7},
+  {name:"Rivastigmina",aliases:["rivastigmina"],group:"iAchE",risk:"Náuseas, vómitos, pérdida de peso, síncope.",renal:"No requiere",priority:"Media",ac:0,guias:["STOPP"],note:"Mismos criterios de cese que Donepezilo.",action:"Sydney Algorithm: escalones de 4 semanas.",taper:{steps:["Reducir parche a tamaño inferior. 4 semanas.","Suspender. Monitorizar."]},monitor:"Cada 4 semanas: cognición, FC, peso.",sorpresa:false,cfs_min:7},
+  {name:"Memantina",aliases:["memantina"],group:"iAchE",risk:"Confusión, alucinaciones. Riesgo aumentado en ERC severa.",renal:"FG 5-29: máx 10mg/día",priority:"Media",ac:0,guias:["STOPP"],note:"Criterio cese: GDS>6, sin beneficio 6 meses.",action:"Sydney Algorithm si criterios de cese.",taper:{steps:["Reducir a mitad. 4 semanas.","Suspender. Monitorizar cognición y conducta."]},monitor:"Cada 4 semanas: cognición, FG.",sorpresa:false,cfs_min:7},
+  /* ── CARDIOVASCULAR ── */
+  {name:"Digoxina",aliases:["digoxina"],group:"Cardiotónico",risk:"Margen estrecho. Toxicidad (arritmias, confusión, náuseas). Crítico en ERC.",renal:"Crítico: FG 10-50 → 25-75% dosis. Máx 0.125mg/día",priority:"Media",ac:0,guias:["Beers","PRISCUS 2.0","STOPP"],note:"Mantener 0.0625-0.125mg/día. Niveles <1.0 ng/mL. Alt: betabloqueantes.",action:"Si se mantiene: reducir a 0.0625-0.125mg/día.",taper:null,monitor:"Niveles plasmáticos, FG, ECG mensual.",sorpresa:false,cfs_min:1},
+  {name:"Doxazosina",aliases:["doxazosina"],group:"Antihipertensivo",risk:"Hipotensión ortostática severa. Principal causa de caídas iatrogénicas.",renal:"Iniciar 0.5mg",priority:"Alta",ac:0,guias:["Beers","STOPP","PRISCUS 2.0"],note:"PIM como antihipertensivo. Alt: IECA/ARA-II.",action:"Suspender con reducción gradual. Alt: Perindopril o Amlodipino.",taper:{steps:["Mitad de dosis 1 semana.","Suspender. Monitorizar PA ortostática 48h.","Alt: Perindopril 5mg o Amlodipino 5mg."]},monitor:"PA ortostática 48h y semanal el primer mes.",sorpresa:false,cfs_min:1},
+  /* FIX v3.2: Alias de Dabigatrán sin duplicados */
+  {name:"Dabigatrán",aliases:["dabigatran"],group:"Anticoagulante",risk:"Mayor riesgo hemorrágico que otros DOACs en anciano frágil.",renal:"Contraindicado FG<30. Reducir si FG 30-50",priority:"Media",ac:0,guias:["Beers","PRISCUS 2.0"],note:"Preferir Apixabán en anciano frágil.",action:"Valorar cambio a Apixabán 2.5mg/12h si edad>80 o FG<50.",taper:null,monitor:"FG cada 3 meses. Signos de sangrado.",sorpresa:false,cfs_min:1},
+  {name:"Warfarina",aliases:["warfarina","acenocumarol","sintrom"],group:"Anticoagulante",risk:"Ventana terapéutica estrecha, múltiples interacciones. INR lábil en anciano.",renal:"No requiere (monitorizar)",priority:"Media",ac:0,guias:["STOPP","EU7PIM"],note:"Valorar cambio a DOAC si FA y sin contraindicación.",action:"Si FA: valorar cambio a Apixabán. Si se mantiene: INR 2-3.",taper:null,monitor:"INR mensual. FG trimestral.",sorpresa:false,cfs_min:1},
+  {name:"Amiodarona",aliases:["amiodarona"],group:"Antiarrítmico",risk:"Toxicidad pulmonar, hepática y tiroidea. Interacciones graves.",renal:"No requiere",priority:"Media",ac:0,guias:["Beers","EU7PIM"],note:"Reservar para arritmias refractarias. Revisar necesidad.",action:"Revisar indicación. Monitorizar función tiroidea, hepática y pulmonar.",taper:null,monitor:"TSH, LFT, función pulmonar cada 6 meses.",sorpresa:false,cfs_min:1},
+  /* ── UROLÓGICO / ANTICOLINÉRGICO ── */
+  {name:"Oxibutinina",aliases:["oxibutinina"],group:"Anticolinérgico",risk:"AC=3: delirio, retención urinaria, estreñimiento. Empeora demencia.",renal:"Ajustar fragilidad",priority:"Alta",ac:3,guias:["Beers","PRISCUS 2.0","STOPP","EU7PIM"],note:"AC=3. Empeora activamente la demencia. Alt: Mirabegrón.",action:"Suspender. Alt: Mirabegrón 25-50mg o entrenamiento pélvico.",taper:null,monitor:"Cognición y función urinaria mensual.",sorpresa:false,cfs_min:1},
+  {name:"Solifenacina",aliases:["solifenacina"],group:"Anticolinérgico",risk:"AC=2. Retención urinaria, confusión, estreñimiento.",renal:"Precaución FG<30",priority:"Alta",ac:2,guias:["Beers","EU7PIM"],note:"AC=2. Preferable Mirabegrón en anciano.",action:"Suspender. Alt: Mirabegrón.",taper:null,monitor:"Cognición y función urinaria mensual.",sorpresa:false,cfs_min:1},
+  {name:"Tolterodina",aliases:["tolterodina"],group:"Anticolinérgico",risk:"AC=2. Retención urinaria, confusión.",renal:"Precaución FG<30",priority:"Alta",ac:2,guias:["Beers","EU7PIM"],note:"AC=2. Alt: Mirabegrón.",action:"Suspender. Alt: Mirabegrón.",taper:null,monitor:"Cognición y función urinaria mensual.",sorpresa:false,cfs_min:1},
+  /* ── ANTIHISTAMÍNICOS ── */
+  {name:"Prometazina",aliases:["prometazina"],group:"Antihistamínico",risk:"AC=3: sedación extrema, delirium, caídas.",renal:"Reducir dosis",priority:"Alta",ac:3,guias:["Beers","PRISCUS 2.0","EU7PIM"],note:"AC=3. Evitar en ancianos. Alt: Loratadina o Cetirizina.",action:"Suspender. Alt: Loratadina 10mg (no sedante).",taper:null,monitor:"Estado cognitivo al mes.",sorpresa:false,cfs_min:1},
+  {name:"Difenhidramina",aliases:["difenhidramina","benadryl"],group:"Antihistamínico",risk:"AC=3. Delirio incluso en dosis única. Retención urinaria.",renal:"No requiere",priority:"Alta",ac:3,guias:["Beers"],note:"AC=3. Evitar incluso uso esporádico. Alt: Loratadina.",action:"Suspender. No usar en anciano.",taper:null,monitor:"Estado cognitivo.",sorpresa:false,cfs_min:1},
+  /* ── PROCINÉTICO ── */
+  {name:"Metoclopramida",aliases:["metoclopramida"],group:"Procinético",risk:"Parkinsonismo tardío, discinesia tardía (irreversible). Máx 5 días.",renal:"FG<40: reducir 50%",priority:"Media",ac:2,guias:["Beers","EU7PIM"],note:"Máx 20mg/día y 5 días agudo. Evitar crónico. Riesgo especial en Parkinson.",action:"Suspender si >5 días. Alt: Domperidona puntual o Eritromicina.",taper:null,monitor:"Síntomas extrapiramidales.",sorpresa:false,cfs_min:1},
+  /* ── OPIOIDES ── */
+  {name:"Tramadol",aliases:["tramadol"],group:"Opioide",risk:"Delirio, náuseas, caídas, hiponatremia. Riesgo elevado en demencia.",renal:"Evitar retard si FG<30",priority:"Media",ac:1,guias:["Beers","STOPP"],note:"Dosis mínima efectiva. Máx 30 días continuados.",action:"Revisar indicación. Si retirar: tapering.",taper:{steps:["Reducir 10-25% semanal.","Monitorizar abstinencia (agitación, diaforesis, mialgias)."]},monitor:"Semanal: estado mental, analgesia, PA.",sorpresa:false,cfs_min:1},
+  /* FIX v3.2: Codeína — alias simplificado sin duplicado */
+  {name:"Codeína",aliases:["codeina"],group:"Opioide",risk:"Metabolismo CYP2D6 variable. Acumulación en ERC. Estreñimiento grave.",renal:"Reducir dosis. Evitar FG<10",priority:"Media",ac:1,guias:["Beers","EU7PIM"],note:"Conversión a morfina variable. Mejor morfina de liberación inmediata a dosis bajas.",action:"Revisar indicación. Valorar sustitución por Paracetamol ± morfina dosis baja.",taper:{steps:["Reducir 10-25% semanal si uso prolongado."]},monitor:"FG, estreñimiento, estado mental.",sorpresa:false,cfs_min:1},
+  /* ── OTROS ── */
+  {name:"Espironolactona",aliases:["espironolactona"],group:"Diurético",risk:"Hiperpotasemia (>25mg/día con IECA/ARA-II o ERC).",renal:"Evitar FG<10",priority:"Media",ac:0,guias:["STOPP","EU7PIM"],note:"Monitorizar K+ y creatinina periódicamente.",action:"Monitorizar K+. Revisar si K+>5.5 mEq/L.",taper:null,monitor:"K+ y creatinina cada 3 meses.",sorpresa:false,cfs_min:1},
+  {name:"Carbamazepina",aliases:["carbamazepina"],group:"Antiepiléptico",risk:"Hiponatremia (SIADH), sedación, ataxia. Múltiples interacciones CYP450.",renal:"Ajustar según respuesta",priority:"Media",ac:1,guias:["STOPP","EU7PIM"],note:"Control Na+ y niveles plasmáticos.",action:"Monitorizar Na+ y niveles. Valorar sustitución si hiponatremia.",taper:null,monitor:"Na+ mensual. Niveles plasmáticos.",sorpresa:false,cfs_min:1},
+  {name:"Ticlopidina",aliases:["ticlopidina"],group:"Antiagregante",risk:"Toxicidad hematológica grave (trombocitopenia, agranulocitosis).",renal:"Ajustar",priority:"Alta",ac:0,guias:["Beers","STOPP"],note:"Superada por Clopidogrel o AAS. No usar.",action:"Suspender. Alt: Clopidogrel 75mg o AAS 100mg.",taper:null,monitor:"Hemograma mensual si se mantiene.",sorpresa:false,cfs_min:1},
+  /* FIX v3.2: Nitrofurantoína — alias sin acento duplicado */
+  {name:"Nitrofurantoína",aliases:["nitrofurantoina"],group:"Antibiótico",risk:"Toxicidad pulmonar/hepática. Sin eficacia si FG<30.",renal:"Contraindicada FG<30",priority:"Media",ac:0,guias:["PRISCUS 2.0","EU7PIM"],note:"No usar en ERC. Alt: Fosfomicina.",action:"Suspender si FG<30. Alt: Fosfomicina según antibiograma.",taper:null,monitor:"Función pulmonar/hepática si uso prolongado.",sorpresa:false,cfs_min:1},
+  {name:"Clometiazol",aliases:["clometiazol"],group:"Hipnótico",risk:"Depresión respiratoria, dependencia rápida, sedación profunda.",renal:"Reducir dosis",priority:"Alta",ac:1,guias:["PRISCUS 2.0","EU7PIM"],note:"Evitar. Alt: Mirtazapina 7.5mg o Melatonina LP 2mg.",action:"Tapering gradual. Sustituir por alternativa.",taper:{steps:["Reducir 25% semanal.","Alt: Mirtazapina 7.5mg o Melatonina LP 2mg."]},monitor:"Calidad del sueño y estado respiratorio.",sorpresa:false,cfs_min:1},
+  {name:"Tizanidina",aliases:["tizanidina"],group:"Relajante muscular",risk:"Hipotensión severa, sedación. Alto riesgo de síncope.",renal:"No requiere",priority:"Media",ac:1,guias:["Beers","EU7PIM"],note:"Alto riesgo de síncope. Alt: fisioterapia.",action:"Suspender con reducción gradual.",taper:{steps:["Reducir 25% semanal.","Monitorizar PA ortostática."]},monitor:"PA ortostática semanal.",sorpresa:false,cfs_min:1}
+];
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 2 ░░  PURE CALCULATION FUNCTIONS
+═══════════════════════════════════════════════════════════════════════ */
+
+function calcCrCl(age, weight, creatinine, sex) {
+  if (!age || !weight || !creatinine) return null;
+  let v = ((140 - age) * weight) / (72 * creatinine);
+  if (sex === 'female') v *= 0.85;
+  return Math.round(v);
+}
+
+function effectiveFG(inputs) {
+  return inputs.fgDirect || calcCrCl(inputs.age, inputs.weight, inputs.crea, inputs.sex);
+}
+
+function parseMedLines(txt) {
+  return txt.split('\n').map(l => l.trim()).filter(Boolean);
+}
+
+function extractDose(line) {
+  var m = line.match(/[\d.,]+\s*(mg|mcg|ml|g|ui|iu)/i);
+  return m ? m[0] : '';
+}
+
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* ── FIX v3.2 CHANGE 1: \b word-boundary RegExp — universally compatible ──
+   Lookbehinds (?<! ) crash on IE11 and older Chromium (hospital kiosks).
+   Since normalize() already strips all non-[a-z0-9 ] characters, \b
+   reliably marks word boundaries between letter/digit and space/string-end.
+   Multi-word aliases use \s+ internally to absorb spacing variations.
+─────────────────────────────────────────────────────────────────────── */
+function matchLine(line) {
+  var normLine = normalize(line);
+  var hits = DRUG_DB.filter(function(d) {
+    return d.aliases.some(function(alias) {
+      var normAlias = normalize(alias);
+      var escaped   = normAlias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var pattern   = new RegExp('\\b' + escaped.replace(/ /g, '\\s+') + '\\b', 'i');
+      return pattern.test(normLine);
+    });
+  });
+  if (hits.length === 0) {
+    console.warn('[CDSS] Fármaco no reconocido: "' + line + '" (normalizado: "' + normLine + '")');
+  }
+  return hits;
+}
+
+function effectivePriority(drug, cfs, sorpresa) {
+  if (drug.priority === 'Alta') return 'Alta';
+  if (sorpresa && drug.sorpresa) return 'Alta';
+  if (cfs && cfs >= drug.cfs_min && drug.cfs_min > 1) return 'Alta';
+  return drug.priority;
+}
+
+function calculateAll(inputs) {
+  var fg    = effectiveFG(inputs);
+  var lines = parseMedLines(inputs.medsText);
+  var unrecognized = [], matched = [];
+
+  lines.forEach(function(line) {
+    var hits = matchLine(line);
+    if (hits.length === 0) { unrecognized.push(line); return; }
+    hits.forEach(function(drug) {
+      if (!matched.find(function(m){ return m.name === drug.name; })) {
+        matched.push(Object.assign({}, drug, {
+          inputLine:    line,
+          dose:         extractDose(line.toLowerCase()),
+          effPriority:  effectivePriority(drug, inputs.cfs, inputs.sorpresa)
+        }));
+      }
+    });
+  });
+
+  var highRisk = matched.filter(function(d){ return d.effPriority === 'Alta'; });
+  var totalAC  = matched.reduce(function(s, d){ return s + d.ac; }, 0);
+  var groups   = matched.reduce(function(acc, d){
+    if (acc.indexOf(d.group) === -1) acc.push(d.group); return acc;
+  }, []);
+
+  var alerts      = buildAlerts(inputs, fg, matched, totalAC);
+  var startAlerts = buildStartAlerts(inputs, matched);
+  var depPlan     = buildDepPlan(matched);
+
+  return { inputs:inputs, fg:fg, matched:matched, unrecognized:unrecognized,
+    metrics:{ highRisk:highRisk.length, total:matched.length, totalAC:totalAC, fg:fg },
+    groups:groups, alerts:alerts, startAlerts:startAlerts, depPlan:depPlan };
+}
+
+function buildAlerts(inp, fg, matched, totalAC) {
+  var a = [], cfs = inp.cfs || 0;
+
+  if (inp.sorpresa || cfs >= 7) {
+    a.push({type:'crit',ico:'🔴',title:'Pronóstico limitado / Fragilidad severa (CFS ≥ 7)',
+      body:'Indicación imperativa de suspender tratamientos preventivos: estatinas, antihipertensivos agresivos, ADOs sulfonilureas, bisfosfonatos. El tiempo para obtener beneficio supera la esperanza de vida estimada.'});
+  }
+  if (totalAC >= 3) {
+    a.push({type:'crit',ico:'🧠',title:'Carga anticolinérgica elevada (total: ' + totalAC + ')',
+      body:'Carga ≥3 asociada a delirio, deterioro cognitivo acelerado, caídas y retención urinaria. Priorizar eliminación de fármacos con AC=3 (Amitriptilina, Oxibutinina, Prometazina, Difenhidramina).'});
+  } else if (totalAC === 2) {
+    a.push({type:'warn',ico:'⚠',title:'Carga anticolinérgica moderada (total: ' + totalAC + ')',
+      body:'Carga 2 ya asociada a efectos cognitivos en ancianos frágiles. Revisar todos los fármacos con AC≥1.'});
+  }
+  if (fg !== null && fg < 30) {
+    a.push({type:'crit',ico:'🔴',title:'ERC avanzada: FG ' + fg + ' mL/min',
+      body:'Contraindicación o ajuste urgente: AINEs, Dabigatrán, Nitrofurantoína, Metformina, ADOs sulfonilureas. Recalcular en cada cambio de medicación.'});
+  } else if (fg !== null && fg < 50) {
+    a.push({type:'warn',ico:'⚠',title:'Función renal reducida: FG ' + fg + ' mL/min',
+      body:'Ajustar Digoxina (máx 0.125mg/día), evitar Glibenclamida (FG<50), precaución con AINEs y ADOs. Revisar en cada cambio.'});
+  }
+  if (inp.demencia && inp.caidas) {
+    a.push({type:'crit',ico:'🚨',title:'Demencia + Alto riesgo de caídas',
+      body:'Prioridad máxima: deprescribing de BZRA, antipsicóticos y anticolinérgicos. Cada grupo multiplica el riesgo de fractura de cadera y mortalidad.'});
+  }
+  if (inp.parkinson) {
+    var pimPar = matched.filter(function(d){
+      return ['metoclopramida','prometazina','haloperidol','risperidona','olanzapina','quetiapina']
+        .some(function(n){ return d.name.toLowerCase().indexOf(n) !== -1; });
+    });
+    if (pimPar.length) {
+      a.push({type:'crit',ico:'🧬',title:'Parkinson/Parkinsonismo + bloqueante dopaminérgico (' + pimPar.map(function(d){return d.name;}).join(', ') + ')',
+        body:'Contraindicación absoluta. Riesgo de empeoramiento motor grave e irreversible. Suspender inmediatamente bajo supervisión neurológica.'});
+    }
+  }
+  if (inp.demencia && inp.parkinson) {
+    a.push({type:'crit',ico:'⚠',title:'Demencia + Parkinsonismo: combinación de alto riesgo',
+      body:'Evitar todos los fármacos con acción dopaminérgica bloqueante. Evitar anticolinérgicos. Revisión neurológica especializada recomendada.'});
+  }
+  var hasBZRA = matched.some(function(d){ return d.group === 'BZRA'; });
+  var hasAP   = matched.some(function(d){ return d.group === 'Antipsicótico'; });
+  if (hasBZRA && hasAP) {
+    a.push({type:'crit',ico:'💊',title:'Combinación BZRA + Antipsicótico (STOPP criterio)',
+      body:'Doble sedación central. Riesgo muy alto de caídas, delirio y mortalidad. Revisar ambos grupos: deprescribing escalonado.'});
+  }
+  if (inp.diabetes && inp.hba1c && inp.hba1c < 7) {
+    a.push({type:'warn',ico:'📉',title:'HbA1c por debajo del objetivo en frágil (' + inp.hba1c + '%)',
+      body:'En pacientes frágiles el objetivo es HbA1c <8.5%. HbA1c <7% sugiere sobretratamiento: riesgo de hipoglucemia letal. Revisar ADOs y ajustar objetivo glucémico.'});
+  }
+  if (inp.diabetes && inp.hba1c && inp.hba1c >= 7 && inp.hba1c < 7.5 && cfs >= 5) {
+    a.push({type:'warn',ico:'⚠',title:'HbA1c ajustada: posible sobretratamiento en paciente frágil (' + inp.hba1c + '%)',
+      body:'En fragilidad moderada-severa, objetivo HbA1c 7.5-8.5%. Considerar reducción de ADOs para evitar hipoglucemias.'});
+  }
+  if (inp.sbp && inp.sbp < 160 && inp.age && inp.age >= 80 && inp.hta) {
+    a.push({type:'warn',ico:'💉',title:'PAS ' + inp.sbp + ' mmHg en mayor de 80 años con HTA tratada',
+      body:'PAS <160 en >80 años: valorar retirada de al menos un antihipertensivo (especialmente alfa-bloqueantes y diuréticos). Riesgo de hipotensión ortostática y síncopes.'});
+  }
+  var byGroup = {};
+  matched.forEach(function(d){ byGroup[d.group] = byGroup[d.group] || []; byGroup[d.group].push(d.name); });
+  Object.keys(byGroup).forEach(function(g){
+    var names = byGroup[g];
+    if (names.length > 1 && ['BZRA','Antipsicótico','AINE','IBP','Antidepresivo'].indexOf(g) !== -1) {
+      a.push({type:'warn',ico:'🔁',title:'Duplicidad terapéutica: ' + g,
+        body:'Se detectan ' + names.length + ' fármacos del mismo grupo: ' + names.join(', ') + '. Revisar indicaciones y eliminar el de mayor riesgo.'});
+    }
+  });
+  if ((hasBZRA || hasAP) && (inp.caidas || (inp.age && inp.age >= 75))) {
+    a.push({type:'warn',ico:'🚶',title:'BZRA y/o Antipsicóticos con riesgo de caídas (PRISCUS)',
+      body:'En pacientes ≥75 años o con alto riesgo de caídas, BZRA y antipsicóticos son PIM independientemente del CFS. Iniciar deprescribing.'});
+  }
+  return a;
+}
+
+/* ── CHANGE 2: CHA₂DS₂-VA score helper (sexo neutral, guías 2024) ──
+   C  Insuficiencia cardíaca / ECV estructural   → 1 pt  (usamos inp.ecv)
+   H  HTA                                         → 1 pt
+   A₂ Edad ≥75 años                              → 2 pts
+   D  Diabetes mellitus                           → 1 pt
+   S₂ Ictus / AIT / Tromboembolismo previo       → 2 pts  (usamos inp.ecv)
+   A  Edad 65-74 años                             → 1 pt
+   (Sexo femenino eliminado como factor de riesgo independiente en guías 2024)
+─────────────────────────────────────────────────────────────────────── */
+function calcCHA2DS2VA(inp) {
+  var score = 0;
+  var breakdown = [];
+  if (inp.ecv)  { score += 1; breakdown.push('IC/ECV estructural (+1)'); }
+  if (inp.hta)  { score += 1; breakdown.push('HTA (+1)'); }
+  if (inp.age >= 75)       { score += 2; breakdown.push('Edad ≥75 (+2)'); }
+  else if (inp.age >= 65)  { score += 1; breakdown.push('Edad 65-74 (+1)'); }
+  if (inp.diabetes) { score += 1; breakdown.push('Diabetes (+1)'); }
+  /* S₂: ictus/AIT/EAP → reutilizamos inp.ecv con peso 2 si ya no se contó
+     Para mayor precisión clínica separamos IC (peso 1) de ictus/EAP (peso 2);
+     con el checkbox único de ECV sumamos el máximo (2 pts) y descontamos el 1
+     ya sumado arriba para no duplicar */
+  if (inp.ecv) { score += 1; breakdown.push('Ictus/EAP previo (+1 adicional → total S₂=2)'); }
+  return { score: score, breakdown: breakdown };
+}
+
+/* ── START RULES — A2 y G1 ahora con CHA₂DS₂-VA dinámico ── */
+const START_RULES = [
+  {
+    id:'START-A1', priority:'Alta',
+    condition: function(inp, m) {
+      return inp.ecv && !m.some(function(d){ return d.group==='Anticoagulante'||d.group==='Antiagregante'; });
+    },
+    title:'Enfermedad CV establecida sin antiagregación ni anticoagulación',
+    body: function(inp) {
+      return 'Iniciar AAS 100mg/día o Clopidogrel 75mg/día si no existe anticoagulación activa ni contraindicación hemorrágica (ECV establecida: IAM previo, ictus isquémico, EAP).';
+    }
+  },
+  {
+    id:'START-A2', priority:'Alta',
+    condition: function(inp, m) {
+      if (!inp.fa) return false;
+      if (m.some(function(d){ return d.group==='Anticoagulante'; })) return false;
+      var cha = calcCHA2DS2VA(inp);
+      return cha.score >= 1;
+    },
+    title:'FA sin anticoagulación oral (CHA₂DS₂-VA ≥1)',
+    body: function(inp) {
+      var cha = calcCHA2DS2VA(inp);
+      return 'CHA&#8322;DS&#8322;-VA calculado: <strong>' + cha.score + ' puntos</strong> '
+        + '(' + (cha.breakdown.length ? cha.breakdown.join(', ') : 'sin factores adicionales') + '). '
+        + 'Puntuación ≥1 indica indicación de anticoagulación oral. '
+        + 'En anciano frágil: <strong>Apixabán 2.5mg/12h</strong> es el DOAC con mejor perfil de seguridad. '
+        + 'Evaluar riesgo hemorrágico (HAS-BLED) antes de prescribir.';
+    }
+  },
+  {
+    id:'START-A3', priority:'Alta',
+    condition: function(inp, m) {
+      return inp.ecv && !m.some(function(d){ return d.group==='Estatina'; });
+    },
+    title:'Enfermedad CV establecida sin estatina (prevención secundaria)',
+    body: function() {
+      return 'En prevención secundaria la estatina reduce mortalidad CV independientemente del colesterol basal. Valorar Atorvastatina 40mg si CFS ≤6 y esperanza de vida >1 año. Suspender si CFS ≥7.';
+    }
+  },
+  {
+    id:'START-A4', priority:'Media',
+    condition: function(inp, m) {
+      return inp.hta && inp.age >= 65 && !m.some(function(d){ return d.group==='Antihipertensivo'; });
+    },
+    title:'HTA documentada sin tratamiento antihipertensivo',
+    body: function() {
+      return 'HTA ≥65 años con PAS >160 mmHg mantenida requiere tratamiento. Primera línea en anciano: Amlodipino 5mg o Perindopril 5mg. Evitar alfa-bloqueantes como primera opción.';
+    }
+  },
+  {
+    id:'START-C1', priority:'Alta',
+    condition: function(inp, m) {
+      return inp.depresion && !m.some(function(d){ return d.group==='Antidepresivo' && d.priority!=='Alta'; });
+    },
+    title:'Depresión documentada sin antidepresivo apropiado',
+    body: function() {
+      return 'Iniciar ISRS de bajo riesgo anticolinérgico: Sertralina 25-50mg/día (primera elección en anciano). Revisar respuesta a las 6-8 semanas. Mirtazapina 15mg noche si hay insomnio asociado.';
+    }
+  },
+  {
+    id:'START-C2', priority:'Media',
+    condition: function(inp, m) {
+      return inp.demencia && inp.cfs <= 6 && !m.some(function(d){ return d.group==='iAchE'; });
+    },
+    title:'Demencia leve-moderada (CFS ≤6) sin inhibidor de colinesterasa',
+    body: function() {
+      return 'Demencia tipo Alzheimer o mixta de grado leve-moderado se beneficia de iAchE: Donepezilo 5-10mg/día o Rivastigmina 4.6mg/24h (parche). Revisar FC antes de iniciar.';
+    }
+  },
+  {
+    id:'START-D1', priority:'Alta',
+    condition: function(inp, m) {
+      return inp.diabetes && inp.hba1c && inp.hba1c > 8.5 && !m.some(function(d){ return d.group==='ADO'; });
+    },
+    title:'Diabetes con HbA1c >8.5% sin tratamiento antidiabético activo',
+    body: function() {
+      return 'HbA1c >8.5% en diabético frágil requiere revisión del tratamiento. Iniciar o ajustar: Metformina 500mg (si FG >45), Gliclazida MR 30mg, o DPP-4i. Objetivo: HbA1c <8.5% en paciente frágil.';
+    }
+  },
+  {
+    id:'START-E1', priority:'Media',
+    condition: function(inp, m) {
+      if (!inp.osteoporosis) return false;
+      return !m.some(function(d){
+        return ['calcio','colecalciferol','vitamina d','vit d','vitd','calcifediol','calcitriol']
+          .some(function(k){ return normalize(d.name).indexOf(normalize(k)) !== -1; });
+      });
+    },
+    title:'Osteoporosis sin calcio ni vitamina D',
+    body: function() {
+      return 'Suplementar con Calcio 500-1000mg/día + Vitamina D3 800-2000 UI/día. Calcifediol 266mcg/semana como alternativa en déficit severo o malabsorción. Ajustar dosis según niveles de 25-OH-vitamina D.';
+    }
+  },
+  {
+    id:'START-E2', priority:'Alta',
+    condition: function(inp, m) {
+      if (!inp.osteoporosis || inp.cfs > 6) return false;
+      return !m.some(function(d){
+        return ['alendronato','risedronato','ibandronato','bifosfonato','denosumab','teriparatida','zolendronico','zoledronico']
+          .some(function(k){ return normalize(d.name).indexOf(normalize(k)) !== -1; });
+      });
+    },
+    title:'Osteoporosis sin terapia específica antiosteoporótica (CFS ≤6)',
+    body: function() {
+      return 'Iniciar bifosfonato oral (Alendronato 70mg/semana) si no hay contraindicación GI y FG >35 mL/min. Alternativa: Denosumab 60mg/6 meses (no requiere ajuste renal). Asociar siempre calcio + vitamina D.';
+    }
+  },
+  {
+    id:'START-F1', priority:'Media',
+    condition: function(inp, m) {
+      if (!inp.erc || inp.age < 65) return false;
+      return !m.some(function(d){
+        return normalize(d.name).indexOf('hierro')!== -1 ||
+               normalize(d.name).indexOf('eritropoyetina')!== -1 ||
+               normalize(d.name).indexOf('darbepoetina')!== -1;
+      });
+    },
+    title:'ERC en anciano: considerar corrección de anemia si documentada',
+    body: function() {
+      return 'En ERC con Hb <10 g/dL: revisar ferropenia (hierro oral si ferritina <100) y necesidad de agente estimulador de eritropoyesis. Coordinar con Nefrología si FG <30 mL/min.';
+    }
+  },
+  {
+    id:'START-G1', priority:'Alta',
+    condition: function(inp, m) {
+      if (!inp.fa || inp.age < 75) return false;
+      if (m.some(function(d){ return d.group==='Anticoagulante'; })) return false;
+      var cha = calcCHA2DS2VA(inp);
+      return cha.score >= 1;
+    },
+    title:'FA en mayor de 75 años sin anticoagulación — riesgo embolígeno muy alto',
+    body: function(inp) {
+      var cha = calcCHA2DS2VA(inp);
+      return 'CHA&#8322;DS&#8322;-VA: <strong>' + cha.score + ' puntos</strong> '
+        + '(' + (cha.breakdown.length ? cha.breakdown.join(', ') : 'edad ≥75 ya suma 2 pts') + '). '
+        + 'Paciente ≥75 años con FA: riesgo embolígeno muy alto. '
+        + '<strong>Apixabán 2.5mg/12h</strong> reduce ictus y mortalidad con menor riesgo de sangrado que warfarina en esta población. '
+        + 'Valorar función renal y escala HAS-BLED.';
+    }
+  }
+];
+
+function buildStartAlerts(inp, matched) {
+  return START_RULES
+    .filter(function(rule){
+      try { return rule.condition(inp, matched); } catch(e){ return false; }
+    })
+    .map(function(rule){
+      return {
+        type:     'start',
+        priority: rule.priority,
+        ico:      '⚡',
+        title:    rule.id + ' · ' + rule.title,
+        body:     typeof rule.body === 'function' ? rule.body(inp) : rule.body
+      };
+    });
+}
+
+function buildDepPlan(matched) {
+  var seen = {}, out = [];
+  ['Alta','Media','Baja'].forEach(function(p){
+    matched.filter(function(d){ return d.effPriority === p; }).forEach(function(d){
+      if (!seen[d.name]) { seen[d.name] = true; out.push(d); }
+    });
+  });
+  return out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 3 ░░  VALIDATION
+═══════════════════════════════════════════════════════════════════════ */
+function validateInputs() {
+  var errs = [];
+  var v = function(id){ return document.getElementById(id).value; };
+  var n = function(id){ return parseFloat(v(id)); };
+  if (v('age')    && (n('age')<18   || n('age')>115))  errs.push("Edad: 18–115 años.");
+  if (v('weight') && (n('weight')<20|| n('weight')>300))errs.push("Peso: 20–300 kg.");
+  if (v('crea')   && (n('crea')<0.1 || n('crea')>25))  errs.push("Creatinina: 0.1–25 mg/dL.");
+  if (v('fg_d')   && (n('fg_d')<1   || n('fg_d')>200)) errs.push("FG directo: 1–200 mL/min.");
+  if (v('hba1c')  && (n('hba1c')<3  || n('hba1c')>20)) errs.push("HbA1c: 3–20%.");
+  if (v('sbp')    && (n('sbp')<60   || n('sbp')>300))  errs.push("PAS: 60–300 mmHg.");
+  if (!v('meds').trim()) errs.push("Introduce al menos un fármaco.");
+  document.getElementById('val-msg').textContent = errs.join(' | ');
+  return errs.length === 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 4 ░░  INPUT COLLECTION
+═══════════════════════════════════════════════════════════════════════ */
+function collectInputs() {
+  var n = function(id){ var v=parseFloat(document.getElementById(id).value); return isNaN(v)?null:v; };
+  var b = function(id){ return document.getElementById(id).checked; };
+  return {
+    age:n('age'), sex:document.getElementById('sex').value,
+    weight:n('weight'), sbp:n('sbp'),
+    fgDirect:n('fg_d'), crea:n('crea'), hba1c:n('hba1c'),
+    cfs:parseInt(document.getElementById('cfs').value)||null,
+    sorpresa:b('sorpresa'),
+    demencia:b('ch_dem'), caidas:b('ch_cai'), diabetes:b('ch_dia'), fa:b('ch_fa'),
+    hta:b('ch_hta'), erc:b('ch_erc'), depresion:b('ch_dep'), insomnio:b('ch_ins'),
+    parkinson:b('ch_par'), ecv:b('ch_cv'), osteoporosis:b('ch_ost'),
+    medsText:document.getElementById('meds').value
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 5 ░░  RENDERING
+═══════════════════════════════════════════════════════════════════════ */
+var CFS_LABELS = {1:"Muy activo",2:"Bien",3:"Manejando bien",4:"Vulnerable",5:"Fragilidad leve",
+  6:"Fragilidad moderada",7:"Fragilidad severa",8:"Muy severamente frágil",9:"Terminal (<6m)"};
+var CFS_COLORS = function(v){ return v<=3?'#166534':v===4?'#b45309':v<=6?'#dc2626':'#7f1d1d'; };
+var CFS_BGS    = function(v){ return v<=3?'#d1fae5':v===4?'#fef3c7':v<=6?'#fee2e2':'#fce7f3'; };
+
+function renderMetrics(state) {
+  var m=state.metrics, inp=state.inputs;
+  var crclCls=m.fg!=null&&m.fg<30?'mc-r':m.fg!=null&&m.fg<50?'mc-a':'mc-b';
+  var acCls=m.totalAC>=3?'mc-r':m.totalAC>=2?'mc-a':'mc-n';
+  var cfs=inp.cfs;
+  var cfsCls=!cfs?'mc-n':cfs<=3?'mc-g':cfs<=4?'mc-a':'mc-r';
+  document.getElementById('r-metrics').innerHTML =
+    '<div class="mc-grid">' +
+      '<div class="mc '+(m.highRisk>0?'mc-r':'mc-g')+'"><div class="v">'+m.highRisk+'</div><div class="l">PIMs alta prioridad</div></div>' +
+      '<div class="mc mc-a"><div class="v">'+m.total+'</div><div class="l">PIMs detectados total</div></div>' +
+      '<div class="mc '+crclCls+'"><div class="v" style="font-size:19px">'+(m.fg!=null?m.fg+' mL/min':'N/D')+'</div><div class="l">FG (Cockcroft-Gault)</div></div>' +
+      '<div class="mc '+acCls+'"><div class="v">'+m.totalAC+'</div><div class="l">Carga AC total</div></div>' +
+      '<div class="mc '+cfsCls+'"><div class="v">'+(cfs?'CFS '+cfs:'N/D')+'</div><div class="l">'+(cfs?CFS_LABELS[cfs]:'Fragilidad')+'</div></div>' +
+    '</div>';
+  var cfsEl = document.getElementById('r-cfs');
+  if (cfs) {
+    var cols=['#639922','#639922','#639922','#ef9f27','#e24b4a','#e24b4a','#a32d2d','#a32d2d','#7f1d1d'];
+    var segs=Array.from({length:9},function(_,i){
+      return '<div class="cfs-seg" style="background:'+(i<cfs?cols[i]:'#e2e8f0')+'"></div>';
+    }).join('');
+    cfsEl.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:var(--c-slate);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Clinical Frailty Scale</div>' +
+      '<div class="cfs-bar">'+segs+'</div>' +
+      '<div style="margin-top:5px;display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:8px;background:'+CFS_BGS(cfs)+'">' +
+        '<span style="font-size:17px;font-weight:700;color:'+CFS_COLORS(cfs)+'">CFS '+cfs+'</span>' +
+        '<span style="font-size:13px;color:'+CFS_COLORS(cfs)+';font-weight:600">'+CFS_LABELS[cfs]+'</span>' +
+      '</div>';
+  } else {
+    cfsEl.innerHTML = '<p style="color:#94a3b8;font-size:13px">CFS no introducido.</p>';
+  }
+}
+
+function alertHTML(a) {
+  var cls = {crit:'alrt-crit',warn:'alrt-warn',info:'alrt-info',start:'alrt-start'}[a.type]||'alrt-info';
+  var badge = a.type==='start' && a.priority
+    ? '<span style="font-size:12px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;background:'+(a.priority==='Alta'?'#fee2e2':a.priority==='Media'?'#fef3c7':'#dcfce7')+';color:'+(a.priority==='Alta'?'#b91c1c':a.priority==='Media'?'#b45309':'#166534')+'">'+a.priority+'</span>'
+    : '';
+  return '<div class="alrt '+cls+'">' +
+    '<div class="alrt-ico">'+a.ico+'</div>' +
+    '<div><div class="alrt-t">'+a.title+badge+'</div><div class="alrt-b">'+a.body+'</div></div>' +
+  '</div>';
+}
+
+function renderAlerts(state) {
+  var stopAlerts=state.alerts, startAlerts=state.startAlerts;
+  var unrecHtml = state.unrecognized.length
+    ? '<div class="unrec-box"><strong>⚠ Fármacos no reconocidos en la base de datos ('+state.unrecognized.length+'):</strong>' +
+      state.unrecognized.map(function(u){ return '<span style="background:#fef3c7;padding:1px 7px;border-radius:4px;margin:2px;display:inline-block">"'+u+'"</span>'; }).join('') +
+      '<br><small>Revise la ortografía o añádalos manualmente.</small></div>'
+    : '';
+  var stoppBlock = stopAlerts.length
+    ? '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--c-red);margin-bottom:6px">⛔ Alertas STOPP / Beers / PRISCUS ('+stopAlerts.length+')</div>' +
+      stopAlerts.map(alertHTML).join('')
+    : '';
+  var divider = (stopAlerts.length && startAlerts.length)
+    ? '<div style="border-top:1.5px dashed #6ee7b7;margin:14px 0 10px"></div>' : '';
+  var startBlock = startAlerts.length
+    ? '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--c-green);margin-bottom:6px">⚡ Alertas START — Tratamientos potencialmente omitidos ('+startAlerts.length+')</div>' +
+      startAlerts.map(alertHTML).join('')
+    : '';
+  var empty = (!stopAlerts.length && !startAlerts.length && !state.unrecognized.length)
+    ? '<p style="color:#94a3b8;font-size:13px">No se han detectado alertas con los datos introducidos.</p>' : '';
+  document.getElementById('r-alerts').innerHTML = [unrecHtml, stoppBlock, divider, startBlock, empty].join('');
+}
+
+function acDots(n) {
+  return '<div class="acd">' +
+    Array.from({length:3},function(_,i){
+      return '<span class="ad ad'+(i<n?n:0)+'" style="opacity:'+(i<n?1:.15)+'"></span>';
+    }).join('') +
+    ' <span style="font-size:12px;margin-left:2px">'+n+'</span></div>';
+}
+
+function renderDrugTable(drugs) {
+  if (!drugs.length) {
+    document.getElementById('r-table').innerHTML='<p style="color:#94a3b8;font-size:13px">No hay fármacos en esta categoría.</p>';
+    return;
+  }
+  var rows = drugs.map(function(d){
+    var pc=d.effPriority==='Alta'?'p-r':d.effPriority==='Media'?'p-a':'p-g';
+    return '<tr><td><strong>'+d.name+'</strong>'+(d.dose?'<br><span style="font-size:12px;color:#64748b">'+d.dose+'</span>':'')+'</td>' +
+      '<td>'+d.group+'</td>' +
+      '<td style="max-width:190px">'+d.risk+'</td>' +
+      '<td style="max-width:130px">'+d.renal+'</td>' +
+      '<td><span class="pill '+pc+'">'+d.effPriority+'</span></td>' +
+      '<td>'+acDots(d.ac)+'</td>' +
+      '<td style="max-width:160px">'+d.note+'</td>' +
+      '<td>'+d.guias.map(function(g){ return '<span class="gtag">'+g+'</span>'; }).join('')+'</td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('r-table').innerHTML =
+    '<div class="tw"><table><thead><tr>' +
+    '<th>Fármaco</th><th>Grupo</th><th>Riesgo geriátrico</th><th>Ajuste renal</th>' +
+    '<th>Prioridad</th><th>AC</th><th>Nota clínica</th><th>Guías</th>' +
+    '</tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function renderTabs(state) {
+  var all=state.matched, groups=state.groups;
+  var tabsHtml = ['<button class="tab on" onclick="switchTab(\'all\',this)">Todos ('+all.length+')</button>']
+    .concat(groups.map(function(g){
+      var cnt=all.filter(function(d){ return d.group===g; }).length;
+      return '<button class="tab" onclick="switchTab(\''+g+'\',this)">'+g+' ('+cnt+')</button>';
+    })).join('');
+  document.getElementById('r-tabs').innerHTML = tabsHtml;
+}
+
+function renderDepPlan(state) {
+  var plan=state.depPlan;
+  if (!plan.length) {
+    document.getElementById('r-dep').innerHTML='<p style="color:#94a3b8;font-size:13px">No se han identificado fármacos con plan de deprescribing activo.</p>';
+    return;
+  }
+  var html=plan.map(function(d,i){
+    var pc=d.effPriority==='Alta'?'p-r':'p-a';
+    var stepsHtml=d.taper
+      ?'<div class="dep-steps" style="margin-bottom:5px"><strong style="font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--c-slate)">Protocolo de tapering:</strong><ol>'+d.taper.steps.map(function(s){ return '<li>'+s+'</li>'; }).join('')+'</ol></div>'
+      :'';
+    return '<div class="dep-item"><div class="dep-num">'+(i+1)+'</div><div>' +
+      '<div class="dep-t">'+d.name+' <span class="pill '+pc+'">'+d.effPriority+'</span> <span class="pill p-n">'+d.group+'</span></div>' +
+      '<div class="dep-a">'+d.action+'</div>' +
+      stepsHtml +
+      '<div class="dep-mon">🔍 Monitorización: '+d.monitor+'</div>' +
+    '</div></div>';
+  }).join('');
+  document.getElementById('r-dep').innerHTML=html;
+}
+
+function renderMonitoring() {
+  var rows=[
+    {g:"BZRA / Z-drugs / Antipsicóticos",v:"Sueño, ansiedad, agitación, PA ortostática",f:"Cada 1-2 semanas (tapering)",e:"Alerta diurna recuperada; reducción de caídas"},
+    {g:"Inhibidores AChE / Memantina",v:"Cognición (MMSE/MoCA), FC, GI",f:"Cada 4 semanas (Sydney)",e:"Sin bradicardia; estabilidad funcional"},
+    {g:"Estatinas",v:"Dolor muscular, funcionalidad",f:"1 mes tras suspensión",e:"Reducción mialgias; simplificación"},
+    {g:"Anticolinérgicos (AC≥2)",v:"Estado cognitivo, retención urinaria, visión",f:"Mensual",e:"Mejora MMSE; alivio síntomas AC"},
+    {g:"AINEs",v:"Dolor, FG, PA",f:"1 semana",e:"Dolor controlado con alternativas; mejora renal"},
+    {g:"ADOs / Insulina",v:"HbA1c, glucemia capilar",f:"Cada 3 meses",e:"HbA1c <8.5% sin hipoglucemias"},
+    {g:"Antihipertensivos",v:"PA ortostática y reposo, síncope",f:"Cada 3 meses (semanal si cambio reciente)",e:"PAS 140-160 sin hipotensión ortostática"},
+    {g:"Anticoagulantes (AVK)",v:"INR, FG, sangrado",f:"INR mensual mínimo",e:"INR 2-3 estable; sin hemorragias"},
+    {g:"Digoxina",v:"Niveles plasmáticos, FG, ECG",f:"Mensual",e:"Nivel <1ng/mL; sin toxicidad"},
+    {g:"Antidepresivos ISRS",v:"Na+ sérico, conducta, cognición",f:"Mensual",e:"Na+>135; depresión controlada"}
+  ];
+  document.getElementById('r-mon').innerHTML =
+    '<div class="tw"><table><thead><tr>' +
+    '<th>Grupo farmacológico</th><th>Variable de revisión</th><th>Frecuencia</th><th>Indicador de éxito</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(function(r){
+      return '<tr><td style="font-weight:600">'+r.g+'</td><td>'+r.v+'</td><td style="white-space:nowrap">'+r.f+'</td><td style="color:var(--c-green)">'+r.e+'</td></tr>';
+    }).join('') +
+    '</tbody></table></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 6 ░░  CONTROLLER
+═══════════════════════════════════════════════════════════════════════ */
+var _state = null;
+
+function runAnalysis() {
+  if (!validateInputs()) return;
+  var inputs = collectInputs();
+  _state = calculateAll(inputs);
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('btn-exp').disabled = false;
+  renderMetrics(_state);
+  renderAlerts(_state);
+  renderTabs(_state);
+  renderDrugTable(_state.matched);
+  renderDepPlan(_state);
+  renderMonitoring();
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function switchTab(group, btn) {
+  if (!_state) return;
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  var drugs = group === 'all' ? _state.matched : _state.matched.filter(function(d){ return d.group===group; });
+  renderDrugTable(drugs);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 7 ░░  LOAD EXAMPLE & CLEAR
+═══════════════════════════════════════════════════════════════════════ */
+function loadExample() {
+  document.getElementById('age').value=83;
+  document.getElementById('weight').value=65;
+  document.getElementById('sex').value='female';
+  document.getElementById('crea').value=1.4;
+  document.getElementById('fg_d').value='';
+  document.getElementById('cfs').value=6;
+  document.getElementById('hba1c').value=8.2;
+  document.getElementById('sbp').value=148;
+  document.getElementById('sorpresa').checked=false;
+  ['dem','cai','dia','hta'].forEach(function(k){ document.getElementById('ch_'+k).checked=true; });
+  ['fa','erc','dep','ins','par','cv','ost'].forEach(function(k){ document.getElementById('ch_'+k).checked=false; });
+  document.getElementById('meds').value =
+    "Amitriptilina 25mg\nDiazepam 5mg\nGlibenclamida 5mg\nOmeprazol 40mg\nRisperidona 1mg\nAtorvastatin 40mg\nDigoxina 0.25mg\nOxibutinina 5mg\nDiclofenaco 75mg\nDoxazosina 4mg";
+  document.getElementById('val-msg').textContent='';
+}
+
+function clearAll() {
+  ['age','weight','crea','fg_d','hba1c','sbp'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('sex').value='male';
+  document.getElementById('cfs').value='';
+  document.getElementById('sorpresa').checked=false;
+  document.getElementById('meds').value='';
+  ['dem','cai','dia','fa','hta','erc','dep','ins','par','cv','ost'].forEach(function(k){ document.getElementById('ch_'+k).checked=false; });
+  document.getElementById('val-msg').textContent='';
+  document.getElementById('results').style.display='none';
+  document.getElementById('btn-exp').disabled=true;
+  _state=null;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ░░ SECTION 8 ░░  EXPORT REPORT
+   CHANGE 3a: sarcopenia note added below metrics grid in the PDF output
+═══════════════════════════════════════════════════════════════════════ */
+function exportReport() {
+  if (!_state) return;
+  var s=_state, inp=s.inputs, metrics=s.metrics, fg=s.fg;
+  var date=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  function alertBlock(a) {
+    var bgMap={crit:'#fee2e2',warn:'#fef3c7',info:'#dbeafe',start:'#d1fae5'};
+    var cMap ={crit:'#b91c1c',warn:'#b45309',info:'#1d4ed8',start:'#155e2e'};
+    var badge = a.type==='start' && a.priority
+      ? '<span style="font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px;background:'+(a.priority==='Alta'?'#fee2e2':a.priority==='Media'?'#fef3c7':'#dcfce7')+';color:'+(a.priority==='Alta'?'#b91c1c':a.priority==='Media'?'#b45309':'#166534')+'">'+a.priority+'</span>'
+      : '';
+    return '<div style="background:'+bgMap[a.type]+';border-left:4px solid '+cMap[a.type]+';border-radius:6px;padding:9px 12px;margin-bottom:7px">' +
+      '<div style="font-weight:700;color:'+cMap[a.type]+';font-size:12px">'+a.ico+' '+a.title+badge+'</div>' +
+      '<div style="font-size:12px;color:#334155;margin-top:2px">'+a.body+'</div>' +
+    '</div>';
+  }
+
+  var stoppHtml = s.alerts.length
+    ? '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#b91c1c;margin-bottom:5px">⛔ STOPP / Beers / PRISCUS ('+s.alerts.length+')</div>'+s.alerts.map(alertBlock).join('')
+    : '<p style="color:#94a3b8;font-size:12px">Sin alertas STOPP/Beers/PRISCUS.</p>';
+
+  var startHtml = s.startAlerts.length
+    ? '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#155e2e;margin:12px 0 5px">⚡ START — Tratamientos potencialmente omitidos ('+s.startAlerts.length+')</div>'+s.startAlerts.map(alertBlock).join('')
+    : '<p style="color:#94a3b8;font-size:12px">Sin alertas START detectadas.</p>';
+
+  var unrecHtml = s.unrecognized.length
+    ? '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px">' +
+      '<strong>⚠ Fármacos no reconocidos ('+s.unrecognized.length+'):</strong><br>' +
+      s.unrecognized.map(function(u){ return '<span style="background:#fef3c7;padding:1px 6px;border-radius:4px;margin:2px;display:inline-block">'+u+'</span>'; }).join('') +
+      '</div>' : '';
+
+  var drugRows = s.matched.map(function(d,i){
+    var pc=d.effPriority==='Alta'?'#b91c1c':d.effPriority==='Media'?'#b45309':'#166534';
+    return '<tr style="'+(i%2===1?'background:#f8fafc':'')+'">'+
+      '<td><strong>'+d.name+'</strong>'+(d.dose?' ('+d.dose+')':'')+'</td>'+
+      '<td>'+d.group+'</td><td>'+d.risk+'</td><td>'+d.renal+'</td>'+
+      '<td style="color:'+pc+';font-weight:700;text-align:center">'+d.effPriority+'</td>'+
+      '<td style="text-align:center">'+d.ac+'</td>'+
+      '<td>'+d.note+'</td><td>'+d.action+'</td>'+
+      '<td style="font-size:10px">'+(d.taper?d.taper.steps.join(' → '):'-')+'</td>'+
+      '<td>'+d.monitor+'</td><td>'+d.guias.join(', ')+'</td>'+
+    '</tr>';
+  }).join('') || '<tr><td colspan="11" style="color:#94a3b8;text-align:center">Ningún PIM detectado</td></tr>';
+
+  var depHtml = s.depPlan.map(function(d,i){
+    return '<div style="margin-bottom:11px;padding:9px 12px;background:#f8fafc;border-radius:6px;border-left:3px solid '+(d.effPriority==='Alta'?'#ef4444':'#f59e0b')+'">' +
+      '<div style="font-weight:700;font-size:12px">'+(i+1)+'. '+d.name+
+        '<span style="color:'+(d.effPriority==='Alta'?'#b91c1c':'#b45309')+'"> — '+d.effPriority+' prioridad</span></div>'+
+      '<div style="font-size:11px;margin-top:3px">'+d.action+'</div>'+
+      (d.taper?'<div style="font-size:10px;color:#475569;margin-top:3px"><strong>Tapering:</strong> '+d.taper.steps.join(' → ')+'</div>':'')+
+      '<div style="font-size:10px;color:#1d4ed8;margin-top:3px">📋 Monitorización: '+d.monitor+'</div>'+
+    '</div>';
+  }).join('') || '<p style="color:#94a3b8;font-size:12px">Sin plan de deprescribing identificado.</p>';
+
+  /* CHANGE 3a: sarcopenia block for printed report */
+  var sarcopeniaBlock =
+    '<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:9px 13px;margin:12px 0;font-size:12px;color:#78350f;line-height:1.5">' +
+    '⚠️ <strong>Nota clínica — FG y sarcopenia:</strong> En pacientes ancianos frágiles con sarcopenia, la creatinina sérica puede ser falsamente baja, sobreestimando el FG calculado por Cockcroft-Gault. Considere CKD-EPI o FG directo de laboratorio cuando haya sospecha de masa muscular reducida.' +
+    '</div>';
+
+  var html = '<!DOCTYPE html>\n<html lang="es"><head><meta charset="UTF-8">\n' +
+    '<title>Informe Deprescribing \u2013 '+date+'</title>\n' +
+    '<style>\n' +
+    '  body{font-family:\'Segoe UI\',sans-serif;font-size:12px;color:#1a1a2e;margin:28px 32px;line-height:1.45}\n' +
+    '  h1{font-size:17px;color:#1e3a5f;margin-bottom:3px}\n' +
+    '  h2{font-size:13px;color:#1e3a5f;margin:18px 0 7px;border-bottom:1.5px solid #e2e8f0;padding-bottom:4px}\n' +
+    '  .sub{font-size:11px;color:#475569;margin-bottom:16px;line-height:1.7}\n' +
+    '  .mg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:6px}\n' +
+    '  .mc{border-radius:7px;padding:10px;text-align:center}\n' +
+    '  .mc .v{font-size:20px;font-weight:700}.mc .l{font-size:10px;margin-top:2px}\n' +
+    '  table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px}\n' +
+    '  th{background:#1e3a5f;color:#fff;padding:6px 7px;text-align:left;font-size:10px;white-space:nowrap}\n' +
+    '  td{padding:5px 7px;border-bottom:1px solid #f1f5f9;vertical-align:top}\n' +
+    '  .tip{background:#e0f2fe;border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:11px;color:#0c4a6e}\n' +
+    '  .footer{margin-top:20px;font-size:10px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:8px}\n' +
+    '  @media print{.tip{display:none}body{margin:14px}}\n' +
+    '</style>\n</head><body>\n' +
+    '<div class="tip">💡 <strong>Para guardar como PDF:</strong> Ctrl+P → Destino: <em>Guardar como PDF</em></div>\n' +
+    '<h1>Informe de Optimización Terapéutica Geriátrica <span style="font-size:12px;background:#f59e0b;color:#1e3a5f;padding:2px 8px;border-radius:12px;font-weight:700">CDSS v3.2</span></h1>\n' +
+    '<div class="sub">\n' +
+    '  FARMACIA HOSPITALARIA · HOSPITAL UNIVERSITARIO PUERTO REAL<br>\n' +
+    '  Autor: Yeray Reyes de la Mata · <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a><br>\n' +
+    '  Fecha: <strong>'+date+'</strong> &nbsp;|&nbsp;\n' +
+    '  Paciente: '+(inp.age||'?')+' años, '+(inp.sex==='male'?'♂ Hombre':'♀ Mujer')+', '+(inp.weight||'?')+' kg &nbsp;|&nbsp;\n' +
+    '  FG: '+(fg!=null?fg+' mL/min':'N/D')+' &nbsp;|&nbsp;\n' +
+    '  '+(inp.cfs?'CFS '+inp.cfs+' ('+CFS_LABELS[inp.cfs]+')':'CFS no registrado')+'\n' +
+    '</div>\n' +
+    '<div class="mg">\n' +
+    '  <div class="mc" style="background:#fee2e2"><div class="v" style="color:#b91c1c">'+metrics.highRisk+'</div><div class="l" style="color:#7f1d1d">PIMs alta prioridad</div></div>\n' +
+    '  <div class="mc" style="background:#fef3c7"><div class="v" style="color:#b45309">'+metrics.total+'</div><div class="l" style="color:#78350f">PIMs detectados</div></div>\n' +
+    '  <div class="mc" style="background:#dbeafe"><div class="v" style="color:#1d4ed8;font-size:17px">'+(fg!=null?fg+' mL/min':'N/D')+'</div><div class="l" style="color:#1e3a5f">FG (Cockcroft-Gault)</div></div>\n' +
+    '  <div class="mc" style="background:'+(metrics.totalAC>=3?'#fee2e2':'#fef3c7')+'"><div class="v" style="color:'+(metrics.totalAC>=3?'#b91c1c':'#b45309')+'">'+metrics.totalAC+'</div><div class="l">Carga AC total</div></div>\n' +
+    '  <div class="mc" style="background:#f1f5f9"><div class="v" style="color:#334155;font-size:14px">'+(inp.sorpresa?'⚠ SÍ':'NO')+'</div><div class="l">Pregunta Sorpresa</div></div>\n' +
+    '</div>\n' +
+    sarcopeniaBlock + '\n' +   /* ← CHANGE 3a: injected here */
+    '<h2>Alertas clínicas — STOPP / Beers / PRISCUS</h2>\n' +
+    unrecHtml + stoppHtml + '\n' +
+    '<h2>Alertas START — Tratamientos potencialmente omitidos</h2>\n' +
+    startHtml + '\n' +
+    '<h2>Fármacos potencialmente inapropiados (PIM)</h2>\n' +
+    '<table><thead><tr><th>Fármaco</th><th>Grupo</th><th>Riesgo</th><th>Ajuste renal</th><th>Prioridad</th><th>AC</th><th>Nota</th><th>Acción</th><th>Tapering</th><th>Monitorización</th><th>Guías</th></tr></thead><tbody>'+drugRows+'</tbody></table>\n' +
+    '<h2>Plan de deprescribing priorizado</h2>\n' +
+    depHtml + '\n' +
+    '<div class="footer">Generado con Optimizador Terapéutico Geriátrico CDSS v3.2 · Criterios: Beers, STOPP/START, PRISCUS 2.0, EU7PIM · '+date+'</div>\n' +
+    '</body></html>';
+
+  var blobWorked = false;
+  try {
+    var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url;
+    a.download = 'informe_deprescribing_'+date.replace(/\//g,'-')+'.html';
+    if ('download' in a) {
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 15000);
+      blobWorked = true;
+    }
+  } catch(e) { console.warn('[CDSS] Blob download no disponible:', e); }
+
+  if (!blobWorked) {
+    var iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none';
+    document.body.appendChild(iframe);
+    iframe.onload = function() {
+      try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
+      catch(e) { console.error('[CDSS] Error al imprimir:', e); }
+      setTimeout(function(){ document.body.removeChild(iframe); }, 3000);
+    };
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(html);
+    iframe.contentDocument.close();
+  }
+}
+</script>
+</body>
+</html>
