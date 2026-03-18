@@ -6,7 +6,10 @@
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-J830XBBQKF');
+
+gtag('config', 'G-J830XBBQKF', {
+  page_path: location.pathname,
+});
 </script>
 
 <meta charset="UTF-8">
