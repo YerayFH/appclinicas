@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J830XBBQKF', { page_path: location.pathname });
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Protocolo de urgencias toxicológicas y guía de antídotos del Hospital Universitario Puerto Real. Farmacia Hospitalaria.">
+  <title>Toxicología Clínica — H.U. Puerto Real</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --accent:#2E86C1;--accent-light:#D6EAF8;--accent-mid:#AED6F1;
+      --header-bg:#EBF5FB;--bg:#F4F9FD;--bg2:#E8F4FB;--bg3:#D6EAF8;
+      --card:#FFFFFF;--txt:#1A2E3D;--txt2:#5D7A8A;--txt3:#94AEBB;
+      --brd:#C5DFF0;--brd2:#A8CCE3;--r:13px;--rs:9px;
+      --red:#C0392B;      --red-bg:#FDEDEC;   --red-txt:#7B241C;
+      --amber:#B7770D;    --amber-bg:#FEF9E7; --amber-txt:#7D6608;
+      --blue:#1A5276;     --blue-bg:#D6EAF8;  --blue-txt:#1A3A52;
+      --green:#1E8449;    --green-bg:#E9F7EF; --green-txt:#1D6A3A;
+      --teal:#0E6655;     --teal-bg:#E8F8F5;  --teal-txt:#0A5244;
+      --purple:#6C3483;   --purple-bg:#F5EEF8;--purple-txt:#512E5F;
+      --gray:#5D7A8A;
+    }
+    @media(prefers-color-scheme:dark){
+      :root{
+        --header-bg:#0F1D2A;--bg:#111E2B;--bg2:#172535;--bg3:#1D2E40;
+        --card:#172535;--brd:#243D56;--brd2:#2E5270;
+        --txt:#D6EAF8;--txt2:#8ABDD8;--txt3:#4E7A96;
+        --accent:#5BA7D9;--accent-light:#1D3448;--accent-mid:#2E5A7A;
+        --red:#F1948A;      --red-bg:#2C1210;   --red-txt:#F5B7B1;
+        --amber:#F0B27A;    --amber-bg:#2C1F08; --amber-txt:#FAD7A0;
+        --blue:#7FB3D3;     --blue-bg:#0D1F2D;  --blue-txt:#AED6F1;
+        --green:#76C89A;    --green-bg:#0A1F14; --green-txt:#A9DFBF;
+        --teal:#4DD0C4;     --teal-bg:#081A18;  --teal-txt:#A2D9D4;
+        --purple:#BB8FCE;   --purple-bg:#1A0E22;--purple-txt:#D7BDE2;
+        --gray:#8ABDD8;
+      }
+      .dash-card:hover,.mode-card:hover,.syn-card:hover,.ob:hover{background:var(--bg3)!important}
+      .az-btn:hover{background:var(--accent-light);color:var(--txt)!important;border-color:var(--accent)}
+      .btn-sm:hover{opacity:.8}
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:14px;line-height:1.5}
+    .app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+    .scr{display:none;padding:18px 16px 28px;flex:1;overflow-y:auto}
+    .scr.on{display:block}
+    .topbar{background:var(--header-bg);border-bottom:1px solid var(--brd);padding:10px 16px 8px;text-align:center;position:sticky;top:0;z-index:100}
+    .topbar-inst{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:1px}
+    .topbar-title{font-size:17px;font-weight:700;color:var(--txt);letter-spacing:-.2px}
+    .footer{background:var(--header-bg);border-top:1px solid var(--brd);padding:10px 16px;text-align:center}
+    .footer p{font-size:11px;color:var(--txt3);line-height:1.7}
+    .footer a{color:var(--accent);text-decoration:none}
+    h1{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-.2px;color:var(--txt)}
+    h2{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--txt)}
+    .sub{font-size:12px;color:var(--txt2);margin-bottom:18px;line-height:1.55}
+    .sec{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--txt3);margin:18px 0 9px}
+    .btn{display:block;width:100%;padding:12px 15px;border-radius:var(--r);border:1px solid var(--brd);background:var(--card);font-size:13px;font-weight:600;cursor:pointer;text-align:left;color:var(--txt);margin-bottom:8px;transition:background .12s,border-color .12s}
+    .btn:hover{background:var(--bg2);border-color:var(--brd2)}
+    .btn-p{background:var(--accent);color:#fff;border-color:var(--accent);text-align:center}
+    .btn-p:hover{opacity:.88;background:var(--accent)}
+    .btn-sm{padding:7px 12px;font-size:12px;width:auto;display:inline-block;margin:3px 3px 3px 0;border-radius:var(--rs);border:1.5px solid;cursor:pointer;font-weight:600;background:transparent;transition:opacity .12s}
+    .back{font-size:12px;color:var(--txt2);cursor:pointer;margin-bottom:16px;display:inline-flex;align-items:center;gap:4px;background:none;border:none;padding:4px 0;font-family:inherit;transition:color .1s}
+    .back:hover{color:var(--accent)}
+    .dash-grid{display:grid;gap:12px;margin:14px 0}
+    .dash-card{padding:22px 18px;border-radius:var(--r);border:1.5px solid var(--brd);background:var(--card);cursor:pointer;transition:all .16s;display:flex;align-items:flex-start;gap:16px;box-shadow:0 1px 4px rgba(46,134,193,.06)}
+    .dash-card:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px);box-shadow:0 4px 12px rgba(46,134,193,.13)}
+    .dash-icon{font-size:32px;flex-shrink:0;line-height:1;margin-top:2px}
+    .dash-card h3{font-size:15px;font-weight:700;margin-bottom:5px;color:var(--txt)}
+    .dash-card p{font-size:12px;color:var(--txt2);line-height:1.5}
+    .mode-grid3{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 20px}
+    .mode-card{padding:16px;border-radius:var(--r);border:1.5px solid var(--brd);background:var(--card);cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(46,134,193,.05)}
+    .mode-card:hover{border-color:var(--accent);background:var(--accent-light)}
+    .mode-card .mico{font-size:26px;flex-shrink:0;width:36px;text-align:center}
+    .mode-card-txt h3{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
+    .mode-card-txt p{font-size:11px;color:var(--txt2)}
+    .syn-list{display:grid;gap:8px;margin-bottom:20px}
+    .syn-card{padding:14px 16px;border-radius:var(--r);border:1.5px solid var(--brd);background:var(--card);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .14s}
+    .syn-card:hover{border-color:var(--accent);background:var(--accent-light)}
+    .syn-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .syn-card h4{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:1px}
+    .syn-card p{font-size:11px;color:var(--txt2)}
+    .sbar{display:flex;gap:5px;margin-bottom:6px}
+    .sd{height:5px;flex:1;border-radius:99px;background:var(--bg3)}
+    .sd.dn{background:var(--accent)}.sd.ac{background:var(--accent-mid)}
+    .qlb{font-size:11px;color:var(--txt3);margin-bottom:5px}
+    .qtt{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--txt)}
+    .quiz-nav{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+    .quiz-back{font-size:12px;color:var(--txt2);cursor:pointer;background:none;border:1px solid var(--brd);padding:5px 11px;border-radius:var(--rs);font-family:inherit;transition:all .12s}
+    .quiz-back:hover{background:var(--bg2);color:var(--txt)}
+    .ogrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .ob{padding:14px 10px;border-radius:var(--rs);border:1.5px solid var(--brd);background:var(--card);cursor:pointer;font-size:13px;font-weight:500;text-align:center;transition:all .13s;color:var(--txt);line-height:1.4}
+    .ob:hover{border-color:var(--accent);background:var(--accent-light)}
+    .ob:active{transform:scale(.97)}
+    .card{border-radius:var(--r);border:1px solid var(--brd);background:var(--card);overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(46,134,193,.04)}
+    .card-h{padding:13px 15px 10px}.card-b{padding:0 15px 14px}
+    .dv{height:1px;background:var(--brd)}
+    .row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--brd);font-size:12px;gap:10px}
+    .row:last-child{border-bottom:none}
+    .rlb{color:var(--txt2);flex-shrink:0;min-width:70px}
+    .rval{text-align:right;font-weight:600;line-height:1.4;color:var(--txt)}
+    .bbar{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin:7px 0 3px}
+    .bfil{height:100%;border-radius:99px;transition:width .45s ease}
+    .bdg{font-size:10px;padding:2px 9px;border-radius:99px;font-weight:700}
+    .bdg-red{background:var(--red-bg);color:var(--red-txt)}
+    .bdg-amber{background:var(--amber-bg);color:var(--amber-txt)}
+    .bdg-blue{background:var(--blue-bg);color:var(--blue-txt)}
+    .bdg-green{background:var(--green-bg);color:var(--green-txt)}
+    .bdg-teal{background:var(--teal-bg);color:var(--teal-txt)}
+    .bdg-purple{background:var(--purple-bg);color:var(--purple-txt)}
+    .bdg-gray{background:var(--bg2);color:var(--txt2);border:1px solid var(--brd)}
+    .alrt{padding:10px 13px;border-radius:var(--rs);font-size:12px;border-left:3px solid;line-height:1.65;margin-bottom:9px}
+    .al-red{background:var(--red-bg);color:var(--red-txt);border-color:var(--red)}
+    .al-amber{background:var(--amber-bg);color:var(--amber-txt);border-color:var(--amber)}
+    .al-blue{background:var(--blue-bg);color:var(--blue-txt);border-color:var(--blue)}
+    .al-green{background:var(--green-bg);color:var(--green-txt);border-color:var(--green)}
+    .al-teal{background:var(--teal-bg);color:var(--teal-txt);border-color:var(--teal)}
+    .al-purple{background:var(--purple-bg);color:var(--purple-txt);border-color:var(--purple)}
+    .al-gray{background:var(--bg2);color:var(--txt2);border-color:var(--brd2)}
+    .srch{width:100%;padding:10px 13px;border-radius:var(--rs);border:1.5px solid var(--brd);background:var(--card);font-size:13px;color:var(--txt);margin-bottom:12px;font-family:inherit;transition:border-color .12s}
+    .srch:focus{outline:none;border-color:var(--accent)}
+    .srch::placeholder{color:var(--txt3)}
+    .li{padding:11px 12px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;transition:background .1s;border-bottom:1px solid var(--brd)}
+    .li:last-child{border-bottom:none}
+    .li:hover{background:var(--bg2)}
+    .az-wrap{position:sticky;top:0;background:var(--bg);padding:2px 0 6px;z-index:10}
+    .az-jump{display:flex;flex-wrap:wrap;gap:4px}
+    .az-btn{padding:3px 7px;border-radius:5px;border:1px solid var(--brd);background:var(--bg2);font-size:11px;font-weight:700;cursor:pointer;color:var(--txt2);transition:all .12s}
+    .az-btn:hover{background:var(--accent-light);color:var(--txt);border-color:var(--accent)}
+    .az-letter{font-size:11px;font-weight:700;color:var(--txt3);padding:8px 12px 4px;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--brd)}
+    .pill{font-size:11px;padding:3px 9px;border-radius:99px;background:var(--bg2);border:1px solid var(--brd);color:var(--txt2);display:inline-block;margin:2px}
+    .tx-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px;margin-bottom:10px}
+    .dosis-block{border-radius:var(--rs);border:1px solid var(--brd);background:var(--bg2);padding:12px 14px;margin-bottom:10px}
+    .dosis-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px}
+    .dosis-text{font-size:13px;line-height:1.7;color:var(--txt)}
+    .dosis-text ul{list-style:disc;padding-left:18px}
+    .dosis-text ul li{margin-bottom:5px;line-height:1.5}
+    .prep-block{border-radius:var(--rs);border:1px solid var(--brd);background:var(--card);padding:12px 14px;margin-bottom:10px;border-left:3px solid var(--accent)}
+    .proto-section{border-radius:var(--rs);border:1px solid var(--brd);background:var(--card);padding:14px 16px;margin-bottom:12px}
+    .proto-section h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:10px}
+    .proto-section ul{list-style:disc;padding-left:18px}
+    .proto-section ul li{font-size:13px;line-height:1.55;margin-bottom:6px;color:var(--txt)}
+    .btn-antidoto{display:block;width:100%;padding:15px 18px;border-radius:var(--r);border:2px solid var(--accent);background:var(--accent);font-size:14px;font-weight:700;cursor:pointer;text-align:center;color:#fff;margin-top:10px;margin-bottom:0;transition:opacity .13s;line-height:1.4}
+    .btn-antidoto:hover{opacity:.85}
+    .btn-antidoto.secondary{background:var(--card);color:var(--accent);border-color:var(--accent)}
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="topbar-inst">Farmacia Hospitalaria · Hospital Universitario Puerto Real</div>
+    <div class="topbar-title">⚕ Toxicología Clínica</div>
+  </div>
+
+  <div id="s-home" class="scr on">
+    <div class="sub" style="margin-top:8px">Protocolo de urgencias · Guía de antídotos</div>
+    <div class="dash-grid">
+      <div class="dash-card" onclick="go('s-dx','s-home')">
+        <div class="dash-icon">🩺</div>
+        <div><h3>Orientación Diagnóstica y Manejo</h3>
+          <p>Identifica el tóxico por cuadro clínico o búscalo directamente</p></div>
+      </div>
+      <div class="dash-card" onclick="go('s-vade','s-home')">
+        <div class="dash-icon">💊</div>
+        <div><h3>Guía de Antídotos</h3>
+          <p>Vademécum completo con dosis adulto, pediátrica y preparación</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-dx" class="scr">
+    <button class="back" onclick="go('s-home','s-dx')">← Inicio</button>
+    <h1 style="margin-bottom:16px">Orientación Diagnóstica</h1>
+    <div class="mode-grid3">
+      <div class="mode-card" onclick="startQ()">
+        <div class="mico">🧩</div>
+        <div class="mode-card-txt">
+          <h3>Tóxico desconocido</h3>
+          <p>Identifica por signos clínicos · cuestionario guiado</p>
+        </div>
+      </div>
+      <div class="mode-card" onclick="go('s-sindromes','s-dx')">
+        <div class="mico">🔬</div>
+        <div class="mode-card-txt">
+          <h3>Conozco el síndrome de intoxicación</h3>
+          <p>Selecciona el cuadro clínico directamente</p>
+        </div>
+      </div>
+      <div class="mode-card" onclick="go('s-search','s-dx')">
+        <div class="mico">🔍</div>
+        <div class="mode-card-txt">
+          <h3>Conozco el tóxico</h3>
+          <p>Búsqueda por sustancia o fármaco</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-sindromes" class="scr">
+    <button class="back" onclick="go('s-dx')">← Orientación</button>
+    <h2 style="margin-bottom:14px">Selecciona el síndrome</h2>
+    <div class="syn-list" id="syn-list"></div>
+  </div>
+
+  <div id="s-search" class="scr">
+    <button class="back" onclick="go('s-dx')">← Orientación</button>
+    <h2>Buscar por tóxico</h2>
+    <input class="srch" type="text" placeholder="Ej: morfina, paracetamol, organofosforado…" id="si">
+    <div id="tlist"></div>
+  </div>
+
+  <div id="s-protocolo-toxico" class="scr">
+    <button class="back" id="ptbk">← Atrás</button>
+    <div id="ptcont"></div>
+  </div>
+
+  <div id="s-quiz" class="scr">
+    <div class="quiz-nav">
+      <button class="quiz-back" onclick="quizBack()">← Atrás</button>
+      <div class="sbar" id="sbar" style="flex:1;margin-bottom:0"></div>
+    </div>
+    <div class="qlb" id="qlb"></div>
+    <div class="qtt" id="qtt"></div>
+    <div class="ogrid" id="qopts"></div>
+  </div>
+
+  <div id="s-res" class="scr">
+    <button class="back" onclick="go('s-dx')">← Nueva consulta</button>
+    <h1 style="margin-bottom:4px">Diagnóstico diferencial</h1>
+    <div class="sub">Compatibilidad con los signos introducidos</div>
+    <div id="reslist"></div>
+    <button class="btn btn-p" onclick="startQ()">↺ Repetir cuestionario</button>
+    <button class="btn" onclick="go('s-home')">Inicio</button>
+  </div>
+
+  <div id="s-vade" class="scr">
+    <button class="back" onclick="go('s-home')">← Inicio</button>
+    <h1 style="margin-bottom:4px">Guía de Antídotos</h1>
+    <div class="sub"><span id="vade-count"></span> antídotos · Red de Antídotos</div>
+    <input class="srch" type="text" placeholder="Filtrar por nombre o indicación…" id="vi">
+    <div class="az-wrap" id="az-wrap"><div class="az-jump" id="azjump"></div></div>
+    <div id="vadebox"></div>
+  </div>
+
+  <div id="s-tox" class="scr">
+    <button class="back" id="tbk">← Atrás</button>
+    <div id="tcont"></div>
+  </div>
+
+  <div id="s-ant" class="scr">
+    <button class="back" id="abk">← Atrás</button>
+    <div id="acont"></div>
+  </div>
+
+  <div class="footer">
+    <p>Autor: Yeray Reyes de la Mata · <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></p>
+    <p>Referencia: Red de Antídotos</p>
+  </div>
+
+</div><!-- .app -->
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   UTILIDADES
+══════════════════════════════════════════════════════════════ */
+const ALC = {red:'al-red',amber:'al-amber',blue:'al-blue',green:'al-green',teal:'al-teal',purple:'al-purple',gray:'al-gray'};
+
+/**
+ * FIX #3: Escapa caracteres HTML especiales (& < > " ') para uso seguro en
+ * atributos HTML. Evita roturas del parser con nombres que contengan &, < o >.
+ */
+function escHtml(s) {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOXIDROMES
+══════════════════════════════════════════════════════════════ */
+const TDRM = [
+  {id:'opi', nm:'Intoxicación por Opioides', c:'red',
+   sx:['Morfina','Fentanilo','Heroína','Metadona','Oxicodona','Codeína','Tramadol','Buprenorfina'],
+   cr:{Pupilas:'miosis puntiforme',Constantes:'bradicardia / bradipnea',Piel:'normal',Mental:'coma / depresión respiratoria'},
+   atx:'Naloxona', atxId:'naloxona',
+   tx:[
+     {l:'Antídoto principal', t:'Naloxona 0,4 mg IV/IM/SC. Repetir cada 2–3 min hasta recuperar FR. Máx 10 mg total.', c:'red'},
+     {l:'Objetivo', t:'Recuperar la FR, NO la consciencia. Titular la mínima dosis eficaz para evitar abstinencia aguda.', c:'amber'},
+     {l:'Vía intranasal', t:'Naloxona IN 4 mg (MAD atomizador). Puede administrarla personal no sanitario.', c:'blue'},
+     {l:'Carbón activado', t:'Si ingesta < 2h y vía aérea protegida: 1 g/kg (máx 50 g).', c:'green'},
+   ],
+   al:['Vida media naloxona 30–90 min: vigilar resedación. Infusión continua si necesario (2/3 dosis eficaz/hora).',
+       'Abstinencia precipitada con dosis altas. Usar mínima dosis necesaria.']},
+
+  {id:'ach', nm:'Intoxicación Anticolinérgica', c:'amber',
+   sx:['Atropina','Antihistamínicos (difenhidramina)','ADT','Escopolamina','Antipsicóticos clásicos','Biperideno'],
+   cr:{Pupilas:'midriasis',Constantes:'taquicardia',Piel:'seca y caliente',Mental:'delirio / agitación / alucinaciones'},
+   atx:'Fisostigmina (casos seleccionados)', atxId:'fisostigmina',
+   tx:[
+     {l:'Agitación', t:'BZD IV: Diazepam 5–10 mg. Preferibles a haloperidol.', c:'blue'},
+     {l:'Fisostigmina', t:'Solo en casos graves sin contraindicaciones (NUNCA en ADT): 1–2 mg IV lento. Máx 4 mg.', c:'amber'},
+     {l:'Hipertermia', t:'Enfriamiento activo urgente si T > 39°C.', c:'red'},
+   ],
+   al:['NUNCA fisostigmina en ADT: riesgo de convulsiones y asistolia.',
+       'Retención urinaria frecuente: sondaje si precisa.']},
+
+  {id:'col', nm:'Intoxicación Colinérgica', c:'red',
+   sx:['Organofosforados','Carbamatos','Agentes nerviosos (sarin, VX)','Pilocarpina','Neostigmina'],
+   cr:{Pupilas:'miosis',Constantes:'bradicardia / hipotensión',Piel:'sudorosa / sialorrea',Mental:'confusión / coma'},
+   atx:'Atropina Sulfato', atxId:'atropina',
+   tx:[
+     {l:'EPP obligatorio', t:'Guantes dobles, mascarilla FFP3, gafas. Descontaminación del paciente PRIMERO.', c:'red'},
+     {l:'Atropina', t:'2–4 mg IV cada 5–10 min sin límite. Objetivo: secar secreciones bronquiales.', c:'red'},
+     {l:'Pralidoxima', t:'1–2 g IV en 30 min + 200–500 mg/h. Iniciar < 24–48h.', c:'amber'},
+   ],
+   al:['Descontaminación es prioridad: personal no protegido puede intoxicarse.',
+       'Pralidoxima INEFICAZ pasadas 24–48h (envejecimiento enzimático).']},
+
+  {id:'sym', nm:'Intoxicación Simpaticomimética', c:'purple',
+   sx:['Cocaína','Anfetaminas / MDMA','Metanfetamina','Efedrina'],
+   cr:{Pupilas:'midriasis',Constantes:'taquicardia / HTA',Piel:'sudorosa / húmeda',Mental:'agitación / psicosis'},
+   atx:'Soporte (no hay antídoto específico)', atxId:null,
+   tx:[
+     {l:'Agitación / HTA', t:'BZD IV primera línea: Diazepam 5–10 mg.', c:'blue'},
+     {l:'Hipertermia', t:'Enfriamiento activo urgente si T > 39°C. Principal marcador de mortalidad.', c:'red'},
+     {l:'ECG', t:'Si QRS > 100 ms: Bicarbonato Sódico 1–2 mEq/kg IV.', c:'amber'},
+   ],
+   al:['Betabloqueantes CONTRAINDICADOS en cocaína: vasoconstricción paradójica.',
+       'MDMA: hiponatremia dilucional frecuente. Vigilar sodio.']},
+
+  {id:'sed', nm:'Intoxicación Hipnosedante', c:'teal',
+   sx:['Benzodiacepinas','Zolpidem / Zaleplon','GHB / GBL','Barbitúricos'],
+   cr:{Pupilas:'normal / miosis leve',Constantes:'bradicardia / bradipnea',Piel:'normal',Mental:'coma / estupor'},
+   atx:'Flumazenilo (solo BZD confirmadas)', atxId:'flumazenilo',
+   tx:[
+     {l:'Vía aérea', t:'Intubación si GCS < 8 o FR < 10 rpm.', c:'red'},
+     {l:'Glucosa + Tiamina', t:'100 ml SG20% IV. Tiamina 100 mg IV antes si sospecha etilismo.', c:'amber'},
+     {l:'Flumazenilo', t:'Solo BZD confirmadas sin contraindicaciones. 0,2→0,3→0,5 mg IV cada 60 seg (máx 3 mg).', c:'teal'},
+   ],
+   al:['Flumazenilo CONTRAINDICADO: epilepsia conocida, dependencia BZD, ADT.',
+       'GHB: NO existe antídoto. Soporte exclusivo.']},
+
+  {id:'bbc', nm:'Bloqueo Betabloqueante / Calcioantagonista', c:'blue',
+   sx:['Betabloqueantes (propranolol, atenolol…)','Calcioantagonistas (verapamilo, diltiazem, amlodipino…)'],
+   cr:{Pupilas:'normal',Constantes:'bradicardia / bloqueo AV / hipotensión',Piel:'normal',Mental:'obnubilación / coma'},
+   atx:'Glucagón + HIET', atxId:'glucagon',
+   tx:[
+     {l:'Glucagón', t:'Bolo 5–10 mg IV + infusión 2–10 mg/h en SG5%.', c:'amber'},
+     {l:'HIET', t:'1 UI/kg bolo insulina regular IV + 0,5–1 UI/kg/h. Glucosa IV paralela.', c:'blue'},
+     {l:'Emulsión Lipídica', t:'Si lipofílicos (verapamilo, propranolol): 1,5 ml/kg IV bolo.', c:'purple'},
+   ],
+   al:['HIET: glucemia cada 15 min y potasio cada hora.',
+       'Glucagón: náuseas/vómitos frecuentes. Proteger vía aérea.']},
+];
+
+/* ══════════════════════════════════════════════════════════════
+   ANTÍDOTOS — 47 entradas
+══════════════════════════════════════════════════════════════ */
+const ANTD = [
+
+  {id:'ac_folico', nm:'Ácido Folínico (Leucovorín)', ind:'Metotrexato / Antagonistas del folato', c:'green',
+   dosisAdulto:`<ul>
+     <li>Rescate estándar: dosis igual a la de metotrexato (mg por mg) IV</li>
+     <li>Sobredosis aguda: <strong>75–100 mg/m² IV</strong> cada 3–6h hasta niveles MTX seguros</li>
+     <li>Continuar hasta nivel MTX &lt; 0,05 µmol/L</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma pauta: dosis equivalente en mg a la de metotrexato recibida</li>
+     <li>Monitorización de niveles MTX cada 24h</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Viales 50 mg/5 ml; IV lento o perfusión 15–30 min</li>
+     <li>No administrar simultáneamente con metotrexato (antagonismo)</li>
+   </ul>`,
+   al:'Iniciar dentro de las primeras 24–42h de la infusión de MTX. Hidratación forzada alcalina (orina pH > 7) imprescindible.'},
+
+  {id:'ac_ascorbico', nm:'Ácido Ascórbico (Vitamina C)', ind:'Metahemoglobinemia (alternativa) / Intoxicación por cromo', c:'teal',
+   dosisAdulto:`<ul>
+     <li>MetHb si Azul de Metileno contraindicado (G6PD): <strong>1–2 g IV</strong> cada 6h</li>
+     <li>Intoxicación Cr(VI): <strong>1 g IV</strong> en 30 min; repetir según evolución</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>25 mg/kg IV</strong> cada 6h en MetHb por déficit G6PD</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 500 mg/5 ml o 1 g/5 ml; diluir en 100 ml SF o SG5%; pasar en 30 min</li>
+     <li>Incompatible con soluciones alcalinas</li>
+   </ul>`,
+   al:'Segunda línea en MetHb cuando Azul de Metileno está contraindicado (déficit G6PD). Efecto más lento.'},
+
+  {id:'l_carnitina', nm:'L-Carnitina', ind:'Hiperamonemia / Hepatotoxicidad por ácido valproico', c:'amber',
+   dosisAdulto:`<ul>
+     <li>Carga: <strong>100 mg/kg IV</strong> (máx 6 g) en bolo</li>
+     <li>Mantenimiento: <strong>15 mg/kg IV cada 4h</strong> hasta mejoría clínica y analítica</li>
+     <li>Vía oral (leve): 50–100 mg/kg/día dividido en 3 dosis</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma pauta: <strong>100 mg/kg IV bolo</strong> + 15 mg/kg/4h</li>
+     <li>Máximo 3 g por dosis en niños pequeños</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Viales 1 g/5 ml para uso IV; diluir en 100 ml SG5% o SF; administrar en 30 min</li>
+   </ul>`,
+   al:'Indicada en hiperamonemia sintomática, hepatotoxicidad o sobredosis masiva de valproato. No esperar niveles si la clínica lo sugiere.'},
+
+  {id:'antdig', nm:'Anticuerpos Antidigoxina (Fab)', ind:'Digoxina / Glucósidos cardíacos', c:'green',
+   dosisAdulto:`<ul>
+     <li>Calculada: nº viales = <strong>[digoxinemia (ng/ml) × peso (kg)] / 100</strong></li>
+     <li>Ingesta conocida: nº viales = mg ingeridos × 2</li>
+     <li>PCR / dosis desconocida: <strong>20 viales empíricos</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma fórmula; en niños pequeños puede ser suficiente 1–2 viales</li>
+     <li>Diluir en SF si &lt; 2 viales</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Disolver cada vial en 4 ml de agua para inyección; IV en 30 min (bolo en PCR)</li>
+     <li>Filtrar con filtro 0,22 µm incluido</li>
+   </ul>`,
+   al:'Indicaciones: K⁺ > 5,5 mEq/L, arritmias graves, inestabilidad hemodinámica o ingesta > 10 mg. Los niveles de digoxina no son interpretables tras la administración.'},
+
+  {id:'atropina', nm:'Atropina Sulfato', ind:'Organofosforados / Carbamatos / Bradicardia colinérgica', c:'red',
+   dosisAdulto:`<ul>
+     <li><strong>2–4 mg IV</strong> cada 5–10 min hasta atropinización</li>
+     <li>Casos graves: 50–100 mg en primeras horas; sin techo de dosis en organofosforados</li>
+     <li>Objetivo: secar secreciones bronquiales (no FC ni pupilas)</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,02–0,05 mg/kg IV</strong> (mín 0,1 mg, máx 1 mg/dosis)</li>
+     <li>Repetir cada 5 min; sin techo en organofosforados</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 1 mg/ml; IV directo sin dilución en urgencia</li>
+     <li>En perfusión: diluir en SF o SG5%</li>
+   </ul>`,
+   al:'Sin dosis máxima en organofosforados. Objetivo: secar bronquios, NO normalizar FC ni pupilas.'},
+
+  {id:'azul_metileno', nm:'Azul de Metileno', ind:'Metahemoglobinemia (nitritos, benzocaína, dapsona, anilinas)', c:'teal',
+   dosisAdulto:`<ul>
+     <li><strong>1–2 mg/kg IV</strong> al 1% (10 mg/ml) en 5–10 min</li>
+     <li>Repetir a la hora si insuficiente; máximo acumulado <strong>7 mg/kg</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>1 mg/kg IV</strong> al 1% en 5–10 min; misma pauta de repetición</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Solución al 1% (10 mg/ml); diluir en 50 ml SG5%; pasar en 5–10 min</li>
+     <li>No mezclar con soluciones alcalinas</li>
+   </ul>`,
+   al:'INEFICAZ en déficit G6PD (riesgo hemólisis). Contraindicado si MetHb > 70%. Coloración azulada transitoria de orina y piel.'},
+
+  {id:'azul_prusia', nm:'Azul de Prusia (Ferrihexa­ciano­ferrato)', ind:'Intoxicación por talio / cesio radiactivo', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Talio: <strong>3 g VO cada 8h</strong> (9 g/día) hasta niveles de talio normales</li>
+     <li>Cesio: misma pauta; duración guiada por niveles séricos</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>1 g VO cada 8h</strong> (3 g/día)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Cápsulas 500 mg; administrar con agua; puede abrirse y mezclar con comida blanda</li>
+     <li>Facilitar tránsito GI: laxante osmótico si precisa</li>
+   </ul>`,
+   al:'Mecanismo: intercambio iónico en intestino, interrumpe el ciclo enterohepático del talio. Solicitar urgentemente a farmacia hospitalaria o autoridades sanitarias. Coloración azul de heces (normal).'},
+
+  {id:'bicarb', nm:'Bicarbonato Sódico 1M', ind:'Antidepresivos Tricíclicos (ADT) / Bloqueo de canal de sodio', c:'amber',
+   dosisAdulto:`<ul>
+     <li><strong>1–2 mEq/kg IV en bolo</strong> si QRS > 100 ms o arritmias</li>
+     <li>Repetir hasta QRS &lt; 100 ms y pH 7,45–7,55</li>
+     <li>Infusión mantenimiento: 3 ampollas 1M en 1L SG5% a 100–150 ml/h</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>1–2 mEq/kg IV en bolo</strong>; monitorizar EAB y ECG cada 30 min</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 10 mEq/10 ml (1M); para infusión: 3 ampollas en SG5% hasta isotonía</li>
+     <li>Objetivo pH 7,45–7,55</li>
+   </ul>`,
+   al:'No superar pH 7,55. Vigilar hipopotasemia. Indicado también en bloqueo de canal de sodio por antipsicóticos y flecainida.'},
+
+  {id:'biperideno', nm:'Biperideno', ind:'Distonías agudas / Crisis oculogiras por antipsicóticos', c:'amber',
+   dosisAdulto:`<ul>
+     <li><strong>2,5–5 mg IV o IM</strong> lento; repetir a los 30 min si no cede; máx <strong>10 mg/día</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,04–0,1 mg/kg IV o IM</strong> (máx 5 mg/dosis)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampolla 5 mg/ml; diluir en 10–20 ml SF; IV muy lento (riesgo hipotensión)</li>
+   </ul>`,
+   al:'Primera línea en distonías agudas por antipsicóticos. Efecto a los 5–10 min IV. Puede repetirse a los 30 min.'},
+
+  {id:'carbon', nm:'Carbón Activado', ind:'Múltiples tóxicos — descontaminación GI (primera hora)', c:'gray',
+   dosisAdulto:`<ul>
+     <li><strong>50 g (1 g/kg)</strong> VO o SNG; liberación sostenida: 25 g cada 4h</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>1 g/kg</strong> (máx 50 g) VO/SNG</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Suspensión 200 mg/ml; agitar bien; administrar por SNG si no coopera</li>
+     <li>No mezclar con leche (reduce adsorción)</li>
+   </ul>`,
+   al:'INEFICAZ en: alcoholes, metales pesados, litio, cáusticos, hidrocarburos, hierro, cianuros. Riesgo aspiración: proteger vía aérea.'},
+
+  {id:'ciproheptadina', nm:'Ciproheptadina', ind:'Síndrome serotoninérgico (coadyuvante)', c:'purple',
+   dosisAdulto:`<ul>
+     <li>Dosis inicial: <strong>12 mg VO o SNG</strong></li>
+     <li>Luego 2 mg cada 2h si persisten síntomas; máximo <strong>32 mg/día</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,25 mg/kg/día</strong> dividido cada 6h (máx 12 mg/día)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Comprimidos 4 mg; triturar y administrar por SNG si precisa; solo vía enteral</li>
+   </ul>`,
+   al:'Anti-H1 con propiedades anti-5HT2A. Coadyuvante; no sustituye a las BZD ni al soporte. Solo oral/SNG.'},
+
+  {id:'cl_calcico', nm:'Cloruro Cálcico 10%', ind:'Calcioantagonistas / Hipercalemia / Hipermagnesemia', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Calcioantagonistas: <strong>10–20 ml (1–2 g) IV lento</strong> en 5–10 min; repetir cada 10–20 min</li>
+     <li>Hipercalemia grave: <strong>10 ml IV en 3–5 min</strong> (estabilización de membrana)</li>
+     <li>Hipermagnesemia: <strong>5–10 ml IV lento</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>20 mg/kg IV</strong> (0,2 ml/kg de sol. al 10%) en 5–10 min</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 1 g/10 ml (10%); administrar IV muy lento (riesgo de bradicardia/asistolia si rápido)</li>
+     <li>No mezclar con bicarbonato (precipita)</li>
+     <li>Vía central preferida (vesicante periférico)</li>
+   </ul>`,
+   al:'Vesicante: evitar extravasación periférica. Administrar lento bajo monitorización ECG. El gluconato cálcico es menos irritante para venas periféricas.'},
+
+  {id:'ccp', nm:'Complejo Protrombínico (CCP)', ind:'Anticoagulantes anti-Xa (Apixabán, Rivaroxabán, Edoxabán) — sangrado mayor', c:'purple',
+   dosisAdulto:`<ul>
+     <li><strong>50 UI/kg IV</strong> en sangrado mayor o cirugía urgente (máx 5.000 UI)</li>
+     <li>Dosis única; puede repetirse según evolución clínica</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>No hay datos pediátricos para anti-Xa; misma dosis orientativa 50 UI/kg bajo criterio especialista</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Reconstituir con disolvente incluido; perfusión IV en 10–15 min; no superar 8 ml/min</li>
+     <li>Tener adrenalina IM ante posible reacción</li>
+   </ul>`,
+   al:'No usar Andexanet alfa (no disponible). CCP es la alternativa de elección para anti-Xa. Monitorizar anti-Xa tras administración.'},
+
+  {id:'dantroleno', nm:'Dantroleno', ind:'Hipertermia maligna / Síndrome neuroléptico maligno', c:'red',
+   dosisAdulto:`<ul>
+     <li><strong>2,5 mg/kg IV en bolo</strong>; repetir cada 5–10 min hasta resolución de rigidez</li>
+     <li>Mantenimiento: 1 mg/kg/6h × 24–48h; máximo acumulado <strong>10 mg/kg</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma dosis: <strong>2,5 mg/kg IV en bolo</strong></li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 20 mg liofilizado; reconstituir con <strong>60 ml agua estéril</strong> (NO SF: precipita)</li>
+     <li>Preparar varios viales en paralelo</li>
+   </ul>`,
+   al:'Hepatotoxicidad con dosis altas/prolongadas. Incompatible con SF. Preparar múltiples viales simultáneamente.'},
+
+  {id:'deferoxamina', nm:'Deferoxamina', ind:'Intoxicación por hierro (ferremia > 500 µg/dl o síntomas sistémicos)', c:'amber',
+   dosisAdulto:`<ul>
+     <li>Infusión IV: <strong>15 mg/kg/h</strong>; máximo 6 g/día</li>
+     <li>Continuar hasta orina color rosado ("vin rosé") y normalización clínica</li>
+     <li>IM como medida inicial si no hay vía IV: 1 g</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Mismo régimen: <strong>15 mg/kg/h IV</strong>; máximo 6 g/día</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 500 mg liofilizado; reconstituir con 5 ml agua estéril</li>
+     <li>Diluir en SF o SG5% hasta ≤ 15 mg/ml; iniciar lento</li>
+   </ul>`,
+   al:'Hipotensión con infusión rápida. Orina rosada confirma quelación activa. No exceder 24h continuas por riesgo de SDRA.'},
+
+  {id:'dimercaprol', nm:'Dimercaprol (BAL)', ind:'Intoxicación por arsénico, mercurio inorgánico, plomo (grave)', c:'amber',
+   dosisAdulto:`<ul>
+     <li>Arsénico / mercurio: <strong>3–5 mg/kg IM</strong> cada 4h × 2 días; luego cada 6–12h × 10 días</li>
+     <li>Plomo + encefalopatía: <strong>4 mg/kg IM</strong> cada 4h × 5 días (combinar con EDTA)</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Encefalopatía por plomo: <strong>4 mg/kg IM</strong> cada 4h; primera dosis ANTES que EDTA</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Solución oleosa 100 mg/ml; solo vía IM profunda (dolorosa)</li>
+     <li>Dar primera dosis ANTES que EDTA en encefalopatía por plomo</li>
+   </ul>`,
+   al:'Contraindicado en insuficiencia hepática grave, selenio, uranio o hierro. Puede redistribuir metales al SNC.'},
+
+  {id:'dmsa', nm:'DMSA (Succímero)', ind:'Intoxicación crónica por plomo / arsénico / mercurio (quelante oral)', c:'green',
+   dosisAdulto:`<ul>
+     <li><strong>10 mg/kg/8h VO</strong> × 5 días; luego 10 mg/kg/12h × 14 días</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>10 mg/kg/8h VO</strong> × 5 días (máx 500 mg/dosis); luego 10 mg/kg/12h × 14 días</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Cápsulas 100 mg; pueden abrirse y mezclar con zumo o comida blanda</li>
+     <li>Hidratación adecuada durante el tratamiento</li>
+   </ul>`,
+   al:'Quelante oral de elección en intoxicación crónica por plomo en niños con plombemia 25–45 µg/dl. Menos tóxico que BAL y EDTA.'},
+
+  {id:'edta', nm:'EDTA Cálcico Disódico', ind:'Intoxicación por plomo / quelación de metales pesados', c:'blue',
+   dosisAdulto:`<ul>
+     <li><strong>50–75 mg/kg/día IV</strong> en infusión continua o 2–3 dosis divididas × 5 días; máx 3 g/día</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Encefalopatía saturnina: <strong>1.500 mg/m²/día IV</strong> × 5 días (siempre con BAL previo)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 200 mg/ml; diluir hasta ≤ 0,5% en SF o SG5%; infusión continua 8–24h</li>
+     <li>Monitorizar función renal (nefrotóxico) cada 2 días</li>
+   </ul>`,
+   al:'Nefrotóxico: hidratación imprescindible. En encefalopatía por plomo: BAL primero, esperar 4h, luego EDTA. No usar en mercurio metílico.'},
+
+  {id:'eli', nm:'Emulsión Lipídica 20% (ELI)', ind:'Anestésicos locales / Fármacos lipofílicos — PCR refractaria', c:'purple',
+   dosisAdulto:`<ul>
+     <li><strong>Bolo: 1,5 ml/kg IV en 1 min</strong></li>
+     <li>Inmediatamente: <strong>0,25 ml/kg/min</strong> durante 30–60 min</li>
+     <li>Si PCR persiste: repetir bolo cada 5 min (máx 3 bolos); total máx <strong>12 ml/kg</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Mismo protocolo: <strong>1,5 ml/kg bolo + 0,25 ml/kg/min</strong></li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Intralipid® 20% o equivalente; vía periférica de gran calibre o central</li>
+     <li>No mezclar con otros fármacos</li>
+   </ul>`,
+   al:'Rescate en PCR refractaria por lipofílicos. Puede interferir con niveles séricos tras su uso.'},
+
+  {id:'etanol', nm:'Etanol (Alcohol etílico)', ind:'Metanol / Etilenglicol — alternativa si no hay Fomepizol', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Carga VO: <strong>0,8 g/kg</strong> de alcohol al 95% (≈ 1 ml/kg de vodka 40°)</li>
+     <li>Mantenimiento VO: <strong>0,15 g/kg/h</strong> para mantener etanolemia 100–150 mg/dl</li>
+     <li>IV: suero glucosado al 5% con 5–10% de etanol; ajustar infusión para etanolemia objetivo</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Mismo objetivo: etanolemia 100–150 mg/dl; ajustar según peso y monitorización estrecha</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>VO: bebida alcohólica diluida en zumo si no hay formulación IV</li>
+     <li>IV: dilución extemporánea en SG5% bajo control farmacéutico</li>
+     <li>Monitorizar etanolemia cada 1–2h</li>
+   </ul>`,
+   al:'SEGUNDA LÍNEA: usar SOLO si Fomepizol no disponible. Inhibe la alcohol deshidrogenasa. Mayor toxicidad y manejo más complejo que Fomepizol. Monitorizar glucemia (hipoglucemia frecuente).'},
+
+  {id:'fentolamina', nm:'Fentolamina', ind:'Crisis hipertensiva por feocromocitoma / Extravasación de catecolaminas', c:'red',
+   dosisAdulto:`<ul>
+     <li>Crisis HTA por feocromocitoma: <strong>1–5 mg IV en bolo</strong>; repetir cada 5 min si precisa</li>
+     <li>Extravasación de noradrenalina: <strong>5–10 mg en 10 ml SF infiltrar SC</strong> alrededor de la zona</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Crisis HTA: <strong>0,05–0,1 mg/kg IV</strong> (máx 5 mg/dosis)</li>
+     <li>Extravasación: 0,1–0,2 mg/kg diluido en 10 ml SF, infiltrar SC</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 10 mg liofilizado; reconstituir con 1 ml agua estéril; diluir en SF para IV</li>
+     <li>Administrar bajo monitorización ECG continua</li>
+   </ul>`,
+   al:'α-bloqueante de acción corta. Útil también en intoxicación por IMAO con crisis adrenérgica. Riesgo de hipotensión severa: tener volumen IV preparado.'},
+
+  {id:'fisostigmina', nm:'Fisostigmina', ind:'Intoxicación anticolinérgica grave (sin contraindicaciones)', c:'amber',
+   dosisAdulto:`<ul>
+     <li><strong>1–2 mg IV lento</strong> en 2–5 min; máximo <strong>4 mg</strong></li>
+     <li>Repetir a los 20–30 min si recurre agitación severa</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,02 mg/kg IV</strong> (máx 0,5 mg) lento en 5 min; máx 2 mg total</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampolla 1 mg/ml; IV muy lento (riesgo bradicardia/convulsiones si rápido)</li>
+     <li>Tener Atropina IV preparada de rescate</li>
+   </ul>`,
+   al:'CONTRAINDICADA en ADT, asma, EPOC grave, bloqueo cardíaco. Monitorización ECG continua.'},
+
+  {id:'flumazenilo', nm:'Flumazenilo', ind:'Benzodiacepinas / Hipnóticos Z (zolpidem, zaleplon)', c:'teal',
+   dosisAdulto:`<ul>
+     <li><strong>0,2 mg IV</strong> en 30 seg; 0,3 mg si no respuesta; luego 0,5 mg cada 60 seg; máx <strong>3 mg</strong></li>
+     <li>Infusión si resedación: 0,1–0,4 mg/h</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,01 mg/kg IV</strong> (máx 0,2 mg); repetir hasta respuesta; máx 1 mg</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampolla 0,1 mg/ml; diluir en SF o SG5% para perfusión</li>
+   </ul>`,
+   al:'CONTRAINDICADO en epilepsia conocida, dependencia BZD, ADT. Vida media ~1h: vigilar resedación.'},
+
+  {id:'fomepizol', nm:'Fomepizol', ind:'Metanol / Etilenglicol (primera elección)', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Carga: <strong>15 mg/kg IV</strong> en 30 min</li>
+     <li>Mantenimiento: <strong>10 mg/kg/12h</strong> × 4 dosis; luego 15 mg/kg/12h</li>
+     <li>Hemodiálisis: repetir cada <strong>4h</strong> durante la sesión</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma carga: <strong>15 mg/kg IV</strong> en 30 min; misma pauta</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 1,5 g/1,5 ml concentrado; diluir en 100 ml SF o SG5%; pasar en 30 min</li>
+   </ul>`,
+   al:'Primera elección frente al etanol. Inhibe alcohol deshidrogenasa evitando metabolitos tóxicos. Iniciar precoz.'},
+
+  {id:'glucarpidasa', nm:'Glucarpidasa (Voraxaze®)', ind:'Toxicidad grave por metotrexato con insuficiencia renal', c:'green',
+   dosisAdulto:`<ul>
+     <li><strong>50 UI/kg IV</strong> en bolo único en 5 min; puede repetirse a las 48h</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma dosis: <strong>50 UI/kg IV</strong></li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 1.000 UI liofilizado; reconstituir con 1 ml SF; bolo IV en 5 min</li>
+     <li>No administrar leucovorín en las 2h previas ni 2h posteriores</li>
+   </ul>`,
+   al:'Hidroliza MTX en metabolitos inactivos. Indicada si niveles > 1 µmol/L a las 36–42h con insuficiencia renal. Uso bajo control oncológico.'},
+
+  {id:'glucagon', nm:'Glucagón', ind:'Betabloqueantes / Calcioantagonistas (bradicardia / bloqueo AV refractario)', c:'amber',
+   dosisAdulto:`<ul>
+     <li>Bolo: <strong>5–10 mg IV</strong> en 1–2 min; infusión: <strong>2–10 mg/h</strong> en SG5%</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,05–0,15 mg/kg IV</strong> (máx 1 mg/dosis); infusión 0,05–0,1 mg/kg/h</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 1 mg liofilizado + disolvente; dosis altas en SG5% (NO SF: precipita)</li>
+     <li>Preparar antieméticos previamente</li>
+   </ul>`,
+   al:'Náuseas/vómitos frecuentes: proteger vía aérea. Preparar protocolo HIET si falla.'},
+
+  {id:'glucosa', nm:'Glucosa Hipertónica', ind:'Hipoglucemia / Coma de origen desconocido', c:'amber',
+   dosisAdulto:`<ul>
+     <li><strong>20 g IV:</strong> 100 ml SG20%, 40 ml SG50%, o 200 ml SG10%</li>
+     <li>Repetir si no hay respuesta en 10 min</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>RN: <strong>SG10% 2–4 ml/kg</strong>; lactantes/niños: SG10% 5 ml/kg o SG25% 2 ml/kg</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vía periférica gruesa (SG50% es esclerosante)</li>
+     <li>Administrar tras <strong>Tiamina 100 mg IV</strong> si etilismo crónico</li>
+   </ul>`,
+   al:'SIEMPRE Tiamina IV ANTES en etilismo crónico (Wernicke). SG50% vesicante: evitar extravasación.'},
+
+  {id:'hiet', nm:'Insulina + Glucosa (HIET)', ind:'Calcioantagonistas / Betabloqueantes — shock cardiogénico', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Bolo: <strong>1 UI/kg insulina regular IV</strong></li>
+     <li>Infusión: <strong>0,5–1 UI/kg/h</strong>; glucemia objetivo 100–250 mg/dl</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Bolo: <strong>0,1 UI/kg insulina regular IV</strong>; infusión 0,1–0,5 UI/kg/h</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Insulina regular en perfusión de jeringa; purgar el sistema (se adsorbe al plástico)</li>
+     <li>Glucosa 10–20% en perfusión paralela; puede requerir 1.000 ml/h de SG10%</li>
+   </ul>`,
+   al:'Glucemia cada 15–30 min y potasio cada hora. Riesgo de hipoglucemia e hipopotasemia severas. Requiere UCI.'},
+
+  {id:'hidroxocob', nm:'Hidroxocobalamina (Vit. B12a)', ind:'Cianuro / Humos de incendio con inhalación de CN', c:'red',
+   dosisAdulto:`<ul>
+     <li><strong>5 g IV en 15 min</strong> (2 viales CyanoKit® de 2,5 g)</li>
+     <li>Repetir hasta <strong>10 g</strong> si respuesta insuficiente; PCR: bolo directo</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>70 mg/kg IV</strong> en 15 min; repetir si necesario hasta 140 mg/kg</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 2,5 g en 100 ml SF (CyanoKit®); agitar 60 seg antes de infundir</li>
+     <li>No mezclar con otros fármacos; sensible a la luz</li>
+   </ul>`,
+   al:'Coloración rojiza de piel, mucosas y orina (transitoria 24–48h). Interferencia analítica durante 24h. No retrasar por ausencia del kit.'},
+
+  {id:'idarucizumab', nm:'Idarucizumab (Praxbind®)', ind:'Reversión urgente de Dabigatrán', c:'purple',
+   dosisAdulto:`<ul>
+     <li><strong>5 g IV</strong>: 2 viales de 2,5 g/50 ml consecutivos en bolo o perfusión de 5–10 min</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>No hay datos pediátricos; uso off-label bajo criterio especialista</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Viales listos para usar (sin dilución); estabilidad 6h a temperatura ambiente</li>
+   </ul>`,
+   al:'Afinidad 350× por dabigatrán. Monitorizar TT y ECT. Puede repetirse una vez si reaparece actividad anticoagulante.'},
+
+  {id:'nac', nm:'N-Acetilcisteína (NAC)', ind:'Intoxicación por Paracetamol / Acetaminofén', c:'green',
+   dosisAdulto:`<ul>
+     <li><strong>Pauta 21h IV (3 bolsas):</strong></li>
+     <li>1ª: 150 mg/kg en 200 ml SG5% → <strong>1h</strong></li>
+     <li>2ª: 50 mg/kg en 500 ml SG5% → <strong>4h</strong></li>
+     <li>3ª: 100 mg/kg en 1L SG5% → <strong>16h</strong>; total <strong>300 mg/kg</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma dosis; ajustar volúmenes en &lt; 20 kg: 1ª 3 ml/kg; 2ª 7 ml/kg; 3ª 14 ml/kg SG5%</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampolla 200 mg/ml; diluir en <strong>SG5%</strong> (NO SF); estabilidad 24h</li>
+   </ul>`,
+   al:'Iniciar si paracetamol > 150 mg/L a las 4h. Reacciones anafilactoides en 1ª bolsa (reducir velocidad, no suspender).'},
+
+  {id:'naloxona', nm:'Naloxona', ind:'Opioides — reversión de depresión respiratoria', c:'red',
+   dosisAdulto:`<ul>
+     <li><strong>0,4 mg IV/IM/SC</strong>; repetir cada 2–3 min hasta recuperar FR; máx 10 mg</li>
+     <li>Infusión si resedación: 2/3 dosis eficaz/hora; IN: 4 mg (MAD atomizador)</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>0,01 mg/kg IV/IM/IO</strong> (máx 0,4 mg/dosis); RN: 0,01 mg/kg</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 0,4 mg/ml o 1 mg/ml; para infusión: SF o SG5% a 0,004 mg/ml</li>
+   </ul>`,
+   al:'Vida media 30–90 min: vigilar resedación. Abstinencia precipitada con dosis altas. Titular mínima dosis eficaz.'},
+
+  {id:'octreotida', nm:'Octreótida', ind:'Hipoglucemia por sulfonilureas / insulinomas', c:'teal',
+   dosisAdulto:`<ul>
+     <li><strong>50–100 µg SC o IV</strong> cada 6–8h; IV: diluir en 50 ml SF en 15–30 min</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>1–2 µg/kg SC o IV</strong> cada 6–8h (máx 50 µg/dosis)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 100 µg/ml o 500 µg/ml; para IV: diluir en 50 ml SF; pasar en 15–30 min</li>
+   </ul>`,
+   al:'Inhibe secreción de insulina. Previene hipoglucemia recurrente por sulfonilureas. Usar con glucosa IV. Vigilar bradicardia e hipotensión.'},
+
+  {id:'penicilamina', nm:'Penicilamina', ind:'Intoxicación crónica por cobre / plomo / mercurio (quelante oral)', c:'blue',
+   dosisAdulto:`<ul>
+     <li><strong>500–1500 mg/día VO</strong> dividido en 3–4 dosis en ayunas</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>20–30 mg/kg/día VO</strong> dividido en 3–4 dosis (máx 1 g/día)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Cápsulas 250 mg; administrar con estómago vacío; suplementar piridoxina 25 mg/día</li>
+   </ul>`,
+   al:'Múltiples efectos adversos: mielotoxicidad, nefrotoxicidad, lupus-like. Monitorización hemática y renal. Uso crónico; no indicado en agudos graves.'},
+
+  {id:'penicilina_g', nm:'Penicilina G sódica', ind:'Amanita phalloides — coadyuvante (complementa a silibinina)', c:'green',
+   dosisAdulto:`<ul>
+     <li><strong>300.000–1.000.000 UI/kg/día IV</strong> en infusión continua × 3–7 días</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>300.000 UI/kg/día IV</strong> en infusión continua</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Viales 1–5 MU liofilizados; reconstituir con SF; infusión continua IV en 24h</li>
+   </ul>`,
+   al:'Desplaza α-amanitina de proteínas plasmáticas y reduce su captación hepática. Coadyuvante de silibinina. Ajustar en insuficiencia renal.'},
+
+  {id:'peg_lavado', nm:'Polietilenglicol (Lavado Intestinal Total)', ind:'Tóxicos sin adsorción por carbón / litio / metales pesados / liberación sostenida', c:'gray',
+   dosisAdulto:`<ul>
+     <li><strong>1,5–2 L/h VO o SNG</strong> hasta que el efluente rectal sea claro</li>
+     <li>Habitualmente 4–10 litros totales</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>25–40 ml/kg/h VO/SNG</strong> (máx 1,5 L/h)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Solución de PEG 3350 + electrolitos (Golytely®, Movicol®); administrar refrigerada si posible</li>
+     <li>SNG si intolerancia oral; procinético si náuseas previas</li>
+   </ul>`,
+   al:'Indicado cuando el carbón activado es INEFICAZ: litio, hierro, plomo, body-packers, fármacos de liberación sostenida. Contraindicado en obstrucción intestinal, íleo, hemorragia GI activa o inestabilidad hemodinámica.'},
+
+  {id:'piridoxina', nm:'Piridoxina (Vitamina B6)', ind:'Isoniazida (INH) / Hidrazinas / Etilenglicol', c:'amber',
+   dosisAdulto:`<ul>
+     <li>Isoniazida: <strong>1 g IV por cada gramo ingerido</strong></li>
+     <li>Dosis desconocida / status epiléptico: <strong>5 g IV</strong></li>
+     <li>Etilenglicol: 50 mg IV cada 6h</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Isoniazida: <strong>70 mg/kg IV</strong> (máx 5 g)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 300 mg/ml; diluir en SF o SG5%; infusión 30 min; bolo lento admisible en status</li>
+   </ul>`,
+   al:'VITAL en status epiléptico refractario por isoniazida. Administrar antes o simultáneo a benzodiacepinas.'},
+
+  {id:'pralidoxima', nm:'Pralidoxima (2-PAM)', ind:'Organofosforados — reactivador de acetilcolinesterasa', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Carga: <strong>1–2 g IV</strong> en 250 ml SF en 15–30 min</li>
+     <li>Mantenimiento: <strong>200–500 mg/h</strong> en infusión continua</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>20–40 mg/kg IV</strong> (máx 1 g) en 30 min; mantenimiento 10–20 mg/kg/h</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 1 g; reconstituir con 20 ml agua estéril; diluir en 250 ml SF</li>
+     <li>Mínimo 15–30 min (bloqueo neuromuscular si rápido)</li>
+   </ul>`,
+   al:'INEFICAZ pasadas 24–48h (envejecimiento enzimático). Administrar SIEMPRE con atropina. No la sustituye.'},
+
+  {id:'protamina', nm:'Protamina', ind:'Sobredosis de heparina / Reversión de anticoagulación por heparina', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Inversión inmediata: <strong>1 mg IV por cada 100 UI de heparina</strong> administradas en la última hora</li>
+     <li>Si > 2h desde la heparina: reducir dosis al 50% (heparina ya degradada parcialmente)</li>
+     <li>Máximo <strong>50 mg</strong> por dosis</li>
+     <li>Para HBPM: <strong>1 mg por cada 1 mg de enoxaparina</strong> (reversión parcial ~60%)</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma relación: <strong>1 mg por cada 100 UI de heparina</strong> recibida</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 10 mg/ml o 50 mg/5 ml; IV muy lento (no superar 5 mg/min)</li>
+     <li>Riesgo de hipotensión severa y anafilaxia: monitorización continua y adrenalina preparada</li>
+   </ul>`,
+   al:'Administrar muy lento (hipotensión grave si rápido). Riesgo aumentado en: alergia al pescado, vasectomía previa, exposición previa a protamina. Solo revierte parcialmente las HBPM.'},
+
+  {id:'silibinina', nm:'Silibinina', ind:'Amanita phalloides / Hepatotoxinas de hongos', c:'green',
+   dosisAdulto:`<ul>
+     <li>Carga: <strong>5 mg/kg IV en 1h</strong></li>
+     <li>Mantenimiento: <strong>20 mg/kg/día</strong> en infusión continua</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma pauta: 5 mg/kg carga + 20 mg/kg/día</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Vial 350 mg liofilizado (Legalon® SIL); reconstituir con 35 ml SF</li>
+     <li>Diluir en 500 ml SF o SG5%; estabilidad 12h; proteger de la luz</li>
+   </ul>`,
+   al:'Iniciar precoz (< 24–48h). Combinar con NAC en fallo hepático fulminante. Valorar trasplante urgente en intoxicación grave.'},
+
+  {id:'suero_anti', nm:'Suero Antiofídico', ind:'Envenenamiento por mordedura de serpiente', c:'red',
+   dosisAdulto:`<ul>
+     <li>Vipéridos europeos: <strong>4–10 viales IV</strong>; guiar por clínica, no por tiempo transcurrido</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Misma dosis que adulto (el veneno no se ajusta por peso)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Diluir en 100–250 ml SF; iniciar lento 10 min (anafilaxia); adrenalina 0,5 mg IM preparada</li>
+   </ul>`,
+   al:'Riesgo de anafilaxia. Dosis guiada por clínica. Contactar Centro Nacional de Toxicología: 91 562 04 20.'},
+
+  {id:'sugammadex', nm:'Sugammadex', ind:'Reversión de bloqueantes neuromusculares (rocuronio, vecuronio)', c:'blue',
+   dosisAdulto:`<ul>
+     <li>Urgencia / PCR: <strong>16 mg/kg IV</strong>; reversión moderada: <strong>4 mg/kg IV</strong></li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>2–16 mg/kg IV según grado de bloqueo; datos limitados en &lt; 2 años</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Viales 200 mg/2 ml o 500 mg/5 ml; bolo IV directo en 10 seg sin dilución</li>
+   </ul>`,
+   al:'Vital ante laringoespasmo o broncoespasmo refractario. Puede prolongar QT en dosis altas.'},
+
+  {id:'tierra_fuller', nm:'Tierra de Fuller', ind:'Paraquat / Diquat — quelación en lumen intestinal', c:'gray',
+   dosisAdulto:`<ul>
+     <li><strong>500 ml de suspensión al 15%</strong> VO o SNG cada 2h × 3 dosis</li>
+     <li>Combinada habitualmente con manitol 200 ml al 20% VO</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>2 g/kg VO/SNG</strong> cada 2h × 3 dosis</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Polvo para suspensión; mezclar con agua hasta 15% de concentración</li>
+     <li>Administrar lo antes posible (< 4h de la ingesta); alternativa: carbón activado si no hay Tierra de Fuller</li>
+   </ul>`,
+   al:'ÚNICO adsorbente activo contra paraquat (el carbón activado tiene menor afinidad). Objetivo: reducir absorción intestinal. No existe antídoto sistémico para el paraquat; la supervivencia depende de la dosis absorbida.'},
+
+  {id:'tiamina', nm:'Tiamina (Vitamina B1)', ind:'Encefalopatía de Wernicke / Déficit B1 en etilismo crónico', c:'green',
+   dosisAdulto:`<ul>
+     <li><strong>100 mg IV</strong> en 30 min; <strong>SIEMPRE ANTES</strong> que la glucosa en etilismo</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>50–100 mg IV</strong>; misma precaución pre-glucosa si etilismo</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 100 mg/ml; diluir en 50–100 ml SF o SG5%</li>
+   </ul>`,
+   al:'Administrar ANTES de glucosa en etilismo. Wernicke: confusión + ataxia + oftalmoplejía.'},
+
+  {id:'vit_k', nm:'Vitamina K1 (Fitomenadiona)', ind:'Anticoagulantes antivitamina K (acenocumarol, warfarina) / Raticidas superwarfarínicos', c:'green',
+   dosisAdulto:`<ul>
+     <li>INR elevado sin sangrado: <strong>2,5–5 mg VO</strong></li>
+     <li>Sangrado activo o INR > 10: <strong>10 mg IV lento</strong> en 20 min (+ CCP si urgente)</li>
+     <li>Raticidas superwarfarínicos: <strong>25–100 mg/día VO</strong> durante semanas/meses</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Neonato: <strong>0,5–1 mg IV o IM</strong>; niños: <strong>1–5 mg VO o IV</strong> según INR y clínica</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Ampollas 10 mg/ml; para IV: diluir en 50 ml SF; pasar en mínimo 20 min (anafilaxia si rápido)</li>
+     <li>Comprimidos 10 mg para uso oral en casos leves</li>
+   </ul>`,
+   al:'IV muy lento (riesgo anafilactoide). Raticidas superwarfarínicos: tratamiento prolongado por vida media muy larga. El CCP es de elección en sangrado activo grave (acción en minutos vs horas de la VitK).'},
+
+  {id:'antitoxina_bot', nm:'Toxina Botulínica — Antitoxina', ind:'Botulismo (Clostridium botulinum)', c:'purple',
+   dosisAdulto:`<ul>
+     <li>Antitoxina trivalente (A, B, E): <strong>1 vial IV dosis única</strong>; puede repetirse en 4h si deterioro</li>
+     <li>Solicitar urgentemente a farmacia hospitalaria / autoridades sanitarias</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li>Antitoxina heptavalente (HBAT) en botulismo infantil o grave</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Diluir 1 vial en 100 ml SF; iniciar a 0,5 ml/min; adrenalina IM preparada (suero equino)</li>
+   </ul>`,
+   al:'Efectivo SOLO antes de la fijación al nervio. No revierte parálisis establecida. Centro Nacional de Toxicología: 91 562 04 20.'},
+
+  {id:'uridina', nm:'Uridina Triacetato', ind:'Sobredosis de fluorouracilo (5-FU) / Capecitabina', c:'teal',
+   dosisAdulto:`<ul>
+     <li><strong>10 g VO cada 6h</strong> × 20 dosis (5 días)</li>
+     <li>Iniciar dentro de las primeras <strong>96h</strong> de la sobredosis o inicio de síntomas graves</li>
+   </ul>`,
+   dosisNino:`<ul>
+     <li><strong>6,2 g/m² VO cada 6h</strong> × 20 dosis (máx 10 g/dosis)</li>
+   </ul>`,
+   preparacion:`<ul>
+     <li>Sobres 10 g; mezclar con 90–120 ml agua, zumo o leche; administrar inmediatamente</li>
+   </ul>`,
+   al:'Antídoto aprobado para sobredosis de 5-FU. Ventana terapéutica 96h. Solicitar urgentemente a farmacia hospitalaria.'},
+];
+
+/* ══════════════════════════════════════════════════════════════
+   PROTOCOLOS TÓXICOS
+══════════════════════════════════════════════════════════════ */
+const PROTOCOLOS_TOXICOS = [
+
+  {nm:'Ácido Valproico (valproato)',
+   manejoInicial:[
+     'Carbón activado 1 g/kg si ingesta < 2h y vía aérea protegida',
+     'Analítica urgente: amonio (hiperamonemia), transaminasas, coagulación, niveles de valproato',
+     'Glucosa IV si hipoglucemia; hemodiálisis si niveles > 850 mg/L con deterioro',
+   ],
+   criteriosAntidoto:[
+     'Hiperamonemia sintomática (encefalopatía, vómitos, somnolencia)',
+     'Ingesta masiva con deterioro del nivel de consciencia',
+     'Fallo hepático agudo por valproato',
+   ],
+   antidotosRelacionados:[{id:'l_carnitina', titulo:'L-Carnitina'}],
+   c:'amber'},
+
+  {nm:'Amanita phalloides (seta)',
+   manejoInicial:[
+     'Fase 1 (0–6h): síntomas GI — fluidoterapia IV agresiva, corrección electrolítica',
+     'Analítica urgente y seriada: transaminasas, coagulación (TP), creatinina, glucemia',
+     'Carbón activado 1 g/kg si ingesta < 2h',
+     'Contactar Hepatología/UCI: valorar trasplante hepático urgente',
+   ],
+   criteriosAntidoto:[
+     'Inicio de silibinina lo antes posible (idealmente < 24h de la ingesta)',
+     'Cualquier ingesta confirmada o sospechada de Amanita phalloides',
+     'No esperar elevación de transaminasas para iniciar',
+   ],
+   antidotosRelacionados:[
+     {id:'silibinina', titulo:'Silibinina — antídoto principal'},
+     {id:'penicilina_g', titulo:'Penicilina G — coadyuvante'},
+   ],
+   c:'green'},
+
+  {nm:'Anestésicos locales (bupivacaína, ropivacaína, lidocaína)',
+   manejoInicial:[
+     'PCR o arritmia grave tras bloqueo regional: iniciar RCP estándar',
+     'Adrenalina: reducir dosis a 10–100 mcg IV (dosis altas reducen eficacia de ELI)',
+     'Evitar propofol en la misma situación',
+   ],
+   criteriosAntidoto:[
+     'PCR o arritmia grave refractaria tras anestésico local',
+     'Colapso cardiovascular por tóxico lipofílico',
+   ],
+   antidotosRelacionados:[{id:'eli', titulo:'Emulsión Lipídica 20% (ELI)'}],
+   c:'purple'},
+
+  {nm:'Anticoagulantes anti-Xa (Apixabán, Rivaroxabán, Edoxabán)',
+   manejoInicial:[
+     'Determinar anti-Xa si disponible',
+     'Medidas hemostáticas locales; transfusión de hemoderivados según clínica',
+     'Carbón activado 1 g/kg si ingesta < 2h y paciente estable',
+   ],
+   criteriosAntidoto:[
+     'Sangrado mayor activo potencialmente mortal',
+     'Cirugía urgente o procedimiento invasivo urgente',
+     'Traumatismo grave con anticoagulación activa por anti-Xa',
+   ],
+   antidotosRelacionados:[{id:'ccp', titulo:'Complejo Protrombínico (CCP)'}],
+   c:'purple'},
+
+  {nm:'Anticoagulantes antivitamina K (acenocumarol, warfarina, raticidas)',
+   manejoInicial:[
+     'Determinar INR urgente',
+     'Si sangrado activo + INR elevado: CCP inmediato + Vitamina K IV',
+     'Si INR elevado sin sangrado: Vitamina K VO',
+     'Carbón activado si ingesta reciente < 2h',
+   ],
+   criteriosAntidoto:[
+     'INR > 4 o cualquier sangrado con INR elevado',
+     'Raticidas superwarfarínicos (brodifacoum): tratamiento oral prolongado semanas/meses',
+   ],
+   antidotosRelacionados:[{id:'vit_k', titulo:'Vitamina K1 (Fitomenadiona)'}],
+   c:'green'},
+
+  {nm:'Antidepresivos Tricíclicos (ADT)',
+   manejoInicial:[
+     'Monitorización ECG continua (QRS > 100 ms, bloqueo de rama derecha, QTc)',
+     'Carbón activado 1 g/kg si ingesta < 2h y vía aérea protegida',
+     'Evitar antiarrítmicos IA y IC, flumazenilo y fisostigmina',
+   ],
+   criteriosAntidoto:[
+     'QRS > 100 ms en ECG',
+     'Arritmias ventriculares (TV, FV)',
+     'Hipotensión refractaria a volumen',
+   ],
+   antidotosRelacionados:[{id:'bicarb', titulo:'Bicarbonato Sódico 1M'}],
+   c:'amber'},
+
+  {nm:'Benzodiacepinas / Hipnosedantes (incluye zolpidem, zaleplon)',
+   manejoInicial:[
+     'Asegurar vía aérea y oxigenoterapia',
+     'Monitorización: SpO₂, ECG, FC, TA',
+     'Glucosa + Tiamina si coma incierto o sospecha de etilismo',
+     'Carbón activado 1 g/kg si ingesta < 1–2h y vía aérea protegida',
+   ],
+   criteriosAntidoto:[
+     'Depresión del SNC atribuible a BZD con certeza (sin sospecha de ADT ni epilepsia)',
+     'Flumazenilo CONTRAINDICADO si: dependencia BZD, epilepsia, ADT, ingesta múltiple desconocida',
+   ],
+   antidotosRelacionados:[{id:'flumazenilo', titulo:'Flumazenilo'}],
+   c:'teal'},
+
+  {nm:'Betabloqueantes',
+   manejoInicial:[
+     'ECG continuo y TA cada 5 min',
+     'Atropina 0,5–1 mg IV si bradicardia sintomática',
+     'Carbón activado 1 g/kg si ingesta < 2h',
+   ],
+   criteriosAntidoto:[
+     'Bradicardia sintomática (< 50 lpm) con hipotensión o bajo gasto',
+     'Bloqueo AV de 2º o 3er grado',
+     'Shock cardiogénico',
+   ],
+   antidotosRelacionados:[
+     {id:'glucagon', titulo:'Glucagón — primera línea'},
+     {id:'hiet', titulo:'Insulina + Glucosa (HIET)'},
+   ],
+   c:'blue'},
+
+  {nm:'Body-packers / Ingestores de drogas embolsadas',
+   manejoInicial:[
+     'Radiografía / TC abdominal: confirmar número y posición de paquetes',
+     'Monitorización hemodinámica continua',
+     'NO inducir vómitos; NO endoscopia (riesgo de rotura)',
+     'Cirugía urgente si: rotura de paquete, obstrucción intestinal, inestabilidad hemodinámica',
+   ],
+   criteriosAntidoto:[
+     'Lavado intestinal total para acelerar la expulsión de paquetes íntegros',
+     'Si rotura de paquete con cocaína: BZD IV + soporte; si opioides: naloxona IV',
+   ],
+   antidotosRelacionados:[{id:'peg_lavado', titulo:'Polietilenglicol (Lavado Intestinal Total)'}],
+   c:'gray'},
+
+  {nm:'Botulismo',
+   manejoInicial:[
+     'Monitorizar función respiratoria: CVF < 1L → IOT electiva',
+     'Notificación urgente a Salud Pública (EDO)',
+     'Investigar fuente y posibles coexpuestos',
+   ],
+   criteriosAntidoto:[
+     'Sospecha clínica: oftalmoplejía, disfagia, disartria, parálisis descendente',
+     'Solicitar ANTES de confirmación microbiológica',
+   ],
+   antidotosRelacionados:[{id:'antitoxina_bot', titulo:'Toxina Botulínica — Antitoxina'}],
+   c:'purple'},
+
+  {nm:'Calcioantagonistas (verapamilo, diltiazem, amlodipino)',
+   manejoInicial:[
+     'ECG continuo y TA invasiva si inestabilidad',
+     'Cloruro cálcico 10% 10–20 ml IV (mejora transitoria de TA)',
+     'Carbón activado si ingesta ≤ 2h y vía aérea protegida',
+   ],
+   criteriosAntidoto:[
+     'Bradicardia / bloqueo AV con inestabilidad hemodinámica',
+     'Shock cardiogénico refractario a volumen',
+   ],
+   antidotosRelacionados:[
+     {id:'cl_calcico', titulo:'Cloruro Cálcico 10%'},
+     {id:'hiet', titulo:'Insulina + Glucosa (HIET)'},
+     {id:'glucagon', titulo:'Glucagón'},
+   ],
+   c:'blue'},
+
+  {nm:'Cianuro / Humos de incendio',
+   manejoInicial:[
+     'Retirar del ambiente; O₂ al 100% reservorio o IOT',
+     'Monitorización continua SpO₂, ECG, TA',
+     'Lactato > 8–10 mmol/L + síntomas: guía diagnóstica',
+   ],
+   criteriosAntidoto:[
+     'Víctima de incendio con síntomas neurológicos o cardiovasculares',
+     'Lactato > 8–10 mmol/L',
+     'Sospecha o confirmación de exposición a cianuro',
+   ],
+   antidotosRelacionados:[{id:'hidroxocob', titulo:'Hidroxocobalamina (Vit. B12a)'}],
+   c:'red'},
+
+  {nm:'Cocaína',
+   manejoInicial:[
+     'BZD IV para agitación e HTA: diazepam 5–10 mg IV titulado',
+     'ECG: QRS ancho, QTc, vasoespasmo coronario',
+     'Enfriamiento activo si T > 39°C',
+     'Evitar ABSOLUTAMENTE betabloqueantes',
+   ],
+   criteriosAntidoto:[
+     'No existe antídoto específico para cocaína',
+     'Si QRS > 100 ms: Bicarbonato Sódico 1–2 mEq/kg IV',
+   ],
+   antidotosRelacionados:[{id:'bicarb', titulo:'Bicarbonato Sódico 1M (si QRS > 100 ms)'}],
+   c:'purple'},
+
+  {nm:'Dabigatrán',
+   manejoInicial:[
+     'TT y ECT para cuantificar actividad anticoagulante',
+     'Hemostasia local y hemoderivados según clínica',
+     'Carbón activado 1 g/kg si ingesta < 2h',
+   ],
+   criteriosAntidoto:[
+     'Sangrado mayor activo',
+     'Cirugía urgente o procedimiento invasivo urgente',
+   ],
+   antidotosRelacionados:[{id:'idarucizumab', titulo:'Idarucizumab (Praxbind®)'}],
+   c:'purple'},
+
+  {nm:'Digoxina / Glucósidos cardíacos',
+   manejoInicial:[
+     'ECG continuo: bradiarritmias, BAV, bigeminismo, TV bidireccional',
+     'K⁺: hipopotasemia potencia toxicidad; hiperpotasemia indica toxicidad grave',
+     'Carbón activado 1 g/kg si ingesta aguda < 2h',
+   ],
+   criteriosAntidoto:[
+     'K⁺ > 5,5 mEq/L',
+     'Arritmias graves (BAV 3er grado, TV, FV)',
+     'Inestabilidad hemodinámica',
+     'Ingesta > 10 mg o digoxinemia > 10–15 ng/ml',
+   ],
+   antidotosRelacionados:[{id:'antdig', titulo:'Anticuerpos Antidigoxina (Fab)'}],
+   c:'green'},
+
+  {nm:'Distonías agudas por antipsicóticos',
+   manejoInicial:[
+     'Retirar o reducir el antipsicótico causante si es posible',
+     'Monitorizar vía aérea (laringoespasmo)',
+   ],
+   criteriosAntidoto:[
+     'Crisis distónica aguda confirmada por antipsicótico / metoclopramida',
+   ],
+   antidotosRelacionados:[{id:'biperideno', titulo:'Biperideno'}],
+   c:'amber'},
+
+  {nm:'Etilenglicol (anticongelante)',
+   manejoInicial:[
+     'Gasometría, función renal, osmol gap, calcio (hipocalcemia por oxalato)',
+     'Tiamina 100 mg IV y Piridoxina 50 mg IV cada 6h (cofactores metabolismo)',
+     'Bicarbonato IV si pH < 7,20; valorar hemodiálisis si deterioro renal',
+   ],
+   criteriosAntidoto:[
+     'Sospecha o confirmación de ingesta',
+     'Osmol gap elevado o acidosis con anión gap',
+     'Cristales de oxalato cálcico en orina',
+   ],
+   antidotosRelacionados:[
+     {id:'fomepizol', titulo:'Fomepizol — primera elección'},
+     {id:'etanol', titulo:'Etanol — alternativa si no hay fomepizol'},
+   ],
+   c:'blue'},
+
+  {nm:'Feocromocitoma / Crisis adrenérgica aguda',
+   manejoInicial:[
+     'Monitorización hemodinámica invasiva (TA arterial)',
+     'No administrar betabloqueantes sin bloqueo alfa previo (crisis hipertensiva paradójica)',
+     'Acceso venoso de gran calibre',
+   ],
+   criteriosAntidoto:[
+     'Crisis hipertensiva grave (TA > 180/120 mmHg) o arritmias por feocromocitoma',
+     'Extravasación de catecolaminas (noradrenalina) con necrosis tisular inminente',
+   ],
+   antidotosRelacionados:[{id:'fentolamina', titulo:'Fentolamina'}],
+   c:'red'},
+
+  {nm:'Fluorouracilo (5-FU) / Capecitabina — sobredosis',
+   manejoInicial:[
+     'Suspender inmediatamente la infusión de 5-FU',
+     'Monitorización: mielosupresión, mucositis, cardiotoxicidad',
+     'Soporte intensivo si mucositis severa o neutropenia febril',
+   ],
+   criteriosAntidoto:[
+     'Sobredosis accidental de 5-FU o capecitabina dentro de las primeras 96h',
+     'Inicio de síntomas GI, neurológicos o cardíacos graves',
+   ],
+   antidotosRelacionados:[{id:'uridina', titulo:'Uridina Triacetato'}],
+   c:'teal'},
+
+  {nm:'Heparina — sobredosis o sangrado',
+   manejoInicial:[
+     'Suspender la infusión de heparina inmediatamente',
+     'Determinar TTPA (heparina no fraccionada) o anti-Xa (HBPM)',
+     'Hemostasia local si sangrado accesible',
+   ],
+   criteriosAntidoto:[
+     'Sangrado mayor activo por heparina',
+     'Necesidad de revertir anticoagulación urgentemente (cirugía)',
+   ],
+   antidotosRelacionados:[{id:'protamina', titulo:'Protamina'}],
+   c:'blue'},
+
+  {nm:'Hierro (sulfato ferroso, multivitamínicos con hierro)',
+   manejoInicial:[
+     'Radiografía abdominal: confirmar presencia y cantidad de comprimidos',
+     'Lavado intestinal total con PEG si múltiples comprimidos (carbón activado INEFICAZ)',
+     'Analítica urgente: ferremia, hemograma, gasometría',
+   ],
+   criteriosAntidoto:[
+     'Ferremia > 500 µg/dl o síntomas sistémicos graves (shock, acidosis, coma)',
+     'Iniciar inmediatamente sin esperar ferremia si la clínica es grave',
+   ],
+   antidotosRelacionados:[
+     {id:'deferoxamina', titulo:'Deferoxamina'},
+     {id:'peg_lavado', titulo:'Polietilenglicol (Lavado Intestinal Total)'},
+   ],
+   c:'amber'},
+
+  {nm:'Hipoglucemia grave / Coma hipoglucémico',
+   manejoInicial:[
+     'Glucemia capilar urgente en todo coma de inicio brusco',
+     'Si inconsciente: NO dar nada oral',
+   ],
+   criteriosAntidoto:[
+     'Glucemia < 50 mg/dl con síntomas neurológicos',
+     'Paciente inconsciente sin causa aparente',
+   ],
+   antidotosRelacionados:[{id:'glucosa', titulo:'Glucosa Hipertónica'}],
+   c:'amber'},
+
+  {nm:'Hipoglucemia por sulfonilureas',
+   manejoInicial:[
+     'Glucosa IV 20–40 g para corrección inicial',
+     'Monitorización horaria de glucemia durante mínimo 24h',
+     'Observación prolongada: hipoglucemia recurrente frecuente',
+   ],
+   criteriosAntidoto:[
+     'Hipoglucemia recurrente tras glucosa IV con sulfonilurea confirmada',
+     'Dificultad para mantener glucemia solo con glucosa IV',
+   ],
+   antidotosRelacionados:[{id:'octreotida', titulo:'Octreótida'}],
+   c:'teal'},
+
+  {nm:'Isoniazida (INH)',
+   manejoInicial:[
+     'Status epiléptico refractario a BZD + historia de TB o INH: PENSAR EN ISONIAZIDA',
+     'BZD IV primer escalón; piridoxina SIMULTÁNEA a las BZD',
+   ],
+   criteriosAntidoto:[
+     'Status epiléptico refractario a BZD con sospecha de isoniazida',
+     'Ingesta conocida de isoniazida en cualquier dosis',
+   ],
+   antidotosRelacionados:[{id:'piridoxina', titulo:'Piridoxina (Vitamina B6)'}],
+   c:'amber'},
+
+  {nm:'Litio — intoxicación aguda o crónica',
+   manejoInicial:[
+     'Litemia urgente; función renal, electrolitos, ECG',
+     'Suspender el litio inmediatamente',
+     'Hidratación IV agresiva con SF (aumenta la excreción renal)',
+     'Hemodiálisis si: litemia > 4 mEq/L aguda, > 2,5 mEq/L crónica con síntomas graves',
+   ],
+   criteriosAntidoto:[
+     'Carbón activado INEFICAZ para litio',
+     'Lavado intestinal total (PEG) si comprimidos de liberación sostenida',
+   ],
+   antidotosRelacionados:[{id:'peg_lavado', titulo:'Polietilenglicol (Lavado Intestinal Total)'}],
+   c:'blue'},
+
+  {nm:'Metahemoglobinemia (nitritos, dapsona, benzocaína, anilinas)',
+   manejoInicial:[
+     'O₂ al 100% por mascarilla reservorio',
+     'Co-oximetría (única que detecta MetHb real; SpO₂ pulsioximetría falsamente normal)',
+     'Eliminar el agente causal',
+   ],
+   criteriosAntidoto:[
+     'MetHb > 20–25% en paciente sintomático',
+     'MetHb > 30% independientemente de síntomas',
+   ],
+   antidotosRelacionados:[
+     {id:'azul_metileno', titulo:'Azul de Metileno — primera línea'},
+     {id:'ac_ascorbico', titulo:'Ácido Ascórbico — alternativa en G6PD'},
+   ],
+   c:'teal'},
+
+  {nm:'Metales pesados — intoxicación aguda (plomo, arsénico, mercurio)',
+   manejoInicial:[
+     'Retirar de la fuente de exposición y descontaminación',
+     'Analítica urgente: niveles del metal, hemograma, función renal y hepática',
+     'Soporte sintomático: convulsiones, encefalopatía, fallo renal',
+   ],
+   criteriosAntidoto:[
+     'Plomo + encefalopatía o plombemia > 70 µg/dl: BAL + EDTA (ingreso UCI)',
+     'Arsénico o mercurio inorgánico agudo: BAL primera línea',
+     'Intoxicación crónica o leve: DMSA (oral) o penicilamina',
+   ],
+   antidotosRelacionados:[
+     {id:'dimercaprol', titulo:'Dimercaprol (BAL) — agudo grave'},
+     {id:'edta', titulo:'EDTA Cálcico Disódico — plomo grave'},
+     {id:'dmsa', titulo:'DMSA (Succímero) — crónico / moderado'},
+     {id:'penicilamina', titulo:'Penicilamina — crónico oral'},
+   ],
+   c:'amber'},
+
+  {nm:'Metotrexato — sobredosis / toxicidad grave',
+   manejoInicial:[
+     'Hidratación IV agresiva (diuresis > 3 ml/kg/h) con alcalinización orina (pH > 7)',
+     'Niveles de MTX a las 24, 48 y 72h',
+     'Analítica: función renal, hemograma cada 24h',
+   ],
+   criteriosAntidoto:[
+     'Niveles MTX > umbral de toxicidad o > 1 µmol/L a las 42h',
+     'Insuficiencia renal que impide aclaramiento',
+     'Glucarpidasa si IR grave y niveles muy elevados',
+   ],
+   antidotosRelacionados:[
+     {id:'ac_folico', titulo:'Ácido Folínico (Leucovorín) — primera línea'},
+     {id:'glucarpidasa', titulo:'Glucarpidasa — si IR grave'},
+   ],
+   c:'green'},
+
+  {nm:'Metanol / Alcohol metílico',
+   manejoInicial:[
+     'Analítica urgente: metanolemia, gasometría, osmol gap',
+     'Bicarbonato IV si pH < 7,20; ácido fólico 50 mg IV cada 4h',
+     'Hemodiálisis si metanolemia > 50 mg/dl, acidosis severa, afectación visual',
+   ],
+   criteriosAntidoto:[
+     'Sospecha o confirmación de ingesta de metanol',
+     'Osmol gap elevado sin otra causa; síntomas visuales',
+   ],
+   antidotosRelacionados:[
+     {id:'fomepizol', titulo:'Fomepizol — primera elección'},
+     {id:'etanol', titulo:'Etanol — alternativa si no hay fomepizol'},
+   ],
+   c:'blue'},
+
+  {nm:'Mordedura de serpiente (vipéridos)',
+   manejoInicial:[
+     'No hacer torniquete, incisión ni succión',
+     'Inmovilización del miembro por debajo del nivel del corazón',
+     'Coagulación (TP, fibrinógeno), plaquetas, función renal',
+     'Contactar Centro Nacional de Toxicología: 91 562 04 20',
+   ],
+   criteriosAntidoto:[
+     'Edema local progresivo más allá del punto de mordedura',
+     'Coagulopatía o síntomas sistémicos',
+   ],
+   antidotosRelacionados:[{id:'suero_anti', titulo:'Suero Antiofídico'}],
+   c:'red'},
+
+  {nm:'Opioides (morfina, fentanilo, heroína, metadona, codeína)',
+   manejoInicial:[
+     'Asegurar vía aérea; intubación si GCS < 8',
+     'Monitorización SpO₂ y FR',
+     'Si no hay acceso IV: vía intranasal o IM',
+   ],
+   criteriosAntidoto:[
+     'Depresión respiratoria (FR < 12 rpm o SpO₂ < 92%)',
+     'Miosis + coma + bradipnea (tríada clásica)',
+   ],
+   antidotosRelacionados:[{id:'naloxona', titulo:'Naloxona'}],
+   c:'red'},
+
+  {nm:'Organofosforados / Agentes nerviosos',
+   manejoInicial:[
+     'EPP obligatorio: guantes dobles, mascarilla FFP3, gafas, bata impermeable',
+     'Descontaminación: retirar ropa, lavado abundante agua y jabón 10 min',
+     'ECG continuo; acceso venoso de gran calibre',
+   ],
+   criteriosAntidoto:[
+     'Cualquier signo colinérgico (SLUDGE) + exposición confirmada',
+     'Miosis + bradicardia + broncoespasmo',
+     'Pralidoxima: iniciar siempre que se confirme organofosforado (< 24–48h)',
+   ],
+   antidotosRelacionados:[
+     {id:'atropina', titulo:'Atropina Sulfato — primera línea'},
+     {id:'pralidoxima', titulo:'Pralidoxima (2-PAM) — reactivador'},
+   ],
+   c:'red'},
+
+  {nm:'Paracetamol / Acetaminofén',
+   manejoInicial:[
+     'Carbón activado 1 g/kg si ingesta < 2h',
+     'Paracetamolemia a las 4h; transaminasas, coagulación, creatinina',
+     'Nomograma de Rumack-Matthew para decisión de tratamiento',
+   ],
+   criteriosAntidoto:[
+     'Paracetamolemia > 150 mg/L a las 4h',
+     'Tiempo de ingesta incierto o nivel antes de 8h imposible',
+     'Ingesta > 150 mg/kg o > 7,5 g en adulto con tiempo incierto',
+   ],
+   antidotosRelacionados:[{id:'nac', titulo:'N-Acetilcisteína (NAC)'}],
+   c:'green'},
+
+  {nm:'Paraquat / Diquat (herbicidas)',
+   manejoInicial:[
+     'Descontaminación inmediata: retirar ropa, lavado abundante piel y ojos',
+     'NO OXÍGENO suplementario (potencia toxicidad pulmonar del paraquat)',
+     'Iniciar descontaminación GI inmediatamente: Tierra de Fuller o carbón activado',
+     'Analítica urgente: paraquatemia, función renal, función pulmonar',
+   ],
+   criteriosAntidoto:[
+     'Cualquier ingesta de paraquat: iniciar descontaminación GI urgente',
+     'Tierra de Fuller preferida sobre carbón activado para paraquat',
+   ],
+   antidotosRelacionados:[{id:'tierra_fuller', titulo:'Tierra de Fuller (adsorbente específico)'}],
+   c:'red'},
+
+  {nm:'Rocuronio / Vecuronio (sobredosis o rescate)',
+   manejoInicial:[
+     'Ventilación manual (ambú) hasta reversión',
+     'Monitorización TOF si disponible',
+   ],
+   criteriosAntidoto:[
+     'Bloqueo neuromuscular profundo sin reversión espontánea',
+     '"Cannot intubate, cannot oxygenate"',
+   ],
+   antidotosRelacionados:[{id:'sugammadex', titulo:'Sugammadex'}],
+   c:'blue'},
+
+  {nm:'Síndrome neuroléptico maligno',
+   manejoInicial:[
+     'Retirar inmediatamente el antipsicótico causante',
+     'Enfriamiento activo urgente si T > 39°C',
+     'Hidratación IV agresiva (rabdomiólisis); BZD IV para rigidez y agitación',
+   ],
+   criteriosAntidoto:[
+     'Rigidez severa + hipertermia + inestabilidad autonómica + CPK elevada',
+     'No respuesta a BZD en las primeras horas',
+   ],
+   antidotosRelacionados:[{id:'dantroleno', titulo:'Dantroleno'}],
+   c:'red'},
+
+  {nm:'Síndrome serotoninérgico',
+   manejoInicial:[
+     'Retirar el agente causante (ISRS, IMAO, triptanes, tramadol…)',
+     'BZD IV para agitación, hiperreflexia y mioclonías',
+     'Enfriamiento activo si T > 41°C; monitorización ECG y TA',
+   ],
+   criteriosAntidoto:[
+     'Síntomas serotoninérgicos moderados-graves a pesar de BZD',
+     'Diagnóstico diferencial confirmado con NMS y toxidrome colinérgico',
+   ],
+   antidotosRelacionados:[{id:'ciproheptadina', titulo:'Ciproheptadina'}],
+   c:'purple'},
+
+  {nm:'Talio / Cesio radiactivo',
+   manejoInicial:[
+     'Aislamiento del paciente y protección radiológica si cesio (contactar autoridades)',
+     'Analítica: taliemia o actividad Cs, función renal, hemograma',
+     'Soporte sintomático: neuropatía, alopecia, íleo',
+   ],
+   criteriosAntidoto:[
+     'Intoxicación confirmada o altamente sospechada por talio',
+     'Exposición a cesio radiactivo: indicación urgente sin esperar niveles',
+   ],
+   antidotosRelacionados:[{id:'azul_prusia', titulo:'Azul de Prusia (Ferricianuro férrico)'}],
+   c:'blue'},
+
+  {nm:'Tóxicos lipofílicos (verapamilo, propranolol, amitriptilina)',
+   manejoInicial:[
+     'PCR refractaria o arritmia grave con sospecha de lipofílico',
+     'RCP de alta calidad; adrenalina reducida (10–100 mcg IV)',
+   ],
+   criteriosAntidoto:[
+     'PCR refractaria o colapso cardiovascular por lipofílico',
+     'Fracaso de medidas convencionales de RCP',
+   ],
+   antidotosRelacionados:[{id:'eli', titulo:'Emulsión Lipídica 20% (ELI)'}],
+   c:'purple'},
+].sort((a, b) => a.nm.localeCompare(b.nm, 'es'));
+
+/* ══════════════════════════════════════════════════════════════
+   QUIZ
+══════════════════════════════════════════════════════════════ */
+const QS = [
+  {k:'p', lb:'Signo 1/4 — Pupilas', tt:'¿Cómo son las pupilas?',
+   opts:['Miosis (puntiformes, < 3 mm)', 'Midriasis (dilatadas, > 6 mm)', 'Normal / reactivas']},
+  {k:'c', lb:'Signo 2/4 — Constantes vitales', tt:'¿Cómo están las constantes?',
+   opts:['Taquicardia / HTA / Taquipnea', 'Bradicardia / Bradipnea / Hipotensión', 'Normal']},
+  {k:'s', lb:'Signo 3/4 — Piel', tt:'¿Cómo está la piel?',
+   opts:['Seca y caliente (rubor)', 'Sudorosa / Sialorrea / Húmeda', 'Normal / sin hallazgos']},
+  {k:'m', lb:'Signo 4/4 — Estado mental', tt:'¿Cuál es el estado mental?',
+   opts:['Agitación / Psicosis / Alucinaciones', 'Delirio / Confusión / Desorientación', 'Coma / Depresión / Estupor', 'Normal / Consciente']},
+];
+const MATCH_TABLE = {
+  opi:{p:['miosis'],    c:['bradicardia'], s:['normal'],              m:['coma','depresión','estupor']},
+  ach:{p:['midriasis'], c:['taquicardia'], s:['seca'],                m:['delirio','agitación','alucinaciones','confusión']},
+  col:{p:['miosis'],    c:['bradicardia'], s:['sudorosa','sialorrea'],m:['confusión','delirio','coma','estupor']},
+  sym:{p:['midriasis'], c:['taquicardia'], s:['sudorosa','húmeda'],   m:['agitación','psicosis']},
+  sed:{p:['normal','miosis'],c:['bradicardia'],s:['normal'],          m:['coma','estupor','depresión']},
+  bbc:{p:['normal'],    c:['bradicardia'], s:['normal'],              m:['obnubilación','confusión','coma']},
+};
+let ans = {}, step = 0;
+
+/* Índice O(1) por id */
+const ANTD_MAP = {};
+ANTD.forEach(a => { ANTD_MAP[a.id] = a; });
+
+/* ══════════════════════════════════════════════════════════════
+   NAVEGACIÓN
+   FIX #2: Lógica de reset del buscador mejorada.
+   - Se resetea solo cuando se accede desde 's-home' o 's-dx'.
+   - Al volver desde un protocolo, el texto de búsqueda se preserva.
+══════════════════════════════════════════════════════════════ */
+let _prevScr = 's-home';
+
+function go(id, fromScr) {
+  const currentScr = document.querySelector('.scr.on')?.id || 's-home';
+  /* fromScr permite forzar el origen; si no se pasa, usamos la pantalla actual */
+  const origin = fromScr || currentScr;
+  _prevScr = currentScr;
+
+  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('on');
+  el.scrollTop = 0;
+
+  if (id === 's-search') {
+    /* Resetear buscador solo si se viene del dashboard o de orientación */
+    if (origin === 's-home' || origin === 's-dx') {
+      document.getElementById('si').value = '';
+      filtSearch('');
+    } else {
+      /* Volver de protocolo: re-renderizar con el texto actual */
+      filtSearch(document.getElementById('si').value);
+    }
+  }
+  if (id === 's-vade') {
+    document.getElementById('vi').value = '';
+    renderVade('');
+  }
+  if (id === 's-sindromes') {
+    renderSindromes();
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LISTA SÍNDROMES
+══════════════════════════════════════════════════════════════ */
+function renderSindromes() {
+  document.getElementById('syn-list').innerHTML = TDRM.map(t =>
+    `<div class="syn-card" data-id="${t.id}">
+      <div class="syn-dot" style="background:var(--${t.c})"></div>
+      <div><h4>${escHtml(t.nm)}</h4><p>${t.sx.slice(0, 3).map(escHtml).join(', ')}…</p></div>
+    </div>`
+  ).join('');
+  /* FIX #3: Usar delegación de eventos en lugar de onclick con string */
+  document.getElementById('syn-list').addEventListener('click', e => {
+    const card = e.target.closest('.syn-card');
+    if (card) showT(card.dataset.id, 's-sindromes');
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BUSCADOR TÓXICOS
+   FIX #3: Delegación de eventos para evitar inyección via onclick
+══════════════════════════════════════════════════════════════ */
+function filtSearch(v) {
+  const q = v.toLowerCase(), el = document.getElementById('tlist');
+  const items = PROTOCOLOS_TOXICOS.filter(x => !q || x.nm.toLowerCase().includes(q) ||
+    x.antidotosRelacionados.some(a => a.titulo.toLowerCase().includes(q)));
+  if (!items.length) {
+    el.innerHTML = `<div style="text-align:center;padding:36px;font-size:12px;color:var(--txt3)">Sin resultados para "${escHtml(v)}"</div>`;
+    return;
+  }
+  el.innerHTML = `<div style="border:1px solid var(--brd);border-radius:var(--r);background:var(--card);overflow:hidden">` +
+    items.map(it => `<div class="li" data-nm="${escHtml(it.nm)}">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--txt)">${escHtml(it.nm)}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">→ <strong>${it.antidotosRelacionados.map(a => escHtml(a.titulo.split('—')[0].trim())).join(' / ')}</strong></div>
+      </div>
+      <span style="font-size:11px;color:var(--txt3)">›</span>
+    </div>`).join('') + `</div>`;
+
+  el.querySelector('div').addEventListener('click', e => {
+    const item = e.target.closest('.li');
+    if (item) showProtocolo(item.dataset.nm);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PROTOCOLO TÓXICO
+   FIX #3: Botones usan data-id + delegación; sin onclick inline con strings
+══════════════════════════════════════════════════════════════ */
+function showProtocolo(nm) {
+  const p = PROTOCOLOS_TOXICOS.find(x => x.nm === nm);
+  if (!p) return;
+  const ps = document.querySelector('.scr.on')?.id || 's-search';
+  document.getElementById('ptbk').onclick = () => go(ps);
+  const col = `var(--${p.c})`;
+
+  const btns = p.antidotosRelacionados.map((a, i) => {
+    const cls = i === 0 ? 'btn-antidoto' : 'btn-antidoto secondary';
+    return `<button class="${cls}" data-antid="${escHtml(a.id)}">💊 ${escHtml(a.titulo)}</button>`;
+  }).join('');
+
+  document.getElementById('ptcont').innerHTML = `
+    <span class="bdg bdg-${p.c}" style="display:inline-block;margin-bottom:9px">Protocolo de intoxicación</span>
+    <h1 style="margin-bottom:16px">${escHtml(p.nm)}</h1>
+    <div class="proto-section"><h4>⚡ Manejo inicial y soporte</h4>
+      <ul>${p.manejoInicial.map(s => `<li>${escHtml(s)}</li>`).join('')}</ul></div>
+    <div class="proto-section" style="border-left:3px solid ${col}"><h4>✓ Criterios para iniciar el antídoto</h4>
+      <ul>${p.criteriosAntidoto.map(s => `<li>${escHtml(s)}</li>`).join('')}</ul></div>
+    <div id="ptbtns" style="margin-top:8px">${btns}</div>
+    <div style="height:20px"></div>`;
+
+  /* Delegación de eventos para los botones del protocolo */
+  document.getElementById('ptbtns').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-antid]');
+    if (btn) showA(btn.dataset.antid, 's-protocolo-toxico');
+  });
+
+  go('s-protocolo-toxico');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   VADEMÉCUM
+   FIX #3: Delegación de eventos para la lista de antídotos
+══════════════════════════════════════════════════════════════ */
+function renderVade(q) {
+  const el = document.getElementById('vadebox'), azEl = document.getElementById('azjump');
+  const filtered = ANTD
+    .filter(a => !q || a.nm.toLowerCase().includes(q.toLowerCase()) || a.ind.toLowerCase().includes(q.toLowerCase()))
+    .sort((a, b) => a.nm.localeCompare(b.nm, 'es'));
+  document.getElementById('vade-count').textContent = ANTD.length;
+  if (!filtered.length) {
+    el.innerHTML = `<div style="text-align:center;padding:36px;font-size:12px;color:var(--txt3)">Sin resultados</div>`;
+    azEl.innerHTML = '';
+    return;
+  }
+  const letters = [...new Set(filtered.map(a => a.nm[0].toUpperCase()))];
+  azEl.innerHTML = letters.map(l => `<button class="az-btn" data-letter="${l}">${l}</button>`).join('');
+  azEl.addEventListener('click', e => {
+    const btn = e.target.closest('.az-btn');
+    if (btn) jumpToLetter(btn.dataset.letter);
+  });
+
+  let html = `<div style="border:1px solid var(--brd);border-radius:var(--r);background:var(--card);overflow:hidden">`, lastL = '';
+  filtered.forEach(a => {
+    const L = a.nm[0].toUpperCase();
+    if (L !== lastL) { html += `<div class="az-letter" id="azl-${L}">${L}</div>`; lastL = L; }
+    html += `<div class="li" data-antid="${escHtml(a.id)}">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--txt)">${escHtml(a.nm)}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:1px">${escHtml(a.ind)}</div>
+      </div>
+      <span style="font-size:11px;color:var(--txt3)">›</span>
+    </div>`;
+  });
+  el.innerHTML = html + '</div>';
+  el.querySelector('div').addEventListener('click', e => {
+    const item = e.target.closest('.li[data-antid]');
+    if (item) showA(item.dataset.antid, 's-vade');
+  });
+}
+
+function filtVade(v) { renderVade(v); }
+
+function jumpToLetter(l) {
+  const target = document.getElementById('azl-' + l);
+  if (!target) return;
+  const scr = document.getElementById('s-vade');
+  const azWrap = document.getElementById('az-wrap');
+  const azH = azWrap ? azWrap.offsetHeight : 0;
+  const sr = scr.getBoundingClientRect(), tr = target.getBoundingClientRect();
+  scr.scrollTo({ top: tr.top - sr.top - azH + scr.scrollTop - 4, behavior: 'smooth' });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUIZ
+══════════════════════════════════════════════════════════════ */
+function startQ() { ans = {}; step = 0; renderQ(); go('s-quiz'); }
+function quizBack() { if (step === 0) { go('s-dx'); return; } step--; delete ans[QS[step].k]; renderQ(); }
+function renderQ() {
+  const q = QS[step];
+  document.getElementById('sbar').innerHTML = QS.map((_, i) =>
+    `<div class="sd ${i < step ? 'dn' : i === step ? 'ac' : ''}"></div>`).join('');
+  document.getElementById('qlb').textContent = q.lb;
+  document.getElementById('qtt').textContent = q.tt;
+  const optsEl = document.getElementById('qopts');
+  optsEl.innerHTML = q.opts.map((o, idx) =>
+    `<button class="ob" data-idx="${idx}">${escHtml(o)}</button>`
+  ).join('');
+  /* Reemplazar listener anterior */
+  const newOpts = optsEl.cloneNode(true);
+  optsEl.parentNode.replaceChild(newOpts, optsEl);
+  newOpts.addEventListener('click', e => {
+    const btn = e.target.closest('.ob');
+    if (!btn) return;
+    const o = q.opts[parseInt(btn.dataset.idx, 10)];
+    selO(q.k, o, btn);
+  });
+}
+function selO(k, v, btn) {
+  btn.style.background = 'var(--accent-light)';
+  btn.style.borderColor = 'var(--accent)';
+  ans[k] = v;
+  setTimeout(() => { step++; if (step >= QS.length) calcRes(); else renderQ(); }, 230);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MATCHING
+══════════════════════════════════════════════════════════════ */
+function matchScore(txt, kws) { if (!txt) return false; const t = txt.toLowerCase(); return kws.some(k => t.includes(k)); }
+function calcRes() {
+  const scored = TDRM.map(t => {
+    const mt = MATCH_TABLE[t.id]; let s = 0;
+    if (mt) {
+      if (matchScore(ans.p, mt.p)) s += 3;
+      if (matchScore(ans.c, mt.c)) s += 2;
+      if (matchScore(ans.s, mt.s)) s += 2;
+      if (matchScore(ans.m, mt.m)) s += 3;
+    }
+    return { ...t, score: s, pct: Math.round(s / 10 * 100) };
+  }).sort((a, b) => b.score - a.score);
+
+  const reslist = document.getElementById('reslist');
+  reslist.innerHTML = scored.map((t, i) => {
+    const col = `var(--${t.c})`;
+    const antBtn = t.atxId
+      ? `<button class="btn-sm" style="border-color:${col};color:${col}" data-antid="${t.atxId}">💊 Ver antídoto →</button>`
+      : `<span style="font-size:11px;color:var(--txt3)">Soporte</span>`;
+    return `<div class="card" style="${i === 0 ? `border:2px solid ${col}` : ''}">
+      <div class="card-h">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;align-items:center;gap:7px">
+            ${i === 0 ? `<span class="bdg bdg-${t.c}">Más probable</span>` : ''}
+            <span style="font-size:13px;font-weight:700">${escHtml(t.nm)}</span>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:${col}">${t.pct}%</span>
+        </div>
+        <div class="bbar"><div class="bfil" style="width:${t.pct}%;background:${col}"></div></div>
+      </div>
+      <div class="dv"></div>
+      <div class="card-b" style="padding-top:10px">
+        <div class="tx-grid">${Object.entries(t.cr).map(([k, v]) => `<div><span style="color:var(--txt2)">${escHtml(k)}: </span><span style="font-weight:600">${escHtml(v)}</span></div>`).join('')}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-bottom:8px">Antídoto: <strong>${escHtml(t.atx)}</strong></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn-sm" style="border-color:${col};color:${col}" data-toxid="${t.id}">Ver protocolo →</button>
+          ${antBtn}
+        </div>
+      </div></div>`;
+  }).join('');
+
+  /* Delegación de eventos en la lista de resultados */
+  reslist.addEventListener('click', e => {
+    const btnTox = e.target.closest('[data-toxid]');
+    if (btnTox) { showT(btnTox.dataset.toxid, 's-res'); return; }
+    const btnAnt = e.target.closest('[data-antid]');
+    if (btnAnt) { showA(btnAnt.dataset.antid, 's-res'); }
+  });
+
+  go('s-res');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FICHA TOXIDROME
+   FIX #3: Botón antídoto usa data-antid + delegación
+══════════════════════════════════════════════════════════════ */
+function showT(id, prevScr) {
+  const t = TDRM.find(x => x.id === id); if (!t) return;
+  const ps = prevScr || document.querySelector('.scr.on')?.id || 's-home';
+  document.getElementById('tbk').onclick = () => go(ps);
+  const col = `var(--${t.c})`;
+  const tcont = document.getElementById('tcont');
+  tcont.innerHTML = `
+    <span class="bdg bdg-${t.c}" style="display:inline-block;margin-bottom:9px">Síndrome de intoxicación</span>
+    <h1 style="margin-bottom:4px">${escHtml(t.nm)}</h1>
+    <div class="sub">Antídoto: <strong>${escHtml(t.atx)}</strong></div>
+    <div class="sec">Signos diagnósticos</div>
+    <div class="card"><div class="card-b" style="padding-top:13px">
+      ${Object.entries(t.cr).map(([k, v]) => `<div class="row"><span class="rlb">${escHtml(k)}</span><span class="rval">${escHtml(v)}</span></div>`).join('')}
+    </div></div>
+    <div class="sec">Protocolo de tratamiento</div>
+    ${t.tx.map(x => `<div class="card"><div class="card-b" style="padding-top:12px">
+      <p style="font-size:11px;font-weight:700;margin-bottom:5px;color:var(--${x.c}-txt)">${escHtml(x.l).toUpperCase()}</p>
+      <p style="font-size:13px;line-height:1.65">${x.t}</p>
+    </div></div>`).join('')}
+    <div class="sec">Alertas y precauciones</div>
+    ${t.al.map(a => `<div class="alrt ${ALC[t.c] || 'al-blue'}">⚠ ${escHtml(a)}</div>`).join('')}
+    <div class="sec">Posibles agentes causantes</div>
+    <div style="margin-bottom:12px">${t.sx.map(s => `<span class="pill">${escHtml(s)}</span>`).join('')}</div>
+    ${t.atxId ? `<div class="sec">Ficha del antídoto</div>
+    <button class="btn-antidoto" data-antid="${t.atxId}" style="margin-bottom:24px">💊 Ver Ficha: ${escHtml(t.atx)}</button>` : ''}`;
+
+  if (t.atxId) {
+    tcont.querySelector('[data-antid]').addEventListener('click', e => {
+      showA(e.currentTarget.dataset.antid, 's-tox');
+    });
+  }
+  go('s-tox');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FICHA ANTÍDOTO
+══════════════════════════════════════════════════════════════ */
+function showA(idOrNm, prevScr) {
+  let a = ANTD_MAP[idOrNm];
+  if (!a) a = ANTD.find(x => x.nm === idOrNm);
+  if (!a) a = ANTD.find(x => x.nm.toLowerCase().includes((idOrNm || '').toLowerCase()));
+  if (!a) { console.warn('Antídoto no encontrado:', idOrNm); return; }
+  const ps = prevScr || document.querySelector('.scr.on')?.id || 's-home';
+  document.getElementById('abk').onclick = () => go(ps);
+  document.getElementById('acont').innerHTML = `
+    <span class="bdg bdg-${a.c}" style="display:inline-block;margin-bottom:9px">Antídoto</span>
+    <h1 style="margin-bottom:4px">${escHtml(a.nm)}</h1>
+    <div class="sub">${escHtml(a.ind)}</div>
+    <div class="sec">Dosis adultos</div>
+    <div class="dosis-block"><div class="dosis-label">Adultos</div><div class="dosis-text">${a.dosisAdulto}</div></div>
+    <div class="sec">Dosis pediátrica</div>
+    <div class="dosis-block"><div class="dosis-label">Niños</div><div class="dosis-text">${a.dosisNino}</div></div>
+    <div class="sec">Preparación y administración</div>
+    <div class="prep-block"><div class="dosis-label">Preparación</div><div class="dosis-text">${a.preparacion}</div></div>
+    <div class="sec">Alerta clínica</div>
+    <div class="alrt ${ALC[a.c] || 'al-blue'}" style="margin-bottom:24px">⚠ ${escHtml(a.al)}</div>`;
+  go('s-ant');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FIX #1: Inicialización dentro de DOMContentLoaded para
+   garantizar que el DOM esté completamente disponible antes
+   de ejecutar cualquier función que acceda a elementos.
+══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  filtSearch('');
+  renderVade('');
+
+  /* Bind del input de búsqueda de tóxicos */
+  document.getElementById('si').addEventListener('input', e => filtSearch(e.target.value));
+
+  /* Bind del input de vademécum */
+  document.getElementById('vi').addEventListener('input', e => filtVade(e.target.value));
+});
+</script>
+</body>
+</html>
