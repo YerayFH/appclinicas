@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J830XBBQKF', { page_path: location.pathname });
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#000000">
+  <title>InfuCalc</title>
+  <!-- ② Tipografía system-ui: sin dependencias externas, óptima para entornos médicos -->
+  <style>
+/* ══════════════════════════════════════════════════════════
+   InfuCalc v5.3 — OLED BLACK DESIGN SYSTEM
+   Hospital Universitario Puerto Real · Farmacia Hospitalaria
+   ─────────────────────────────────────────────────────────
+   CAMBIOS v5.3 (sobre v5.2):
+   ① Pills de diluyentes en cabecera del calculador (buildCalc)
+   ② Eliminada conversión ml/min — resultado siempre en ml/h
+   ③ Corregido cruce de unidad en copyLog (modo inverso)
+   ④ res-unit inicial = d.unit cuando calcMode=true por defecto
+   ⑤ Eliminado res-inv-note residual del template HTML
+   ⑥ Eliminada variable dc no usada en buildCalc
+   ⑦ Eliminada "Diluyente preferido:" del meta texto
+   ⑧ DISC_KEY actualizado a v53
+══════════════════════════════════════════════════════════ */
+:root {
+  --ic-bg:          #000000;
+  --ic-card:        #0d1117;
+  --ic-card2:       #111827;
+  --ic-card3:       #161d2e;
+  --ic-border:      rgba(255,255,255,0.07);
+  --ic-border2:     rgba(255,255,255,0.14);
+  --ic-text:        #e2e8f4;
+  --ic-muted:       #4a5568;
+  --ic-muted2:      #718096;
+
+  --ic-accent-uci:      #38bdf8;
+  --ic-accent-uci-d:    rgba(56,189,248,0.10);
+  --ic-accent-uci-glow: rgba(56,189,248,0.24);
+  --ic-accent-uci-b:    rgba(56,189,248,0.32);
+
+  --ic-accent-abx:      #34d399;
+  --ic-accent-abx-d:    rgba(52,211,153,0.10);
+  --ic-accent-abx-glow: rgba(52,211,153,0.24);
+  --ic-accent-abx-b:    rgba(52,211,153,0.32);
+
+  --ic-amber:       #fbbf24;
+  --ic-amber-d:     rgba(251,191,36,0.10);
+  --ic-amber-b:     rgba(251,191,36,0.32);
+  --ic-orange:      #fb923c;
+  --ic-orange-d:    rgba(251,146,60,0.12);
+  --ic-orange-b:    rgba(251,146,60,0.38);
+  --ic-red:         #f87171;
+  --ic-red-d:       rgba(248,113,113,0.12);
+  --ic-red-b:       rgba(248,113,113,0.42);
+  --ic-red-glow:    rgba(248,113,113,0.28);
+
+  /* ② Tipografía system-ui — sin Google Fonts, legible en entornos médicos */
+  --ic-font-mono:    'Roboto Mono', 'Consolas', 'Courier New', monospace;
+  --ic-font-display: 'Roboto', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --r8:4px; --r12:8px; --r16:12px; --r20:16px; --r24:20px;
+
+  --ic-fs-label: 0.75rem;
+  --ic-fs-hosp:  0.75rem;
+  --ic-fs-note:  0.75rem;
+  --ic-fs-pill:  0.68rem;
+  --ic-fs-grp:   0.68rem;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:#000}
+body{font-family:var(--ic-font-display);background:var(--ic-bg);color:var(--ic-text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+
+.shell{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column}
+.screen.active{display:flex}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;background:var(--ic-bg);border-bottom:1px solid var(--ic-border);padding:10px 16px 8px}
+.topbar-hosp{font-family:var(--ic-font-display);font-size:var(--ic-fs-hosp);font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--ic-muted2);text-align:center;line-height:1.2}
+.topbar-brand{font-family:var(--ic-font-display);font-size:1.3rem;font-weight:800;text-align:center;letter-spacing:0.03em;background:linear-gradient(90deg,var(--ic-accent-uci),var(--ic-accent-abx));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:2px 0 1px;line-height:1}
+.topbar-sub{font-size:0.6rem;color:var(--ic-muted);text-align:center;letter-spacing:0.12em}
+.back-btn{display:none;align-items:center;gap:6px;background:var(--ic-card);border:1px solid var(--ic-border2);border-radius:var(--r12);color:var(--ic-muted2);font-family:var(--ic-font-mono);font-size:0.75rem;padding:8px 14px;cursor:pointer;transition:color .15s,border-color .15s;margin-bottom:7px;width:fit-content}
+.back-btn:hover{color:var(--ic-text);border-color:var(--ic-accent-uci)}
+.back-btn.show{display:flex}
+
+/* DASHBOARD */
+.dash-body{padding:18px 16px 24px;flex:1;display:flex;flex-direction:column;gap:12px}
+.dash-card{flex:1;min-height:150px;border-radius:var(--r24);border:1px solid var(--ic-border);background:var(--ic-card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;position:relative;overflow:hidden;transition:transform .17s,border-color .17s;padding:22px 20px;user-select:none}
+.dash-card:active{transform:scale(0.97)}
+.dash-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.dash-card.uci::after{background:radial-gradient(ellipse at 30% 40%,var(--ic-accent-uci-glow),transparent 65%)}
+.dash-card.abx::after{background:radial-gradient(ellipse at 70% 40%,var(--ic-accent-abx-glow),transparent 65%)}
+.dash-card:hover::after{opacity:1}
+.dash-card.uci:hover{border-color:var(--ic-accent-uci-b)}
+.dash-card.abx:hover{border-color:var(--ic-accent-abx-b)}
+.dash-icon{font-size:2.6rem;line-height:1;position:relative;z-index:1}
+.dash-title{font-family:var(--ic-font-display);font-size:1rem;font-weight:700;letter-spacing:0.06em;text-align:center;position:relative;z-index:1}
+.dash-card.uci .dash-title{color:var(--ic-accent-uci)}
+.dash-card.abx .dash-title{color:var(--ic-accent-abx)}
+.dash-desc{font-size:0.68rem;color:var(--ic-muted2);text-align:center;line-height:1.55;position:relative;z-index:1}
+.dash-badge{font-size:var(--ic-fs-pill);font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:0.07em;position:relative;z-index:1}
+.dash-card.uci .dash-badge{background:var(--ic-accent-uci-d);color:var(--ic-accent-uci);border:1px solid var(--ic-accent-uci-b)}
+.dash-card.abx .dash-badge{background:var(--ic-accent-abx-d);color:var(--ic-accent-abx);border:1px solid var(--ic-accent-abx-b)}
+.dash-tools{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tool-card{background:var(--ic-card);border:1px solid var(--ic-border);border-radius:var(--r20);padding:15px 12px;cursor:pointer;text-align:center;transition:border-color .15s}
+.tool-card:hover{border-color:var(--ic-border2)}
+.tool-icon{font-size:1.4rem;margin-bottom:5px}
+.tool-label{font-size:0.68rem;color:var(--ic-muted2);letter-spacing:0.07em;line-height:1.4}
+
+/* DRUG LIST */
+.list-body{padding:12px 16px 24px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1}
+.search-wrap{position:relative}
+.search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none}
+.search-inp{width:100%;padding:12px 12px 12px 38px;background:var(--ic-card);border:1px solid var(--ic-border);border-radius:var(--r16);color:var(--ic-text);font-family:var(--ic-font-mono);font-size:0.9rem;outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--ic-accent-uci)}
+.search-inp.em:focus{border-color:var(--ic-accent-abx)}
+.grp-label{font-size:var(--ic-fs-grp);letter-spacing:0.14em;text-transform:uppercase;color:var(--ic-muted);padding:8px 2px 3px}
+.drug-row{background:var(--ic-card);border:1px solid var(--ic-border);border-radius:var(--r16);padding:13px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s,background .15s;gap:10px}
+.drug-row:hover{background:var(--ic-card2)}
+.drug-row.uci:hover{border-color:var(--ic-accent-uci-b)}
+.drug-row.abx:hover{border-color:var(--ic-accent-abx-b)}
+.dr-name{font-family:var(--ic-font-display);font-size:0.9rem;font-weight:600}
+.dr-sub{font-size:var(--ic-fs-label);color:var(--ic-muted2);margin-top:3px;letter-spacing:0.03em}
+.dr-right{display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:130px}
+.dil-pills{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.dil-pill{font-size:var(--ic-fs-pill);font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:0.05em}
+.dil-g5  {background:rgba(251,191,36,.10);  color:var(--ic-amber);   border:1px solid rgba(251,191,36,.22)}
+.dil-sf  {background:var(--ic-accent-uci-d);color:var(--ic-accent-uci);border:1px solid var(--ic-accent-uci-b)}
+.dil-pure{background:rgba(148,163,184,.07); color:#94a3b8;           border:1px solid rgba(148,163,184,.15)}
+/* ── v5.1: RL en verde esmeralda ── */
+.dil-rl  {background:rgba(34,197,94,.10);   color:#22c55e;           border:1px solid rgba(34,197,94,.32)}
+.dr-arrow{color:var(--ic-muted);font-size:0.7rem}
+
+/* QUICK GUIDE */
+.guide-body{padding:12px 16px 24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
+.guide-table-wrap{background:var(--ic-card);border:1px solid var(--ic-border);border-radius:var(--r16);overflow:hidden}
+.guide-thead{display:grid;grid-template-columns:1.6fr 1.4fr 0.7fr 1.8fr;background:var(--ic-card2);border-bottom:1px solid var(--ic-border)}
+.guide-th{padding:9px 10px;font-size:var(--ic-fs-grp);letter-spacing:0.12em;text-transform:uppercase;color:var(--ic-muted2);font-weight:600;border-right:1px solid var(--ic-border)}
+.guide-th:last-child{border-right:none}
+.guide-row{display:grid;grid-template-columns:1.6fr 1.4fr 0.7fr 1.8fr;border-bottom:1px solid var(--ic-border);transition:background .12s}
+.guide-row:last-child{border-bottom:none}
+.guide-row.uci-row:hover{background:rgba(56,189,248,.04)}
+.guide-row.abx-row:hover{background:rgba(52,211,153,.04)}
+.guide-td{padding:9px 10px;font-size:0.72rem;border-right:1px solid var(--ic-border);line-height:1.4;color:var(--ic-text)}
+.guide-td:last-child{border-right:none;color:var(--ic-muted2);font-size:var(--ic-fs-label)}
+.guide-td.name-td{font-family:var(--ic-font-display);font-size:0.78rem;font-weight:600}
+.guide-td.name-td.uci-c{color:var(--ic-accent-uci)}
+.guide-td.name-td.abx-c{color:var(--ic-accent-abx)}
+.gf-row{display:flex;gap:6px;flex-wrap:wrap}
+.gf-btn{padding:6px 13px;background:var(--ic-card);border:1px solid var(--ic-border);border-radius:20px;font-family:var(--ic-font-mono);font-size:0.72rem;color:var(--ic-muted2);cursor:pointer;transition:all .15s}
+.gf-btn.all.active{background:var(--ic-card2);color:var(--ic-text);border-color:var(--ic-border2)}
+.gf-btn.uci.active{background:var(--ic-accent-uci-d);color:var(--ic-accent-uci);border-color:var(--ic-accent-uci-b)}
+.gf-btn.abx.active{background:var(--ic-accent-abx-d);color:var(--ic-accent-abx);border-color:var(--ic-accent-abx-b)}
+
+/* CALCULATOR */
+.calc-body{padding:12px 16px 32px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
+.blk{background:var(--ic-card);border:1px solid var(--ic-border);border-radius:var(--r20);overflow:hidden}
+.blk-title{padding:9px 14px;font-size:0.68rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-bottom:1px solid var(--ic-border);display:flex;align-items:center;gap:7px}
+.blk-body{padding:14px;display:flex;flex-direction:column;gap:10px}
+.drug-hdr{background:var(--ic-card2);border-radius:var(--r16);padding:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dh-name{font-family:var(--ic-font-display);font-size:1.05rem;font-weight:700;line-height:1.1}
+.dh-meta{font-size:var(--ic-fs-label);color:var(--ic-muted2);margin-top:5px;line-height:1.65}
+.dil-big{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:var(--r12);font-size:0.7rem;font-weight:700;letter-spacing:0.06em;flex-shrink:0}
+/* ── ① Pills de diluyentes en cabecera del calculador ── */
+.dil-pills-hdr{display:flex;flex-wrap:wrap;gap:5px;flex-shrink:0;justify-content:flex-end;align-self:flex-start;padding-top:2px}
+.note-row{padding:10px 12px;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.16);border-radius:var(--r12);font-size:var(--ic-fs-note);color:#c89b20;line-height:1.6}
+
+/* ── BOTONES DE MODO ── */
+.mode-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-mode{padding:14px 10px;border:2px solid var(--ic-border);border-radius:var(--r16);font-family:var(--ic-font-display);font-size:0.8rem;font-weight:700;letter-spacing:0.07em;cursor:pointer;transition:all .18s;line-height:1.3;text-align:center;background:var(--ic-card2);color:var(--ic-muted2)}
+.btn-mode:active{transform:scale(0.97)}
+.btn-mode:hover{color:var(--ic-text);border-color:var(--ic-border2)}
+.btn-mode.dir.on    {background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;border-color:transparent}
+.btn-mode.dir.on-abx{background:linear-gradient(135deg,#065f46,#10b981);color:#fff;border-color:transparent}
+.btn-mode.inv.on    {background:var(--ic-accent-uci-d);color:var(--ic-accent-uci);border-color:var(--ic-accent-uci-b)}
+.btn-mode.inv.on-abx{background:var(--ic-accent-abx-d);color:var(--ic-accent-abx);border-color:var(--ic-accent-abx-b)}
+.btn-mode-icon{font-size:1.2rem;display:block;margin-bottom:4px}
+.btn-mode-lbl{font-size:0.7rem;display:block;line-height:1.3}
+
+/* fields */
+.field{display:flex;flex-direction:column;gap:5px}
+.flbl{font-size:var(--ic-fs-label);letter-spacing:0.08em;color:var(--ic-muted2);font-weight:500}
+.finp{width:100%;padding:13px 14px;background:var(--ic-card2);border:1px solid var(--ic-border);border-radius:var(--r16);color:var(--ic-text);font-family:var(--ic-font-mono);font-size:1rem;font-weight:500;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.finp:focus{border-color:var(--ic-accent-uci)}
+.finp.em:focus{border-color:var(--ic-accent-abx)}
+.finp.edit:focus{border-color:var(--ic-amber)}
+.finp.invalid{border-color:var(--ic-red)!important;animation:shake .35s ease}
+.finp::placeholder{color:var(--ic-muted);font-size:0.85rem}
+select.finp{cursor:pointer}
+/* ── v5.1: campos bloqueados (isPremixed) ── */
+.finp:disabled{opacity:0.55;cursor:not-allowed;background:var(--ic-card3);border-style:dashed}
+.premixed-note{padding:8px 12px;background:rgba(56,189,248,.06);border:1px solid var(--ic-accent-uci-b);border-radius:var(--r12);font-size:0.7rem;color:var(--ic-accent-uci);line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.conc-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--ic-card3);border-radius:var(--r12);font-size:0.75rem}
+.conc-bar span:first-child{color:var(--ic-muted2)}
+.conc-val{font-weight:600;font-size:0.82rem;color:var(--ic-amber);transition:color .2s}
+.conc-unusual{display:none;padding:9px 12px;background:var(--ic-amber-d);border:1px solid var(--ic-amber-b);border-radius:var(--r12);font-size:var(--ic-fs-label);color:#e5aa10;line-height:1.5}
+.conc-unusual.show{display:block}
+
+.via-row{display:flex;gap:8px}
+.via-btn{flex:1;padding:11px 8px;background:var(--ic-card2);border:1px solid var(--ic-border);border-radius:var(--r16);cursor:pointer;font-family:var(--ic-font-mono);font-size:0.75rem;font-weight:600;letter-spacing:0.07em;text-align:center;transition:all .18s;color:var(--ic-muted2)}
+.via-btn:hover{border-color:var(--ic-border2);color:var(--ic-text)}
+.via-btn.central.active{background:var(--ic-accent-uci-d);color:var(--ic-accent-uci);border-color:var(--ic-accent-uci-b)}
+.via-btn.periph.active{background:var(--ic-orange-d);color:var(--ic-orange);border-color:var(--ic-orange-b)}
+.via-warn{padding:10px 12px;background:var(--ic-orange-d);border:1px solid var(--ic-orange-b);border-radius:var(--r12);font-size:var(--ic-fs-label);color:var(--ic-orange);line-height:1.5;display:none}
+.via-warn.show{display:block}
+
+.btn-calc{width:100%;padding:15px;border:none;border-radius:var(--r16);font-family:var(--ic-font-display);font-size:0.9rem;font-weight:700;letter-spacing:0.09em;cursor:pointer;transition:opacity .15s,transform .12s}
+.btn-calc:active{transform:scale(0.98)}
+.btn-calc.sky{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff}
+.btn-calc.em {background:linear-gradient(135deg,#065f46,#10b981);color:#fff}
+.btn-calc:hover{opacity:.9}
+
+.bolo-blk{padding:12px;background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.18);border-radius:var(--r16)}
+.bolo-hd{font-size:0.68rem;color:var(--ic-amber);letter-spacing:.10em;margin-bottom:8px}
+.bolo-out{font-size:1rem;font-weight:600;color:var(--ic-amber);margin-top:6px}
+
+.dil-warn-bar{padding:10px 12px;background:var(--ic-red-d);border:2px solid var(--ic-red-b);border-radius:var(--r12);font-size:var(--ic-fs-label);color:#fca5a5;line-height:1.5;display:none;animation:fadeUp .2s ease both}
+.dil-warn-bar.show{display:block}
+.dil-warn-bar .dil-warn-icon{font-size:1.1rem;margin-right:5px}
+
+.res-box{border-radius:var(--r16);padding:17px;border:1px solid var(--ic-border);background:var(--ic-card2);transition:all .3s}
+.res-box.sky    {background:var(--ic-accent-uci-d);border-color:var(--ic-accent-uci-b)}
+.res-box.em     {background:var(--ic-accent-abx-d);border-color:var(--ic-accent-abx-b)}
+.res-box.warn   {background:var(--ic-amber-d);border-color:var(--ic-amber-b)}
+.res-box.danger {background:var(--ic-red-d);border-color:var(--ic-red-b);animation:pulse-danger 1.1s infinite}
+.res-box.blocked{background:var(--ic-red-d);border:2px solid var(--ic-red);box-shadow:0 0 0 3px var(--ic-red-glow)}
+@keyframes pulse-danger{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 8px var(--ic-red-glow)}}
+.res-lbl{font-size:0.68rem;letter-spacing:.12em;color:var(--ic-muted2);margin-bottom:5px}
+.res-num{font-family:var(--ic-font-display);font-size:2.8rem;font-weight:800;line-height:1;transition:color .25s}
+.res-num.idle   {color:var(--ic-muted)}
+.res-num.sky-c  {color:var(--ic-accent-uci)}
+.res-num.em-c   {color:var(--ic-accent-abx)}
+.res-num.warn-c {color:var(--ic-amber)}
+.res-num.danger-c{color:var(--ic-red);animation:blink .75s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.res-unit{font-size:0.78rem;color:var(--ic-muted2);margin-top:4px}
+.res-range{font-size:var(--ic-fs-label);color:var(--ic-muted);margin-top:7px}
+.alert-chip{display:none;margin-top:9px;padding:9px 12px;border-radius:var(--r12);font-size:var(--ic-fs-label);line-height:1.55}
+.alert-chip.show{display:block}
+.alert-chip.soft   {background:var(--ic-amber-d);border:1px solid var(--ic-amber-b);color:#fde68a}
+.alert-chip.hard   {background:var(--ic-red-d);border:1px solid var(--ic-red-b);color:#fca5a5}
+.alert-chip.low    {background:var(--ic-accent-uci-d);border:1px solid var(--ic-accent-uci-b);color:#bae6fd}
+.alert-chip.blocked{background:var(--ic-red-d);border:2px solid var(--ic-red);color:#fca5a5;font-weight:600;animation:blink .75s step-end infinite}
+.copy-btn{width:100%;padding:11px;background:var(--ic-card2);border:1px solid var(--ic-border);border-radius:var(--r16);color:var(--ic-muted2);font-family:var(--ic-font-mono);font-size:0.75rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:0.06em}
+.copy-btn:hover{color:var(--ic-text);border-color:var(--ic-border2)}
+
+/* SERUM */
+.serum-body{padding:12px 16px 32px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.stat-card{background:var(--ic-card2);border:1px solid var(--ic-border);border-radius:var(--r16);padding:11px;text-align:center}
+.stat-val{font-family:var(--ic-font-display);font-size:1.1rem;font-weight:700;color:var(--ic-accent-uci)}
+.stat-val.em{color:var(--ic-accent-abx)}
+.stat-val.amber{color:var(--ic-amber)}
+.stat-lbl{font-size:0.62rem;color:var(--ic-muted2);margin-top:3px;letter-spacing:0.06em;line-height:1.3}
+.rate-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.rate-card{background:var(--ic-card2);border:1px solid var(--ic-accent-uci-b);border-radius:var(--r16);padding:11px;text-align:center}
+.rate-card.em{border-color:var(--ic-accent-abx-b)}
+.rate-card.amber{border-color:var(--ic-amber-b)}
+.rate-val{font-family:var(--ic-font-display);font-size:1.05rem;font-weight:700;color:var(--ic-accent-uci)}
+.rate-card.em .rate-val{color:var(--ic-accent-abx)}
+.rate-card.amber .rate-val{color:var(--ic-amber)}
+.rate-lbl{font-size:0.62rem;color:var(--ic-muted2);margin-top:3px;letter-spacing:0.05em}
+.serum-note{padding:9px 12px;background:var(--ic-card2);border:1px solid var(--ic-border);border-radius:var(--r12);font-size:var(--ic-fs-label);color:var(--ic-muted2);line-height:1.6}
+.nacl3-warn{display:none;padding:10px 12px;background:var(--ic-red-d);border:1px solid var(--ic-red-b);border-radius:var(--r12);font-size:var(--ic-fs-label);color:#fca5a5;line-height:1.55}
+.nacl3-warn.show{display:block}
+.btn-clear-serum{width:100%;padding:11px;background:var(--ic-card2);border:1px solid var(--ic-border);border-radius:var(--r16);color:var(--ic-muted2);font-family:var(--ic-font-mono);font-size:0.75rem;cursor:pointer;transition:all .15s;letter-spacing:0.06em}
+.btn-clear-serum:hover{color:var(--ic-red);border-color:var(--ic-red-b)}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:12px;opacity:0;pointer-events:none;transition:opacity .22s}
+.overlay.show{opacity:1;pointer-events:all}
+.sheet{background:var(--ic-card);border:1px solid var(--ic-border2);border-radius:var(--r24);padding:22px;width:100%;max-width:500px;transform:translateY(28px);transition:transform .22s}
+.overlay.show .sheet{transform:translateY(0)}
+.m-icon{font-size:2.5rem;text-align:center;margin-bottom:10px}
+.m-title{font-family:var(--ic-font-display);font-size:0.7rem;font-weight:700;letter-spacing:.17em;text-transform:uppercase;text-align:center;margin-bottom:12px}
+.m-body{font-size:0.82rem;color:#94a3b8;line-height:1.7;margin-bottom:16px}
+.m-body strong{color:var(--ic-text)}
+.m-btns{display:flex;gap:8px}
+.mbtn{flex:1;padding:13px;border:none;border-radius:var(--r16);font-family:var(--ic-font-mono);font-size:0.78rem;font-weight:600;letter-spacing:0.07em;cursor:pointer;transition:opacity .15s}
+.mbtn:hover{opacity:.88}
+.mbtn-cancel{background:#1e293b;color:var(--ic-muted2)}
+.mbtn-sky  {background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff}
+.mbtn-em   {background:linear-gradient(135deg,#065f46,#10b981);color:#fff}
+.mbtn-amber{background:linear-gradient(135deg,#78350f,#f59e0b);color:#fff}
+.mbtn:disabled{opacity:.4;cursor:not-allowed}
+
+.c-summary{background:var(--ic-card2);border-radius:var(--r16);padding:14px;margin-bottom:14px;display:flex;flex-direction:column;gap:7px;border:2px solid var(--ic-accent-uci-b);box-shadow:0 0 20px var(--ic-accent-uci-glow),inset 0 1px 0 rgba(56,189,248,.06)}
+.c-summary.em-brd    {border-color:var(--ic-accent-abx-b);box-shadow:0 0 20px var(--ic-accent-abx-glow)}
+.c-summary.danger-brd{border-color:var(--ic-red-b);box-shadow:0 0 20px var(--ic-red-glow)}
+.c-row{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem}
+.c-key{color:var(--ic-muted2)}
+.c-val{font-weight:600;color:var(--ic-text)}
+.c-val.sky   {color:var(--ic-accent-uci)}
+.c-val.em    {color:var(--ic-accent-abx)}
+.c-val.warn  {color:var(--ic-amber)}
+.c-val.danger{color:var(--ic-red)}
+.c-val.orange{color:var(--ic-orange)}
+
+/* DISCLAIMER */
+#mod-disclaimer{align-items:center;padding:16px}
+#mod-disclaimer .sheet{max-height:90vh;overflow-y:auto;border-color:var(--ic-red-b);box-shadow:0 0 30px rgba(248,113,113,.15)}
+.disc-header{text-align:center;margin-bottom:18px}
+.disc-badge{display:inline-block;padding:4px 12px;background:var(--ic-red-d);border:1px solid var(--ic-red-b);border-radius:20px;font-size:0.65rem;font-weight:700;letter-spacing:0.14em;color:var(--ic-red);text-transform:uppercase;margin-bottom:10px}
+.disc-title{font-family:var(--ic-font-display);font-size:1.1rem;font-weight:800;color:var(--ic-text);letter-spacing:0.02em;line-height:1.2}
+.disc-subtitle{font-size:0.72rem;color:var(--ic-muted2);margin-top:4px;letter-spacing:0.06em}
+.disc-clauses{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.disc-clause{padding:11px 13px;background:var(--ic-card2);border-left:3px solid var(--ic-red-b);border-radius:0 var(--r12) var(--r12) 0;font-size:0.8rem;color:#c8d0dd;line-height:1.6}
+.disc-clause strong{color:var(--ic-text);font-weight:600}
+.disc-clause.highlight{border-left-color:var(--ic-red);background:var(--ic-red-d)}
+.disc-meta{padding:10px 12px;background:var(--ic-card3);border-radius:var(--r12);font-size:0.68rem;color:var(--ic-muted2);line-height:1.55;margin-bottom:16px;text-align:center}
+.disc-meta a{color:var(--ic-accent-uci);text-decoration:none}
+#disc-accept{width:100%;padding:15px;font-size:0.82rem;border-radius:var(--r16)}
+
+.footer{padding:15px 16px;border-top:1px solid var(--ic-border);text-align:center}
+.footer-name{font-family:var(--ic-font-display);font-size:0.7rem;color:var(--ic-muted2);letter-spacing:.07em}
+.footer-contact{font-size:0.65rem;color:var(--ic-muted);margin-top:2px}
+.footer-contact a{color:var(--ic-accent-uci);text-decoration:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fu{animation:fadeUp .22s ease both}
+.fu1{animation-delay:.04s}.fu2{animation-delay:.09s}
+.fu3{animation-delay:.14s}.fu4{animation-delay:.19s}
+  </style>
+</head>
+<body>
+
+<!-- DISCLAIMER -->
+<div class="overlay" id="mod-disclaimer">
+  <div class="sheet">
+    <div class="disc-header">
+      <div class="disc-badge">⚠️ AVISO LEGAL Y DE SEGURIDAD</div>
+      <div class="disc-title">InfuCalc — Prototipo de Apoyo</div>
+      <div class="disc-subtitle">HOSPITAL UNIVERSITARIO PUERTO REAL · FARMACIA HOSPITALARIA</div>
+    </div>
+    <div class="disc-clauses">
+      <div class="disc-clause highlight">Esta herramienta es un <strong>prototipo de apoyo a la decisión</strong> y <strong>NO constituye un producto sanitario validado</strong> conforme al Reglamento (UE) 2017/745 sobre productos sanitarios.</div>
+      <div class="disc-clause">El uso de esta aplicación <strong>NO sustituye el criterio clínico</strong>, diagnóstico o tratamiento de un profesional sanitario titulado. Todos los cálculos deben ser verificados conforme al <strong>protocolo vigente de la unidad</strong>.</div>
+      <div class="disc-clause"><strong>El usuario asume toda la responsabilidad</strong> por las decisiones clínicas tomadas basadas en los resultados de esta herramienta.</div>
+      <div class="disc-clause highlight"><strong>El desarrollador no se hace responsable</strong> de daños derivados del uso inadecuado o de posibles errores en los datos. Ante cualquier duda, consulte con <strong>Farmacia Hospitalaria</strong>.</div>
+    </div>
+    <div class="disc-meta">
+      Versión 5.4 · Datos orientativos basados en fichas técnicas AEMPS<br>
+      <a href="https://www.aemps.gob.es" target="_blank" rel="noopener">aemps.gob.es</a> ·
+      Autor: Yeray Reyes de la Mata · <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a>
+    </div>
+    <button class="mbtn mbtn-sky" id="disc-accept" onclick="acceptDisclaimer()">✓ HE LEÍDO Y ACEPTO — CONTINUAR</button>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="mod-confirm">
+  <div class="sheet">
+    <div class="m-icon">💉</div>
+    <div class="m-title">VERIFICACIÓN ANTES DE PROGRAMAR</div>
+    <div class="c-summary" id="mc-summary"></div>
+    <p class="m-body" style="text-align:center;margin-bottom:14px;font-size:0.78rem">Confirma que los datos son correctos antes de programar la bomba.</p>
+    <div class="m-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeConfirm()">✕ CANCELAR</button>
+      <button class="mbtn" id="mc-ok" onclick="doConfirm()">✓ CONFIRMAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIL WARNING MODAL -->
+<div class="overlay" id="mod-dil">
+  <div class="sheet">
+    <div class="m-icon">⚠️</div>
+    <div class="m-title" style="color:var(--ic-amber)">INCOMPATIBILIDAD DE DILUYENTE</div>
+    <p class="m-body" id="md-text" style="text-align:center"></p>
+    <div class="m-btns">
+      <button class="mbtn mbtn-amber" onclick="closeDilModal(false)">MANTENER DILUYENTE</button>
+      <button class="mbtn mbtn-sky"   onclick="closeDilModal(true)">RESTAURAR RECOMENDADO</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="topbar">
+    <button class="back-btn" id="back-btn" onclick="goBack()">← VOLVER</button>
+    <div class="topbar-hosp">FARMACIA HOSPITALARIA · HOSPITAL UNIVERSITARIO PUERTO REAL</div>
+    <div class="topbar-brand">InfuCalc</div>
+    <div class="topbar-sub">SISTEMA DE SOPORTE A LA DECISIÓN CLÍNICA · v5.4</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="screen active" id="scr-dash">
+    <div class="dash-body">
+      <div class="dash-card uci fu fu1" onclick="openModule('UCI')">
+        <div class="dash-icon">🫀</div>
+        <div class="dash-title">SEDOANALGESIA<br>Y VASOACTIVOS</div>
+        <div class="dash-desc">Vasoactivos · Inotropos · Sedación<br>Analgesia · Electrólitos · Anticoagulación</div>
+        <div class="dash-badge" id="uci-badge"></div>
+      </div>
+      <div class="dash-card abx fu fu2" onclick="openModule('ABX')">
+        <div class="dash-icon">🧬</div>
+        <div class="dash-title">ANTIBIÓTICOS<br>EXTENDIDOS</div>
+        <div class="dash-desc">Betalactámicos · Carbapenémicos<br>Glucopéptidos · Antifúngicos · PK/PD</div>
+        <div class="dash-badge" id="abx-badge"></div>
+      </div>
+      <div class="dash-tools fu fu3">
+        <div class="tool-card" onclick="openSerum()">
+          <div class="tool-icon">🧪</div>
+          <div class="tool-label">CALCULADORA<br>DE SUEROS</div>
+        </div>
+        <div class="tool-card" onclick="openGuide()">
+          <div class="tool-icon">📋</div>
+          <div class="tool-label">GUÍA RÁPIDA<br>DE DILUCIONES</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="footer-name">Autor: Yeray Reyes de la Mata</div>
+      <div class="footer-contact">Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    </div>
+  </div>
+
+  <!-- DRUG LIST -->
+  <div class="screen" id="scr-list">
+    <div class="list-body">
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input class="search-inp" id="list-search" type="text" placeholder="Buscar fármaco..." oninput="renderList()">
+      </div>
+      <div id="drug-list-inner"></div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="screen" id="scr-calc">
+    <div class="calc-body" id="calc-body"></div>
+  </div>
+
+  <!-- SERUM -->
+  <div class="screen" id="scr-serum">
+    <div class="serum-body">
+      <div class="blk fu">
+        <div class="blk-title" style="color:var(--ic-accent-uci)">🧪 CALCULADORA DE SUEROS</div>
+        <div class="blk-body">
+          <div class="field">
+            <div class="flbl">TIPO DE SUERO</div>
+            <select class="finp" id="ser-type" onchange="calcSerum()">
+              <option value="">— Seleccionar —</option>
+              <option value="nacl09">Suero Fisiológico 0.9% (NaCl)</option>
+              <option value="nacl045">Suero Salino 0.45%</option>
+              <option value="rl">Ringer Lactato</option>
+              <option value="g5">Glucosado 5%</option>
+              <option value="g10">Glucosado 10%</option>
+              <option value="nacl3">Salino Hipertónico 3% ⚠️</option>
+              <option value="kcl10">KCl 10 mEq / 100 ml</option>
+              <option value="kcl20">KCl 20 mEq / 100 ml</option>
+            </select>
+          </div>
+          <div class="nacl3-warn" id="nacl3-warn">🚨 <strong>NaCl 3% — VÍA CENTRAL EXCLUSIVA.</strong> La administración periférica produce necrosis y flebitis graves.</div>
+          <div class="row2">
+            <div class="field">
+              <div class="flbl">VOLUMEN TOTAL (ml)</div>
+              <input class="finp" id="ser-vol" type="number" inputmode="decimal" placeholder="500" oninput="calcSerum()">
+            </div>
+            <div class="field">
+              <div class="flbl">RITMO (ml/h)</div>
+              <input class="finp" id="ser-rate" type="number" inputmode="decimal" placeholder="125" oninput="calcSerum()">
+            </div>
+          </div>
+          <div class="serum-note" id="ser-note">Selecciona un tipo de suero para ver su composición.</div>
+          <button class="btn-clear-serum" onclick="clearSerum()">🗑 LIMPIAR CAMPOS</button>
+        </div>
+      </div>
+      <div class="blk fu fu1" id="ser-static-blk" style="display:none">
+        <div class="blk-title" style="color:var(--ic-accent-uci)">📊 COMPOSICIÓN TOTAL</div>
+        <div class="blk-body"><div class="stat-grid" id="ser-static"></div></div>
+      </div>
+      <div class="blk fu fu2" id="ser-rate-blk" style="display:none">
+        <div class="blk-title" style="color:var(--ic-accent-abx)">⚡ APORTES POR HORA (3 decimales)</div>
+        <div class="blk-body"><div class="rate-grid" id="ser-rate-res"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK GUIDE -->
+  <div class="screen" id="scr-guide">
+    <div class="guide-body">
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input class="search-inp" id="guide-search" type="text" placeholder="Buscar fármaco..." oninput="renderGuide()">
+      </div>
+      <div class="gf-row">
+        <button class="gf-btn all active" id="gf-all" onclick="setGF('all')">Todos</button>
+        <button class="gf-btn uci"        id="gf-uci" onclick="setGF('UCI')">🫀 UCI</button>
+        <button class="gf-btn abx"        id="gf-abx" onclick="setGF('ABX')">🧬 ABX</button>
+      </div>
+      <div class="guide-table-wrap">
+        <div class="guide-thead">
+          <div class="guide-th">Fármaco</div>
+          <div class="guide-th">Presentaciones</div>
+          <div class="guide-th">Diluyente</div>
+          <div class="guide-th">Notas clave</div>
+        </div>
+        <div id="guide-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   InfuCalc v5.1 — BASE DE DATOS
+   ─────────────────────────────────────────────────────────
+   ARQUITECTURA DE UNIDADES v5.1 — DESACOPLAMIENTO SEGURO
+   ══════════════════════════════════════════════════════════
+
+   PROBLEMA RESUELTO:
+   En v5.0, getPresUnitLabel(d) infería la unidad del vial a partir
+   de d.unit (si la dosis era mcg/kg/min, se asumía el vial en mcg).
+   Esto es un ERROR LETAL: Noradrenalina se dosifica en mcg pero las
+   ampollas Levophed® vienen en mg (4 mg/4 mL). Un enfermero que ve
+   el campo "MCG del vial" teclearía 4 mcg en lugar de 4 mg →
+   concentración calculada x1000 → error de bombeo catastrófico.
+
+   SOLUCIÓN v5.1:
+   Cada entrada de DRUGS declara explícitamente:
+     · vialUnit   : unidad real del envase comercial ('mg','mcg','UI','mEq')
+     · defaultPres: valor por defecto del campo pres (placeholder dinámico)
+     · defaultVol : valor por defecto del campo vol  (placeholder dinámico)
+     · isPremixed : true → campos bloqueados y pre-rellenados
+
+   La función getConcUnit(d) usa d.vialUnit → la concentración se
+   muestra en d.vialUnit/mL.
+
+   computeRate y computeDose aplican internamente el factor de
+   conversión entre vialUnit y d.unit cuando son distintos:
+     · vialUnit='mg'  + d.unit contiene 'mcg' → conc_en_mcg = conc_mg × 1000
+     · vialUnit='mcg' + d.unit contiene 'mg'  → conc_en_mg  = conc_mcg / 1000
+     · mismo tipo → sin conversión
+
+   VERIFICACIÓN con Noradrenalina:
+     Vial: 4 mg / 250 mL = 0.016 mg/mL
+     Dosis: 0.1 mcg/kg/min, peso 70 kg
+     conc normalizada a mcg/mL = 0.016 × 1000 = 16 mcg/mL
+     dose_h = 0.1 × 70 × 60 = 420 mcg/h
+     mL/h   = 420 / 16 = 26.25 ✓ (correcto clínicamente)
+════════════════════════════════════════════════════════════ */
+
+const DRUGS = [
+
+  /* ════ VASOACTIVOS ════════════════════════════════════════ */
+  {
+    /* Levophed® (Pfizer): ampollas 4 mg/4 mL (1 mg/mL).
+       Dilución estándar UCI: 4 amp (16 mg) en 250 mL G5%.
+       DOSIS en mcg/kg/min · VIAL en mg → conversión interna ×1000. */
+    cat:'UCI', sub:'Vasoactivo', name:'Noradrenalina',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:16, defaultVol:250,
+    maxConc: 0.16, maxConcP: 0.016,
+    rango:[0.01,3.0], soft:1.0, hard:3.0,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:24, bolo:false,
+    viaSelector:true,
+    viaPeriphMsg:'⚠️ Riesgo de NECROSIS por extravasación. Uso periférico solo en emergencia y baja concentración. Monitorizar punto de punción continuamente.',
+    nota:'Levophed® 1mg/mL (amp 4mg/4mL). Vial en MG. Dosis en mcg/kg/min. Vía central de elección. Proteger de luz. Cambiar c/24h.'
+  },
+  {
+    /* Adrenalina Braun® / Inibsa® 1 mg/mL.
+       Dilución estándar UCI: 5 mg (5 amp) en 250 mL G5%.
+       DOSIS en mcg/kg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Vasoactivo', name:'Adrenalina',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:5, defaultVol:250,
+    maxConc: 0.1,
+    rango:[0.01,1.0], soft:0.5, hard:2.0,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:24, bolo:false,
+    viaSelector:true,
+    viaPeriphMsg:'⚠️ Riesgo de NECROSIS por extravasación. Uso periférico solo en emergencia y baja concentración.',
+    nota:'Braun® / Inibsa® 1mg/mL (amp 1mg/1mL). Vial en MG. Dosis en mcg/kg/min. Vía central obligatoria. ECG continuo.'
+  },
+  {
+    /* Dopamina Fresenius® / Braun® 40 mg/mL (200 mg/5 mL).
+       Dilución UCI: 200 mg en 250 mL G5%.
+       DOSIS en mcg/kg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Vasoactivo', name:'Dopamina',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:200, defaultVol:250,
+    maxConc: 3.2, maxConcP: 1.6,
+    viaSelector:true,
+viaPeriphMsg: '⚠️ Riesgo de isquemia y necrosis. Límite periférico 1.6 mg/ml. Vigilar extravasación.',
+    rango:[2,20], soft:15, hard:20,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:24, bolo:false,
+    nota:'Fresenius® / Braun® 40mg/mL (200mg/5mL). Vial en MG. <5: dopaminérgico. 5–10: inotrópico. >10: vasopresor.'
+  },
+  {
+    /* Empressin® (Ever Pharma) 20 UI/1 mL.
+       Dilución: 20 UI en 100 mL SF → 0.2 UI/mL.
+       DOSIS en UI/h · VIAL en UI → sin conversión. */
+    cat:'UCI', sub:'Vasoactivo', name:'Vasopresina',
+    unit:'UI/h', vialUnit:'UI',
+    defaultPres:20, defaultVol:100,
+    maxConc: 1,
+    viaSelector: true,
+viaPeriphMsg: '⚠️ Alto riesgo de isquemia distal y necrosis cutánea. Vía central de elección obligatoria en cuanto sea posible.',
+    rango:[1.8,4.0], soft:2.4, hard:4.0,
+    dilPref:'SF', dilOk:['SF'], estab:24, bolo:false,
+    nota:'Empressin® 20UI/mL. SOLO SF (FT AEMPS). Dosis sepsis: 0.03–0.04 UI/min (1.8–2.4 UI/h). Vigilar isquemia distal.'
+  },
+  {
+    /* Isuprel® 0.2 mg/mL (uso compasivo).
+       Dilución: 1 mg en 100 mL G5%.
+       DOSIS en mcg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Vasoactivo', name:'Isoprenalina',
+    unit:'mcg/min', vialUnit:'mg',
+    defaultPres:1, defaultVol:100,
+    maxConc: 0.02,
+    rango:[0.5,20], soft:10, hard:20,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:24, bolo:false,
+    nota:'Isuprel® 0.2mg/mL. Vial en MG. Dosis en mcg/min. ECG continuo obligatorio. Riesgo taquiarritmias e isquemia.'
+  },
+
+  /* ════ INOTROPOS ══════════════════════════════════════════ */
+  {
+    /* Dobutamina Braun® / Fresenius® 12.5 mg/mL (250 mg/20 mL).
+       Dilución: 250 mg en 250 mL G5%.
+       DOSIS en mcg/kg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Inotropo', name:'Dobutamina',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:250, defaultVol:250,
+    maxConc: 5,
+    viaSelector: true,
+viaPeriphMsg: '⚠️ Riesgo de flebitis y necrosis focal por extravasación. Usar vena periférica de grueso calibre o cambiar a vía central.',
+    rango:[2,20], soft:20, hard:40,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:24, bolo:false,
+    nota:'Braun® / Fresenius® 12.5mg/mL (250mg/20mL). Vial en MG. Taquicardia frecuente. NO mezclar con heparina.'
+  },
+  {
+    /* Primacor® 10 mg/10 mL (1 mg/mL) — medicamento extranjero.
+       DOSIS en mcg/kg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Inotropo', name:'Milrinona',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:20, defaultVol:100,
+    maxConc: 0.2,
+    rango:[0.375,0.75], soft:0.75, hard:1.13,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:24,
+    bolo:true, boloDosis:50, boloUnit:'mcg/kg', boloT:'10–20 min',
+    nota:'Primacor® 1mg/mL. Vial en MG. Carga: 25–75 mcg/kg en 10–20 min. Máx 1.13 mcg/kg/min. Ajustar en insuf. renal.'
+  },
+  {
+    /* Simdax® (Orion Pharma) 2.5 mg/mL, viales 5 mL (12.5 mg).
+       SOLO G5% (FT AEMPS).
+       DOSIS en mcg/kg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Inotropo', name:'Levosimendán',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:12.5, defaultVol:250,
+    minConc: 0.025, maxConc: 0.05, maxConcP: 0.025,
+    viaSelector: true,
+    rango:[0.05,0.2], soft:0.2, hard:0.4,
+    dilPref:'G5%', dilOk:['G5%'], estab:24,
+    bolo:true, boloDosis:12, boloUnit:'mcg/kg', boloT:'10 min',
+    nota:'Simdax® 2.5mg/mL. Vial en MG. SOLO G5% (FT AEMPS — precipita en SF). Bolo 6–12 mcg/kg en 10 min (opcional). Hipotensión.'
+  },
+
+  /* ════ ANTIHIPERTENSIVOS ══════════════════════════════════ */
+  {
+    /* Cleviprex® (Chiesi) 0.5 mg/mL. NO DILUIR.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Antihipertensivo', name:'Clevidipino',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:50, defaultVol:100,
+    maxConc: 0.5,
+    rango:[1,32], soft:16, hard:32,
+    dilPref:'PURO', dilOk:['PURO'], estab:12, bolo:false,
+    nota:'Cleviprex® 0.5mg/mL. Emulsión lipídica. NO diluir. Máx 32mg/h (FT EMA). Cambiar c/12h.'
+  },
+
+  /* ════ SEDACIÓN ════════════════════════════════════════════ */
+  {
+    /* Diprivan® / Propofol 1% 10 mg/mL. NO DILUIR.
+       DOSIS en mg/kg/h · VIAL en mg → sin conversión.
+       isPremixed: campos bloqueados con 500 mg / 50 mL. */
+    cat:'UCI', sub:'Sedación', name:'Propofol 1%',
+    unit:'mg/kg/h', vialUnit:'mg',
+    defaultPres:500, defaultVol:50,
+    isPremixed:true,
+    minConc: 2, maxConc: 10,
+    viaSelector: true,
+viaPeriphMsg: '⚠️ Alto riesgo de dolor en la inyección y flebitis lipídica. Administrar estrictamente en vena de grueso calibre (ej. antecubital).',
+    rango:[0.3,4.0], soft:4.0, hard:6.0,
+    dilPref:'PURO', dilOk:['PURO'], estab:12, bolo:false,
+    nota:'Diprivan® 10mg/mL. Pre-rellenado: 500mg/50mL. Cambiar c/12h. PRIS si >4mg/kg/h >48h. Vía exclusiva.'
+  },
+  {
+    /* Propofol Lipuro® 2% / Freofol® 2% 20 mg/mL. NO DILUIR.
+       isPremixed: campos bloqueados con 1000 mg / 50 mL. */
+    cat:'UCI', sub:'Sedación', name:'Propofol 2%',
+    unit:'mg/kg/h', vialUnit:'mg',
+    defaultPres:1000, defaultVol:50,
+    isPremixed:true,
+    maxConc: 20,
+    viaSelector: true,
+viaPeriphMsg: '⚠️ Alto riesgo de dolor en la inyección y flebitis lipídica. Administrar estrictamente en vena de grueso calibre (ej. antecubital).',
+    rango:[0.3,4.0], soft:4.0, hard:6.0,
+    dilPref:'PURO', dilOk:['PURO'], estab:12, bolo:false,
+    nota:'Propofol Lipuro® 2% 20mg/mL. Pre-rellenado: 1000mg/50mL. Cambiar c/12h. PRIS >4mg/kg/h >48h. Vía exclusiva.'
+  },
+  {
+    /* Midazolam Braun® / Reig Jofré® 5 mg/mL.
+       Dilución estándar: 150 mg en 50 mL SF.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Sedación', name:'Midazolam',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:150, defaultVol:50,
+    maxConc: 5,
+    rango:[1,15], soft:10, hard:20,
+    dilPref:'SF', dilOk:['G5%','SF'], estab:24, bolo:false,
+    nota:'Braun® / Reig Jofré® 5mg/mL. Dilución: 150mg/50mL SF. Acumulación en obesidad/insuf. renal. Evaluación diaria RASS.'
+  },
+  {
+    /* Dexdor® (Orion Pharma) 100 mcg/mL, viales 2 mL (200 mcg) / 4 mL (400 mcg).
+       Diluir a 4 mcg/mL → 200 mcg en 50 mL SF.
+       DOSIS en mcg/kg/h · VIAL en mcg → sin conversión.
+       v5.1: dilOk ampliado con G5% y RL (FT AEMPS). */
+    cat:'UCI', sub:'Sedación', name:'Dexmedetomidina',
+    unit:'mcg/kg/h', vialUnit:'mcg',
+    defaultPres:200, defaultVol:50,
+    minConc: 4, maxConc: 8,
+    rango:[0.2,1.4], soft:1.4, hard:2.0,
+    dilPref:'SF', dilOk:['SF','G5%','RL'], estab:24, bolo:false,
+    nota:'Dexdor® 100mcg/mL. Vial en MCG. Diluir a 4mcg/mL (ej. 200mcg/50mL). SF preferido; G5% y RL aceptados (FT AEMPS). Vigilar bradicardia e hipotensión.'
+  },
+
+  /* ════ ANALGESIA ══════════════════════════════════════════ */
+  {
+    /* Fentanest® / Fentanilo Braun® 50 mcg/mL.
+       Dilución estándar: 1000 mcg (20 mL) en 50 mL SF → 20 mcg/mL.
+       DOSIS en mcg/kg/h · VIAL en mcg → sin conversión. */
+    cat:'UCI', sub:'Analgesia', name:'Fentanilo',
+    unit:'mcg/kg/h', vialUnit:'mcg',
+    defaultPres:1000, defaultVol:50,
+    maxConc: 50,
+    rango:[0.5,5], soft:5, hard:10,
+    dilPref:'SF', dilOk:['G5%','SF'], estab:24, bolo:false,
+    nota:'Fentanest® 50mcg/mL. Vial en MCG. Dilución: 1000mcg/50mL SF = 20mcg/mL. Monitorizar NRS/CPOT. Pupilometría c/turno.'
+  },
+  {
+    /* Ultiva® (Aspen) 1/2/5 mg de polvo liofilizado.
+       Reconstituir y diluir en G5%: 5 mg en 50 mL = 0.1 mg/mL = 100 mcg/mL.
+       DOSIS en mcg/kg/min · VIAL en mcg → sin conversión. */
+    cat:'UCI', sub:'Analgesia', name:'Remifentanilo',
+    unit:'mcg/kg/min', vialUnit:'mcg',
+    defaultPres:5000, defaultVol:50,
+    minConc: 20, maxConc: 250,
+    rango:[0.05,0.3], soft:0.3, hard:0.5,
+    dilPref:'G5%', dilOk:['G5%','SF'], estab:4, bolo:false,
+    nota:'Ultiva® viales 1/2/5mg. Vial en MCG (5mg=5000mcg). Estabilidad 4h. Máx 0.5mcg/kg/min (FT AEMPS). Sin acumulación. Hiperalgesia prolongada.'
+  },
+
+  /* ════ BLOQUEANTE NEUROMUSCULAR ═══════════════════════════ */
+  {
+    /* Nimbex® (Aspen) 2 mg/mL y 5 mg/mL.
+       Dilución estándar: 150 mg en 50 mL SF → 3 mg/mL.
+       DOSIS en mcg/kg/min · VIAL en mg → conversión ×1000. */
+    cat:'UCI', sub:'Bloqueante NM', name:'Cisatracurio',
+    unit:'mcg/kg/min', vialUnit:'mg',
+    defaultPres:150, defaultVol:50,
+    minConc: 0.1, maxConc: 5,
+    rango:[1,3], soft:3, hard:5,
+    dilPref:'SF', dilOk:['G5%','SF'], estab:24, bolo:false,
+    nota:'Nimbex® 2mg/mL y 5mg/mL. Vial en MG. FT: 1–3 mcg/kg/min mantenimiento UCI. ⚠️ Requiere VMI y sedación profunda. TOF obligatorio.'
+  },
+
+  /* ════ ANTIARRÍTMICO ══════════════════════════════════════ */
+  {
+    /* Trangorex® (Sanofi) 150 mg/3 mL (50 mg/mL). SOLO G5%.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Antiarrítmico', name:'Amiodarona',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:900, defaultVol:500,
+    minConc: 1, maxConc: 6, maxConcP: 2,
+    rango:[29,60], soft:60, hard:125,
+    dilPref:'G5%', dilOk:['G5%'], estab:24,
+    bolo:true, boloDosis:300, boloUnit:'mg', boloT:'1 hora',
+    viaSelector:true,
+    viaPeriphMsg:'⚠️ Alto riesgo de FLEBITIS QUÍMICA en vía periférica. Máx concentración 2mg/mL, vena gruesa. Use vía central siempre que sea posible.',
+    nota:'Trangorex® 50mg/mL (150mg/3mL). SOLO G5% (FT AEMPS — precipita en SF). Carga: 300mg en 1h. Mantenimiento: 900–1400mg/24h. Vigilar QTc.'
+  },
+
+  /* ════ METABÓLICO ═════════════════════════════════════════ */
+  {
+    /* Actrapid® (Novo Nordisk) 100 UI/mL, viales 10 mL.
+       Dilución estándar: 100 UI en 100 mL SF → 1 UI/mL.
+       DOSIS en UI/h · VIAL en UI → sin conversión. */
+    cat:'UCI', sub:'Metabólico', name:'Insulina Actrapid',
+    unit:'UI/h', vialUnit:'UI',
+    defaultPres:100, defaultVol:100,
+    maxConc: 2,
+    rango:[1,20], soft:20, hard:50,
+    dilPref:'SF', dilOk:['SF'], estab:24, bolo:false,
+    nota:'Actrapid® 100UI/mL. Purgar 20mL antes (adsorción PVC). Glucemia c/1h. Objetivo 140–180mg/dL. Máx 50UI/h.'
+  },
+
+  /* ════ ANTICOAGULACIÓN ════════════════════════════════════ */
+  {
+    /* Heparina Sódica Rovi® / Leo® 25000 UI/5 mL.
+       Dilución: 25000 UI en 500 mL SF → 50 UI/mL.
+       DOSIS en UI/h · VIAL en UI → sin conversión.
+       v5.1: dilOk ampliado con G5% (compatible, FT AEMPS). */
+    cat:'UCI', sub:'Anticoagulación', name:'Heparina Sódica',
+    unit:'UI/h', vialUnit:'UI',
+    defaultPres:25000, defaultVol:500,
+    maxConc: 100,
+    rango:[500,2000], soft:2000, hard:3000,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
+    nota:'Rovi® / Leo® 25000UI/5mL. SF preferido. G5% aceptado (FT AEMPS v5.1). APTT ratio 1.5–2.5. Plaquetas c/48h (TIH).'
+  },
+
+  /* ════ ELECTRÓLITOS ═══════════════════════════════════════ */
+  {
+    /* KCl Braun® / Grifols® 2 mEq/mL (10 mEq/5 mL o 20 mEq/10 mL).
+       DOSIS en mEq/h · VIAL en mEq → sin conversión. */
+    cat:'UCI', sub:'Electrólito', name:'KCl (Cloruro Potásico)',
+    unit:'mEq/h', vialUnit:'mEq',
+    defaultPres:40, defaultVol:100,
+    maxConc: 0.4, maxConcP: 0.04,
+    rango:[10,20], soft:20, hard:40,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
+    viaSelector:true,
+    viaPeriphHardLimit:10,
+    viaPeriphBlockMsg:'🚨 BLOQUEO DE SEGURIDAD: Máximo 10 mEq/h en vía periférica. PASE A VÍA CENTRAL. Riesgo de parada cardíaca y necrosis grave.',
+    nota:'⚠️ MÁX 10 mEq/h en PERIFÉRICA (FT AEMPS). ECG continuo. Nunca en bolo IV directo.'
+  },
+
+  /* ════ DIURÉTICO ══════════════════════════════════════════ */
+  {
+    /* Seguril® / Furosemida Braun® 10 mg/mL (20 mg/2 mL o 250 mg/25 mL).
+       Dilución: 250 mg en 50 mL SF → 5 mg/mL.
+       v5.1: dilOk corregido → SF y RL (G5% eliminado: precipitación documentada).
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Diurético', name:'Furosemida',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:250, defaultVol:50,
+    maxConc: 10,
+    rango:[5,40], soft:40, hard:80,
+    dilPref:'SF', dilOk:['SF','RL'], estab:24, bolo:false,
+    nota:'Seguril® / Braun® 10mg/mL. Perf. continua: 5–40mg/h. Máx 4mg/min (FT AEMPS). SF o RL (G5% puede precipitar). Monitorizar K⁺, Na⁺.'
+  },
+
+  /* ════ ANTIPSICÓTICO/ABSTINENCIA ══════════════════════════ */
+  {
+    /* Tiaprizal® (Sanofi) 100 mg/2 mL (50 mg/mL).
+       v5.1: corregido 100mg/2mL (no 10mL como en v5.0 — error tipográfico).
+       Dilución: 800 mg (16 amp) en 500 mL SF → 1.6 mg/mL.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Antipsicótico/Abstinencia', name:'Tiaprida (Tiaprizal)',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:800, defaultVol:500,
+    maxConc: 50,
+    rango:[16.7,66.7], soft:66.7, hard:100,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
+    nota:'Tiaprizal® 50mg/mL (100mg/2mL — ampollas España). Abstinencia alcohólica: 400–1600mg/24h (FT AEMPS). SF o G5%. Vigilar QTc y síndrome neuroléptico.'
+  },
+
+  /* ════ ANTIBIÓTICOS ═══════════════════════════════════════ */
+  {
+    /* Tazocel® / Piperacilina-Tazobactam Kabi® 4g/0.5g.
+       Perfusión continua: 12g pip en 240 mL SF.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'ABX', sub:'Betalactámico', name:'Piperacilina/Tazobactam',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:12000, defaultVol:240,
+    maxConc: 100,
+    rango:[500,750], soft:750, hard:1000,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:12, bolo:false,
+    nota:'Tazocel® 4g/0.5g. Perfusión continua 12–16g/24h pip. SF o G5% (12h). Ajustar en insuf. renal (FT AEMPS).'
+  },
+  {
+    /* Meronem® / Meropenem Kabi® 500 mg, 1 g.
+       SOLO SF — G5% incompatible (hidrólisis). Estabilidad 8h.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'ABX', sub:'Carbapenémico', name:'Meropenem',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:2000, defaultVol:100,
+    minConc: 1, maxConc: 50,
+    rango:[250,750], soft:750, hard:1500,
+    dilPref:'SF', dilOk:['SF'], estab:8, bolo:false,
+    nota:'Meronem® 500mg/1g. SOLO SF (G5% incompatible — FT AEMPS). Estabilidad 8h. Perfusión extendida 3h. Cambiar c/8h.'
+  },
+  {
+    /* Fortam® / Ceftazidima Kabi® 1 g, 2 g.
+       SOLO SF — G5% incompatible en perfusión extendida. Estabilidad 8h.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'ABX', sub:'Cefalosporina', name:'Ceftazidima',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:6000, defaultVol:240,
+    maxConc: 40,
+    rango:[125,500], soft:500, hard:750,
+    dilPref:'SF', dilOk:['SF'], estab:8, bolo:false,
+    nota:'Fortam® 1g/2g. SOLO SF (G5% incompatible en perf. extendida — FT AEMPS). Estabilidad 8h. Perfusión extendida 3h.'
+  },
+  {
+    /* Maxipime® / Cefepima Kabi® 500 mg, 1 g, 2 g.
+       SF y G5% compatibles. Estabilidad 8h.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'ABX', sub:'Cefalosporina', name:'Cefepima',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:2000, defaultVol:100,
+    minConc: 1, maxConc: 40,
+    rango:[250,750], soft:750, hard:1500,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:8, bolo:false,
+    nota:'Maxipime® 1g/2g. SF y G5% compatibles (FT AEMPS). Perfusión extendida 3–4h. Neurotoxicidad en insuf. renal.'
+  },
+  {
+    /* Vancomicina Normon® / Kabi® 500 mg, 1 g.
+       Perfusión continua AUC-guiada: 2g en 250 mL SF.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'ABX', sub:'Glucopéptido', name:'Vancomicina',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:2000, defaultVol:250,
+    minConc: 2.5, maxConc: 10, maxConcP: 5,
+    viaSelector: true,
+    rango:[40,125], soft:125, hard:175,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
+    nota:'Normon® / Kabi® 500mg/1g. AUC/MIC objetivo 400–600. Máx 10mg/min. SF o G5% (FT AEMPS). Ajustar función renal.'
+  },
+  {
+    /* Ecalta® (Pfizer) 100 mg polvo.
+       Mantenimiento: 100 mg en 100 mL SF → 1 mg/mL.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'ABX', sub:'Antifúngico', name:'Anidulafungina (Ecalta)',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:100, defaultVol:100,
+    minConc: 0.2, maxConc: 1.1,
+    rango:[25,66], soft:66, hard:100,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24,
+    bolo:true, boloDosis:200, boloUnit:'mg', boloT:'180 min',
+    nota:'Ecalta® 100mg. Carga: 200mg en 180 min (≤1.1mg/min=66mg/h — FT AEMPS). Mantenimiento: 100mg/24h. Monitorizar hepático.'
+  },
+  {
+    /* Metronidazol Braun® / Kabi® — bolsa premezclada 500 mg/100 mL (5 mg/mL).
+       v5.1: isPremixed=true + dilPref PURO (bolsa lista para usar).
+       No requiere dilución — campos bloqueados automáticamente. */
+    cat:'ABX', sub:'Nitroimidazol', name:'Metronidazol',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:500, defaultVol:100,
+    maxConc: 5,
+    isPremixed:true,
+    rango:[62.5,500], soft:500, hard:1000,
+    dilPref:'PURO', dilOk:['PURO'], estab:24, bolo:false,
+    nota:'Braun® / Kabi® bolsa premezclada 500mg/100mL (5mg/mL). Lista para usar, NO diluir. Perf. continua: 1500mg/24h=62.5mg/h. Intermitente: 500mg en 1h. Proteger de luz.'
+  },
+  {
+    /* Zyvoxid® / Linezolid Kabi® — bolsa premezclada 600 mg/300 mL (2 mg/mL).
+       v5.1: isPremixed=true + dilPref PURO (bolsa lista para usar). */
+    cat:'ABX', sub:'Oxazolidinona', name:'Linezolid',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:600, defaultVol:300,
+    maxConc: 2,
+    isPremixed:true,
+    rango:[300,1200], soft:1200, hard:1200,
+    dilPref:'PURO', dilOk:['PURO'], estab:24, bolo:false,
+    nota:'Zyvoxid® / Kabi® bolsa premezclada 600mg/300mL (2mg/mL). Lista para usar, NO diluir. 600mg en 30–120min. NO asociar con ISRS/IMAO. Trombocitopenia si >28 días.'
+  },
+];
+
+/* ════════════════════════════════════════════════════════════
+   SERUM DATABASE
+════════════════════════════════════════════════════════════ */
+const SERUMS = {
+  nacl09:  { name:'SF 0.9%',            meqNa:154, meqK:0,  meqCl:154, meqLac:0,  meqCa:0, glucG:0,   mOsm:308,  nota:'Isotónico. 154 mEq/L Na⁺ y Cl⁻. Expansor de volemia. Compatible con la mayoría de fármacos.' },
+  nacl045: { name:'SF 0.45%',           meqNa:77,  meqK:0,  meqCl:77,  meqLac:0,  meqCa:0, glucG:0,   mOsm:154,  nota:'Hipotónico. 77 mEq/L. Mantenimiento y corrección hiperosmolaridad.' },
+  rl:      { name:'Ringer Lactato',     meqNa:130, meqK:4,  meqCl:109, meqLac:28, meqCa:3,  glucG:0,   mOsm:273,  nota:'Isotónico. 130 Na⁺ · 4 K⁺ · 3 Ca²⁺ · 109 Cl⁻ · 28 Lactato mEq/L. Precaución en alcalosis.' },
+  g5:      { name:'Glucosado 5%',       meqNa:0,   meqK:0,  meqCl:0,   meqLac:0,  meqCa:0,  glucG:50,  mOsm:278,  nota:'50g glucosa/L. Sin electrólitos. Hipotónico al metabolizarse. Aporta 200 kcal/L.' },
+  g10:     { name:'Glucosado 10%',      meqNa:0,   meqK:0,  meqCl:0,   meqLac:0,  meqCa:0,  glucG:100, mOsm:555,  nota:'100g glucosa/L. Hiperosmolar. Soporte calórico. Vía central recomendada.' },
+  nacl3:   { name:'NaCl 3% ⚠️ CENTRAL', meqNa:513, meqK:0,  meqCl:513, meqLac:0,  meqCa:0,  glucG:0,   mOsm:1026, nota:'⚠️ VÍA CENTRAL EXCLUSIVA. 513 mEq/L. Hiponatremia severa. Corrección máxima 8-10 mEq/24h.' },
+  kcl10:   { name:'KCl 10mEq/100ml',   meqNa:0,   meqK:10, meqCl:10,  meqLac:0,  meqCa:0,  glucG:0,   mOsm:200,  nota:'10 mEq K⁺/100ml. Máx periférica: 10 mEq/h. ECG continuo.' },
+  kcl20:   { name:'KCl 20mEq/100ml',   meqNa:0,   meqK:20, meqCl:20,  meqLac:0,  meqCa:0,  glucG:0,   mOsm:400,  nota:'20 mEq K⁺/100ml. SOLO vía CENTRAL. ECG continuo obligatorio.' },
+};
+
+/* ════════════════════════════════════════════════════════════
+   ARQUITECTURA DE CÁLCULO v5.1
+   ─────────────────────────────────────────────────────────
+   getConc()       → concentración en vialUnit/mL
+   getConcInDoseUnit(d, conc) → convierte a la unidad de dosis
+   computeRate()   → usa getConcInDoseUnit internamente
+   computeDose()   → ídem inverso
+   getConcUnit(d)  → usa d.vialUnit para la etiqueta mostrada
+════════════════════════════════════════════════════════════ */
+
+/* Unidad de concentración para mostrar al usuario */
+function getConcUnit(d) {
+  return d.vialUnit + '/mL';
+}
+
+/* Concentración bruta del vial: pres/vol en vialUnit/mL */
+function getConc() {
+  const p = parseFloat(document.getElementById('inp-pres')?.value);
+  const v = parseFloat(document.getElementById('inp-vol')?.value);
+  if (isNaN(p) || isNaN(v) || v <= 0 || p <= 0) return null;
+  return p / v;
+}
+
+/* ── getConcInDoseUnit ────────────────────────────────────
+   Convierte la concentración del vial (en vialUnit/mL)
+   a la unidad usada en la fórmula de dosis (extraída de d.unit).
+
+   Casos:
+   · vialUnit='mg'  + d.unit contiene 'mcg' → ×1000 (mg→mcg)
+   · vialUnit='mcg' + d.unit contiene 'mg'  → /1000 (mcg→mg)
+     (este caso no existe en la BD actual pero se cubre por seguridad)
+   · mismo tipo → sin factor
+
+   Resultado: concentración en [unidad_base_dosis]/mL
+*/
+function getConcInDoseUnit(d, conc) {
+  const vU = d.vialUnit.toLowerCase();
+  const dU = d.unit.toLowerCase();
+  if (vU === 'mg'  && dU.includes('mcg')) return conc * 1000;
+  if (vU === 'mcg' && dU.includes('mg') && !dU.includes('mcg')) return conc / 1000;
+  return conc; // UI, mEq, misma unidad → sin conversión
+}
+
+/* ── computeRate ─────────────────────────────────────────
+   Calcula mL/h.
+   dose en unidad nativa del fármaco (d.unit).
+   conc en vialUnit/mL → se normaliza a doseUnit/mL mediante getConcInDoseUnit.
+
+   PASO 1: dose → dose_base/h
+     · /kg/ → × weight
+     · /min → × 60
+   PASO 2: concDose = getConcInDoseUnit(d, conc)
+   PASO 3: mL/h = dose_base_h / concDose
+
+   VERIFICACIÓN Noradrenalina (vialUnit='mg', unit='mcg/kg/min'):
+     conc = 16mg/250mL = 0.064 mg/mL
+     concDose = 0.064 × 1000 = 64 mcg/mL
+     dose=0.1mcg/kg/min, peso=70kg
+     dose_h = 0.1 × 70 × 60 = 420 mcg/h
+     mL/h = 420 / 64 = 6.56 ✓
+*/
+function computeRate(d, dose, weight, conc) {
+  let doseH = dose;
+  if (d.unit.includes('/kg/')) doseH *= weight;
+  if (d.unit.includes('/min')) doseH *= 60;
+  const concDose = getConcInDoseUnit(d, conc);
+  return doseH / concDose;
+}
+
+/* ── computeDose: mL/h → dosis NATIVA (⑤ CORRECCIÓN v5.2)  ────────────
+   El resultado está en d.unit — la misma unidad que d.rango/soft/hard.
+   Si d.unit incluye '/min', se divide por 60 para devolver mcg/min, etc.
+   Esto garantiza que checkVal sea comparable con los límites de seguridad.
+
+   VERIFICACIÓN Isoprenalina (vialUnit='mg', unit='mcg/min'):
+     Vial: 0.2mg/100mL = 0.002 mg/mL → concDose = 2 mcg/mL
+     Ritmo bomba: 60 mL/h
+     dose = 60 × 2 / 60 = 2 mcg/min ✓ (dentro rango 0.5–20)
+     SIN la corrección: dose = 60 × 2 = 120 → falsa alarma de sobredosis x6 */
+function computeDose(d, rate, weight, conc) {
+  const concDose = getConcInDoseUnit(d, conc);
+  let dose = rate * concDose;
+  if (d.unit.includes('/kg/')) dose /= weight;
+  if (d.unit.includes('/min')) dose /= 60;   // ← CORRECCIÓN CRÍTICA v5.2
+  return dose;
+}
+
+/* Unidad del campo de dosis (modo directo y resultado modo inverso) */
+function getDoseUnit(d) { return d.unit; }
+/* getInvResultUnit eliminada en v5.2: el resultado del modo inverso
+   se expresa siempre en d.unit (la unidad nativa del fármaco). */
+
+/* ════════════════════════════════════════════════════════════
+   APP STATE
+════════════════════════════════════════════════════════════ */
+let activeMod   = 'UCI';
+let activeDrug  = null;
+let calcMode    = false;
+let pending     = null;
+let guideFilter = 'all';
+let viaState    = 'central';
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('uci-badge').textContent = DRUGS.filter(d=>d.cat==='UCI').length + ' FÁRMACOS';
+  document.getElementById('abx-badge').textContent = DRUGS.filter(d=>d.cat==='ABX').length + ' FÁRMACOS';
+  initDisclaimer();
+});
+
+/* ════════════════════════════════════════════════════════════
+   DISCLAIMER
+════════════════════════════════════════════════════════════ */
+const DISC_KEY = 'infucalc_disc_v54';
+function initDisclaimer() {
+  if (!localStorage.getItem(DISC_KEY)) {
+    document.getElementById('mod-disclaimer').classList.add('show');
+  }
+}
+function acceptDisclaimer() {
+  localStorage.setItem(DISC_KEY, 'yes');
+  document.getElementById('mod-disclaimer').classList.remove('show');
+}
+
+/* ════════════════════════════════════════════════════════════
+   GLOBAL SANITIZER — comma → dot
+════════════════════════════════════════════════════════════ */
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.tagName !== 'INPUT') return;
+  if (el.value.indexOf(',') !== -1) {
+    const pos = el.selectionStart;
+    el.value = el.value.replace(/,/g, '.');
+    try { el.setSelectionRange(pos, pos); } catch(_) {}
+  }
+}, true);
+
+/* ════════════════════════════════════════════════════════════
+   GLOBAL ENTER KEY
+════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.querySelector('#mod-confirm.show, #mod-dil.show')) return;
+  const scr = document.querySelector('.screen.active');
+  if (!scr) return;
+  if (scr.id === 'scr-calc')  { e.preventDefault(); requestConfirm(); }
+  if (scr.id === 'scr-serum') { e.preventDefault(); calcSerum(); }
+}, false);
+
+/* ════════════════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function setBack(lbl) {
+  const b = document.getElementById('back-btn');
+  b.textContent = '← ' + lbl; b.classList.add('show');
+}
+function hideBack() { document.getElementById('back-btn').classList.remove('show'); }
+function goBack() {
+  const id = document.querySelector('.screen.active')?.id;
+  if (id === 'scr-calc') { showScreen('scr-list'); setBack(activeMod==='UCI'?'🫀 UCI':'🧬 ANTIBIÓTICOS'); }
+  else if (id) { showScreen('scr-dash'); hideBack(); }
+}
+function openModule(mod) {
+  activeMod = mod;
+  document.getElementById('list-search').value = '';
+  document.getElementById('list-search').className = 'search-inp' + (mod==='ABX'?' em':'');
+  showScreen('scr-list'); setBack('INICIO'); renderList();
+}
+function openSerum() { showScreen('scr-serum'); setBack('INICIO'); }
+function openGuide() {
+  guideFilter='all'; updateGFBtns();
+  document.getElementById('guide-search').value='';
+  showScreen('scr-guide'); setBack('INICIO'); renderGuide();
+}
+
+/* ════════════════════════════════════════════════════════════
+   DRUG LIST
+════════════════════════════════════════════════════════════ */
+function renderList() {
+  const q = document.getElementById('list-search').value.trim();
+  const drugs = DRUGS.filter(d => d.cat===activeMod && fuzzy(d.name, q));
+  const c = document.getElementById('drug-list-inner');
+  if (!drugs.length) {
+    c.innerHTML='<div style="text-align:center;padding:40px 0;color:var(--ic-muted);font-size:0.85rem">Sin resultados</div>';
+    return;
+  }
+  const groups = {};
+  drugs.forEach(d => { if(!groups[d.sub]) groups[d.sub]=[]; groups[d.sub].push(d); });
+  let html = '';
+  for (const grp of Object.keys(groups)) {
+    html += `<div class="grp-label">${grp}</div>`;
+    for (const d of groups[grp]) {
+      const idx = DRUGS.indexOf(d);
+      const isABX = d.cat==='ABX';
+      const pillsHtml = d.dilOk.map(dil => `<span class="dil-pill ${dpCls(dil)}">${dil}</span>`).join('');
+      const premixedBadge = d.isPremixed ? '<span style="font-size:0.6rem;color:var(--ic-accent-uci);letter-spacing:.06em"> ★PREMIX</span>' : '';
+      html += `
+      <div class="drug-row ${isABX?'abx':'uci'} fu" onclick="openDrug(${idx})">
+        <div style="flex:1;min-width:0">
+          <div class="dr-name">${d.name}${premixedBadge}</div>
+          <div class="dr-sub">${d.unit} · Vial: ${d.vialUnit} · ${d.estab}h</div>
+        </div>
+        <div class="dr-right">
+          <div class="dil-pills">${pillsHtml}</div>
+          <span class="dr-arrow">›</span>
+        </div>
+      </div>`;
+    }
+  }
+  c.innerHTML = html;
+}
+
+/* ════════════════════════════════════════════════════════════
+   QUICK GUIDE
+════════════════════════════════════════════════════════════ */
+function setGF(f) { guideFilter=f; updateGFBtns(); renderGuide(); }
+function updateGFBtns() {
+  document.getElementById('gf-all').className = 'gf-btn all'+(guideFilter==='all'?' active':'');
+  document.getElementById('gf-uci').className = 'gf-btn uci'+(guideFilter==='UCI'?' active':'');
+  document.getElementById('gf-abx').className = 'gf-btn abx'+(guideFilter==='ABX'?' active':'');
+}
+function renderGuide() {
+  const q = document.getElementById('guide-search').value.trim();
+  const filtered = DRUGS.filter(d=>(guideFilter==='all'||d.cat===guideFilter)&&fuzzy(d.name,q));
+  const c = document.getElementById('guide-rows');
+  if (!filtered.length) {
+    c.innerHTML='<div style="padding:20px;text-align:center;color:var(--ic-muted);font-size:0.82rem">Sin resultados</div>';
+    return;
+  }
+  c.innerHTML = filtered.map(d => {
+    const isABX = d.cat==='ABX';
+    const pillsHtml = d.dilOk.map(dil => `<span class="dil-pill ${dpCls(dil)}" style="font-size:0.62rem">${dil}</span>`).join(' ');
+    return `
+    <div class="guide-row ${isABX?'abx-row':'uci-row'}">
+      <div class="guide-td name-td ${isABX?'abx-c':'uci-c'}">${d.name}</div>
+      <div class="guide-td" style="font-size:0.68rem">${d.defaultPres}${d.vialUnit}/${d.defaultVol}mL<br><span style="color:var(--ic-muted2)">${d.unit}</span></div>
+      <div class="guide-td">${pillsHtml}</div>
+      <div class="guide-td">${d.nota}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════
+   OPEN DRUG → BUILD CALCULATOR
+════════════════════════════════════════════════════════════ */
+function openDrug(idx) {
+  activeDrug = idx; calcMode = true; pending = null; viaState = 'central';
+  showScreen('scr-calc');
+  setBack(activeMod==='UCI'?'🫀 UCI':'🧬 ABX');
+  buildCalc();
+}
+
+function buildCalc() {
+  const d      = DRUGS[activeDrug];
+  const isABX  = d.cat==='ABX';
+  const acc    = isABX?'em':'sky';
+  const needsW = d.unit.includes('/kg/');
+  const sessionW = sessionStorage.getItem('ic_weight') || '';
+  /* ① Pills de diluyentes para la cabecera */
+  const pillsHdr = d.dilOk.map(dil => `<span class="dil-pill ${dpCls(dil)}">${dil}</span>`).join('');
+
+  /* ── isPremixed: campos disabled y auto-rellenados ── */
+  const locked      = !!d.isPremixed;
+  const lockedAttr  = locked ? 'disabled' : '';
+  const presValue   = locked ? d.defaultPres : '';
+  const volValue    = locked ? d.defaultVol  : '';
+
+  const viaSel = d.viaSelector ? `
+  <div class="field">
+    <div class="flbl">VÍA DE ADMINISTRACIÓN</div>
+    <div class="via-row">
+      <button class="via-btn central active" id="via-c" onclick="setVia('central')">🏥 VÍA CENTRAL</button>
+      <button class="via-btn periph"         id="via-p" onclick="setVia('periph')">💉 VÍA PERIFÉRICA</button>
+    </div>
+    <div class="via-warn" id="via-warn"></div>
+  </div>` : '';
+
+  document.getElementById('calc-body').innerHTML = `
+
+  <div class="blk fu">
+    <div class="blk-title" style="color:var(--ic-accent-${acc})">${isABX?'🧬':'🫀'} ${d.sub.toUpperCase()}</div>
+    <div class="blk-body">
+      <div class="drug-hdr">
+        <div style="flex:1;min-width:0">
+          <div class="dh-name">${d.name}</div>
+          <div class="dh-meta">
+        Rango: ${d.rango[0]}–${d.rango[1]} ${d.unit} · Soft: ${d.soft} · Hard: ${d.hard}<br>
+        ${d.maxConcP ? `<strong>Límites: Central ${d.maxConc} / Perif. ${d.maxConcP} ${d.vialUnit}/ml</strong> · ` : d.minConc && d.maxConc ? `<strong>Rango Conc: ${d.minConc} – ${d.maxConc} ${d.vialUnit}/ml</strong> · ` : d.maxConc ? `<strong>Conc. Máxima: ${d.maxConc} ${d.vialUnit}/ml</strong> · ` : ''}Estabilidad: ${d.estab}h
+      </div>
+        </div>
+        <div class="dil-pills-hdr">${pillsHdr}</div>
+      </div>
+      <div class="note-row">${d.nota}</div>
+    </div>
+  </div>
+
+  <!-- ⚗️ PRESENTACIÓN COMERCIAL -->
+  <div class="blk fu fu1">
+    <div class="blk-title" style="color:var(--ic-amber)">⚗️ PRESENTACIÓN COMERCIAL</div>
+    <div class="blk-body">
+
+      ${locked ? `<div class="premixed-note">📦 Producto premezclado listo para usar. Concentración fijada por el fabricante. Campos bloqueados.</div>` : ''}
+
+      <div class="row2">
+        <div class="field">
+          <div class="flbl">${d.vialUnit.toUpperCase()} TOTALES DEL VIAL/BOLSA</div>
+          <input class="finp edit" id="inp-pres" type="number" inputmode="decimal"
+                 placeholder="${d.defaultPres}" value="${presValue}"
+                 oninput="onDilEdit()" ${lockedAttr}>
+        </div>
+        <div class="field">
+          <div class="flbl">ML TOTALES DEL VIAL/BOLSA</div>
+          <input class="finp edit" id="inp-vol" type="number" inputmode="decimal"
+                 placeholder="${d.defaultVol}" value="${volValue}"
+                 oninput="onDilEdit()" ${lockedAttr}>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="flbl">DILUYENTE USADO</div>
+        <select class="finp edit" id="inp-dil" onchange="onDilChange()" ${locked?'disabled':''}>
+          <option value="G5%"      ${d.dilPref==='G5%' ?'selected':''}>🟡 Glucosado 5%</option>
+          <option value="SF"       ${d.dilPref==='SF'  ?'selected':''}>🔵 Suero Fisiológico 0.9%</option>
+          <option value="RL">🟢 Ringer Lactato</option>
+          <option value="NACL045">Salino 0.45%</option>
+          <option value="PURO"     ${d.dilPref==='PURO'?'selected':''}>⬜ Sin diluyente (puro/premezclado)</option>
+        </select>
+      </div>
+
+      <div class="dil-warn-bar" id="dil-warn">
+        <span class="dil-warn-icon">🚫</span>
+        <span id="dil-warn-text"></span>
+      </div>
+
+      <div class="conc-bar">
+        <span>Concentración calculada</span>
+        <span class="conc-val" id="conc-disp">Introduce los datos arriba</span>
+      </div>
+      <div class="conc-unusual" id="conc-unusual">⚠️ Concentración fuera del rango habitual. Verifica los datos del vial.</div>
+    </div>
+  </div>
+
+  <!-- 💊 DOSIFICACIÓN -->
+  <div class="blk fu fu2">
+    <div class="blk-title" style="color:var(--ic-accent-${acc})">💊 DOSIFICACIÓN</div>
+    <div class="blk-body">
+      ${viaSel}
+      <div class="field">
+        <div class="flbl">MODO DE CÁLCULO</div>
+        <div class="mode-btns">
+          <button class="btn-mode inv on${isABX?'-abx':''}" id="btn-inv" onclick="setCalcMode(true)">
+            <span class="btn-mode-icon">🔢→💊</span>
+            <span class="btn-mode-lbl">Tengo los ml/h<br>calcular DOSIS</span>
+          </button>
+          <button class="btn-mode dir" id="btn-dir" onclick="setCalcMode(false)">
+            <span class="btn-mode-icon">💊→🔢</span>
+            <span class="btn-mode-lbl">Tengo la DOSIS<br>calcular ml/h</span>
+          </button>
+        </div>
+      </div>
+      ${needsW ? `
+      <div class="field">
+        <div class="flbl">PESO PACIENTE (kg)</div>
+        <input class="finp ${acc}" id="inp-weight" type="number" inputmode="decimal"
+               placeholder="70" min="2" max="300" value="${sessionW}" oninput="saveWeightSession()">
+      </div>` : ''}
+      <div class="field">
+        <div class="flbl" id="dose-lbl">RITMO BOMBA (ml/h)</div>
+        <input class="finp ${acc}" id="inp-dose" type="number" inputmode="decimal"
+               placeholder="Introducir ritmo (ml/h)..." step="any">
+      </div>
+      <button class="btn-calc ${acc}" onclick="requestConfirm()">CALCULAR Y VERIFICAR ›</button>
+    </div>
+  </div>
+
+  ${d.bolo ? `
+  <div class="blk fu fu3">
+    <div class="blk-title" style="color:var(--ic-amber)">💊 DOSIS DE CARGA (OPCIONAL)</div>
+    <div class="blk-body">
+      <div class="bolo-blk">
+        <div class="bolo-hd">CARGA: ${d.boloDosis} ${d.boloUnit}${d.boloT?' EN '+d.boloT.toUpperCase():''}</div>
+        <div class="row2">
+          ${needsW ? `<div class="field"><div class="flbl">PESO (kg)</div>
+          <input class="finp" id="bolo-w" type="number" inputmode="decimal" placeholder="70" value="${sessionW}" oninput="calcBolo()">
+          </div>` : '<div></div>'}
+          <div class="field"><div class="flbl">DOSIS BOLO (${d.boloUnit})</div>
+          <input class="finp" id="bolo-d" type="number" inputmode="decimal" placeholder="${d.boloDosis}" oninput="calcBolo()">
+          </div>
+        </div>
+        <div class="bolo-out" id="bolo-out">— ml de bolo</div>
+      </div>
+    </div>
+  </div>` : ''}
+
+  <div class="blk fu fu4">
+    <div class="blk-title" style="color:var(--ic-accent-${acc})">📊 RESULTADO</div>
+    <div class="blk-body">
+      <div class="res-box" id="res-box">
+        <div class="res-lbl" id="res-lbl">DOSIS RESULTANTE</div>
+        <div class="res-num idle" id="res-num">—</div>
+        <div class="res-unit" id="res-unit">${d.unit}</div>
+        <div class="res-range">Rango: ${d.rango[0]}–${d.rango[1]} ${d.unit}</div>
+        <div class="alert-chip soft"    id="alert-soft">⚠️ Dosis en límite alto del rango habitual. Revisar indicación con médico.</div>
+        <div class="alert-chip hard"    id="alert-hard">🚨 ALERTA CRÍTICA: Dosis supera el hard limit. Riesgo vital. Verificar con facultativo.</div>
+        <div class="alert-chip low"     id="alert-low">⚠️ Ritmo &lt;0.1 ml/h. Puede estar bajo el umbral de bombas estándar. Reconcentrar.</div>
+        <div class="alert-chip blocked" id="alert-blocked"></div>
+      </div>
+      <button class="copy-btn" id="copy-btn" onclick="copyLog()">📋 COPIAR REGISTRO CLÍNICO</button>
+    </div>
+  </div>
+  `;
+
+  /* Auto-actualizar concentración si el fármaco es premezclado */
+  if (locked) updateConc();
+}
+
+/* ════════════════════════════════════════════════════════════
+   CONCENTRACIÓN
+════════════════════════════════════════════════════════════ */
+function onDilEdit() { updateConc(); resetResult(); }
+
+function updateConc() {
+  const d    = DRUGS[activeDrug];
+  const conc = getConc();
+  const el   = document.getElementById('conc-disp');
+  const wu   = document.getElementById('conc-unusual');
+  if (!el) return;
+
+  if (conc === null) {
+    el.textContent = 'Introduce los datos arriba';
+    el.style.color = ''; wu?.classList.remove('show');
+    return;
+  }
+
+  el.textContent = `${conc.toFixed(4)} ${getConcUnit(d)}`;
+  el.style.color = ''; wu?.classList.remove('show');
+}
+
+/* ════════════════════════════════════════════════════════════
+   DILUYENTE
+════════════════════════════════════════════════════════════ */
+function onDilChange() {
+  const d      = DRUGS[activeDrug];
+  const chosen = document.getElementById('inp-dil').value;
+  const warn   = document.getElementById('dil-warn');
+  const warnTxt= document.getElementById('dil-warn-text');
+
+  if (!d.dilOk.includes(chosen)) {
+    const compatibles = d.dilOk.join(', ');
+    const msgFull = `${chosen} NO es compatible con ${d.name} según FT AEMPS. Diluyentes aceptados: ${compatibles}. Puede causar precipitación, pérdida de actividad o degradación.`;
+    if (warnTxt) warnTxt.textContent = msgFull;
+    warn.classList.add('show');
+    document.getElementById('md-text').textContent = msgFull;
+    document.getElementById('mod-dil').classList.add('show');
+  } else {
+    warn.classList.remove('show');
+  }
+}
+
+function closeDilModal(restore) {
+  document.getElementById('mod-dil').classList.remove('show');
+  if (restore) {
+    document.getElementById('inp-dil').value = DRUGS[activeDrug].dilPref;
+    document.getElementById('dil-warn').classList.remove('show');
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   VIA SAFETY
+════════════════════════════════════════════════════════════ */
+function setVia(via) {
+  viaState = via;
+  document.getElementById('via-c')?.classList.toggle('active', via === 'central');
+  document.getElementById('via-p')?.classList.toggle('active', via === 'periph');
+  const warnEl = document.getElementById('via-warn');
+  if (warnEl) {
+    const d = DRUGS[activeDrug];
+    if (via === 'periph' && d.viaPeriphMsg) {
+      warnEl.textContent = d.viaPeriphMsg;
+      warnEl.classList.add('show');
+    } else { warnEl.classList.remove('show'); }
+  }
+  resetResult();
+}
+
+function checkViaSafety(d, checkVal) {
+  if (!d.viaSelector || viaState !== 'periph') return null;
+  if (d.viaPeriphHardLimit !== undefined && checkVal > d.viaPeriphHardLimit)
+    return { blocked:true, msg:d.viaPeriphBlockMsg };
+  return null;
+}
+
+/* ════════════════════════════════════════════════════════════
+   MODO DE CÁLCULO
+════════════════════════════════════════════════════════════ */
+function setCalcMode(inverse) {
+  calcMode = inverse;
+  const d = DRUGS[activeDrug];
+  const isABX = d.cat === 'ABX';
+  const sfx = isABX ? '-abx' : '';
+  const btnDir = document.getElementById('btn-dir');
+  const btnInv = document.getElementById('btn-inv');
+  if (btnInv) btnInv.className = `btn-mode inv${ inverse ? ' on'+sfx : ''}`;
+  if (btnDir) btnDir.className = `btn-mode dir${!inverse ? ' on'+sfx : ''}`;
+  document.getElementById('dose-lbl').textContent      = inverse ? 'RITMO BOMBA (ml/h)'       : `DOSIS (${getDoseUnit(d)})`;
+  document.getElementById('inp-dose').placeholder      = inverse ? 'Introducir ritmo (ml/h)...' : 'Introducir dosis...';
+  document.getElementById('res-lbl').textContent       = inverse ? 'DOSIS RESULTANTE'           : 'RITMO DE BOMBA';
+  document.getElementById('res-unit').textContent      = inverse ? d.unit                       : 'ml/h';
+  document.getElementById('inp-dose').value = '';
+  resetResult();
+}
+
+function resetResult() {
+  const box = document.getElementById('res-box');
+  const num = document.getElementById('res-num');
+  if (!box||!num) return;
+  box.className = 'res-box'; num.className = 'res-num idle'; num.textContent = '—';
+  ['alert-soft','alert-hard','alert-low','alert-blocked'].forEach(id =>
+    document.getElementById(id)?.classList.remove('show'));
+}
+
+/* ════════════════════════════════════════════════════════════
+   SESSION WEIGHT
+════════════════════════════════════════════════════════════ */
+function saveWeightSession() {
+  const v = document.getElementById('inp-weight')?.value;
+  if (v && parseFloat(v) >= 2 && parseFloat(v) <= 300) sessionStorage.setItem('ic_weight', v);
+}
+
+/* ════════════════════════════════════════════════════════════
+   REQUEST CONFIRM
+════════════════════════════════════════════════════════════ */
+function requestConfirm() {
+  const d      = DRUGS[activeDrug];
+  const needsW = d.unit.includes('/kg/');
+  const doseEl = document.getElementById('inp-dose');
+  const dose   = parseFloat(doseEl?.value);
+  if (isNaN(dose) || dose <= 0) { flash(doseEl); return; }
+
+  let weight = null;
+  if (needsW) {
+    const wEl  = document.getElementById('inp-weight');
+    weight = parseFloat(wEl?.value);
+    if (!wEl?.value || isNaN(weight) || weight < 2 || weight > 300) { flash(wEl); return; }
+  }
+
+  const conc = getConc();
+  if (conc === null || conc <= 0) {
+    flash(document.getElementById('inp-pres'));
+    flash(document.getElementById('inp-vol'));
+    return;
+  }
+
+/* 🛡️ GUARDIA INTELIGENTE POR VÍA Y RANGOS v5.4 */
+const isMcgV = d.vialUnit === 'mcg';
+const fallbackMin = isMcgV ? 0.001 : 0.0001;
+const fallbackMax = isMcgV ? 1e8 : 10000;
+
+// Escoger límite según la vía elegida en pantalla
+const currentMax = (viaState === 'periph' && d.maxConcP !== undefined) ? d.maxConcP : d.maxConc;
+const currentMin = (viaState === 'periph' && d.minConcP !== undefined) ? d.minConcP : d.minConc;
+
+const limitMax = currentMax !== undefined ? currentMax : fallbackMax;
+const limitMin = currentMin !== undefined ? currentMin : fallbackMin;
+
+if (conc < limitMin || conc > limitMax) {
+const wu = document.getElementById('conc-unusual');
+if (wu) {
+  wu.classList.add('show');
+  if (conc > limitMax && currentMax !== undefined) {
+      wu.innerHTML = `🚨 <strong>SOBRECONCENTRACIÓN (${viaState === 'periph' ? 'VÍA PERIFÉRICA' : 'VÍA CENTRAL'}):</strong> La mezcla (${conc.toFixed(3)} ${d.vialUnit}/ml) excede el máximo permitido (${currentMax} ${d.vialUnit}/ml).<br>Riesgo de flebitis o toxicidad.`;
+  } else if (conc < limitMin && currentMin !== undefined) {
+      wu.innerHTML = `⚠️ <strong>INFRACONCENTRACIÓN:</strong> La mezcla (${conc.toFixed(3)} ${d.vialUnit}/ml) es inferior al mínimo recomendado (${currentMin} ${d.vialUnit}/ml).<br>Riesgo de inestabilidad o pérdida de dosis.`;
+  } else {
+      wu.textContent = `🚨 Concentración fuera de rango lógico (${conc.toFixed(4)} ${getConcUnit(d)}). Revisa los datos.`;
+  }
+}
+flash(document.getElementById('inp-pres'));
+flash(document.getElementById('inp-vol'));
+return;
+}
+
+  let result, checkVal;
+  if (!calcMode) {
+    result   = computeRate(d, dose, weight, conc);
+    checkVal = dose;
+  } else {
+    result   = computeDose(d, dose, weight, conc);
+    checkVal = result;
+  }
+
+  /* Guardia de resultado imposible */
+  const vTot = parseFloat(document.getElementById('inp-vol')?.value) || 999999;
+  if (!calcMode && result > vTot * 20) {
+    const wu = document.getElementById('conc-unusual');
+    wu?.classList.add('show');
+    if (wu) wu.textContent = `🚨 Resultado (${result.toFixed(0)} ml/h) imposible. Comprueba la unidad del vial: es ${d.vialUnit.toUpperCase()}, no la de la dosis.`;
+    flash(document.getElementById('inp-pres'));
+    flash(document.getElementById('inp-vol'));
+    return;
+  }
+
+  const vs = checkViaSafety(d, checkVal);
+  if (vs?.blocked) { pending = { dose, weight, result, checkVal, conc, blocked:true }; applyResult(result, checkVal); return; }
+
+  pending = { dose, weight, result, checkVal, conc, blocked:false };
+
+  const isABX  = d.cat==='ABX';
+  const ac     = isABX?'em':'sky';
+  const valCls = checkVal>d.hard?'danger':checkVal>d.soft?'warn':ac;
+  const sumEl  = document.getElementById('mc-summary');
+
+  sumEl.className = `c-summary${checkVal>d.hard?' danger-brd':isABX?' em-brd':''}`;
+  sumEl.innerHTML = `
+    <div class="c-row"><span class="c-key">FÁRMACO</span><span class="c-val ${ac}">${d.name}</span></div>
+    ${d.viaSelector?`<div class="c-row"><span class="c-key">VÍA</span><span class="c-val ${viaState==='periph'?'orange':'sky'}">${viaState==='periph'?'💉 PERIFÉRICA':'🏥 CENTRAL'}</span></div>`:''}
+    ${weight!=null?`<div class="c-row"><span class="c-key">PESO</span><span class="c-val">${weight} kg</span></div>`:''}
+    <div class="c-row"><span class="c-key">${calcMode?'RITMO ENTRADA':'DOSIS'}</span><span class="c-val">${dose} ${calcMode?'ml/h':d.unit}</span></div>
+    <div class="c-row"><span class="c-key">${calcMode?'DOSIS CALC.':'RITMO BOMBA'}</span><span class="c-val ${valCls}">${result.toFixed(2)} ${calcMode?d.unit:'ml/h'}</span></div>
+    <div class="c-row"><span class="c-key">CONC. VIAL</span><span class="c-val">${conc.toFixed(4)} ${getConcUnit(d)}</span></div>
+  `;
+  document.getElementById('mc-ok').className = `mbtn mbtn-${ac}`;
+  document.getElementById('mod-confirm').classList.add('show');
+}
+
+function closeConfirm() { document.getElementById('mod-confirm').classList.remove('show'); pending=null; }
+function doConfirm()    { document.getElementById('mod-confirm').classList.remove('show'); if (pending) applyResult(pending.result, pending.checkVal); }
+
+/* ════════════════════════════════════════════════════════════
+   APPLY RESULT — v5.3
+   · Modo directo:  siempre ml/h con 2 decimales (sin ml/min).
+   · Modo inverso:  unidad nativa d.unit con 2 decimales.
+   · checkVal ya viene en unidad nativa (computeDose /60 si /min).
+════════════════════════════════════════════════════════════ */
+function applyResult(result, checkVal) {
+  const d      = DRUGS[activeDrug];
+  const isABX  = d.cat === 'ABX';
+  const box      = document.getElementById('res-box');
+  const num      = document.getElementById('res-num');
+  const aBlk     = document.getElementById('alert-blocked');
+  const resUnitEl= document.getElementById('res-unit');
+
+  if (!calcMode) {
+    /* Modo directo → SIEMPRE ml/h, 2 decimales */
+    num.textContent = result.toFixed(2);
+    if (resUnitEl) resUnitEl.textContent = 'ml/h';
+  } else {
+    /* Modo inverso → unidad nativa d.unit, 2 decimales */
+    num.textContent = result.toFixed(2);
+    if (resUnitEl) resUnitEl.textContent = d.unit;
+  }
+
+  const vs = checkViaSafety(d, checkVal);
+  if (vs?.blocked) {
+    box.className = 'res-box blocked'; num.className = 'res-num danger-c';
+    aBlk.textContent = vs.msg; aBlk.classList.add('show');
+    ['alert-soft','alert-hard','alert-low'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+    return;
+  }
+  aBlk.classList.remove('show');
+  const isHard = checkVal > d.hard;
+  const isSoft = !isHard && checkVal > d.soft;
+  const isLow  = !calcMode && result < 0.1;
+  box.className = isHard ? 'res-box danger' : isSoft ? 'res-box warn' : `res-box ${isABX?'em':'sky'}`;
+  num.className = isHard ? 'res-num danger-c' : isSoft ? 'res-num warn-c' : `res-num ${isABX?'em':'sky'}-c`;
+  document.getElementById('alert-soft').classList.toggle('show', isSoft);
+  document.getElementById('alert-hard').classList.toggle('show', isHard);
+  document.getElementById('alert-low').classList.toggle('show', isLow && !isHard);
+}
+
+/* ════════════════════════════════════════════════════════════
+   BOLO
+════════════════════════════════════════════════════════════ */
+function calcBolo() {
+  const d = DRUGS[activeDrug];
+  const needsW = (d.boloUnit||'').includes('kg');
+  const dose = parseFloat(document.getElementById('bolo-d')?.value);
+  const w    = parseFloat(document.getElementById('bolo-w')?.value);
+  const out  = document.getElementById('bolo-out');
+  if (isNaN(dose)||dose<=0) { out.textContent='— ml de bolo'; return; }
+  const totalUnits = needsW && !isNaN(w) ? dose * w : dose;
+  const conc = getConc();
+  if (!conc || conc <= 0) { out.textContent='— Introduce la concentración primero'; return; }
+  /* La dosis de bolo se expresa en la unidad de dosis, aplicar conversión si procede */
+  const concDose = getConcInDoseUnit(d, conc);
+  out.textContent = `▶ ${(totalUnits / concDose).toFixed(2)} ml${d.boloT?' en '+d.boloT:' en bolo lento'}`;
+}
+
+/* ════════════════════════════════════════════════════════════
+   COPY LOG
+════════════════════════════════════════════════════════════ */
+function copyLog() {
+  if (!pending) { showCopyFb('⚠️ Calcula primero un resultado'); return; }
+  const d = DRUGS[activeDrug];
+  const { dose, weight, result } = pending;
+  const now = new Date();
+  const ts  = `${pad(now.getDate())}/${pad(now.getMonth()+1)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const via = d.viaSelector ? ` [${viaState==='periph'?'Periférica':'Central'}]` : '';
+  const resultUnit = calcMode ? d.unit : 'ml/h';
+  const txt = `${ts} · ${d.name}${via} · ${dose} ${calcMode ? 'ml/h' : d.unit}${weight!=null?' · Peso '+weight+'kg':''} → ${result.toFixed(2)} ${resultUnit} · [InfuCalc v5.4 · H.U. Puerto Real]`;
+  navigator.clipboard?.writeText(txt)
+    .then(() => showCopyFb('✓ COPIADO AL PORTAPAPELES'))
+    .catch(() => alert('Copia manual:\n\n' + txt));
+}
+function showCopyFb(msg) {
+  const btn = document.getElementById('copy-btn');
+  if (!btn) return;
+  const orig = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(() => { btn.textContent = orig; }, 2500);
+}
+
+/* ════════════════════════════════════════════════════════════
+   SERUM CALCULATOR
+════════════════════════════════════════════════════════════ */
+function clearSerum() {
+  document.getElementById('ser-type').value = '';
+  document.getElementById('ser-vol').value  = '';
+  document.getElementById('ser-rate').value = '';
+  document.getElementById('ser-note').textContent = 'Selecciona un tipo de suero para ver su composición.';
+  document.getElementById('ser-static').innerHTML   = '';
+  document.getElementById('ser-rate-res').innerHTML  = '';
+  document.getElementById('ser-static-blk').style.display = 'none';
+  document.getElementById('ser-rate-blk').style.display   = 'none';
+  document.getElementById('nacl3-warn').classList.remove('show');
+}
+function calcSerum() {
+  const type  = document.getElementById('ser-type')?.value;
+  const vol   = parseFloat(document.getElementById('ser-vol')?.value) || 0;
+  const rate  = parseFloat(document.getElementById('ser-rate')?.value);
+  const sbBlk = document.getElementById('ser-static-blk');
+  const rrBlk = document.getElementById('ser-rate-blk');
+  document.getElementById('nacl3-warn').classList.toggle('show', type==='nacl3');
+  if (!type||!vol) { sbBlk.style.display='none'; rrBlk.style.display='none'; return; }
+  const s = SERUMS[type]; const f = vol/1000; const isRL = type==='rl';
+  document.getElementById('ser-note').textContent = s.nota;
+  const sRows = [
+    { lbl:'mEq Na⁺ total',  val:(s.meqNa*f).toFixed(1), cls:'' },
+    { lbl:'mEq K⁺ total',   val:(s.meqK*f).toFixed(1),  cls:s.meqK>0?'em':'' },
+    { lbl:'mEq Cl⁻ total',  val:(s.meqCl*f).toFixed(1), cls:'' },
+    { lbl:'g Glucosa total', val:(s.glucG*f).toFixed(1), cls:s.glucG>0?'em':'' },
+    { lbl:'mOsm total',      val:(s.mOsm*f).toFixed(0),  cls:'amber' },
+    { lbl:'Volumen (ml)',    val:vol.toFixed(0),           cls:'' },
+  ];
+  if (isRL) {
+    sRows.push(
+      {lbl:'mEq Lactato total', val:(s.meqLac*f).toFixed(1), cls:'amber'},
+      {lbl:'mEq Ca²⁺ total',   val:(s.meqCa*f).toFixed(1),  cls:'amber'}
+    );
+  }
+  document.getElementById('ser-static').innerHTML = sRows.map(r=>
+    `<div class="stat-card"><div class="stat-val ${r.cls}">${r.val}</div><div class="stat-lbl">${r.lbl}</div></div>`
+  ).join('');
+  sbBlk.style.display = '';
+  if (!isNaN(rate) && rate > 0) {
+    const rf = rate/1000;
+    const rRows = [
+      {lbl:'mEq Na⁺ / h',  val:(s.meqNa*rf).toFixed(3), cls:''},
+      {lbl:'mEq K⁺ / h',   val:(s.meqK*rf).toFixed(3),  cls:s.meqK>0?'em':''},
+      {lbl:'mEq Cl⁻ / h',  val:(s.meqCl*rf).toFixed(3), cls:''},
+      {lbl:'g Glucosa / h', val:(s.glucG*rf).toFixed(3), cls:s.glucG>0?'em':''},
+    ];
+    if (isRL) {
+      rRows.push(
+        {lbl:'mEq Lactato / h', val:(s.meqLac*rf).toFixed(3), cls:'amber'},
+        {lbl:'mEq Ca²⁺ / h',   val:(s.meqCa*rf).toFixed(3),  cls:'amber'}
+      );
+    }
+    document.getElementById('ser-rate-res').innerHTML = rRows.map(r=>
+      `<div class="rate-card ${r.cls}"><div class="rate-val">${r.val}</div><div class="rate-lbl">${r.lbl}</div></div>`
+    ).join('');
+    rrBlk.style.display = '';
+  } else { rrBlk.style.display='none'; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════════════════ */
+function fuzzy(str, q) {
+  if (!q) return true;
+  str = str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  q   = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let si=0;
+  for (let i=0; i<str.length && si<q.length; i++) if(str[i]===q[si]) si++;
+  return si===q.length;
+}
+function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
+function flash(el) {
+  if (!el) return; el.classList.add('invalid');
+  el.focus();
+  setTimeout(() => el.classList.remove('invalid'), 1400);
+}
+function dpCls(p) {
+  if (p==='G5%')  return 'dil-g5';
+  if (p==='SF')   return 'dil-sf';
+  if (p==='RL')   return 'dil-rl';
+  return 'dil-pure';
+}
+function dilIcon(p) {
+  if (p==='G5%')  return '🟡';
+  if (p==='SF')   return '🔵';
+  if (p==='RL')   return '🟢';
+  if (p==='PURO') return '⬜';
+  return '◻️';
+}
+</script>
+</body>
+</html>
