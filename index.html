@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YerayFH - de la Mata</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="/appclinicas/img/icon.png">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-J830XBBQKF', { page_path: location.pathname });
+</script>
+
+<style>
+:root {
+  --primary-color: #8b5cf6;
+  --secondary-color: #d3c0f9;
+  --accent-color: #d8b4fe;
+  --card-shadow: rgba(0,0,0,0.1);
+  --hover-shadow: rgba(0,0,0,0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background-color: var(--secondary-color);
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* ================= HEADER ================= */
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+header .header-icon img {
+  width: 80px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+header .title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+header .hospital {
+  font-size: 1rem;
+  color: #4c1d95;
+  font-weight: 500;
+}
+
+header .warning {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #444;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f8f8f8;
+  margin: 0.5rem 0;
+}
+
+header .autor {
+  font-size: 1rem;
+  color: var(--accent-color);
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+/* ================= SEARCH ================= */
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: 2px solid var(--accent-color);
+  border-radius: 25px;
+  outline: none;
+  box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+/* ================= SECTIONS ================= */
+.section-wrapper {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  color: #4c1d95;
+  margin: 1.5rem 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ================= CARDS ================= */
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  text-align: center;
+}
+
+.icon-container {
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+  background-color: transparent; /* PNG transparente respetada */
+}
+
+.card img {
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  color: #4c1d95;
+  margin-bottom: 0.5rem;
+}
+
+.card a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+footer {
+  margin-top: 2rem;
+  color: #777;
+  font-size: 0.85rem;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  header .hospital {
+    font-size: 0.9rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-icon">
+    <img src="/appclinicas/img/icon.png" alt="Icono">
+  </div>
+
+  <div class="title-container">
+    <h1>YerayFH - de la Mata</h1>
+    <div class="hospital">FARMACIA HOSPITALARIA. HOSPITAL UNIVERSITARIO PUERTO REAL</div>
+    <div class="warning">No sustituye al criterio facultativo · No validadas clínicamente</div>
+    <div class="autor">Autor: Yeray Reyes de la Mata</div>
+  </div>
+</header>
+
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Buscar...">
+</div>
+
+<!-- ===================== DIAGNOSTICO ===================== -->
+<div class="section-wrapper">
+  <div class="section-title">Diagnóstico y/o manejo terapéutico</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/guiaempirica.png" alt="">
+      </div>
+      <h2>Antibioterapia empírica: guía HUPR 2025</h2>
+      <a href="guiaempirica/">Empírico</a>
+    </div>
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/cerebro.png" alt="">
+      </div>
+      <h2>Ictus isquémico agudo: motor interactivo de manejo terapéutico</h2>
+      <a href="ictus/">Código Ictus</a>
+    </div>
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/antidoto.png" alt="">
+      </div>
+      <h2>Intoxicación: antídotos y motor de manejo clínico</h2>
+      <a href="antidoto/">Detox</a>
+    </div>
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/bacteria.png" alt="">
+      </div>
+      <h2>Sepsis: diagnóstico y manejo terapéutico</h2>
+      <a href="sepsis/">Código Sepsis</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== FARMACOTERAPIA ===================== -->
+<div class="section-wrapper">
+  <div class="section-title">Farmacoterapia</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/funcionrenal.png" alt="">
+      </div>
+      <h2>Función renal: ajuste de fármacos</h2>
+      <a href="funcionrenal/">Ajustar</a>
+    </div>
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/infucalc.png" alt="">
+      </div>
+      <h2>Infucalc: ritmos de infusión con bomba</h2>
+      <a href="infucalc/">Ritmo</a>
+    </div>
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/anciano.png" alt="">
+      </div>
+      <h2>Polimedicados: anciano crónico complejo</h2>
+      <a href="polimedicados/">Polimedicado</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OTROS ===================== -->
+<div class="section-wrapper">
+  <div class="section-title">Otros</div>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-container">
+        <img src="/appclinicas/img/lecturacritica.png" alt="">
+      </div>
+      <h2>Lectura crítica: checklist</h2>
+      <a href="lecturacritica/">Evidencia</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+© 2026 Yeray Reyes de la Mata
+</footer>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const sections = document.querySelectorAll('.section-wrapper');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  sections.forEach(section => {
+    const sectionCards = section.querySelectorAll('.card');
+    let visible = false;
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.style.display = 'block';
+        visible = true;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    section.style.display = visible ? 'block' : 'none';
+  });
+});
+
+// Orden alfabético
+document.querySelectorAll(".grid").forEach(grid => {
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  cards.sort((a,b) => a.querySelector("h2").innerText.toLowerCase().localeCompare(b.querySelector("h2").innerText.toLowerCase()));
+  cards.forEach(card => grid.appendChild(card));
+});
+</script>
+
+</body>
+</html>
