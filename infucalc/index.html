@@ -698,7 +698,6 @@ viaPeriphMsg: '⚠️ Riesgo de flebitis y necrosis focal por extravasación. Us
     dilPref:'PURO', dilOk:['PURO'], estab:12, bolo:false,
     nota:'Cleviprex® 0.5mg/mL. Emulsión lipídica. NO diluir. Máx 32mg/h (FT EMA). Cambiar c/12h.'
   },
-
 {
     /* Nicardipino 10 mg/10 mL (1 mg/mL).
        Dilución recomendada a 0.1 - 0.2 mg/mL. Ej: 25 mg en 250 mL.
@@ -713,6 +712,45 @@ viaPeriphMsg: '⚠️ Riesgo de flebitis y necrosis focal por extravasación. Us
     dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
     nota:'Viales 1mg/mL (10mg/10mL). FT AEMPS: diluir a 0.1-0.2 mg/mL. Inicio a 3-5 mg/h, titular según PA. Máx 15 mg/h. Rotar vía periférica c/12h.'
   },
+    {
+    /* Urapidilo (Elgadil) 50 mg/10 mL.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Antihipertensivo', name:'Urapidilo',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:250, defaultVol:250,
+    maxConc: 4,
+    viaSelector: true,
+    rango:[9,30], soft:30, hard:120,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24,
+    bolo:true, boloDosis:25, boloUnit:'mg', boloT:'5 min',
+    nota:'Elgadil® (amp 50mg/10mL). Titulación inicial en bolo, seguida de perfusión. Dosis mantenimiento habitual 9-30 mg/h. Concentración máxima diluida 4 mg/mL.'
+  },
+  {
+    /* Labetalol (Trandate) 100 mg/20 mL.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Antihipertensivo', name:'Labetalol',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:200, defaultVol:200,
+    maxConc: 5,
+    viaSelector: true,
+    rango:[20,160], soft:160, hard:300,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24,
+    bolo:true, boloDosis:20, boloUnit:'mg', boloT:'2 min',
+    nota:'Trandate® 5mg/mL (100mg/20mL). Dosis máxima acumulada habitual 300 mg. Evitar en asma o bloqueos AV. Monitorizar FC y PA continua.'
+  },
+  {
+    /* Nitroglicerina (Solinitrina) 50 mg/10 mL.
+       DOSIS en mcg/min · VIAL en mg → conversión automática ×1000. */
+    cat:'UCI', sub:'Vasodilatador', name:'Nitroglicerina',
+    unit:'mcg/min', vialUnit:'mg', displayConcUnit:'mcg',
+    defaultPres:50, defaultVol:500,
+    maxConc: 400,
+    viaSelector: true,
+    rango:[10,200], soft:200, hard:400,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
+    nota:'Solinitrina® 50mg/10mL. Vial en MG, dosis en MCG/MIN. Se recomiendan tubuladuras de baja adsorción (polietileno/teflón). Taquifilaxia a las 24-48h.'
+  },
+
 
   /* ════ SEDACIÓN ════════════════════════════════════════════ */
   {
@@ -768,6 +806,19 @@ viaPeriphMsg: '⚠️ Alto riesgo de dolor en la inyección y flebitis lipídica
     rango:[0.2,1.4], soft:1.4, hard:2.0,
     dilPref:'SF', dilOk:['SF','G5%','RL'], estab:24, bolo:false,
     nota:'Dexdor® 100mcg/mL. Vial en MCG. Diluir a 4mcg/mL (ej. 200mcg/50mL). SF preferido; G5% y RL aceptados (FT AEMPS). Vigilar bradicardia e hipotensión.'
+  },
+    {
+    /* Ketamina (Ketolar) 50 mg/mL.
+       DOSIS en mg/kg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Sedación', name:'Ketamina',
+    unit:'mg/kg/h', vialUnit:'mg',
+    defaultPres:500, defaultVol:50,
+    maxConc: 50,
+    viaSelector: true,
+    rango:[0.5,2.5], soft:2.5, hard:4.5,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24,
+    bolo:true, boloDosis:1, boloUnit:'mg/kg', boloT:'1 min',
+    nota:'Ketolar® 50mg/mL. Usos: analgesia adyuvante, broncoespasmo severo, estatus epiléptico. Dosis analgésica: 0.1-0.3 mg/kg/h. Sedación profunda: >1 mg/kg/h.'
   },
 
   /* ════ ANALGESIA ══════════════════════════════════════════ */
@@ -838,6 +889,32 @@ viaPeriphMsg: '⚠️ Alto riesgo de dolor en la inyección y flebitis lipídica
     rango:[1,20], soft:20, hard:50,
     dilPref:'SF', dilOk:['SF'], estab:24, bolo:false,
     nota:'Actrapid® 100UI/mL. Purgar 20mL antes (adsorción PVC). Glucemia c/1h. Objetivo 140–180mg/dL. Máx 50UI/h.'
+  },
+  {
+    /* Omeprazol liofilizado 40 mg.
+       DOSIS en mg/h · VIAL en mg → sin conversión. */
+    cat:'UCI', sub:'Digestivo', name:'Omeprazol',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:200, defaultVol:500,
+    maxConc: 0.8,
+    viaSelector: false,
+    rango:[8,8], soft:8, hard:16,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:12,
+    bolo:true, boloDosis:80, boloUnit:'mg', boloT:'15 min',
+    nota:'Protocolo HDA: Bolo 80 mg seguido de perfusión a 8 mg/h durante 72h. Estabilidad: 12h en SF, 6h en G5%. Proteger de la luz si es posible.'
+  },
+  {
+    /* Somatostatina liofilizado 3 mg.
+       DOSIS en mcg/h · VIAL en mg → conversión automática ×1000. */
+    cat:'UCI', sub:'Digestivo', name:'Somatostatina',
+    unit:'mcg/h', vialUnit:'mg', displayConcUnit:'mcg',
+    defaultPres:6, defaultVol:500,
+    maxConc: 120,
+    viaSelector: false,
+    rango:[250,500], soft:250, hard:500,
+    dilPref:'SF', dilOk:['SF'], estab:24,
+    bolo:true, boloDosis:250, boloUnit:'mcg', boloT:'1 min',
+    nota:'Hemorragia por varices: Bolo de 250 mcg seguido de 250 mcg/h continuos. Vida media muy corta (minutos). No interrumpir la infusión bruscamente.'
   },
 
   /* ════ ANTICOAGULACIÓN ════════════════════════════════════ */
@@ -997,9 +1074,31 @@ viaPeriphMsg: '⚠️ Alto riesgo de dolor en la inyección y flebitis lipídica
     defaultPres:600, defaultVol:300,
     maxConc: 2,
     isPremixed:true,
-    rango:[300,1200], soft:1200, hard:1200,
+    rango:[300,1200], soft:1200, hard:1500,
     dilPref:'PURO', dilOk:['PURO'], estab:24, bolo:false,
     nota:'Zyvoxid® / Kabi® bolsa premezclada 600mg/300mL (2mg/mL). Lista para usar, NO diluir. 600mg en 30–120min. NO asociar con ISRS/IMAO. Trombocitopenia si >28 días.'
+  },
+    {
+    /* Ceftolozano/Tazobactam (Zerbaxa) 1g/0.5g. 
+       Se pauta por TOTAL de miligramos de la suma (1.5g = 1500mg). */
+    cat:'ABX', sub:'Cefalosporina', name:'Ceftolozano/Tazobactam',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:4500, defaultVol:250,
+    minConc: 6, maxConc: 15,
+    rango:[187.5,375], soft:375, hard:425,
+    dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
+    nota:'Zerbaxa® 1g/0.5g (1.5g total). Perfusión extendida/continua. Dosis usual: 1.5g a 3g cada 8h (equivale a 4500-9000 mg/24h = 187.5-375 mg/h). Ajustar en disfunción renal.'
+  },
+  {
+    /* Ceftazidima/Avibactam (Zavicefta) 2g/0.5g.
+       Se pauta por TOTAL de miligramos de la suma (2.5g = 2500mg). */
+    cat:'ABX', sub:'Cefalosporina', name:'Ceftazidima/Avibactam',
+    unit:'mg/h', vialUnit:'mg',
+    defaultPres:7500, defaultVol:250,
+    minConc: 8, maxConc: 40,
+    rango:[312.5,312.5], soft:312.5, hard:330,
+    dilPref:'SF', dilOk:['SF','G5%','RL'], estab:12, bolo:false,
+    nota:'Zavicefta® 2g/0.5g (2.5g total). Perfusión continua: 7.5g/24h (312.5 mg/h). RL compatible. Estabilidad a Tª ambiente: 12h (cambiar bolsa c/12h). Ajustar en disfunción renal.'
   },
 ];
 
