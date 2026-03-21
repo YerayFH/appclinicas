@@ -1778,7 +1778,7 @@ function copyLog() {
   if (calcMode && resultUnit === 'mg/h' && d.unit.includes('mcg')) {
       finalRes = result / 1000;
   }
-  const txt = `${ts} · ${d.name}${via} · ${dose} ${calcMode ? 'ml/h' : d.unit}${weight!=null?' · Peso '+weight+'kg':''} → ${finalRes.toFixed(2)} ${resultUnit} · [InfuCalc · H.U. Puerto Real]`;
+  const txt = `${ts} · ${d.name}${via} · ${dose} ${calcMode ? 'ml/h' : d.unit}${weight!=null?' · Peso '+weight+'kg':''} → ${finalRes.toFixed(2)} ${resultUnit} · [InfuCalc]`;
   navigator.clipboard?.writeText(txt)
     .then(() => showCopyFb('✓ COPIADO AL PORTAPAPELES'))
     .catch(() => alert('Copia manual:\n\n' + txt));
