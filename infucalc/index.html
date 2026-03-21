@@ -698,19 +698,21 @@ viaPeriphMsg: '⚠️ Riesgo de flebitis y necrosis focal por extravasación. Us
     dilPref:'PURO', dilOk:['PURO'], estab:12, bolo:false,
     nota:'Cleviprex® 0.5mg/mL. Emulsión lipídica. NO diluir. Máx 32mg/h (FT EMA). Cambiar c/12h.'
   },
-{
+  {
     /* Nicardipino 10 mg/10 mL (1 mg/mL).
-       Dilución recomendada a 0.1 - 0.2 mg/mL. Ej: 25 mg en 250 mL.
+       Dilución recomendada periférica a 0.1 - 0.2 mg/mL (máx 0.5). Central admite hasta 1 mg/mL.
        DOSIS en mg/h · VIAL en mg → sin conversión. */
     cat:'UCI', sub:'Antihipertensivo', name:'Nicardipino',
     unit:'mg/h', vialUnit:'mg',
     defaultPres:25, defaultVol:250,
-    maxConc: 0.5, minConc: 0.1,
+    minConc: 0.1,
+    maxConc: 1.0,     // Límite para VÍA CENTRAL (permite pasarlo puro a 1 mg/mL)
+    maxConcP: 0.5,    // Límite para VÍA PERIFÉRICA (salta alerta si se supera 0.5 mg/mL)
     viaSelector: true,
-    viaPeriphMsg: '⚠️ Riesgo de flebitis o trombosis venosa. En vía periférica, la AEMPS recomienda cambiar el lugar de inyección cada 12 horas.',
+    viaPeriphMsg: '⚠️ Riesgo de flebitis o trombosis venosa. En vía periférica, la AEMPS recomienda cambiar el lugar de inyección cada 12 horas. Concentración máxima periférica recomendada: 0.5 mg/mL.',
     rango:[3,15], soft:15, hard:20,
     dilPref:'SF', dilOk:['SF','G5%'], estab:24, bolo:false,
-    nota:'Viales 1mg/mL (10mg/10mL). FT AEMPS: diluir a 0.1-0.2 mg/mL. Inicio a 3-5 mg/h, titular según PA. Máx 15 mg/h. Rotar vía periférica c/12h.'
+    nota:'Viales 1mg/mL (10mg/10mL). Vía periférica: diluir a 0.1-0.2 mg/mL. Vía central: admite hasta 1 mg/mL (puro). Inicio a 3-5 mg/h, titular según PA. Rotar VVP c/12h.'
   },
     {
     /* Urapidilo (Elgadil) 50 mg/10 mL.
