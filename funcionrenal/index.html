@@ -1,0 +1,2645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-J830XBBQKF', {
+  page_path: location.pathname,
+});
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajuste posológico renal</title>
+<link rel="icon" type="image/png" href="/appclinicas/img/funcionrenal.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;--bg4:#21262d;
+  --border:#30363d;--border2:#3d444d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --blue:#2f81f7;--blue2:#1f6feb;
+  --green:#3fb950;--yellow:#e3b341;--red:#ff7b72;--cyan:#39d353;--purple:#a371f7;
+  --ok-bg:#0b2218;--ok-border:#1a4228;--ok-accent:#3fb950;
+  --warn-bg:#2a1f08;--warn-border:#4a3610;--warn-accent:#e3b341;
+  --err-bg:#2d1515;--err-border:#4a2020;--err-accent:#ff7b72;
+  --unk-bg:#1c2128;--unk-border:#30363d;--unk-accent:#6e7681;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;display:flex;flex-direction:column}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.header-top{background:#0e1e38;border-bottom:1px solid #1f4080;padding:7px 20px;display:flex;align-items:center;gap:10px}
+.hosp-icon{width:32px;height:32px;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hosp-name{font-size:12px;font-weight:700;color:#79c0ff;letter-spacing:.4px;text-transform:uppercase}
+.hosp-sub{font-size:10px;color:#4a8fd4;margin-top:1px}
+.header-main{padding:10px 20px;display:flex;align-items:center;gap:12px}
+.header-icon{width:34px;height:34px;background:var(--blue2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.header-title{font-size:1.2rem;font-weight:700;color:var(--text)}
+.main{display:grid;grid-template-columns:340px 1fr;flex:1;min-height:0;overflow:hidden}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:11px}
+.content{padding:16px;overflow-y:auto}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px}
+.section-title{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group.full{grid-column:1/-1}
+label{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+input,select,textarea{background:var(--bg4);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 9px;font-size:13px;width:100%;outline:none;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+textarea{resize:vertical;min-height:120px;font-family:monospace;font-size:12px;line-height:1.65}
+.fg-display{background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:6px 9px;font-size:13px;color:var(--cyan);font-weight:700;min-height:32px;display:flex;flex-direction:column;justify-content:center}
+.fg-method{font-size:9px;color:var(--text3);margin-top:2px;line-height:1.2}
+.manual-input{border-color:var(--cyan) !important;color:var(--cyan) !important;font-weight:700}
+.mode-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.mode-tab{background:var(--bg4);border:2px solid var(--border2);border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s;font-size:11px;font-weight:700;color:var(--text3);user-select:none}
+.mode-tab:hover{color:var(--text);border-color:var(--text3)}
+.mode-tab .ti{font-size:17px;display:block;margin-bottom:2px}
+.mode-tab.act{background:#0e2040;border-color:var(--blue2);color:#79c0ff}
+.mode-tab.m-hd.act{background:#1e1535;border-color:var(--purple);color:#d2a8ff}
+.mode-tab.m-hfvvc.act{background:#0b2218;border-color:#2ea043;color:var(--cyan)}
+.mode-bar{margin-top:7px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:600;line-height:1.4}
+.mb-normal{background:#0e2040;border:1px solid var(--blue2);color:#79c0ff}
+.mb-hd{background:#1e1535;border:1px solid var(--purple);color:#d2a8ff}
+.mb-hfvvc{background:#0b2218;border:1px solid #2ea043;color:var(--cyan)}
+.btn{border:none;border-radius:6px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;justify-content:center}
+.btn-primary{background:var(--blue2);color:#fff}.btn-primary:hover{background:var(--blue);transform:translateY(-1px)}
+.btn-secondary{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}.btn-secondary:hover{background:var(--border)}
+.btn-danger{background:#2d1515;color:var(--red);border:1px solid #4a2020}.btn-danger:hover{background:#3d1f1f}
+.btn-success{background:#1a4228;color:var(--cyan);border:1px solid #2ea043}.btn-success:hover{background:#225533}
+.btn-scan{background:#1a1535;color:var(--purple);border:1px solid #3d2a6e}.btn-scan:hover{background:#251e4a}
+.btn-info{background:transparent;border:1px solid var(--border2);border-radius:50%;width:22px;height:22px;padding:0;font-size:12px;color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;line-height:1}
+.btn-info:hover{border-color:var(--blue);color:var(--blue);background:rgba(47,129,247,.08)}
+.info-panel{display:none;margin-top:10px;background:#0e1e38;border:1px solid #1f4080;border-radius:8px;padding:10px 13px;font-size:11px;color:#79c0ff;line-height:1.6}
+.info-panel.open{display:block;animation:fadeIn .15s ease}
+.info-panel-title{font-weight:700;font-size:11px;color:#a8ccff;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.info-panel dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:11px}
+.info-panel dt{color:#4a8fd4;font-weight:700;white-space:nowrap}
+.info-panel dd{color:#c8deff}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.results-title{font-size:15px;font-weight:700;color:var(--text)}
+.fg-pill{border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;border:1px solid}
+.fg-pill.normal{background:#0e2040;border-color:var(--blue2);color:#79c0ff}
+.fg-pill.hd    {background:#1e1535;border-color:var(--purple);color:#d2a8ff}
+.fg-pill.hfvvc {background:#0b2218;border-color:#2ea043;color:var(--cyan)}
+.drug-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;transition:box-shadow .15s;border-left-width:4px}
+.drug-card:hover{box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.drug-card.card-ok  {border-left-color:var(--ok-accent)}
+.drug-card.card-warn{border-left-color:var(--warn-accent)}
+.drug-card.card-err {border-left-color:var(--err-accent)}
+.drug-card.card-unk {border-left-color:var(--unk-accent)}
+.drug-card-header{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 14px 9px 14px;border-bottom:1px solid var(--border);gap:8px}
+.drug-header-left{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.drug-name{font-size:14px;font-weight:700;color:var(--text);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drug-cat{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.drug-header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.match-badge{font-size:9px;background:#0e2040;color:#4a8fd4;border:1px solid #1f4080;border-radius:4px;padding:2px 6px;font-family:monospace;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.drug-card-body{padding:11px 14px;display:flex;flex-direction:column;gap:9px}
+.dose-row{display:flex;gap:8px;flex-wrap:wrap}
+.info-block{background:var(--bg4);border:1px solid var(--border2);border-radius:7px;padding:8px 11px;flex:1;min-width:100px}
+.info-block-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:4px}
+.dose-value{font-family:'Courier New',monospace;color:var(--yellow);font-weight:700;font-size:13px}
+.ref-value{font-family:'Courier New',monospace;color:var(--text2);font-size:12px}
+.ajuste-block{border-radius:8px;padding:11px 14px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px}
+.ajuste-ok  {background:var(--ok-bg);border:1px solid var(--ok-border)}
+.ajuste-warn{background:var(--warn-bg);border:1px solid var(--warn-border)}
+.ajuste-err {background:var(--err-bg);border:1px solid var(--err-border)}
+.ajuste-unk {background:var(--unk-bg);border:1px solid var(--unk-border)}
+.ajuste-icon{font-size:22px;line-height:1}
+.ajuste-content{display:flex;flex-direction:column;gap:2px}
+.ajuste-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.ajuste-ok   .ajuste-label{color:#2ea043}
+.ajuste-warn .ajuste-label{color:#9e7a20}
+.ajuste-err  .ajuste-label{color:#9e3030}
+.ajuste-unk  .ajuste-label{color:var(--text3)}
+.ajuste-status{font-size:13px;font-weight:700;margin-bottom:1px}
+.ajuste-ok   .ajuste-status{color:var(--green)}
+.ajuste-warn .ajuste-status{color:var(--yellow)}
+.ajuste-err  .ajuste-status{color:var(--red)}
+.ajuste-unk  .ajuste-status{color:var(--text3)}
+.ajuste-rec{font-size:12px;color:var(--text2);line-height:1.45}
+.not-found-card{background:var(--bg3);border:1px solid var(--border);border-left:4px solid var(--unk-accent);border-radius:10px;margin-bottom:10px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.not-found-name{font-size:14px;font-weight:700;color:var(--text3);flex:1}
+.badge-unk{background:var(--bg4);color:var(--text3);border:1px solid var(--border2);border-radius:12px;padding:3px 9px;font-size:10px;font-weight:700}
+.summary-bar{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;margin-top:4px;margin-bottom:14px}
+.sum-item{display:flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-weight:600}
+.sum-ok  {background:#0b2218;color:var(--green);border:1px solid #1a4228}
+.sum-warn{background:#2a1f08;color:var(--yellow);border:1px solid #4a3610}
+.sum-err {background:#2d1515;color:var(--red);border:1px solid #4a2020}
+.sum-unk {background:var(--bg4);color:var(--text3);border:1px solid var(--border2)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;gap:12px;color:var(--text3)}
+.empty-icon{font-size:48px;opacity:.4}
+.autocomplete-wrap{position:relative;margin-bottom:6px}
+.autocomplete-wrap input{width:100%}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--bg3);border:1px solid var(--blue2);border-radius:0 0 8px 8px;z-index:999;max-height:180px;overflow-y:auto;display:none}
+.autocomplete-list.open{display:block}
+.autocomplete-item{padding:7px 10px;cursor:pointer;font-size:12px;color:var(--text);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:hover,.autocomplete-item.selected{background:var(--bg4);color:#79c0ff}
+.autocomplete-item .ac-cat{font-size:10px;color:var(--text3)}
+.autocomplete-hint{font-size:10px;color:var(--text3);margin-bottom:4px;padding-left:2px}
+.erc-widget{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px}
+.erc-stages{display:flex;gap:3px;margin:8px 0 6px 0;border-radius:6px;overflow:hidden}
+.erc-stage{flex:1;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);transition:all .3s;cursor:default}
+.erc-stage.active{color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,0.4)}
+.erc-s1{background:#1a3a1a}.erc-s1.active{background:#2ea043}
+.erc-s2{background:#2a3010}.erc-s2.active{background:#6ea800}
+.erc-s3a{background:#2a2810}.erc-s3a.active{background:#c8a000}
+.erc-s3b{background:#2a2010}.erc-s3b.active{background:#e07800}
+.erc-s4{background:#2a1a10}.erc-s4.active{background:#d04000}
+.erc-s5{background:#2a1010}.erc-s5.active{background:#c00020}
+.erc-info{font-size:11px;font-weight:700;padding:6px 10px;border-radius:6px;line-height:1.4;min-height:28px}
+.erc-none{color:var(--text3);font-style:italic;font-weight:400}
+.erc-g1 {background:#0b2218;color:#3fb950;border:1px solid #1a4228}
+.erc-g2 {background:#182808;color:#a8d400;border:1px solid #2a4a00}
+.erc-g3a{background:#2a2808;color:#e3b341;border:1px solid #4a4010}
+.erc-g3b{background:#2a2008;color:#f08000;border:1px solid #4a3000}
+.erc-g4 {background:#2a1808;color:#e05000;border:1px solid #4a2800}
+.erc-g5 {background:#2d1515;color:#ff7b72;border:1px solid #4a2020}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.hidden{display:none}
+.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:560px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.modal-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.modal-desc{font-size:12px;color:var(--text2);line-height:1.55}
+.modal-box textarea{min-height:150px;font-family:monospace;font-size:12px;line-height:1.6;border-color:var(--purple)}
+.modal-preview{background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:var(--cyan);min-height:40px;max-height:120px;overflow-y:auto;white-space:pre-wrap;line-height:1.6}
+.modal-preview-label{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+footer{background:#0e1e38;border-top:2px solid #1f4080;padding:15px;text-align:center;color:var(--text2);font-size:12px;flex-shrink:0}
+.footer-ref{font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5}
+.footer-ref a{color:#4a8fd4;text-decoration:none}
+.footer-ref a:hover{text-decoration:underline}
+@media(max-width:820px){.main{grid-template-columns:1fr;overflow:visible}.sidebar{border-right:none;border-bottom:1px solid var(--border)}.drug-card-body{flex-direction:column}}
+
+/* ══ PDF REPORT STYLES ══ */
+.pdf-header{background:#1a2f5e;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:4px 4px 0 0}
+.pdf-header-left h1{font-size:13pt;font-weight:700;margin:0 0 2px 0;letter-spacing:.3px}
+.pdf-header-left p{font-size:8pt;opacity:.85;margin:0}
+.pdf-header-right{text-align:right;font-size:8pt;opacity:.85}
+.pdf-header-right strong{font-size:10pt;display:block}
+.pdf-section{padding:12px 20px;border-bottom:1px solid #e8ecf4}
+.pdf-section-title{font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#5a6a8a;margin-bottom:8px}
+.pdf-patient-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pdf-patient-cell{background:#f4f6fb;border:1px solid #dde3f0;border-radius:4px;padding:7px 10px}
+.pdf-patient-cell .lbl{font-size:7.5pt;color:#7a8aaa;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.pdf-patient-cell .val{font-size:11pt;font-weight:700;color:#1a2f5e;margin-top:1px}
+.pdf-erc-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:9pt;font-weight:700;border:2px solid;margin-top:4px}
+.pdf-erc-g1{background:#e6f9ee;color:#1a6b3a;border-color:#aedec2}
+.pdf-erc-g2{background:#f0f9e0;color:#3d6600;border-color:#b8dca0}
+.pdf-erc-g3a{background:#fff9e0;color:#7a5500;border-color:#f0d580}
+.pdf-erc-g3b{background:#fff3e0;color:#8a4500;border-color:#f0c080}
+.pdf-erc-g4{background:#fff0e8;color:#8a3000;border-color:#f0b080}
+.pdf-erc-g5{background:#fde8e8;color:#8a1a1a;border-color:#f0a0a0}
+.pdf-erc-hd {background:#f0eaff;color:#4a1a8a;border-color:#c8a0f0}
+.pdf-summary-bar{display:flex;gap:10px;flex-wrap:wrap}
+.pdf-sum-box{flex:1;min-width:90px;padding:10px 14px;border-radius:6px;text-align:center;border:1.5px solid}
+.pdf-sum-box .num{font-size:20pt;font-weight:700;display:block;line-height:1.1}
+.pdf-sum-box .lbl{font-size:7.5pt;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.pdf-sum-total{background:#f0f4ff;color:#1a2f7a;border-color:#b0c0f0}
+.pdf-sum-ok   {background:#e8f9f0;color:#1a6b3a;border-color:#aadcbe}
+.pdf-sum-warn {background:#fff8e0;color:#7a5500;border-color:#f0d060}
+.pdf-sum-err  {background:#fde8e8;color:#8a1a1a;border-color:#f0a0a0}
+.pdf-sum-unk  {background:#f4f4f4;color:#555;border-color:#ccc}
+.pdf-table{width:100%;border-collapse:collapse;font-size:9pt}
+.pdf-table th{background:#1a2f5e;color:#fff;padding:7px 10px;text-align:left;font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.pdf-table td{padding:7px 10px;border-bottom:1px solid #e8ecf4;vertical-align:top}
+.pdf-table tr:nth-child(even) td{background:#f8faff}
+.pdf-table tr{page-break-inside:avoid}
+.pdf-badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:8pt;font-weight:700;border:1px solid;white-space:nowrap}
+.pdf-ok  {background:#e8f9f0;color:#1a6b3a;border-color:#aadcbe}
+.pdf-warn{background:#fff8e0;color:#7a5500;border-color:#f0d060}
+.pdf-err {background:#fde8e8;color:#8a1a1a;border-color:#f0a0a0}
+.pdf-unk {background:#f4f4f4;color:#555;border-color:#ccc}
+.pdf-footer{padding:10px 20px;border-top:2px solid #1a2f5e;display:flex;align-items:center;justify-content:space-between;font-size:7.5pt;color:#7a8aaa}
+.pdf-watermark{font-size:7pt;color:#e05050;background:#fff0f0;border:1px solid #f0b0b0;border-radius:3px;padding:3px 8px}
+
+/* ══ DISCLAIMER OVERLAY ══ */
+#disclaimer-overlay{position:fixed;inset:0;z-index:9000;background:rgba(10,14,26,.92);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.disclaimer-box{background:#161b22;border:1px solid #30363d;border-radius:14px;width:100%;max-width:620px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.disclaimer-header{background:#0e1e38;border-bottom:2px solid #c0392b;padding:18px 24px;display:flex;align-items:center;gap:14px}
+.disclaimer-header-icon{width:46px;height:46px;background:#c0392b;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.disclaimer-header h2{font-size:15px;font-weight:700;color:#fff;margin:0 0 3px 0;letter-spacing:.3px}
+.disclaimer-header p{font-size:11px;color:#8b949e;margin:0}
+.disclaimer-body{padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+.disclaimer-clause{display:flex;gap:12px;align-items:flex-start;background:#1c2128;border:1px solid #30363d;border-radius:8px;padding:12px 14px}
+.disclaimer-clause-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.disclaimer-clause p{margin:0;font-size:12px;line-height:1.55;color:#c9d1d9}
+.disclaimer-clause p strong{color:#e6edf3;display:block;margin-bottom:3px;font-size:12.5px}
+.disclaimer-clause.warn {border-color:#4a3610;background:#2a1f08}
+.disclaimer-clause.err  {border-color:#4a2020;background:#2d1515}
+.disclaimer-clause.info {border-color:#1f4080;background:#0e1e38}
+.disclaimer-footer{padding:16px 24px;border-top:1px solid #30363d;background:#0d1117;display:flex;flex-direction:column;gap:10px}
+.disclaimer-check-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none}
+.disclaimer-check-row input[type=checkbox]{width:17px;height:17px;accent-color:#2f81f7;flex-shrink:0;margin-top:2px;cursor:pointer}
+.disclaimer-check-row span{font-size:12px;color:#8b949e;line-height:1.45}
+.disclaimer-check-row span strong{color:#c9d1d9}
+#disclaimer-accept-btn{width:100%;padding:12px;background:#1f6feb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;opacity:.45;letter-spacing:.3px}
+#disclaimer-accept-btn:not(:disabled){opacity:1}
+#disclaimer-accept-btn:not(:disabled):hover{background:#2f81f7;transform:translateY(-1px)}
+#disclaimer-accept-btn:disabled{cursor:not-allowed}
+
+/* ══ PDF EXPORT BUTTON ══ */
+.btn-pdf{background:#1a2f5e;color:#7ec8ff;border:1px solid #2a4a8e}.btn-pdf:hover{background:#1f3d7a}
+.btn-pdf:disabled{opacity:.55;cursor:not-allowed;transform:none !important}
+</style>
+</head>
+<body>
+<!-- ══════════════════════════════════════════════════════════
+     DISCLAIMER OVERLAY — bloquea la UI hasta aceptación
+     ══════════════════════════════════════════════════════════ -->
+<div id="disclaimer-overlay" role="dialog" aria-modal="true" aria-labelledby="disclaimer-title">
+  <div class="disclaimer-box">
+
+    <div class="disclaimer-header">
+      <div class="disclaimer-header-icon">⚠️</div>
+      <div>
+        <h2 id="disclaimer-title">Aviso Legal y Limitación de Responsabilidad</h2>
+        <p>Herramienta de Apoyo a la Decisión Clínica · YerayFH - de la Mata</p>
+      </div>
+    </div>
+
+    <div class="disclaimer-body">
+      <div class="disclaimer-clause err">
+        <div class="disclaimer-clause-icon">🚫</div>
+        <p><strong>Prototipo no validado como producto sanitario</strong>
+          Esta herramienta es un prototipo de apoyo a la decisión y NO constituye un producto sanitario validado según el Reglamento (UE) 2017/745 ni ninguna normativa aplicable.</p>
+      </div>
+      <div class="disclaimer-clause warn">
+        <div class="disclaimer-clause-icon">🩺</div>
+        <p><strong>No sustituye el criterio clínico profesional</strong>
+          El uso de esta aplicación NO sustituye el criterio clínico, diagnóstico o terapéutico de un profesional sanitario titulado. Toda decisión clínica es responsabilidad exclusiva del profesional que la adopte.</p>
+      </div>
+      <div class="disclaimer-clause warn">
+        <div class="disclaimer-clause-icon">👤</div>
+        <p><strong>Responsabilidad del usuario</strong>
+          El usuario asume toda la responsabilidad por las decisiones clínicas tomadas basadas en los resultados de esta herramienta. Se recomienda contrastar siempre con fuentes oficiales y la ficha técnica del medicamento.</p>
+      </div>
+      <div class="disclaimer-clause info">
+        <div class="disclaimer-clause-icon">ℹ️</div>
+        <p><strong>Exención de responsabilidad del desarrollador</strong>
+          El desarrollador no se hace responsable de daños, perjuicios o consecuencias negativas derivados del uso inadecuado, errores en los datos o interpretaciones incorrectas de los resultados de esta herramienta.</p>
+      </div>
+    </div>
+
+    <div class="disclaimer-footer">
+      <label class="disclaimer-check-row" id="disclaimer-check-label">
+        <input type="checkbox" id="disclaimer-checkbox" onchange="disclaimerCheckChanged()">
+        <span>He leído, entiendo y acepto las condiciones de uso. <strong>Soy un profesional sanitario y utilizaré esta herramienta únicamente como apoyo complementario a mi criterio clínico.</strong></span>
+      </label>
+      <button id="disclaimer-accept-btn" disabled onclick="acceptDisclaimer()">
+        ✓ Acepto las condiciones — Acceder a la herramienta
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-top">
+<div class="hosp-icon">
+  <img src="/appclinicas/img/icon.png" alt="Logo" style="width:100%; height:auto;">
+</div>
+<div>
+  <div class="hosp-name">YerayFH - de la Mata</div>
+  <div class="hosp-sub">Farmacia Hospitalaria</div>
+</div>
+  <div class="header-main">
+    <div class="header-icon">💊</div>
+    <div class="header-title">Ajuste Posológico Renal</div>
+  </div>
+</div>
+<div class="main">
+  <div class="sidebar">
+    <div class="card">
+      <div class="section-title">Situación Renal</div>
+      <div class="mode-tabs">
+        <div class="mode-tab act" id="tab_normal" onclick="setMode('normal')"><span class="ti">🫘</span>Normal/FG</div>
+        <div class="mode-tab m-hd" id="tab_hd" onclick="setMode('hd')"><span class="ti">🩸</span>HD</div>
+        <div class="mode-tab m-hfvvc" id="tab_hfvvc" onclick="setMode('hfvvc')"><span class="ti">🔄</span>HFVVC</div>
+      </div>
+      <div class="mode-bar mb-normal" id="mode_bar">🫘 Cálculo por filtrado glomerular (FG)</div>
+    </div>
+    <div class="card">
+      <div class="section-title">Manual / Estimado</div>
+      <div class="form-group">
+        <label>FG Manual (ml/min)</label>
+        <input type="number" id="fg_manual" placeholder="Prioritario si se rellena" class="manual-input">
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">Paciente</div>
+      <div class="form-row">
+        <div class="form-group"><label>Edad</label><input type="number" id="age" placeholder="Años" min="1" max="120"></div>
+        <div class="form-group"><label>Sexo</label><select id="sex"><option value="">-</option><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Peso (kg)</label><input type="number" id="weight" step="0.1"></div>
+        <div class="form-group"><label>Altura (cm)</label><input type="number" id="height"></div>
+      </div>
+      <div class="form-row" style="grid-template-columns:2fr 1fr;">
+        <div class="form-group"><label>Creatinina</label><input type="number" id="creatinine" step="0.01"></div>
+        <div class="form-group"><label>Unidad</label><select id="cr_unit"><option value="mg">mg/dL</option><option value="umol">µmol/L</option></select></div>
+      </div>
+      <div class="form-group full" id="fg_row">
+        <label>FG Calculado / Datos</label>
+        <div class="fg-display" id="fg_display"><div>—</div></div>
+        <div class="fg-method" id="fg_method"></div>
+      </div>
+    </div>
+    <div class="erc-widget" id="erc_widget">
+      <div class="section-title">Estadio ERC (KDIGO)</div>
+      <div class="erc-stages">
+        <div class="erc-stage erc-s1"  id="erc_s1">G1</div>
+        <div class="erc-stage erc-s2"  id="erc_s2">G2</div>
+        <div class="erc-stage erc-s3a" id="erc_s3a">G3a</div>
+        <div class="erc-stage erc-s3b" id="erc_s3b">G3b</div>
+        <div class="erc-stage erc-s4"  id="erc_s4">G4</div>
+        <div class="erc-stage erc-s5"  id="erc_s5">G5</div>
+      </div>
+      <div class="erc-info erc-none" id="erc_info">Introduce FG para ver estadio</div>
+    </div>
+    <div class="card">
+      <div class="section-title">Fármacos (uno por línea)</div>
+      <div class="autocomplete-hint">🔍 Busca y añade un fármaco:</div>
+      <div class="autocomplete-wrap">
+        <input type="text" id="ac_input" placeholder="Escribe un principio activo…" autocomplete="off">
+        <div class="autocomplete-list" id="ac_list"></div>
+      </div>
+      <textarea id="drug_input" placeholder="Ej:&#10;Omeprazol 20mg/24h&#10;Metformina 850mg/12h"></textarea>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <button class="btn btn-primary" onclick="analyze()">🔍 Analizar Medicación</button>
+      <div style="display:flex;gap:5px">
+        <button class="btn btn-scan" style="flex:1" onclick="openScanModal()">📋 Escanear Lista</button>
+        <button class="btn btn-secondary" style="flex:1" onclick="loadExample()">📄 Ejemplo</button>
+        <button class="btn btn-danger" style="flex:1" onclick="clearAll()">🗑</button>
+      </div>
+      <button class="btn btn-pdf" id="pdf-btn" onclick="exportToPDF()" style="width:100%;margin-top:2px" disabled>
+        📄 Exportar Informe PDF
+      </button>
+    </div>
+  </div>
+  <div class="content" id="results_area">
+    <div class="empty-state">
+      <div class="empty-icon">🩺</div>
+      <p>Introduce los datos del paciente y sus fármacos para analizar.</p>
+    </div>
+  </div>
+</div>
+<!-- SCAN MODAL -->
+<div class="modal-overlay hidden" id="scan_modal">
+  <div class="modal-box">
+    <div class="modal-title">📋 Escanear Lista de Prescripción</div>
+    <div class="modal-desc">
+      Pega aquí el texto copiado de tu sistema de prescripción hospitalario.<br>
+      El escáner detecta fármacos, dosis y frecuencias automáticamente.
+    </div>
+    <textarea id="scan_input" placeholder="Pega aquí el texto del sistema de prescripción…&#10;&#10;Ejemplos aceptados:&#10;12345 METFORMINA 850MG/12H&#10;Omeprazol 20 mg cada 24 horas&#10;AMIKACINA 500 MG/8H IV&#10;3 - Enoxaparina sódica 60mg sc/24h&#10;Paracetamol 1g - 1-1-1 oral"></textarea>
+    <div>
+      <div class="modal-preview-label">Vista previa — líneas que se añadirán:</div>
+      <div class="modal-preview" id="scan_preview">—</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeScanModal()">Cancelar</button>
+      <button class="btn btn-scan" onclick="applyScan()">✓ Añadir al listado</button>
+    </div>
+  </div>
+</div>
+<footer>
+  Yeray Reyes de la Mata · Contacto: ydelamata01@gmail.com
+  <div class="footer-ref">
+    Referencia: García Montemayor V, Sanchez-Agesta Martínez M, Naranjo Muñoz J. Ajuste de Fármacos en la Enfermedad Renal Crónica. En: Lorenzo V., López Gómez JM (Eds). <em>Nefrología al día</em>. ISSN: 2659-2606.
+    <a href="https://www.nefrologiaaldia.org/325" target="_blank" rel="noopener">https://www.nefrologiaaldia.org/325</a>
+  </div>
+</footer>
+<script>
+const DB = [
+// ══ AMINOGLUCÓSIDOS ══
+{name:"amikacina",al:["amikacin"],dn:"7.5 mg/kg/8-12h",met:"I",r1:"Cada 8-12h",r2:"Cada 24-48h",r3:"Cada 48-72h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Aminoglucósidos"},
+{name:"estreptomicina",al:["streptomycin"],dn:"15 mg/kg/24h (Máx. 1g)",met:"I",r1:"Cada 24h",r2:"Cada 24-72h",r3:"Cada 72-96h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Aminoglucósidos"},
+{name:"gentamicina",al:["gentamycin"],dn:"1.5 mg/kg/8h",met:"D e I",r1:"Cada 8-12h",r2:"30-70%/12-24h",r3:"20-30%/24-48h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Aminoglucósidos"},
+{name:"tobramicina",al:["tobramycin"],dn:"1.5 mg/kg/8h",met:"D e I",r1:"Cada 8-12h",r2:"30-70%/12-24h",r3:"20-30%/24-48h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Aminoglucósidos"},
+// ══ CARBAPENEM ══
+{name:"ertapenem",al:[],dn:"1 g/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Carbapenem"},
+{name:"imipenem",al:["imipenem-cilastatina","imipenem cilastatina"],dn:"250mg-1g/6h (Máx 4g/día)",met:"D e I",r1:"100%",r2:"50%",r3:"25%",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Carbapenem"},
+{name:"meropenem",al:[],dn:"1-2g/8h",met:"D e I",r1:"100%",r2:"50%/12h",r3:"50%/24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Carbapenem"},
+// ══ CEFALOSPORINAS ══
+{name:"cefazolina",al:["cefazolin"],dn:"500mg-1g/8h (Máx. 2g/8h)",met:"I",r1:"Cada 8h",r2:"Cada 8-12h",r3:"Cada 18-24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
+{name:"cefepima",al:["cefepime"],dn:"1-2g/12h",met:"D e I",r1:"1-2g/12h",r2:"500mg-2g/24h",r3:"250-500mg/24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
+{name:"cefixima",al:["cefixime"],dn:"200mg/12h",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"No recomendado",hv:"—",cat:"Cefalosporinas"},
+{name:"cefotaxima",al:["cefotaxime"],dn:"1-2g/6-12h",met:"I",r1:"Cada 6h",r2:"Cada 6-12h",r3:"Cada 24h o 50%",hd:"Extra 1g postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
+{name:"cefoxitina",al:["cefoxitin"],dn:"1-2g/6-8h",met:"I",r1:"Cada 6-8h",r2:"Cada 12-24h",r3:"Cada 24-48h",hd:"Extra 1g postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
+{name:"ceftazidima",al:["ceftazidime"],dn:"1-2g/8-12h",met:"I",r1:"Cada 8-12h",r2:"Cada 12-24h",r3:"Cada 24-48h",hd:"Extra 1g postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
+{name:"ceftriaxona",al:["ceftriaxone"],dn:"1-2g/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Cefalosporinas"},
+{name:"cefuroxima",al:["cefuroxime"],dn:"0.75-1.5g/8h",met:"I",r1:"Cada 8h",r2:"Cada 8-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Cefalosporinas"},
+{name:"ceftazidima-avibactam",al:["ceftazidime-avibactam","avycaz","ceftazidima avibactam"],dn:"2/0.5g/8h",met:"D e I",r1:"100%",r2:"CCr 50-31: 1/0.25g/8h; CCr 30-16: 0.75/0.1875g/12h",r3:"CCr 15-10: 0.75/0.1875g/12h; <10: 0.75/0.1875g/24h",hd:"0.75/0.1875g/48h",hv:"—",cat:"Cefalosporinas"},
+{name:"ceftolozano-tazobactam",al:["ceftolozane-tazobactam","zerbaxa","ceftolozano tazobactam"],dn:"1/0.5g/8h",met:"D",r1:"100%",r2:"CCr 50-30: 1g/500mg/8h; CCr 29-15: 500mg/250mg/8h",r3:"500mg/250mg/8h",hd:"Carga 1.5g/750mg; Mant 100-300mg/8h",hv:"—",cat:"Cefalosporinas"},
+// ══ FLUORQUINOLONAS ══
+{name:"ciprofloxacino",al:["ciprofloxacin","cipro"],dn:"500-750mg/12h",met:"D",r1:"100%",r2:"50-75%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Fluorquinolonas"},
+{name:"delafloxacino",al:["delafloxacin"],dn:"300mg/12h",met:"D",r1:"100%",r2:"100%; CCr<30: 200mg/12h",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Fluorquinolonas"},
+{name:"levofloxacino",al:["levofloxacin"],dn:"250-750mg/24h",met:"D",r1:"100%",r2:"500mg x1; seguir 250-750mg/24-48h",r3:"500mg x1; seguir 250-500mg/48h",hd:"Dosis postdiálisis",hv:"—",cat:"Fluorquinolonas"},
+{name:"moxifloxacino",al:["moxifloxacin"],dn:"400mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Fluorquinolonas"},
+{name:"norfloxacino",al:["norfloxacin"],dn:"400mg/12h",met:"I",r1:"Cada 12h",r2:"Cada 12-24h",r3:"Evitar",hd:"Sin datos",hv:"—",cat:"Fluorquinolonas"},
+{name:"ofloxacino",al:["ofloxacin"],dn:"200-400mg/12h",met:"D e I",r1:"100%",r2:"200-400mg/24h",r3:"200mg/24h",hd:"100-200mg postdiálisis",hv:"—",cat:"Fluorquinolonas"},
+// ══ MACRÓLIDOS ══
+{name:"azitromicina",al:["azithromycin"],dn:"500mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Macrólidos"},
+{name:"claritromicina",al:["clarithromycin"],dn:"250-500mg/12h",met:"D",r1:"100%",r2:"500mg x1; seguir 250mg/12-24h",r3:"500mg x1; seguir 250mg/12-24h",hd:"Dosis postdiálisis",hv:"—",cat:"Macrólidos"},
+{name:"eritromicina",al:["erythromycin"],dn:"250-500mg/6-12h (Máx. 4g/día)",met:"D",r1:"100%",r2:"100%",r3:"50-75%",hd:"50-75%",hv:"—",cat:"Macrólidos"},
+{name:"roxitromicina",al:["roxithromycin"],dn:"150mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Macrólidos"},
+// ══ MISCELÁNEA ANTIBACTERIANA ══
+{name:"clindamicina",al:["clindamycin"],dn:"600-900mg/6-8h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea Antibact."},
+{name:"cloranfenicol",al:["chloramphenicol"],dn:"0.25-1g/6h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea Antibact."},
+{name:"colistina",al:["colistin","polimixina e"],dn:"1-2 MUI/8-12h",met:"D",r1:"1-2 MUI/8-12h",r2:"4.5-7.5 MUI/24h",r3:"3.5 MUI/24h",hd:"2.25 MUI/24h (días NO HD) / 3 MUI/24h postdiálisis",hv:"CCr=100-50 ml/min",cat:"Miscelánea Antibact."},
+{name:"dalbavancina",al:["dalvance"],dn:"1000mg sem1; 500mg sem2",met:"D",r1:"100%",r2:"100%; CCr<30: 750mg sem1+375mg sem2",r3:"750mg sem1+375mg sem2",hd:"750mg sem1+375mg sem2. No dosis extra",hv:"—",cat:"Miscelánea Antibact."},
+{name:"daptomicina",al:["daptomycin","cubicin"],dn:"4-6 mg/kg/24h",met:"I",r1:"100%",r2:"Cada 48h",r3:"Cada 48h",hd:"Cada 48h (postHD)",hv:"—",cat:"Miscelánea Antibact."},
+{name:"eravaciclina",al:["eravacycline"],dn:"1 mg/kg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Miscelánea Antibact."},
+{name:"linezolid",al:["linezolida","zyvox"],dn:"400-600mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Miscelánea Antibact."},
+{name:"metronidazol",al:["metronidazole","flagyl"],dn:"500mg/6-8h",met:"I",r1:"100%",r2:"100%",r3:"Cada 8-12h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Miscelánea Antibact."},
+{name:"nitrofurantoina",al:["nitrofurantoin","macrobid"],dn:"50-100mg/6h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"—",hv:"—",cat:"Miscelánea Antibact."},
+{name:"oritavancina",al:["oritavancin"],dn:"15 mg/kg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"100%",cat:"Miscelánea Antibact."},
+{name:"sulfametoxazol",al:["sulfamethoxazole","smx","cotrimoxazol"],dn:"1g/8-12h",met:"I",r1:"Cada 12h",r2:"Cada 18h",r3:"Cada 24h",hd:"Extra 1g postdiálisis",hv:"—",cat:"Miscelánea Antibact."},
+{name:"tedizolid",al:[],dn:"20mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea Antibact."},
+{name:"teicoplanina",al:["teicoplanin"],dn:"6 mg/kg/24h",met:"I",r1:"Cada 24h",r2:"Cada 48h",r3:"Cada 72h",hd:"Cada 72h",hv:"CCr=50-10 ml/min",cat:"Miscelánea Antibact."},
+{name:"tigeciclina",al:["tigecycline"],dn:"100mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea Antibact."},
+{name:"trimetoprim",al:["trimethoprim","tmp"],dn:"100mg/12h",met:"I",r1:"Cada 12h",r2:"Cada 12h si FG>30; Cada 18h si FG 30-10",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"CCr=10 ml/min",cat:"Miscelánea Antibact."},
+{name:"vancomicina",al:["vancomycin"],dn:"1g/12h",met:"D e I",r1:"1g/12h",r2:"1g/24-96h",r3:"1g/4-6 días",hd:"Si membrana HF: 500mg postHD",hv:"500mg/24-48h",cat:"Miscelánea Antibact."},
+// ══ PENICILINAS ══
+{name:"amoxicilina",al:["amoxicillin","amoxycillin"],dn:"875mg/12h; 250-500mg/8h",met:"I",r1:"100%",r2:"Cada 8-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Penicilinas"},
+{name:"amoxicilina-clavulanico",al:["amoxicilina clavulanico","augmentine","co-amoxiclav","amoxicilina clavulanato","amoxi clavulanico"],dn:"500/125mg/8h",met:"D e I",r1:"500/125mg/8h",r2:"250/125mg/12h",r3:"250/125mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Penicilinas"},
+{name:"ampicilina",al:["ampicillin"],dn:"250mg-2g/6h",met:"I",r1:"100%",r2:"Cada 6-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Penicilinas"},
+{name:"aztreonam",al:[],dn:"1-2g/8h",met:"D",r1:"100%",r2:"1-2g x1; seguir 500mg/6-8h",r3:"1-2g x1; seguir 500mg/6-12h",hd:"Extra 250mg postdiálisis",hv:"—",cat:"Penicilinas"},
+{name:"penicilina g",al:["bencilpenicilina","penicilina"],dn:"0.5-4 millones U/4-6h",met:"D",r1:"100%",r2:"75%",r3:"20-50%",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Penicilinas"},
+{name:"piperacilina",al:[],dn:"3-4g/4-6h",met:"I",r1:"100%",r2:"Cada 6-12h",r3:"Cada 12h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Penicilinas"},
+{name:"piperacilina-tazobactam",al:["pip-tazo","piptazo","piperacilina tazobactam","tazobactam"],dn:"3.375-4.5g/6h",met:"D e I",r1:"100%",r2:"2.25g/6h (FG<20: 2.25g/8h)",r3:"2.25g/8h",hd:"Extra 0.75g postHD",hv:"—",cat:"Penicilinas"},
+{name:"ticarcilina",al:[],dn:"3g/4h",met:"D e I",r1:"1-2g/4h",r2:"1-2g/8h",r3:"1-2g/12h",hd:"No",hv:"CCr=50-10 ml/min",cat:"Penicilinas"},
+{name:"ticarcilina-clavulanico",al:["ticarcilina clavulanico"],dn:"3.1g/4h",met:"D e I",r1:"3.1g/4h",r2:"3.1g/8-12h",r3:"2.0g/12h",hd:"Extra 2g postdiálisis",hv:"—",cat:"Penicilinas"},
+// ══ TETRACICLINAS ══
+{name:"doxiciclina",al:["doxycycline"],dn:"100mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"No",hv:"—",cat:"Tetraciclinas"},
+{name:"tetraciclina",al:["tetracycline"],dn:"250-500mg/6-12h",met:"I",r1:"100%",r2:"Cada 12-24h",r3:"Cada 24h",hd:"No",hv:"—",cat:"Tetraciclinas"},
+// ══ TUBERCULOSTÁTICOS ══
+{name:"bedaquilina",al:["bedaquiline"],dn:"Sem 1-2: 400mg/24h; Sem 3-24: 200mg/48h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Tuberculostáticos"},
+{name:"delamanid",al:[],dn:"100mg/12h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Tuberculostáticos"},
+{name:"etambutol",al:["ethambutol"],dn:"15-25 mg/kg/24h (Máx. 2.5g/día)",met:"D",r1:"100%",r2:"75%",r3:"50-75%",hd:"Dosis postdiálisis",hv:"CCr=100-50 ml/min",cat:"Tuberculostáticos"},
+{name:"etionamida",al:["ethionamide"],dn:"500-750mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Tuberculostáticos"},
+{name:"isoniacida",al:["isoniazid","inh"],dn:"300mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Tuberculostáticos"},
+{name:"pirazinamida",al:["pyrazinamide"],dn:"15-30 mg/kg/24h (Máx. 2g/24h)",met:"D",r1:"100%",r2:"12-20 mg/kg/24h",r3:"12-20 mg/kg/24h",hd:"Dosis postdiálisis",hv:"Evitar",cat:"Tuberculostáticos"},
+{name:"rifabutina",al:["rifabutin"],dn:"300mg/24h",met:"No",r1:"100%",r2:"100%; CCr<30: 50%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Tuberculostáticos"},
+{name:"rifampicina",al:["rifampin","rifampicin"],dn:"600mg/24h",met:"D",r1:"100%",r2:"100%",r3:"300mg/24h",hd:"300mg/24h",hv:"—",cat:"Tuberculostáticos"},
+{name:"rifapentina",al:["rifapentine"],dn:"600mg 2x/sem; luego 600mg/sem",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100% dosis rec. postdiálisis",hv:"—",cat:"Tuberculostáticos"},
+// ══ ANTIFÚNGICOS ══
+{name:"anfotericina b liposomal",al:["anfotericina b","anfotericina liposomal","ambisome","anfotericina"],dn:"5 mg/kg/24h",met:"D",r1:"5 mg/kg/24h",r2:"1-3 mg/kg/24h",r3:"1-3 mg/kg/24h",hd:"1-3 mg/kg/24h",hv:"CCr=50-10 ml/min",cat:"Antifúngicos"},
+{name:"caspofungina",al:["caspofungin"],dn:"50-70mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antifúngicos"},
+{name:"fluconazol",al:["fluconazole"],dn:"200-400mg/24h (Máx. 800mg/24h)",met:"D",r1:"100%",r2:"200mg/24h",r3:"200mg/24h",hd:"100-200mg postHD",hv:"CCr=50-10 ml/min",cat:"Antifúngicos"},
+{name:"flucitosina",al:["flucytosine"],dn:"12.5-37.5 mg/kg/6h",met:"I",r1:"Cada 6-12h",r2:"Cada 12-24h",r3:"Cada 24-48h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Antifúngicos"},
+{name:"isavuconazol",al:["isavuconazole","cresemba"],dn:"Carga 200mg/8h; Mant 200mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antifúngicos"},
+{name:"itraconazol",al:["itraconazole"],dn:"100-200mg/12h V.O.; IV: 200mg/12h",met:"D",r1:"100%",r2:"100%; IV: no si CCr<30",r3:"50%; IV: contraindicado",hd:"100% dosis rec.",hv:"—",cat:"Antifúngicos"},
+{name:"micafungina",al:["micafungin"],dn:"50-150mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"100%",cat:"Antifúngicos"},
+{name:"posaconazol",al:["posaconazole"],dn:"100-200mg/6-24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antifúngicos"},
+{name:"voriconazol",al:["voriconazole","vfend"],dn:"V.O.: 200mg/12h; IV: 3mg/kg/12h",met:"-",r1:"V.O.: 100%; IV: evitar si CCr<50",r2:"V.O.: 100%; IV: evitar",r3:"V.O.: 100%; IV: contraindicado",hd:"100% dosis rec. V.O.",hv:"-",cat:"Antifúngicos"},
+// ══ ANTIPARASITARIOS ══
+{name:"ivermectina",al:["ivermectin"],dn:"200 µg/kg única toma",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antiparasitarios"},
+{name:"pentamidina",al:[],dn:"4 mg/kg/día",met:"I",r1:"Cada 24h",r2:"Cada 24-36h",r3:"Cada 48h",hd:"Cada 48h",hv:"—",cat:"Antiparasitarios"},
+{name:"pirimetamina",al:["pyrimethamine"],dn:"100mg/24h 1er día; luego 25mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100% dosis rec. postdiálisis",hv:"—",cat:"Antiparasitarios"},
+{name:"quinina",al:["quinine"],dn:"650mg/8h",met:"I",r1:"Cada 8h",r2:"Cada 8-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Antiparasitarios"},
+// ══ ANTIVIRALES ══
+{name:"abacavir-lamivudina",al:["abacavir lamivudina"],dn:"600/300mg",met:"D",r1:"100%",r2:"100%; CCr<30: No recomendado",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Antivirales"},
+{name:"aciclovir",al:["acyclovir"],dn:"5-10 mg/kg/8h",met:"D e I",r1:"5-10 mg/kg/8h",r2:"5-10 mg/kg/12-24h",r3:"2.5 mg/kg/24h",hd:"Dosis postdiálisis",hv:"2.5 mg/kg/24h",cat:"Antivirales"},
+{name:"adefovir",al:[],dn:"10mg/24h",met:"I",r1:"10mg/24h",r2:"10mg/48-72h",r3:"10mg/7días",hd:"10mg/7días postdiálisis",hv:"3.5 mg/kg/24h",cat:"Antivirales"},
+{name:"amantadina",al:[],dn:"100mg/12h",met:"D e I",r1:"Cada 12h",r2:"200mg x1; seguir 100mg/24-48h",r3:"200mg/7días",hd:"200mg/7días",hv:"No",cat:"Antivirales"},
+{name:"atazanavir",al:[],dn:"300mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"bictegravir-emtricitabina-taf",al:["bictegravir emtricitabina tenofovir alafenamida"],dn:"200/25/50mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"cabotegravir",al:[],dn:"600mg/2meses",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Precaución",hv:"—",cat:"Antivirales"},
+{name:"cidofovir",al:[],dn:"5 mg/kg/sem x2; luego 5-3 mg/kg/2sem",met:"D",r1:"5 mg/kg/sem x2; luego 5-3 mg/kg/2sem",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"cobicistat",al:[],dn:"150mg/24h",met:"D",r1:"No si CCr<70",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"daclatasvir",al:[],dn:"60mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"darunavir-cobicistat-emtricitabina-taf",al:["darunavir cobicistat"],dn:"800/150/200/10mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"dasabuvir",al:[],dn:"250mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"didanosina",al:["didanosine","ddi"],dn:"125-200mg/12h",met:"D",r1:"125-200mg/12h",r2:"125-200mg/12h",r3:"75-100mg/24h",hd:"50mg/24h",hv:"—",cat:"Antivirales"},
+{name:"dolutegravir",al:[],dn:"50mg/12-24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Antivirales"},
+{name:"elbasvir-grazoprevir",al:["elbasvir grazoprevir"],dn:"50/100mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antivirales"},
+{name:"elvitegravir-cobicistat-emtricitabina-taf",al:["elvitegravir cobicistat"],dn:"150/150/200/10mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"emtricitabina-tenofovir",al:["emtricitabina tenofovir","truvada"],dn:"200/245mg/24h",met:"I",r1:"Precaución",r2:"1 tab/48h",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Antivirales"},
+{name:"emtricitabina-taf-rilpivirina",al:["emtricitabina rilpivirina"],dn:"200/25/25mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"famciclovir",al:["famcyclovir"],dn:"500mg/8h",met:"D e I",r1:"500mg/8h",r2:"250mg/12-24h",r3:"250mg/24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Antivirales"},
+{name:"foscarnet",al:["foscavir"],dn:"Inducción 60mg/kg/8h; Mantenimiento 90-120mg/kg/24h",met:"D e I",r1:"Ver tabla específica por CCr/kg",r2:"Reducir según CCr/kg (ver ficha)",r3:"Evitar si CCr/kg <0.4",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"fostemsavir",al:[],dn:"600mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"—",hv:"—",cat:"Antivirales"},
+{name:"ganciclovir",al:[],dn:"5 mg/kg/12h IV",met:"D e I",r1:"5 mg/kg/12h IV",r2:"1.25-2.5 mg/kg/24h IV",r3:"1.25 mg/kg 3x sem IV",hd:"Dosis postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"glecaprevir-pibrentasvir",al:["glecaprevir pibrentasvir"],dn:"300/120mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antivirales"},
+{name:"indinavir",al:[],dn:"800mg/8h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Antivirales"},
+{name:"lamivudina",al:["3tc","lamivudine"],dn:"150mg/12h",met:"D e I",r1:"100%",r2:"100-150mg/24h",r3:"25-50mg/24h",hd:"Dosis postdiálisis",hv:"Sin datos",cat:"Antivirales"},
+{name:"ledipasvir-sofosbuvir",al:["ledipasvir sofosbuvir"],dn:"90/400mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"letermovir",al:[],dn:"240mg/24h",met:"D",r1:"100%",r2:"Precaución",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Antivirales"},
+{name:"lopinavir-ritonavir",al:["lopinavir ritonavir"],dn:"400/100mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antivirales"},
+{name:"nelfinavir",al:[],dn:"750mg/12h-1250mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Antivirales"},
+{name:"nevirapina",al:[],dn:"200mg/24h x14d; luego 200mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Antivirales"},
+{name:"nirmatrelvir-ritonavir",al:["paxlovid","nirmatrelvir ritonavir"],dn:"300/100mg/día",met:"D",r1:"100%",r2:"150/100mg/día; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Antivirales"},
+{name:"ombitasvir",al:[],dn:"12.5mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"oseltamivir",al:["tamiflu"],dn:"75mg/12h",met:"D e I",r1:"75mg/12h; CCr<60: 30mg/12h",r2:"30mg/12h; CCr<30: 30mg/24h",r3:"30mg/48h",hd:"30mg postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"paritaprevir",al:[],dn:"75mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"ribavirina",al:["ribavirin"],dn:"500-600mg/12h",met:"D",r1:"500-600mg/12h",r2:"400-200mg/24h",r3:"200mg/24h",hd:"200mg/24h",hv:"—",cat:"Antivirales"},
+{name:"rilpivirina",al:[],dn:"25mg/24h",met:"D",r1:"100%",r2:"Precaución",r3:"Precaución",hd:"—",hv:"—",cat:"Antivirales"},
+{name:"rimantadina",al:[],dn:"100mg/12h",met:"I",r1:"100mg/12h",r2:"100mg/12h",r3:"100mg/24h",hd:"100mg/24h",hv:"—",cat:"Antivirales"},
+{name:"rolutegravir-rilpivirina",al:["rolutegravir rilpivirina"],dn:"50/25mg/24h",met:"D",r1:"100%",r2:"Precaución",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"simeprevir",al:[],dn:"150mg/24h",met:"No",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"sofosbuvir",al:[],dn:"400mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"sofosbuvir-velpatasvir-voxilaprevir",al:["sofosbuvir velpatasvir voxilaprevir"],dn:"400/100/100mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"stavudina",al:["d4t"],dn:"30-40mg/12h",met:"D e I",r1:"100%",r2:"20mg/12h",r3:"20mg/24h",hd:"Dosis postdiálisis",hv:"CCr=10-50 ml/min",cat:"Antivirales"},
+{name:"tenofovir",al:["tenofovir df","tdf"],dn:"300mg/24h",met:"I",r1:"300mg/24h",r2:"300mg/48h; CCr<30: 300mg x2 dosis/sem",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"tenofovir alafenamida",al:["taf"],dn:"25mg/24h",met:"D",r1:"25mg/24h",r2:"25mg/24h; CCr<15: No recomendado",r3:"No recomendado",hd:"25mg/24h",hv:"—",cat:"Antivirales"},
+{name:"tenofovir disoproxilo",al:["tenofovir disoproxil","tenofovir macleods"],dn:"245mg/24h",met:"I",r1:"245mg/24h",r2:"245mg/48h; CCr<30: 245mg/72-96h",r3:"245mg/72-96h",hd:"245mg semanal tras diálisis",hv:"—",cat:"Antivirales"},
+{name:"valaciclovir",al:["valacyclovir"],dn:"1g/8h",met:"D e I",r1:"1g/8h",r2:"0.5-1g/12-24h",r3:"0.5g/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Antivirales"},
+{name:"valganciclovir",al:["valcyte"],dn:"900mg/12h",met:"D e I",r1:"900mg/12h; CCr<60: 450mg/12h",r2:"450mg/12h; CCr<40: 450mg/24h",r3:"No usar si CCr<10",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"velpatasvir",al:[],dn:"100mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Antivirales"},
+{name:"zalcitabina",al:["ddc"],dn:"0.75mg/8h",met:"I",r1:"Cada 8h",r2:"Cada 12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"CCr=10-50 ml/min",cat:"Antivirales"},
+// ══ ANALGÉSICOS / OPIOIDES ══
+{name:"buprenorfina",al:["buprenorphine","buprenorfina parche"],dn:"35-70 mcg/h (parche)",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"codeina",al:["codeine","codeína"],dn:"10-20mg/4-6h (Máx. 120mg/24h)",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"dextrometorfano",al:["dextromethorphan"],dn:"30mg/6-8h (Máx. 120mg/24h)",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"erenumab",al:[],dn:"70-140mg/4 semanas",met:"D",r1:"100%",r2:"100%; CCr<30: Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"fentanilo",al:["fentanyl","fentanil"],dn:"200 mcg/día (titular dosis)",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"galcanezumab",al:[],dn:"240mg carga; 120mg/4 semanas",met:"D",r1:"100%",r2:"100%; CCr<30: Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"meperidina",al:["pethidine","petidina"],dn:"25-100mg/4h (im o sc)",met:"D",r1:"100%",r2:"50%",r3:"EVITAR (normeperidina)",hd:"EVITAR",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"metamizol",al:["dipyrone","nolotil"],dn:"575mg/6-8h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"morfina",al:["morphine"],dn:"10mg/4h (titular dosis)",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"oxicodona",al:["oxycodone"],dn:"10mg/12h (titular dosis)",met:"D",r1:"Iniciar <50% y titular",r2:"Iniciar <50% y titular",r3:"Iniciar <50% y titular",hd:"Iniciar <50% y titular",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"paracetamol",al:["acetaminophen","acetaminofeno"],dn:"0.5-1g/6-8h",met:"I",r1:"0.5-1g/6-8h",r2:"500mg/6h",r3:"500mg/8h",hd:"No",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"rizatriptan",al:["rizatriptán"],dn:"10mg",met:"D",r1:"50%",r2:"50%; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"tapentadol",al:[],dn:"50-250mg/12h",met:"D",r1:"100%",r2:"100%; CCr<30: No recomendado",r3:"No recomendado",hd:"Sin datos",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"tramadol",al:[],dn:"50-100mg/6-8h",met:"I",r1:"Cada 8h",r2:"Cada 12h",r3:"Evitar",hd:"No",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"zolmitriptan",al:["zolmitriptán"],dn:"2.5-10mg/24h",met:"D",r1:"100%",r2:"100%; CCr<15: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Analgésicos/Opioides"},
+// ══ AINEs ══
+{name:"celecoxib",al:["celebrex"],dn:"200mg/24h",met:"D",r1:"100-75%",r2:"75-50%; Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"clonixino lisina",al:["clonixino"],dn:"125-250mg/6-8h",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"dexketoprofeno",al:["dexketoprofen","enantyum"],dn:"12.5-25mg/8h",met:"D",r1:"100-75%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"diclofenaco",al:["diclofenac","voltaren"],dn:"50mg/8-12h",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"etoricoxib",al:["arcoxia"],dn:"30-60mg/24h",met:"D",r1:"100%",r2:"Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"flurbiprofeno",al:["flurbiprofen"],dn:"8.75mg/6h",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"ibuprofeno",al:["ibuprofen","nurofen"],dn:"600mg/6-8h",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"indometacina",al:["indomethacin"],dn:"25-50mg/8-12h",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"ketoprofeno",al:["ketoprofen"],dn:"50mg/8-12h",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"50%",hv:"—",cat:"AINEs"},
+{name:"naproxeno",al:["naproxen"],dn:"550mg/12-24h",met:"D",r1:"100-75%",r2:"75-50%; Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"parecoxib",al:[],dn:"40mg/24h (iv o im)",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"AINEs"},
+{name:"piroxicam",al:[],dn:"20mg/día",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
+{name:"sulindaco",al:["sulindac"],dn:"200-400mg/día",met:"D",r1:"100%",r2:"100-75%",r3:"50%",hd:"50%",hv:"—",cat:"AINEs"},
+// ══ PSICOLÉPTICOS ══
+{name:"alprazolam",al:[],dn:"0.25-0.5mg/8h",met:"I",r1:"0.25-0.5mg/8h",r2:"Cada 12h",r3:"Cada 24h",hd:"Cada 24h",hv:"—",cat:"Psicolépticos"},
+{name:"amisulprida",al:["amisulpride"],dn:"400-1200mg/24h",met:"D",r1:"100%; CCr<50: 50%",r2:"50%; CCr<30: 25%",r3:"25%",hd:"100%",hv:"—",cat:"Psicolépticos"},
+{name:"aripiprazol",al:["aripiprazole"],dn:"10-30mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicolépticos"},
+{name:"asenapina",al:["asenapine"],dn:"5-10mg/12h",met:"D",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"buspirona",al:["buspirone"],dn:"7.5mg/12h",met:"D",r1:"100%",r2:"50%",r3:"25%",hd:"25%",hv:"—",cat:"Psicolépticos"},
+{name:"cariprazina",al:["cariprazine"],dn:"1.5-6mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: No recomendado",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Psicolépticos"},
+{name:"clonazepam",al:[],dn:"1.5-20mg/día",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicolépticos"},
+{name:"clorazepato dipotasico",al:["clorazepato"],dn:"5-30mg/24h",met:"D",r1:"100%",r2:"50%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"clorpromazina",al:["chlorpromazine"],dn:"25-50mg/8h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"50%",hv:"—",cat:"Psicolépticos"},
+{name:"clozapina",al:["clozapine"],dn:"200-900mg/día",met:"D",r1:"100%",r2:"Precaución; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Psicolépticos"},
+{name:"diazepam",al:["valium"],dn:"10mg/24h",met:"D",r1:"100%",r2:"100-75%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"haloperidol",al:[],dn:"1-3 o 10-20mg/8h",met:"D",r1:"100%",r2:"100-75%",r3:"50% (Precaución)",hd:"50% (Precaución)",hv:"—",cat:"Psicolépticos"},
+{name:"ketazolam",al:[],dn:"15-75mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50% (Precaución)",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"litio",al:["carbonato de litio","lithium"],dn:"400-1200mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50-25% (Control litemia estricto)",hd:"Dosis postdiálisis",hv:"—",cat:"Psicolépticos"},
+{name:"lorazepam",al:[],dn:"2-10mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"lormetazepam",al:[],dn:"1-2mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"lurasidona",al:["lurasidone"],dn:"37-148mg/24h",met:"D",r1:"100%; CCr<60: 18.5-74mg/24h",r2:"18.5-74mg/24h",r3:"18.5-74mg/24h; No recomendado",hd:"No recomendado",hv:"—",cat:"Psicolépticos"},
+{name:"midazolam",al:[],dn:"7.5-15mg/24h",met:"D",r1:"7.5-15mg/24h",r2:"7.5mg/24h",r3:"7.5mg/24h (Precaución)",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
+{name:"quetiapina",al:["quetiapine","seroquel"],dn:"150-750mg/día",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicolépticos"},
+{name:"ziprasidona",al:["ziprasidone"],dn:"40-80mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicolépticos"},
+{name:"zolpidem",al:[],dn:"10mg/24h",met:"D",r1:"100%",r2:"50%",r3:"50%",hd:"50%",hv:"—",cat:"Psicolépticos"},
+// ══ PSICOANALÉPTICOS ══
+{name:"amitriptilina",al:["amitriptyline"],dn:"50-100mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicoanalépticos"},
+{name:"citalopram",al:["celexa"],dn:"20mg/día",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Psicoanalépticos"},
+{name:"clomipramina",al:["clomipramine"],dn:"25-250mg/24h",met:"D",r1:"Sin datos en IR; precaución",r2:"Precaución",r3:"Precaución",hd:"—",hv:"—",cat:"Psicoanalépticos"},
+{name:"desvenlafaxina",al:["desvenlafaxine"],dn:"50-200mg/24h",met:"D e I",r1:"100%",r2:"100%; CCr<30: 50mg/48h",r3:"50mg/48h",hd:"—",hv:"—",cat:"Psicoanalépticos"},
+{name:"duloxetina",al:["duloxetine","cymbalta"],dn:"60mg/día",met:"D",r1:"100%",r2:"100%; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Psicoanalépticos"},
+{name:"escitalopram",al:["lexapro"],dn:"10-20mg/día",met:"D",r1:"100%",r2:"100%",r3:"50% o Evitar",hd:"50% o Evitar",hv:"—",cat:"Psicoanalépticos"},
+{name:"fluoxetina",al:["fluoxetine","prozac"],dn:"20mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicoanalépticos"},
+{name:"metilfenidato",al:["methylphenidate","ritalin"],dn:"18-72mg/24h",met:"D",r1:"100%",r2:"Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Psicoanalépticos"},
+{name:"mianserina",al:["mianserin"],dn:"30-90mg/día",met:"D",r1:"100%",r2:"30mg/24h",r3:"30mg/24h",hd:"30mg/24h",hv:"—",cat:"Psicoanalépticos"},
+{name:"mirtazapina",al:["mirtazapine"],dn:"15-25mg/día",met:"D",r1:"100%",r2:"100%; CCr<40: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Psicoanalépticos"},
+{name:"nortriptilina",al:["nortriptyline"],dn:"25mg/6-8h",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"Psicoanalépticos"},
+{name:"olanzapina",al:["olanzapine"],dn:"10-15mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Precaución",hv:"—",cat:"Psicoanalépticos"},
+{name:"paroxetina",al:["paroxetine"],dn:"20-50mg/día",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicoanalépticos"},
+{name:"sertralina",al:["sertraline","zoloft"],dn:"50-200mg/día",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Psicoanalépticos"},
+{name:"venlafaxina",al:["venlafaxine","effexor"],dn:"75-375mg/día",met:"D",r1:"100%",r2:"CCr<30: 50%",r3:"50%",hd:"50%",hv:"—",cat:"Psicoanalépticos"},
+{name:"vortioxetina",al:["vortioxetine"],dn:"5-20mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Psicoanalépticos"},
+// ══ OTROS PSICOFÁRMACOS ══
+{name:"agomelatina",al:["agomelatine"],dn:"25-50mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Otros Psicofármacos"},
+{name:"citisina",al:["cytisine"],dn:"1.5mg/2-12h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Otros Psicofármacos"},
+{name:"citicolina",al:["citicoline"],dn:"500-2000mg",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"donepezilo",al:["donepezil"],dn:"10mg",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"melatonina",al:["melatonin"],dn:"2mg/día",met:"D",r1:"100%",r2:"Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Otros Psicofármacos"},
+{name:"memantina",al:["memantine"],dn:"10-20mg",met:"D",r1:"100%",r2:"100%; CCr<30: 50% y aumentar",r3:"50%",hd:"50%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"naloxona",al:["naloxone"],dn:"5mg/12h",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"naltrexona",al:["naltrexone"],dn:"25-50mg/24h",met:"D",r1:"100%",r2:"Precaución",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Otros Psicofármacos"},
+{name:"opicapona",al:["opicapone"],dn:"50mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"paliperidona",al:["paliperidone","invega"],dn:"3-12mg/24h",met:"I",r1:"100%; CCr 80-50: 3-6mg",r2:"3mg/24-48h",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Otros Psicofármacos"},
+{name:"rasagilina",al:["rasagiline"],dn:"1mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"rimegepant",al:[],dn:"75mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Otros Psicofármacos"},
+{name:"rivastigmina",al:["rivastigmine"],dn:"4.6-13.3mg/24h (parche)",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"—",hv:"—",cat:"Otros Psicofármacos"},
+{name:"safinamida",al:["safinamide"],dn:"50-100mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"solriamfetol",al:[],dn:"37.5-150mg/24h",met:"D",r1:"100%; CCr<60: 37.5-75mg",r2:"37.5-75mg; CCr<15: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Otros Psicofármacos"},
+{name:"tafamidis",al:[],dn:"20mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Otros Psicofármacos"},
+{name:"tranilcipromina",al:["tranylcypromine"],dn:"20-40mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Otros Psicofármacos"},
+{name:"vareniclina",al:["champix","varenicline"],dn:"1mg/12h",met:"D",r1:"100%",r2:"0.5mg/12h o 1mg/24h",r3:"0.5mg/24h",hd:"0.5mg/24h",hv:"—",cat:"Otros Psicofármacos"},
+// ══ ANTIEPILÉPTICOS ══
+{name:"brivaracetam",al:[],dn:"50-200mg/24h",met:"D",r1:"100%",r2:"100%",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Antiepilépticos"},
+{name:"carbamazepina",al:["carbamazepine","tegretol"],dn:"400-1200mg/día",met:"D",r1:"100%",r2:"100%",r3:"75%",hd:"Dosis postdiálisis",hv:"100%",cat:"Antiepilépticos"},
+{name:"cenobamato",al:[],dn:"12.5-400mg/24h",met:"D",r1:"Precaución; máx 300mg",r2:"Precaución; máx 300mg",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Antiepilépticos"},
+{name:"clobazam",al:[],dn:"10-30mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Antiepilépticos"},
+{name:"eslicarbazepina",al:[],dn:"400-1200mg/24h",met:"D",r1:"100%",r2:"CCr 30-60: 200-400mg; máx 50%",r3:"No recomendado",hd:"50% + dosis postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"etosuximida",al:["ethosuximide"],dn:"500-1500mg/día",met:"D",r1:"100%",r2:"100%",r3:"75%",hd:"Dosis postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"fenfluramina",al:["fenfluramine"],dn:"0.2 mg/kg/día (máx 17mg)",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Sin datos",hv:"—",cat:"Antiepilépticos"},
+{name:"fenitoina",al:["phenytoin","epamin"],dn:"150-300mg/día",met:"D",r1:"100%",r2:"100%",r3:"100% (Monitorizar niveles libres)",hd:"100%",hv:"—",cat:"Antiepilépticos"},
+{name:"fenobarbital",al:["phenobarbital","luminal"],dn:"50-200mg/día",met:"I",r1:"100%",r2:"75-50%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Antiepilépticos"},
+{name:"gabapentina",al:["gabapentin","neurontin"],dn:"300-900mg/8h",met:"D e I",r1:"300-900mg/8h; CCr 50-30: 300-600mg/12h",r2:"CCr 29-15: 200-700mg/12-24h",r3:"100-300mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"lacosamida",al:["vimpat"],dn:"100-200mg/12h",met:"D",r1:"100%",r2:"100%",r3:"Máx 250mg/día",hd:"Suplemento 50% postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"lamotrigina",al:["lamotrigine","lamictal"],dn:"100-200mg/12-24h",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"Suplemento 20% postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"levetiracetam",al:["keppra"],dn:"500-1500mg/12h",met:"D",r1:"500-1000mg/12h",r2:"250-750mg/12h",r3:"250-500mg/12h",hd:"500-1000mg/24h + extra postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"oxcarbazepina",al:["trileptal"],dn:"300-600mg/12h",met:"D",r1:"100%",r2:"Iniciar a 50% (300mg/día) y titular",r3:"Iniciar a 50%",hd:"Dosis postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"perampanel",al:[],dn:"2-12mg/día",met:"D",r1:"100%",r2:"No recomendado",r3:"No recomendado",hd:"Sin datos",hv:"—",cat:"Antiepilépticos"},
+{name:"pregabalina",al:["pregabalin","lyrica"],dn:"75-300mg/12h",met:"D e I",r1:"150-600mg/día",r2:"150-300mg/día; CCr<30: 75mg/día",r3:"75mg/24h",hd:"75mg/24h + dosis extra postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"primidona",al:["primidon"],dn:"200-500mg/8h",met:"I",r1:"Cada 8h",r2:"Cada 8-12h",r3:"Cada 12-24h",hd:"Sin datos",hv:"—",cat:"Antiepilépticos"},
+{name:"rufinamida",al:["inovelon"],dn:"200-1600mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Precaución",hv:"—",cat:"Antiepilépticos"},
+{name:"topiramato",al:["topiramate","topamax"],dn:"50-200mg/12h",met:"D",r1:"100%",r2:"50%",r3:"50%",hd:"Extra postdiálisis",hv:"—",cat:"Antiepilépticos"},
+{name:"valproato",al:["acido valproico","depakine"],dn:"500-1000mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100% (Monitorizar niveles libres)",hd:"100%",hv:"—",cat:"Antiepilépticos"},
+{name:"zonisamida",al:["zonegran"],dn:"100-500mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"Antiepilépticos"},
+// ══ DIURÉTICOS ══
+{name:"amilorida",al:["amiloride"],dn:"5mg/24h",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"bumetanida",al:[],dn:"0.5-10mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"clortalidona",al:["chlorthalidone"],dn:"12.5-50mg/24h",met:"D",r1:"100%",r2:"Evitar si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"eplerenona",al:["eplerenone"],dn:"25-50mg/24h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"espironolactona",al:["spironolactone","aldactone"],dn:"25-100mg/24h",met:"D e I",r1:"100%",r2:"CCr 50-30: 100%; CCr <30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"furosemida",al:["furosemide","seguril"],dn:"20-40mg/día",met:"No",r1:"100%",r2:"100% (pueden requerirse altas dosis)",r3:"100% (pueden requerirse altas dosis)",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"hidroclorotiazida",al:["hctz"],dn:"12.5-50mg/24h",met:"D",r1:"100%",r2:"Ineficaz si CCr <30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"indapamida",al:[],dn:"1.25-5mg/24h",met:"D",r1:"100%",r2:"Evitar si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"metolazona",al:[],dn:"2.5-20mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"tolvaptan",al:[],dn:"15-120mg/24h",met:"D",r1:"100%",r2:"No recomendado si CCr<20",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"torasemida",al:["torasemide"],dn:"5-20mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"triamterene",al:[],dn:"50-100mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+// ══ IECA / ARA-II ══
+{name:"benazepril",al:[],dn:"10mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50-25%",hd:"50-25%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"captopril",al:["capoten"],dn:"25-50mg/8h",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"enalapril",al:["renitec"],dn:"5-20mg/12-24h",met:"D",r1:"100%",r2:"75-100%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"lisinopril",al:[],dn:"2-20mg/24h",met:"D",r1:"5-10mg/24h",r2:"2.5-5mg/24h",r3:"2.5mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"perindopril",al:[],dn:"5mg/24h",met:"D",r1:"5mg/24h",r2:"2.5mg; CCr<30: 2.5mg/48h",r3:"2.5mg/48h",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"ramipril",al:["acovil"],dn:"2.5-10mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50-25%",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"candesartan",al:[],dn:"8-32mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"50%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"irbesartan",al:[],dn:"75-300mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100% (Dosis inicial 75mg)",hd:"100% (No ajuste HD)",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"losartan",al:["cozaar"],dn:"50-100mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"olmesartan",al:[],dn:"10-40mg/24h",met:"D",r1:"100%; CCr<60: 20mg",r2:"CCr<60: 20mg",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"telmisartan",al:[],dn:"20-80mg/24h",met:"D",r1:"100%",r2:"20mg/24h",r3:"20mg/24h",hd:"20mg/24h",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"valsartan",al:["diovan"],dn:"80-320mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+// ══ CALCIOANTAGONISTAS ══
+{name:"amlodipino",al:["amlodipine"],dn:"5-10mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"barnidipino",al:["libradin"],dn:"10-20mg/24h",met:"D",r1:"100%",r2:"10mg/24h",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"diltiazem",al:["masdil"],dn:"60mg/8h o 120-240mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"felodipino",al:["felodipine"],dn:"2.5-10mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"lacidipino",al:[],dn:"2-6mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"lercanidipino",al:["zanidip"],dn:"10-20mg/24h",met:"D",r1:"100%",r2:"100-75%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"manidipino",al:["arterial"],dn:"10-20mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"nicardipino",al:[],dn:"3-5mg/h",met:"D",r1:"100%",r2:"50%",r3:"50%",hd:"No",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"nifedipino",al:["nifedipine","adalat"],dn:"30-60mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"nisoldipino",al:[],dn:"10-40mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"nitrendipino",al:[],dn:"20-40mg/24h",met:"D",r1:"100%",r2:"100%",r3:"5mg/día",hd:"5mg/día",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"verapamilo",al:["verapamil","manidon"],dn:"120-240mg/día",met:"D",r1:"100%",r2:"100%",r3:"75-50%",hd:"75-50%",hv:"—",cat:"Diuréticos/AntiHTA"},
+// ══ BETABLOQUEANTES ══
+{name:"atenolol",al:["tenormin"],dn:"50-100mg/24h",met:"D",r1:"100%",r2:"50%",r3:"25%",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"bisoprolol",al:["emconcor"],dn:"2.5-10mg/24h",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"carvedilol",al:["coropres"],dn:"6.25-25mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"celiprolol",al:[],dn:"200-400mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"labetalol",al:[],dn:"100-200mg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"metoprolol",al:["beloc"],dn:"50-200mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"nadolol",al:[],dn:"40-80mg/24h",met:"D",r1:"100%",r2:"50%",r3:"25%",hd:"25%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"propranolol",al:["sumial"],dn:"10-40mg/8h",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"Diuréticos/AntiHTA"},
+// ══ ALFA BLOQUEANTES / ALFA CENTRALES ══
+{name:"doxazosina",al:["carduran"],dn:"2-8mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"prazosina",al:[],dn:"1-10mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"terazosina",al:[],dn:"2-5mg/24h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"clonidina",al:["catapresan"],dn:"0.1-0.3mg/12h",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"metildopa",al:["methyldopa"],dn:"250-1000mg/12h",met:"I",r1:"Cada 12h",r2:"Cada 12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"moxonidina",al:[],dn:"0.2-0.6mg/24h",met:"D",r1:"100%",r2:"0.2-0.4mg/24h",r3:"0.2mg/24h",hd:"0.2mg/24h",hv:"—",cat:"Diuréticos/AntiHTA"},
+// ══ ANTIHIPERTENSIVOS ADICIONALES ══
+{name:"aliskireno",al:["rasilez"],dn:"150-300mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Contraindicado si CCr<30",hd:"Contraindicado",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"alprostadil",al:[],dn:"0.05-0.1 mcg/kg",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+{name:"diazoxido",al:[],dn:"1-3 mg/kg inicio",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"hidralazina",al:["apresolina"],dn:"12.5-50mg/6h",met:"I",r1:"Cada 6h",r2:"Cada 8h",r3:"Cada 8-16h",hd:"Cada 8-16h",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"minoxidil",al:["loniten"],dn:"5-100mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"nitroprusiato",al:[],dn:"0.5-1.5 mcg/kg/min",met:"D",r1:"100%",r2:"Evitar (acumulación de tiocianato)",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Diuréticos/AntiHTA"},
+{name:"sacubitrilo-valsartan",al:["entresto"],dn:"24/26 a 97/103mg/12h",met:"D",r1:"100%",r2:"CCr<30: Dosis inicial 24/26mg",r3:"24/26mg",hd:"No recomendado",hv:"—",cat:"Diuréticos/AntiHTA"},
+// ══ CARDIOVASCULARES (Antiarrítmicos, inotrópicos, otros) ══
+{name:"amiodarona",al:["trangorex"],dn:"200mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+{name:"digoxina",al:["digoxin"],dn:"0.125-0.25mg/24h",met:"D e I",r1:"100%",r2:"75-25% o /36h",r3:"25-10% o /48h",hd:"25-10% o /48h",hv:"—",cat:"Cardiovasculares"},
+{name:"disopiramida",al:[],dn:"100mg/6h",met:"I",r1:"100mg/6h",r2:"100mg/8-12h",r3:"100mg/24h",hd:"100mg/24h",hv:"—",cat:"Cardiovasculares"},
+{name:"dobutamina",al:[],dn:"2.5-10 mcg/kg/min",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+{name:"dopamina",al:[],dn:"5-20 mcg/kg/min",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+{name:"flecainida",al:["apocard"],dn:"50-150mg/12h",met:"D",r1:"100%",r2:"CCr<35: 50% dosis inicial",r3:"50mg/12h",hd:"50mg/12h",hv:"—",cat:"Cardiovasculares"},
+{name:"hidroquinidina",al:["quinidina"],dn:"300-600mg/12h",met:"D",r1:"100%",r2:"100%",r3:"75%",hd:"Dosis postdiálisis",hv:"—",cat:"Cardiovasculares"},
+{name:"ivabradina",al:["procoralan"],dn:"5-7.5mg/12h",met:"D",r1:"100%",r2:"100%",r3:"CCr<15: Precaución",hd:"Precaución",hv:"—",cat:"Cardiovasculares"},
+{name:"milrinona",al:[],dn:"50 mcg/kg inicial",met:"D",r1:"100%",r2:"0.4-0.3 mcg/kg/min",r3:"0.2 mcg/kg/min",hd:"0.2 mcg/kg/min",hv:"—",cat:"Cardiovasculares"},
+{name:"nitroglicerina",al:["solinitrina","cafinitrina"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+{name:"isosorbida",al:["mononitrato","isonutrina"],dn:"20-40mg/8-12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+{name:"propafenona",al:[],dn:"150-300mg/8h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
+// ══ ANTICOAGULANTES Y ANTIAGREGANTES ══
+{name:"acenocumarol",al:["sintrom"],dn:"Variable",met:"No",r1:"Ajustar INR 2-3",r2:"Ajustar INR 2-3",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Hematología/Coagulación"},
+{name:"warfarina",al:["warfarin","aldocumar"],dn:"Variable",met:"No",r1:"Ajustar INR 2-3",r2:"Ajustar INR 2-3",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Hematología/Coagulación"},
+{name:"apixaban",al:["eliquis"],dn:"5mg/12h",met:"D",r1:"5mg/12h",r2:"5mg/12h",r3:"Evitar si CCr<15",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
+{name:"dabigatran",al:["pradaxa"],dn:"150mg/12h",met:"D",r1:"150mg/12h",r2:"CCr 50-30: 110mg/12h",r3:"Contraindicado si CCr<30",hd:"Contraindicado",hv:"—",cat:"Hematología/Coagulación"},
+{name:"edoxaban",al:["lixiana"],dn:"60mg/24h",met:"D",r1:"60mg/24h",r2:"60mg/24h",r3:"60mg/24h; Evitar si CCr<15",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
+{name:"rivaroxaban",al:["xarelto"],dn:"20mg/24h",met:"D",r1:"20mg/24h",r2:"15mg/24h",r3:"15mg/24h; Evitar si CCr<15",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
+{name:"cangrelor",al:[],dn:"30 mcg/kg",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Hematología/Coagulación"},
+{name:"clopidogrel",al:["plavix"],dn:"75mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100% (Precaución)",hd:"100%",hv:"—",cat:"Hematología/Coagulación"},
+{name:"prasugrel",al:["efient"],dn:"10mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100% (Precaución)",hd:"100%",hv:"—",cat:"Hematología/Coagulación"},
+{name:"ticagrelor",al:["brilique"],dn:"90mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Hematología/Coagulación"},
+{name:"treprostinilo",al:[],dn:"0.625-1.25 ng/kg",met:"D",r1:"100%",r2:"Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Hematología/Coagulación"},
+{name:"acido acetilsalicilico",al:["aspirina","aas","adiro"],dn:"100-300mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Evitar (riesgo de sangrado en uremia)",hd:"Evitar dosis altas",hv:"—",cat:"Hematología/Coagulación"},
+{name:"enoxaparina",al:["clexane"],dn:"1mg/kg/12h (terapéutica)",met:"D",r1:"100%",r2:"CCr<30: 1mg/kg/24h (terapéutica); Profilaxis: 20mg/24h",r3:"Evitar o monitorizar Anti-Xa",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
+{name:"bemiparina",al:["hibor"],dn:"Variable",met:"D",r1:"100%",r2:"Profilaxis: 100%; Terapéutica: Precaución si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
+{name:"dalteparina",al:["fragmin"],dn:"Variable",met:"D",r1:"100%",r2:"Monitorizar Anti-Xa si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
+{name:"fondaparinux",al:["arixtra"],dn:"2.5mg/24h",met:"D",r1:"100%",r2:"CCr 50-20: Precaución; CCr<20: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Hematología/Coagulación"},
+// ══ ENDOCRINOS Y ANTIDIABÉTICOS ══
+{name:"metformina",al:["metformin","dianben"],dn:"500-850mg/12h",met:"D",r1:"100% (FG≥45: usar con precaución; reducir si FG 45-60)",r2:"FG 30-44: reducir dosis al 25-50%; FG<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
+{name:"glibenclamida",al:["daonil"],dn:"2.5-15mg/día",met:"D",r1:"Precaución",r2:"Precaución; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
+{name:"gliclazida",al:["diamicron"],dn:"30-120mg/día",met:"D",r1:"50-100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"glimepirida",al:["amaryl"],dn:"1-4mg/día",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"repaglinida",al:["prandin","novonorm"],dn:"0.5-2mg/8h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"50%",hv:"—",cat:"Endocrinos"},
+{name:"sitagliptina",al:["januvia"],dn:"100mg/24h",met:"D",r1:"100%",r2:"CCr 45-30: 50mg/día; CCr<30: 25mg/día",r3:"25mg/día",hd:"25mg/día",hv:"—",cat:"Endocrinos"},
+{name:"vildagliptina",al:["galvus"],dn:"50mg/12h",met:"D",r1:"100%",r2:"CCr<50: 50mg/día",r3:"50mg/día",hd:"50mg/día",hv:"—",cat:"Endocrinos"},
+{name:"saxagliptina",al:["onglyza"],dn:"5mg/24h",met:"D",r1:"100%",r2:"2.5mg/24h",r3:"2.5mg/24h",hd:"2.5mg/24h postdiálisis",hv:"—",cat:"Endocrinos"},
+{name:"alogliptina",al:["vipidia"],dn:"25mg/24h",met:"D",r1:"100%",r2:"12.5mg/24h si CCr<50; 6.25mg si CCr<30",r3:"6.25mg/24h",hd:"6.25mg/24h",hv:"—",cat:"Endocrinos"},
+{name:"linagliptina",al:["trajenta"],dn:"5mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+{name:"empagliflozina",al:["jardiance"],dn:"10-25mg/24h",met:"D",r1:"100%",r2:"No iniciar si CCr<60; Interrumpir si CCr<45",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"dapagliflozina",al:["forxiga"],dn:"5-10mg/24h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"canagliflozina",al:["invokana"],dn:"100-300mg/24h",met:"D",r1:"100%",r2:"CCr<60: máx 100mg; Interrumpir si CCr<45",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"dulaglutida",al:["trulicity"],dn:"0.75-1.5mg/sem",met:"No",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"liraglutida",al:["victoza","saxenda"],dn:"0.6-3mg/24h",met:"No",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"semaglutida",al:["ozempic","rybelsus"],dn:"0.25-1mg/sem",met:"No",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"pioglitazona",al:["actos"],dn:"15-30mg/día",met:"No",r1:"100%",r2:"100%",r3:"100% (Precaución por retención hídrica)",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
+{name:"insulina",al:["lantus","toujeo","novorapid","humalog","actrapid"],dn:"Variable",met:"D",r1:"100%",r2:"75% (Ajuste individual)",r3:"50% (Ajuste individual)",hd:"Monitorización estrecha",hv:"—",cat:"Endocrinos"},
+{name:"levotiroxina",al:["eutirox","dexnon"],dn:"50-150mcg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+{name:"metimazol",al:["tiamazol","tirodril"],dn:"5-15mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+{name:"desmopresina",al:["minurin","ddavp"],dn:"0.1-0.2mg/8h",met:"D",r1:"100%",r2:"Evitar si CCr<50",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
+{name:"prednisona",al:["dacortin"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+{name:"dexametasona",al:["fortecortin"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Endocrinos"},
+{name:"metilprednisolona",al:["methylprednisolone","urbason","solu-medrol"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+// ══ HIPOLIPEMIANTES ══
+{name:"atorvastatina",al:["atorvastatin","zarator"],dn:"10-80mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+{name:"bezafibrato",al:["bezafibrate"],dn:"200-400mg/24h",met:"D",r1:"100-50%",r2:"50-25%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"ezetimiba",al:["ezetrol"],dn:"10mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
+{name:"evolocumab",al:["repatha"],dn:"140mg/14 días",met:"No",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Endocrinos"},
+{name:"alirocumab",al:["praluent"],dn:"75-150mg/14 días",met:"No",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Endocrinos"},
+{name:"fenofibrato",al:["secalip"],dn:"145-160mg/24h",met:"D",r1:"100%",r2:"Reducir si CCr<60; Evitar si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"gemfibrozilo",al:["lopid"],dn:"600mg/12h",met:"D",r1:"100%",r2:"900mg/día; Evitar si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"pitavastatina",al:["alipza"],dn:"1-4mg/24h",met:"D",r1:"100%",r2:"1-2mg/24h",r3:"1-2mg/24h",hd:"1-2mg/24h",hv:"—",cat:"Endocrinos"},
+{name:"pravastatina",al:["liplatina"],dn:"10-40mg/24h",met:"D",r1:"100%",r2:"Iniciar con 10mg/día",r3:"Iniciar con 10mg/día",hd:"10mg/día",hv:"—",cat:"Endocrinos"},
+{name:"rosuvastatina",al:["crestor"],dn:"5-20mg/24h",met:"D",r1:"100%",r2:"CCr<30: 10mg/24h",r3:"5mg/24h",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"simvastatina",al:["simvastatin"],dn:"10-40mg/24h",met:"D",r1:"100%",r2:"Precaución >10mg si CCr<30",r3:"Precaución >10mg",hd:"Precaución",hv:"—",cat:"Endocrinos"},
+// ══ DIGESTIVOS ══
+{name:"cimetidina",al:["cimetidine"],dn:"400mg/12h",met:"D e I",r1:"100%",r2:"300mg/12h",r3:"300mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Digestivo"},
+{name:"famotidina",al:["famotidine"],dn:"20-40mg/24h",met:"D",r1:"50%",r2:"25%",r3:"10%",hd:"10%",hv:"—",cat:"Digestivo"},
+{name:"ranitidina",al:["ranitidine"],dn:"150-300mg/24h",met:"D",r1:"75%",r2:"50%",r3:"25%",hd:"25%",hv:"—",cat:"Digestivo"},
+{name:"esomeprazol",al:["nexium"],dn:"20-40mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"lansoprazol",al:["lansoprazole"],dn:"15-30mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"omeprazol",al:["omeprazole"],dn:"20-40mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"pantoprazol",al:["pantoprazole"],dn:"20-40mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"domperidona",al:["motilium"],dn:"10mg/8h",met:"I",r1:"Cada 8h",r2:"Cada 12-24h",r3:"Cada 24h",hd:"Cada 24h",hv:"—",cat:"Digestivo"},
+{name:"metoclopramida",al:["primperan"],dn:"10mg/8h",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Digestivo"},
+{name:"ondansetron",al:["zofran"],dn:"8mg/8-12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"loperamida",al:["fortasec"],dn:"2mg",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"mesalazina",al:["pentasa","claversal"],dn:"1-4g/día",met:"D",r1:"100%",r2:"Precaución, monitorizar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Digestivo"},
+{name:"sulfasalazina",al:["salazopyrina"],dn:"2-4g/día",met:"No",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Digestivo"},
+{name:"acido ursodesoxicolico",al:["ursochol"],dn:"10-15mg/kg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"prucaloprida",al:["resolor"],dn:"2mg/24h",met:"D",r1:"100%",r2:"1mg/24h si CCr<30",r3:"1mg/24h",hd:"Evitar",hv:"—",cat:"Digestivo"},
+{name:"linaclotida",al:["constella"],dn:"290mcg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+{name:"rifaximina",al:["spiraxin"],dn:"400-550mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
+// ══ REUMATOLÓGICOS Y GOTA ══
+{name:"alopurinol",al:["allopurinol","zyloric"],dn:"100-300mg/día",met:"D",r1:"75%",r2:"50%",r3:"25%",hd:"Dosis postdiálisis",hv:"—",cat:"Reumatología"},
+{name:"colchicina",al:["colchicine"],dn:"0.5-1mg/día",met:"D",r1:"100%",r2:"50%; Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
+{name:"febuxostat",al:["adenuric"],dn:"80-120mg/día",met:"D",r1:"100%",r2:"100%",r3:"Precaución. Máx 40mg/día",hd:"Precaución",hv:"—",cat:"Reumatología"},
+{name:"leflunomida",al:["arava"],dn:"10-20mg/día",met:"D",r1:"Evitar",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
+{name:"metotrexato",al:["methotrexate"],dn:"7.5-25mg/semana",met:"D",r1:"50%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
+{name:"hidroxicloroquina",al:["dolquine"],dn:"200-400mg/día",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
+{name:"probenecid",al:[],dn:"500mg/12h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
+// ══ INMUNOSUPRESORES Y BIOLÓGICOS ══
+{name:"azatioprina",al:["imurel"],dn:"1-3mg/kg/día",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Inmunosupresores"},
+{name:"ciclosporina",al:["cyclosporine","sandimmun"],dn:"Variable",met:"No",r1:"100%",r2:"75-50% (monitorizar niveles)",r3:"50% (monitorizar niveles)",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"micofenolato",al:["mycophenolate","cellcept"],dn:"1-1.5g/12h",met:"D",r1:"100%",r2:"100%",r3:"Máx 1g/12h",hd:"Máx 1g/12h",hv:"—",cat:"Inmunosupresores"},
+{name:"tacrolimus",al:["prograf","advagraf"],dn:"Variable",met:"No",r1:"100%",r2:"100% (monitorizar niveles)",r3:"100% (monitorizar niveles)",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"sirolimus",al:["rapamune"],dn:"1-5mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"everolimus",al:["certican"],dn:"0.75-1.5mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"adalimumab",al:["humira"],dn:"40mg/2semanas",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"etanercept",al:["enbrel"],dn:"50mg/semana",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"infliximab",al:["remicade"],dn:"3-5mg/kg",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+{name:"rituximab",al:["mabthera"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Inmunosupresores"},
+// ══ ONCOLÓGICOS E INMUNOMODULADORES ══
+{name:"abemaciclib",al:[],dn:"150mg/12h",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"abiraterona",al:["zytiga"],dn:"1000mg/día",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"abrocitinib",al:[],dn:"100-200mg/día",met:"D",r1:"100%; CCr<60: 50%",r2:"50%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"afatinib",al:[],dn:"40mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"alectinib",al:[],dn:"600mg/12h",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"anastrozol",al:["arimidex"],dn:"1mg/día",met:"No",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"anifrolumab",al:[],dn:"300mg/4sem",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"arsenico trioxido",al:["trisenox"],dn:"0.15 mg/kg/día",met:"No",r1:"Sin datos en IR",r2:"Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"asciminib",al:[],dn:"40mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"atelozimumab",al:["tecentriq"],dn:"1200mg/3 semanas",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"avelumab",al:["bavencio"],dn:"10mg/kg/2 semanas",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"axitinib",al:[],dn:"5mg/12h",met:"D",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"azacitidina",al:["vidaza"],dn:"75mg/m²/día (7d)",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"baricitinib",al:[],dn:"4-2mg/24h",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"benralizumab",al:["fasenra"],dn:"30mg/4 sem",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bertuzumab",al:[],dn:"420-840mg/3 sem",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bevacizumab",al:["avastin"],dn:"5-15 mg/kg",met:"No",r1:"100%",r2:"Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bexaroteno",al:[],dn:"300mg/m²/día",met:"D",r1:"100%",r2:"Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bicalutamida",al:["casodex"],dn:"50mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"binimetinib",al:[],dn:"45mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bleomicina",al:["bleomycin"],dn:"10-20 UI/m2",met:"D",r1:"100%",r2:"75%",r3:"75%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bortezomib",al:["velcade"],dn:"1.3 mg/m2",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"bosutinib",al:["bosulif"],dn:"500mg/24h",met:"D",r1:"100%",r2:"400mg/24h",r3:"300mg/24h",hd:"300mg/24h",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"brentuximab",al:["adcetris"],dn:"1.2mg/kg variable",met:"D",r1:"100%",r2:"1.2mg/kg (Precaución)",r3:"1.2mg/kg (Precaución)",hd:"1.2mg/kg (Precaución)",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"brodalumab",al:[],dn:"210mg/semanal",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"busulfan",al:[],dn:"0.8mg/6h x4d",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"cabazitaxel",al:["jevtana"],dn:"25 mg/m2",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"cabozantinib",al:[],dn:"60mg/24h",met:"D",r1:"Precaución",r2:"Precaución",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"canakinumab",al:[],dn:"150mg dosis única",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"capecitabina",al:["xeloda"],dn:"1250mg/m2/12h",met:"D",r1:"100-75%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"carboplatino",al:["carboplatin"],dn:"Calvert formula",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"carmustina",al:[],dn:"150-200mg/m²",met:"D",r1:"100%",r2:"100%",r3:"50-25%",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ceritinib",al:[],dn:"450mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"cetuximab",al:["erbitux"],dn:"400 mg/m2 carga",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ciclofosfamida",al:["cyclophosphamide"],dn:"50-200mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"cisplatino",al:["cisplatin"],dn:"50-100mg/m2",met:"D",r1:"100-75%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"cladribina",al:[],dn:"0.1mg/kg/día",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"clorambucil",al:[],dn:"0.1-0.2mg/kg/día",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"cobimetinib",al:[],dn:"60mg/24h",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"crizotinib",al:["xalkori"],dn:"250mg/12h",met:"D",r1:"100%",r2:"250mg/24h si CCr<30",r3:"250mg/24h",hd:"250mg/24h",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"dabrafenib",al:["tafinlar"],dn:"150mg/12h",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"daratumumab",al:["darzalex"],dn:"16 mg/kg",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"dasatinib",al:["sprycel"],dn:"100mg/24h",met:"No",r1:"100%",r2:"Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"daunorubicina",al:[],dn:"60-45mg/m²",met:"D",r1:"75-50%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"denosumab",al:["prolia","xgeva"],dn:"60-120mg",met:"No",r1:"100%",r2:"100% (Controlar hipocalcemia)",r3:"100% (Riesgo alto hipocalcemia)",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"deucravacitinib",al:[],dn:"6mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"dimetilfumarato",al:[],dn:"120-240mg/12h",met:"D",r1:"100%",r2:"Precaución; No <30ml/min",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"docetaxel",al:["taxotere"],dn:"75-100 mg/m2",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"dostarlimab",al:[],dn:"500-1000mg variable",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"doxorubicina",al:["adriamicina"],dn:"50-60mg/m²",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"durvalumab",al:["imfinzi"],dn:"10 mg/kg/2 sem",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"eculizumab",al:[],dn:"600-900mg variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"elotuzumab",al:[],dn:"10mg/kg/semanal",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"encorafenib",al:[],dn:"450mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"enzalutamida",al:[],dn:"160mg/día",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"epirubicina",al:[],dn:"60-90mg/m²",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"eribulina",al:[],dn:"1.23mg/m² variable",met:"D",r1:"100%",r2:"Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"erlotinib",al:["tarceva"],dn:"150mg/24h",met:"D",r1:"Precaución",r2:"Precaución",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"etopósido",al:["etoposide"],dn:"50-100mg/m2",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"exemestano",al:[],dn:"25mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"fedratinib",al:[],dn:"400mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"fingolimod",al:[],dn:"0.5mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"fludarabina",al:["fludara"],dn:"25-100mg/24h",met:"D",r1:"100%; CCr<70: 70%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"fluorouracilo",al:["5-fu"],dn:"12-15mg/kg",met:"No",r1:"100%",r2:"100%",r3:"75-50%",hd:"75-50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"flutamide",al:[],dn:"250mg/8h",met:"No",r1:"100%",r2:"100%",r3:"No",hd:"No",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"fulvestrant",al:[],dn:"500mg/mes",met:"D",r1:"100%",r2:"100-75%",r3:"75%",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"gefitinib",al:["iressa"],dn:"250mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"glofitamab",al:[],dn:"2.5-30mg iv",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"guselkumab",al:[],dn:"100mg variable",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"hidroxiurea",al:["hidroxicarbamida","hydroxyurea"],dn:"5-60mg/kg/día",met:"D",r1:"100%; CCr<60: 7.5mg/kg",r2:"7.5mg/kg",r3:"7.5mg/kg",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ibrutinib",al:["imbruvica"],dn:"420-560mg/24h",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"idarubicina",al:[],dn:"12mg/m²/día",met:"D",r1:"100-75%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"idelalisib",al:[],dn:"150mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ifosfamida",al:[],dn:"20-80mg/kg/día",met:"D",r1:"100-75%",r2:"75-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"imatinib",al:["glivec"],dn:"400mg/día",met:"D",r1:"100%",r2:"400mg/24h",r3:"400mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ipilimumab",al:["yervoy"],dn:"3 mg/kg/3 sem",met:"No",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"irinotecan",al:[],dn:"350mg/m²",met:"D",r1:"100-75%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ivacaftor",al:[],dn:"150mg/12h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ixekizumab",al:[],dn:"160mg/2 sem",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"lapatinib",al:[],dn:"1250mg/24h",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"lenalidomida",al:["revlimid"],dn:"25mg/día",met:"D",r1:"100%",r2:"10-7.5mg/día",r3:"7.5-5mg/día",hd:"Extra postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"lenvatinib",al:[],dn:"24mg (tiroides)",met:"D",r1:"100%",r2:"100%",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"loncastuximab",al:[],dn:"0.15-0.075mg/kg",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"melfalan",al:[],dn:"8-30mg/m²",met:"D",r1:"100%",r2:"75%",r3:"50%",hd:"75%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"mepolizumab",al:[],dn:"100mg/4 sem",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"mercaptopurina",al:[],dn:"1-2.5mg/kg/día",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"midostaurina",al:[],dn:"50-100mg/12h",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"mitoxantrona",al:[],dn:"12-14mg/m²",met:"D",r1:"75-50%",r2:"75-50%",r3:"50%",hd:"50%",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"olaparib",al:[],dn:"400mg/12h",met:"D",r1:"100%",r2:"300mg/12h",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"oxaliplatino",al:[],dn:"85mg/m²",met:"D",r1:"100%",r2:"100%",r3:"Evitar",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"pemetrexed",al:[],dn:"500mg/m²",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"pentoxifilina",al:["pentoxifylline"],dn:"600mg/12h",met:"D",r1:"100-75%",r2:"50-30%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"pomalidomida",al:[],dn:"4mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"ribociclib",al:[],dn:"600mg/24h",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"sildenafilo",al:["viagra"],dn:"50-100mg",met:"D",r1:"100%",r2:"100%; CCr<30: 25mg",r3:"25mg",hd:"25mg",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"sugammadex",al:["bridion"],dn:"2-16mg/kg",met:"No",r1:"100%",r2:"100%; CCr<30: No recomendado",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"tofacitinib",al:[],dn:"5-10mg/12h",met:"D",r1:"100%",r2:"100%",r3:"5-10mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"topotecan",al:[],dn:"1.5mg/m²/día",met:"D",r1:"75%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"trifluridina-tipiracilo",al:[],dn:"35mg/m² x2/día",met:"D",r1:"100%",r2:"100%",r3:"15-20mg/m²",hd:"No recomendado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"venetoclax",al:[],dn:"400mg/24h",met:"D",r1:"100%",r2:"100% (Precaución)",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"vericiguat",al:["quviviq"],dn:"10mg/día",met:"No",r1:"100%",r2:"100%; CCr<15: No recomendado",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"zanubrutinib",al:[],dn:"320mg/día",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
+// ══ UROLOGÍA Y GINECOLOGÍA ══
+{name:"tamsulosina",al:["omnic"],dn:"0.4mg/24h",met:"D",r1:"100%",r2:"Precaución si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Urología/Ginecología"},
+{name:"silodosina",al:["silodyx","urorec"],dn:"8mg/24h",met:"D",r1:"100%",r2:"CCr 50-30: 4mg/24h; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Urología/Ginecología"},
+{name:"dutasterida",al:["avidart"],dn:"0.5mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Urología/Ginecología"},
+{name:"finasterida",al:["proscar","propecia"],dn:"5mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Urología/Ginecología"},
+{name:"tadalafilo",al:["cialis"],dn:"10-20mg a demanda; 5mg/24h",met:"D",r1:"100%",r2:"50-25%",r3:"25% o Máx 5mg/48h",hd:"Máx 5mg",hv:"—",cat:"Urología/Ginecología"},
+{name:"vardenafilo",al:["levitra"],dn:"10-20mg",met:"D",r1:"100%",r2:"75-50%",r3:"50%",hd:"No recomendado",hv:"—",cat:"Urología/Ginecología"},
+{name:"mirabegron",al:["betmiga"],dn:"50mg/24h",met:"D",r1:"100%",r2:"25mg/24h si CCr<30",r3:"25mg/24h",hd:"No recomendado",hv:"—",cat:"Urología/Ginecología"},
+{name:"solifenacina",al:["vesicare"],dn:"5-10mg/24h",met:"D",r1:"100%",r2:"Máx 5mg/24h si CCr<30",r3:"Máx 5mg/24h",hd:"5mg/24h",hv:"—",cat:"Urología/Ginecología"},
+{name:"tolterodina",al:["urotrol"],dn:"2-4mg/día",met:"D",r1:"100%",r2:"1mg/12h si CCr<30",r3:"1mg/12h",hd:"1mg/12h",hv:"—",cat:"Urología/Ginecología"},
+{name:"fesoterodina",al:["toviaz"],dn:"4-8mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: 4mg",r3:"4mg",hd:"4mg",hv:"—",cat:"Urología/Ginecología"},
+{name:"ulipristal",al:["esmya","ellaone"],dn:"30mg (dosis única)",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Urología/Ginecología"},
+// ══ RESPIRATORIO Y ALERGIAS ══
+{name:"bilastina",al:["bilaxten"],dn:"20mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"cetirizina",al:["zyrtec"],dn:"10mg/24h",met:"D",r1:"100%; CCr<60: 50%",r2:"50%; CCr<30: 25%",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"desloratadina",al:["aerius"],dn:"5mg/24h",met:"I",r1:"100%",r2:"5mg cada 48h",r3:"5mg cada 48h",hd:"5mg cada 48h",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"ebastina",al:["ebastel"],dn:"10-20mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"levocetirizina",al:["xyzal"],dn:"5mg/24h",met:"D",r1:"100%",r2:"2.5mg/24h si CCr<50; 2.5mg/48h si CCr<30",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"loratadina",al:["clarityne"],dn:"10mg/24h",met:"I",r1:"100%",r2:"10mg cada 48h si CCr<30",r3:"10mg cada 48h",hd:"10mg cada 48h",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"montelukast",al:["singulair"],dn:"10mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"roflumilast",al:["daxas"],dn:"500mcg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Respiratorio/Alergias"},
+// ══ NEUROLOGÍA ══
+{name:"levodopa-carbidopa",al:["sinemet"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Neurología"},
+{name:"pramipexol",al:["mirapexin"],dn:"0.18-3.15mg/día",met:"D",r1:"100%",r2:"CCr 50-20: 50%; CCr<20: 25%",r3:"25%",hd:"15%",hv:"—",cat:"Neurología"},
+{name:"ropinirol",al:["requip"],dn:"2-24mg/día",met:"D",r1:"100%",r2:"100%",r3:"Evitar si CCr<30",hd:"Evitar",hv:"—",cat:"Neurología"},
+{name:"rotigotina",al:["neupro"],dn:"2-16mg/24h (parche)",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Neurología"},
+{name:"entacapona",al:["comtan"],dn:"200mg/dosis",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Neurología"},
+{name:"selegilina",al:["plurimen"],dn:"5-10mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Neurología"},
+{name:"amantadina neurologica",al:["pk-merz"],dn:"100mg/12-24h",met:"D e I",r1:"100mg/24h",r2:"100mg/48-72h",r3:"100mg/7 días",hd:"100mg/7 días",hv:"—",cat:"Neurología"},
+{name:"riluzol",al:["rilutek"],dn:"50mg/12h",met:"No",r1:"100%",r2:"100%",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Neurología"},
+{name:"tetrabenazina",al:["nitoman"],dn:"12.5-25mg/8h",met:"No",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Neurología"},
+// ══ MISCELÁNEA ADICIONAL ══
+{name:"acido acetohidroxamico",al:["lithostat"],dn:"375-750mg/24h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Miscelánea"},
+{name:"ambroxol",al:[],dn:"60-120mg/día",met:"D",r1:"100%",r2:"Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Miscelánea"},
+{name:"ambrisentan",al:[],dn:"5-10mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Miscelánea"},
+{name:"bosentan",al:[],dn:"62.5-125mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea"},
+{name:"deferasirox",al:["exjade"],dn:"14mg/kg/día",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Miscelánea"},
+{name:"deferoxamina",al:["desferal"],dn:"25-55mg/kg/día",met:"D",r1:"100%",r2:"25-50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Miscelánea"},
+{name:"dupilumab",al:["dupixent"],dn:"Variable",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Miscelánea"},
+{name:"gadoteridol",al:[],dn:"0.1-0.3 mmol/kg",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Miscelánea"},
+{name:"guanfacina",al:[],dn:"1-7mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Miscelánea"},
+{name:"icatibanto",al:["firazyr"],dn:"30mg dosis única",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea"},
+{name:"isotretinoina",al:["roaccutane"],dn:"0.5-1.0mg/kg",met:"D",r1:"100%",r2:"100%; Iniciar 10mg",r3:"Iniciar 10mg",hd:"Iniciar 10mg",hv:"—",cat:"Miscelánea"},
+{name:"lasmiditan",al:[],dn:"50-200mg",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Miscelánea"},
+{name:"lesinurad",al:[],dn:"200mg/24h",met:"D",r1:"100%",r2:"Precaución; CCr<45: Evitar",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Miscelánea"},
+{name:"levosimendan",al:[],dn:"Variable",met:"D",r1:"Precaución",r2:"Precaución; No <30ml/min",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Cardiovasculares"},
+{name:"macitentan",al:[],dn:"10mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Miscelánea"},
+{name:"mavacamten",al:[],dn:"2.5-15mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Cardiovasculares"},
+{name:"migalastat",al:["galafold"],dn:"123mg/48h",met:"D",r1:"100%",r2:"100%",r3:"Evitar si CCr<30",hd:"Evitar",hv:"—",cat:"Miscelánea"},
+{name:"pirfenidona",al:["esbriet"],dn:"2403mg/día",met:"D",r1:"100%",r2:"Precaución; Evitar <30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Respiratorio/Alergias"},
+{name:"ponesimod",al:[],dn:"2-10mg/día",met:"D",r1:"100%",r2:"100%; CCr<30: Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Miscelánea"},
+{name:"riociguat",al:["adempas"],dn:"1-2.5mg/8h",met:"D",r1:"100%",r2:"Precaución; Evitar <30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Cardiovasculares"},
+{name:"risedronato",al:["actonel"],dn:"35mg/sem",met:"D",r1:"100%",r2:"Contraindicado si CCr<30",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Miscelánea"},
+{name:"selexipag",al:[],dn:"200-1600mcg",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Cardiovasculares"},
+{name:"tezacaftor",al:[],dn:"100mg",met:"D",r1:"100%",r2:"100%; CCr<30: Precaución",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Respiratorio/Alergias"},
+// ══ ANTÍDOTOS Y TOXICOLOGÍA ══
+{name:"acetilcisteina",al:["flumil","n-acetilcisteina","nac"],dn:"150 mg/kg infusión",met:"No",r1:"100%",r2:"75%",r3:"75%",hd:"75%",hv:"—",cat:"Antídotos"},
+{name:"carbon activado",al:["carbón activado"],dn:"50-100g",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antídotos"},
+{name:"flumazenilo",al:["flumazenil","anexate"],dn:"0.2-1mg IV",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antídotos"},
+{name:"idarucizumab",al:["praxbind"],dn:"5g (2x2.5g) IV",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antídotos"},
+{name:"protamina",al:["prolamina"],dn:"1mg/100U heparina",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Antídotos"},
+// ══ VITAMINAS Y SUPLEMENTOS ══
+{name:"acido folico",al:["acfol"],dn:"5-10mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100% (Dar post-HD)",hv:"—",cat:"Vitaminas/Minerales"},
+{name:"calcifediol",al:["hidroferol"],dn:"0.266mg/mes",met:"No",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Vitaminas/Minerales"},
+{name:"calcitriol",al:["rocaltrol"],dn:"0.25-0.5mcg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Vitaminas/Minerales"},
+{name:"cianocobalamina",al:["vitamina b12","optovite"],dn:"1000mcg/mes",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Vitaminas/Minerales"},
+{name:"hierro intravenoso",al:["ferinject","venofer"],dn:"100-1000mg",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Vitaminas/Minerales"},
+{name:"tiamina",al:["vitamina b1","benerva"],dn:"100-300mg/día",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Vitaminas/Minerales"},
+// ══ CLOMETIAZOL ══
+{name:"clometiazol",al:["clomethiazole","distraneurine"],dn:"192mg/8h",met:"No",r1:"100%",r2:"100%",r3:"Precaución (sedación)",hd:"100%",hv:"—",cat:"Psicolépticos"},
+// ══ ÁCIDO ZOLEDRÓNICO ══
+{name:"acido zoledronico",al:["zoledronato","zometa","aclasta"],dn:"4mg o 5mg única",met:"D",r1:"100%; CCr 30-39: 3mg",r2:"Evitar si CCr<35",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Reumatología"},
+];
+
+// ════════════════════════════════════════════════════════════════
+// CONSTANTES GLOBALES
+// ════════════════════════════════════════════════════════════════
+
+/** Sentinel para dosis normal sin ajuste */
+const NORMAL_DOSE = { type: 'normal', display: 'Dosis habitual (sin ajuste)' };
+
+/** Sentinel para dato ausente */
+const NO_DATA = { type: 'nodata', display: 'Sin datos / Consulte Ficha Técnica' };
+
+/** Palabras de exclusión clínica */
+const EXCLUSION_WORDS = ['evitar', 'contraindicado', 'no recomendado', 'no usar', 'no dar'];
+
+/** Patrón de dosis numérica clínica */
+const RE_CLINICAL_DOSE = /\d[\d.,]*\s*(mg|g|mcg|µg|ug|ui|u\.i\.|ml|comp|cap|amp|mUI|MUI|%)(?!\w)/i;
+
+// ════════════════════════════════════════════════════════════════
+// SANITIZACIÓN DE LA BASE DE DATOS
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Normaliza un campo de recomendación de la DB:
+ * - Null/vacío/guión → NO_DATA sentinel
+ * - "100%" estricto → NORMAL_DOSE sentinel
+ * - Resto → string limpio (trimmed)
+ */
+function sanitizeField(val) {
+  if (val === null || val === undefined) return NO_DATA;
+  const s = String(val).trim();
+  if (s === '' || s === '—' || s === '-') return NO_DATA;
+  if (s === '100%') return NORMAL_DOSE;
+  return s;
+}
+
+/**
+ * Devuelve la representación de display de un campo sanitizado.
+ */
+function fieldDisplay(val) {
+  if (val && typeof val === 'object') return val.display;
+  return val;
+}
+
+// ════════════════════════════════════════════════════════════════
+// UTILIDADES GENERALES
+// ════════════════════════════════════════════════════════════════
+
+/** Normaliza texto: quita tildes, pasa a minúsculas, colapsa espacios */
+function normalize(t) {
+  return String(t)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+/** Normaliza separadores: guion, barra y doble espacio → espacio simple */
+function normalizeSeparators(t) {
+  return normalize(t)
+    .replace(/[-\/]+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/** Escapa HTML */
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════════════════════════════
+// MOTOR DE BÚSQUEDA TOKEN-BASED CON LÍMITES DE PALABRA (req. 1)
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Construye un RegExp con límites de palabra Unicode para un término.
+ * Trata guion/barra/espacio como equivalentes.
+ * @param {string} term
+ * @returns {RegExp}
+ */
+function buildTermRegex(term) {
+  // Normaliza separadores del término y escapa caracteres especiales de regex
+  const normalized = normalizeSeparators(term)
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')   // escape regex special chars
+    .replace(/ /g, '[\\s\\-\\/]+');              // separadores equivalentes
+  // Usa \b para límites de palabra; fallback con (?<![a-záéíóúüñ]) si \b falla con Unicode
+  return new RegExp(`(?<![a-záéíóúüñ])${normalized}(?![a-záéíóúüñ])`, 'iu');
+}
+
+/**
+ * Motor principal: busca en la línea de texto el fármaco de la DB
+ * con la coincidencia MÁS LARGA (longest match first).
+ *
+ * @param {string} line  - Línea original del usuario
+ * @returns {{ drug, matchedTerm, detectedDose } | null}
+ */
+function findDrugInLine(line) {
+  const lineNorm = normalizeSeparators(line);
+  let best = null;        // { drug, matchedTerm, matchLength }
+
+  for (const drug of DB) {
+    // Todos los términos candidatos: nombre principal + alias
+    const candidates = [drug.name, ...(drug.al || [])];
+
+    for (const term of candidates) {
+      if (!term) continue;
+      const termNorm = normalizeSeparators(term);
+      const rx = buildTermRegex(termNorm);
+      const m = lineNorm.match(rx);
+      if (m && termNorm.length > (best ? best.matchLength : 0)) {
+        best = { drug, matchedTerm: term, matchLength: termNorm.length };
+      }
+    }
+  }
+
+  if (!best) return null;
+
+  // Extraer la dosis prescrita: texto a la derecha del término en la línea normalizada.
+  // IMPORTANTE: se trabaja íntegramente sobre lineNorm para evitar desajustes de índice
+  // que ocurren cuando el término normalizado (guion→espacio) no coincide posicionalmente
+  // con la línea original (p.ej. "amoxicilina-clavulanico" vs "amoxicilina clavulanico").
+  const termRx = buildTermRegex(normalizeSeparators(best.matchedTerm));
+  const mDose  = lineNorm.match(termRx);
+  const detectedDose = mDose
+    ? lineNorm.substring(mDose.index + mDose[0].length).trim()
+    : '';
+
+  return {
+    drug: best.drug,
+    matchedTerm: best.matchedTerm,
+    detectedDose,
+  };
+}
+
+// ════════════════════════════════════════════════════════════════
+// CLASIFICADOR SEMÁNTICO REDISEÑADO (req. 2)
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Clasifica una recomendación en: 'ok' | 'warn' | 'err' | 'unk'
+ *
+ * Lógica booleana:
+ *  • 'unk'  → campo ausente o sin datos
+ *  • 'ok'   → NORMAL_DOSE sentinel, o FG≥50 en modo normal con r1=NORMAL_DOSE
+ *  • 'err'  → contiene palabra de exclusión Y NO contiene dosis numérica clínica
+ *  • 'warn' → contiene palabra de exclusión PERO también una dosis alternativa (contraindicación relativa)
+ *             O el texto difiere de r1 indicando ajuste
+ *  • 'ok'   → FG≥50 en modo normal (regla de seguridad adicional)
+ *
+ * @param {*}      recRaw  - Valor sanitizado (string | NORMAL_DOSE | NO_DATA)
+ * @param {object} drug    - Entrada de la DB
+ * @param {number|null} fgVal
+ * @returns {'ok'|'warn'|'err'|'unk'}
+ */
+function classifyRec(recRaw, drug, fgVal) {
+  // — Dato ausente
+  if (!recRaw || (typeof recRaw === 'object' && recRaw.type === 'nodata')) return 'unk';
+
+  // — Dosis normal sentinela
+  if (typeof recRaw === 'object' && recRaw.type === 'normal') return 'ok';
+
+  const rec = String(recRaw).trim();
+  const recLow = normalize(rec);
+
+  // — Texto equivale a constantes de normalización explícitas
+  const NORMAL_CONSTANTS = ['100%', 'dosis habitual', 'sin ajuste', 'no requiere ajuste'];
+  if (NORMAL_CONSTANTS.some(c => normalize(rec) === normalize(c))) return 'ok';
+
+  // — FG ≥ 50 en modo normal: uso del tramo r1
+  if (MODE === 'normal' && fgVal !== null && fgVal >= 50) return 'ok';
+
+  // — Detección de palabras de exclusión
+  const hasExclusion = EXCLUSION_WORDS.some(w => recLow.includes(normalize(w)));
+
+  if (hasExclusion) {
+    // ¿Hay una dosis clínica numérica alternativa en el mismo string?
+    const hasAltDose = RE_CLINICAL_DOSE.test(rec);
+    // Si hay dosis alternativa → contraindicación relativa → amarillo
+    if (hasAltDose) return 'warn';
+    // Solo exclusión, sin pauta alternativa → rojo
+    return 'err';
+  }
+
+  // — Si hay texto y difiere de r1 → ajuste
+  const r1Raw = sanitizeField(drug.r1);
+  const r1Display = fieldDisplay(r1Raw);
+  if (normalize(rec) !== normalize(String(r1Display))) return 'warn';
+
+  return 'ok';
+}
+
+// ════════════════════════════════════════════════════════════════
+// CÁLCULO DE FG
+// ════════════════════════════════════════════════════════════════
+
+function getBSA(w, h) {
+  if (!w || !h) return null;
+  return Math.sqrt((w * h) / 3600);
+}
+
+function getCKDEPI(age, sex, cr) {
+  if (!age || !sex || !cr || cr <= 0) return null;
+  const kappa = sex === 'F' ? 0.7 : 0.9;
+  const alpha = sex === 'F' ? -0.241 : -0.302;
+  const genderFactor = sex === 'F' ? 1.012 : 1;
+  return Math.round(
+    142 * Math.pow(Math.min(cr/kappa,1), alpha) *
+        Math.pow(Math.max(cr/kappa,1), -1.200) *
+        Math.pow(0.9938, age) * genderFactor
+  );
+}
+
+function getFG() {
+  const manual = parseFloat(document.getElementById('fg_manual').value);
+  if (!isNaN(manual) && manual >= 0) return { val: manual, method: 'Manual', isManual: true };
+
+  if (MODE !== 'normal') return null;
+  const age  = parseFloat(document.getElementById('age').value);
+  const sex  = document.getElementById('sex').value;
+  const w    = parseFloat(document.getElementById('weight').value);
+  let cr     = parseFloat(document.getElementById('creatinine').value);
+  const h    = parseFloat(document.getElementById('height').value);
+  const unit = document.getElementById('cr_unit').value;
+
+  if (!age || !sex || !cr || cr <= 0) return null;
+  if (unit === 'umol') cr = cr / 88.4;
+
+  let pesoUso = w || 70;
+  if (h && w) {
+    const ibw = sex === 'M' ? 50 + 0.91*(h-152.4) : 45.5 + 0.91*(h-152.4);
+    if (w > ibw * 1.3) pesoUso = ibw + 0.4*(w - ibw);
+  }
+  let cg = ((140 - age) * pesoUso) / (72 * cr);
+  if (sex === 'F') cg *= 0.85;
+
+  const epi = getCKDEPI(age, sex, cr);
+  const bsa = getBSA(w, h);
+  return { val: Math.round(cg), epi, bsa, method: 'Cockcroft-Gault' };
+}
+
+// ════════════════════════════════════════════════════════════════
+// ESTADIO ERC KDIGO
+// ════════════════════════════════════════════════════════════════
+
+const ERC_STAGES = [
+  { id:'erc_s1',  min:90,  max:Infinity, label:'G1',  cls:'erc-g1',  desc:'G1 — FG normal o elevado (≥90 ml/min).' },
+  { id:'erc_s2',  min:60,  max:89,       label:'G2',  cls:'erc-g2',  desc:'G2 — Leve reducción del FG (60-89 ml/min).' },
+  { id:'erc_s3a', min:45,  max:59,       label:'G3a', cls:'erc-g3a', desc:'G3a — Reducción leve-moderada (45-59 ml/min).' },
+  { id:'erc_s3b', min:30,  max:44,       label:'G3b', cls:'erc-g3b', desc:'G3b — Reducción moderada-grave (30-44 ml/min).' },
+  { id:'erc_s4',  min:15,  max:29,       label:'G4',  cls:'erc-g4',  desc:'G4 — Reducción grave (15-29 ml/min). Preparar TRS.' },
+  { id:'erc_s5',  min:0,   max:14,       label:'G5',  cls:'erc-g5',  desc:'G5 — Fallo renal (<15 ml/min). Considerar diálisis/trasplante.' },
+];
+
+function updateERCWidget() {
+  const fg   = getFG();
+  const info = document.getElementById('erc_info');
+  ERC_STAGES.forEach(s => document.getElementById(s.id).classList.remove('active'));
+
+  if (MODE === 'hd') {
+    info.className = 'erc-info erc-g5';
+    info.textContent = 'HD — Equivalente G5D (diálisis)';
+    document.getElementById('erc_s5').classList.add('active');
+    return;
+  }
+  if (MODE === 'hfvvc') {
+    info.className = 'erc-info erc-g5';
+    info.textContent = 'HFVVC — Fallo renal agudo/crónico avanzado';
+    document.getElementById('erc_s5').classList.add('active');
+    return;
+  }
+  if (!fg) { info.className = 'erc-info erc-none'; info.textContent = 'Introduce FG para ver estadio'; return; }
+
+  const stage = ERC_STAGES.find(s => fg.val >= s.min && fg.val <= s.max);
+  if (stage) {
+    document.getElementById(stage.id).classList.add('active');
+    info.className = 'erc-info ' + stage.cls;
+    info.textContent = stage.desc;
+  }
+}
+
+function updateFGDisplay() {
+  const disp = document.getElementById('fg_display');
+  const meth = document.getElementById('fg_method');
+  const res  = getFG();
+
+  if (res && res.isManual) {
+    disp.innerHTML = `<div style="color:var(--cyan)">${res.val} ml/min (Manual)</div>`;
+    meth.textContent = '';
+  } else if (MODE === 'normal' && res) {
+    const bsaTxt = res.bsa ? ` | SC: ${res.bsa.toFixed(2)} m²` : '';
+    disp.innerHTML = `<div>CG: ${res.val} ml/min</div><div style="font-size:11px;color:var(--text2)">CKD-EPI: ${res.epi} ml/min${bsaTxt}</div>`;
+    meth.textContent = 'Usando ' + res.method + ' para ajuste';
+  } else {
+    disp.textContent = '—';
+    meth.textContent = '';
+  }
+  updateERCWidget();
+}
+
+// ════════════════════════════════════════════════════════════════
+// MODO DE SITUACIÓN RENAL
+// ════════════════════════════════════════════════════════════════
+
+let MODE = 'normal';
+
+function setMode(m) {
+  MODE = m;
+  ['normal','hd','hfvvc'].forEach(id =>
+    document.getElementById('tab_'+id).classList.toggle('act', id === m)
+  );
+  const bar   = document.getElementById('mode_bar');
+  const fgRow = document.getElementById('fg_row');
+  if (m === 'normal') {
+    bar.className = 'mode-bar mb-normal';
+    bar.textContent = '🫘 Cálculo por filtrado glomerular (FG)';
+    fgRow.style.display = '';
+  } else if (m === 'hd') {
+    bar.className = 'mode-bar mb-hd';
+    bar.textContent = '🩸 Hemodiálisis — recomendación HD';
+    fgRow.style.display = 'none';
+  } else {
+    bar.className = 'mode-bar mb-hfvvc';
+    bar.textContent = '🔄 HFVVC — hemofiltración venovenosa continua';
+    fgRow.style.display = 'none';
+  }
+  updateFGDisplay();
+}
+
+// ════════════════════════════════════════════════════════════════
+// METADATOS DE CLASIFICACIÓN
+// ════════════════════════════════════════════════════════════════
+
+const CLS_META = {
+  ok  : { icon:'✅', status:'✓ Posología Estándar'   },
+  warn: { icon:'⚠️', status:'⚠ Requiere Ajuste'      },
+  err : { icon:'🚫', status:'✕ Contraindicado'       },
+  unk : { icon:'❓', status:'? Sin datos disponibles' },
+};
+
+// ════════════════════════════════════════════════════════════════
+// INFO PANEL
+// ════════════════════════════════════════════════════════════════
+
+function toggleInfo(cardId) {
+  const panel = document.getElementById('info_' + cardId);
+  if (panel) panel.classList.toggle('open');
+}
+
+function buildInfoRows(drug, fgVal, cls, recDisplay, matchedTerm) {
+  let tramoLabel;
+  if (MODE === 'hd')         tramoLabel = 'Hemodiálisis (HD)';
+  else if (MODE === 'hfvvc') tramoLabel = 'Hemofiltración venovenosa continua (HFVVC)';
+  else if (fgVal === null)   tramoLabel = 'FG no calculado';
+  else if (fgVal >= 50)      tramoLabel = `FG ≥ 50 ml/min — función normal/levemente reducida`;
+  else if (fgVal >= 10)      tramoLabel = `FG 10-49 ml/min — función moderadamente reducida`;
+  else                       tramoLabel = `FG < 10 ml/min — función gravemente reducida`;
+
+  const r1Raw = sanitizeField(drug.r1);
+  return [
+    ['Fármaco',                  drug.name.charAt(0).toUpperCase() + drug.name.slice(1)],
+    ['Categoría',                drug.cat],
+    ['Término coincidente',      matchedTerm],
+    ['Dosis de referencia',      drug.dn],
+    ['Situación actual',         MODE === 'normal' && fgVal !== null ? `${fgVal} ml/min` : MODE.toUpperCase()],
+    ['Tramo aplicado',           tramoLabel],
+    ['Rec. función normal (r1)', fieldDisplay(r1Raw)],
+    ['Recomendación aplicada',   recDisplay],
+    ['Resultado',                CLS_META[cls].status],
+    ['Mecanismo eliminación',    drug.met || '—'],
+  ];
+}
+
+// ════════════════════════════════════════════════════════════════
+// FUNCIÓN ANALYZE() — limpia DOM antes de ejecutar (req. 4)
+// ════════════════════════════════════════════════════════════════
+
+function analyze() {
+  const raw   = document.getElementById('drug_input').value;
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (!lines.length) { alert('Escribe al menos un fármaco.'); return; }
+
+  const fg    = getFG();
+  const fgVal = fg ? fg.val : null;
+  const cnt   = { ok:0, warn:0, err:0, unk:0 };
+  let cards   = '';
+
+  // Limpiar DOM antes de insertar — evita nodos duplicados
+  const resultsArea = document.getElementById('results_area');
+  resultsArea.innerHTML = '';
+
+  lines.forEach((line, idx) => {
+    const found = findDrugInLine(line);
+
+    if (!found) {
+      cnt.unk++;
+      cards += `<div class="not-found-card">
+        <div style="font-size:22px">❓</div>
+        <div class="not-found-name">${escHtml(line)}</div>
+        <div style="margin-left:auto"><span class="badge-unk">No encontrado</span></div>
+      </div>`;
+      return;
+    }
+
+    const { drug, matchedTerm, detectedDose } = found;
+
+    // Obtener recomendación del tramo correcto
+    let recRaw;
+    if (MODE === 'hd')         recRaw = sanitizeField(drug.hd);
+    else if (MODE === 'hfvvc') recRaw = sanitizeField(drug.hv);
+    else {
+      if (fgVal === null)    recRaw = null;
+      else if (fgVal >= 50)  recRaw = sanitizeField(drug.r1);
+      else if (fgVal >= 10)  recRaw = sanitizeField(drug.r2);
+      else                   recRaw = sanitizeField(drug.r3);
+    }
+
+    const cls        = classifyRec(recRaw, drug, fgVal);
+    cnt[cls]++;
+    const meta       = CLS_META[cls];
+    const recDisplay = fieldDisplay(recRaw) || NO_DATA.display;
+    const cardId     = `card_${idx}`;
+
+    let tramoCtx;
+    if (MODE === 'hd')         tramoCtx = 'HD';
+    else if (MODE === 'hfvvc') tramoCtx = 'HFVVC';
+    else if (fgVal !== null)   tramoCtx = `FG ${fgVal} ml/min`;
+    else                       tramoCtx = 'FG no calculado';
+
+    const infoRows = buildInfoRows(drug, fgVal, cls, recDisplay, matchedTerm);
+    const infoHtml = '<dl>' +
+      infoRows.map(([k,v]) => `<dt>${escHtml(k)}</dt><dd>${escHtml(v)}</dd>`).join('') +
+      '</dl>';
+
+    // data-match almacena el término exacto disparador para auditoría (req. 4)
+    cards += `
+    <div class="drug-card card-${cls}"
+         data-drug="${escHtml(drug.name)}"
+         data-match="${escHtml(matchedTerm)}">
+      <div class="drug-card-header">
+        <div class="drug-header-left">
+          <div class="drug-name">💊 ${escHtml(drug.name.toUpperCase())}</div>
+          <div class="drug-cat">${escHtml(drug.cat)}</div>
+        </div>
+        <div class="drug-header-right">
+          <span class="match-badge" title="Término disparador: ${escHtml(matchedTerm)}">⚡ ${escHtml(matchedTerm)}</span>
+          <button class="btn-info" onclick="toggleInfo('${cardId}')" title="Ver detalle de la recomendación">ⓘ</button>
+        </div>
+      </div>
+      <div class="drug-card-body">
+        <div class="dose-row">
+          ${detectedDose ? `<div class="info-block"><div class="info-block-label">📌 Prescrito</div><div class="dose-value">${escHtml(detectedDose)}</div></div>` : ''}
+          <div class="info-block"><div class="info-block-label">📖 Referencia</div><div class="ref-value">${escHtml(drug.dn)}</div></div>
+        </div>
+        <div class="ajuste-block ajuste-${cls}">
+          <div class="ajuste-icon">${meta.icon}</div>
+          <div class="ajuste-content">
+            <div class="ajuste-label">${escHtml(tramoCtx)}</div>
+            <div class="ajuste-status">${meta.status}</div>
+            <div class="ajuste-rec">${escHtml(recDisplay)}</div>
+          </div>
+        </div>
+        <div class="info-panel" id="info_${cardId}">
+          <div class="info-panel-title">ⓘ Origen de la recomendación</div>
+          ${infoHtml}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  const pillHtml = fgVal !== null
+    ? `<span class="fg-pill ${MODE}">${MODE==='normal'?'🫘 FG: '+fgVal+' ml/min':MODE==='hd'?'🩸 HD':'🔄 HFVVC'}</span>`
+    : (MODE !== 'normal' ? `<span class="fg-pill ${MODE}">${MODE==='hd'?'🩸 HD':'🔄 HFVVC'}</span>` : '');
+
+  resultsArea.innerHTML = `
+    <div class="results-header">
+      <div class="results-title">Resultados (${lines.length})</div>
+      <div style="display:flex;gap:8px">${pillHtml}<button class="btn btn-success" onclick="copySummary()">📋 Copiar Resumen</button></div>
+    </div>
+    <div class="summary-bar">
+      ${cnt.ok   ? `<div class="sum-item sum-ok">✓ ${cnt.ok} estándar</div>`         : ''}
+      ${cnt.warn ? `<div class="sum-item sum-warn">⚠ ${cnt.warn} ajuste</div>`       : ''}
+      ${cnt.err  ? `<div class="sum-item sum-err">✕ ${cnt.err} contraindicado</div>` : ''}
+      ${cnt.unk  ? `<div class="sum-item sum-unk">? ${cnt.unk} sin datos</div>`      : ''}
+    </div>
+    ${cards}`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// COPIAR RESUMEN
+// ════════════════════════════════════════════════════════════════
+
+function copySummary() {
+  const fg = getFG();
+  let text = `RESUMEN AJUSTE RENAL (${new Date().toLocaleDateString()})\n`;
+  text += `Situación: ${MODE === 'normal' ? 'FG ' + (fg ? fg.val : '?') + ' ml/min' : MODE.toUpperCase()}\n`;
+  text += `-------------------------------------------\n`;
+  document.querySelectorAll('.drug-card').forEach(card => {
+    const name   = card.querySelector('.drug-name').textContent.replace('💊 ', '');
+    const rec    = card.querySelector('.ajuste-rec').textContent;
+    const status = card.querySelector('.ajuste-status').textContent;
+    const match  = card.dataset.match || '';
+    text += `${name} [${match}]: ${status} → ${rec}\n`;
+  });
+  navigator.clipboard.writeText(text).then(() => alert('Resumen copiado al portapapeles.'));
+}
+
+// ════════════════════════════════════════════════════════════════
+// SCANNER DE PRESCRIPCIÓN — VERSIÓN REFACTORIZADA (req. 3 scanner)
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Stop-words clínicas: términos que aparecen junto al principio activo
+ * en los sistemas de prescripción pero no forman parte del nombre del fármaco.
+ */
+const SCAN_STOP_WORDS = [
+  'comprimido','comprimidos','comp','sobre','sobres','capsulas','capsula',
+  'cap','ampolla','ampollas','amp','vial','viales','via','oral','intravenoso',
+  'iv','im','sc','sublingual','sl','topico','patch','parche','parches',
+  'administrar','tomar','usar','aplicar','solución','solucion','suspension',
+  'jarabe','pomada','crema','gel','polvo','efervescente','retard','lp',
+  'liberacion','prolongada','inmediata','bucodispersable','odt',
+  'sodica','sodico','potasica','potasico','calcica','calcico',
+  'clorhidrato','sulfato','fosfato','lactato','gluconato','maleato','mesilato',
+];
+
+/**
+ * Mapa de frecuencias ampliado con soporte para lenguaje natural
+ * e insensible a mayúsculas/minúsculas.
+ */
+const FREQ_MAP = [
+  // Patrón SOS / a demanda
+  { rx: /\b(sos|si\s*precisa|a\s*demanda|si\s*necesario|prn)\b/i,                   label: '(si precisa)' },
+  // Cada 6h
+  { rx: /\b(cada\s*6\s*h(oras?)?|c\/?6\s*h|q\.?6\s*h|6h|1-1-1-1)\b/i,             label: '/6h' },
+  // Cada 8h
+  { rx: /\b(cada\s*8\s*h(oras?)?|c\/?8\s*h|q\.?8\s*h|8h|1-1-1|tres\s*veces)\b/i,  label: '/8h' },
+  // Cada 12h
+  { rx: /\b(cada\s*12\s*h(oras?)?|c\/?12\s*h|q\.?12\s*h|12h|1-0-1|dos\s*veces|ma[nñ]ana\s*y\s*noche)\b/i, label: '/12h' },
+  // Cada 24h / una vez al día
+  { rx: /\b(cada\s*24\s*h(oras?)?|c\/?24\s*h|q\.?24\s*h|24h|1-0-0|0-0-1|0-1-0|una\s*vez\s*al\s*d[ií]a|diario|cada\s*ma[nñ]ana|cada\s*noche)\b/i, label: '/24h' },
+  // Cada 48h
+  { rx: /\b(cada\s*48\s*h(oras?)?|c\/?48\s*h|q\.?48\s*h|48h|dias?\s*alternos?)\b/i, label: '/48h' },
+  // Cada 72h
+  { rx: /\b(cada\s*72\s*h(oras?)?|c\/?72\s*h|72h)\b/i,                              label: '/72h' },
+  // Semanal
+  { rx: /\b(semanal(mente)?|una\s*vez\s*a\s*la\s*semana|1\s*vez\s*semana)\b/i,      label: '/sem' },
+];
+
+/**
+ * Regex anclado a dosis: detecta magnitud+unidad.
+ * Captura el texto anterior (nombre del fármaco) y posterior (frecuencia).
+ */
+const RE_DOSE_ANCHOR = /(?<!\d)(\d+[.,]?\d*)\s*(mg|mcg|ug|µg|g|ui|u\.i\.|ml|comp|cap|amp|via|unid)\b/i;
+
+/**
+ * Sanitiza el nombre del principio activo extraído:
+ * - Elimina IDs del sistema (≥5 dígitos consecutivos)
+ * - Elimina prefijos numéricos tipo "3 -"
+ * - Elimina caracteres especiales de inicio (* - > #)
+ * - Elimina stop-words clínicas
+ * - Capitaliza la primera letra
+ *
+ * @param {string} raw
+ * @returns {string}
+ */
+function sanitizeDrugName(raw) {
+  let s = raw
+    .replace(/\b\d{5,}\b/g, '')              // IDs numéricos largos
+    .replace(/^\s*\d+\s*[-–.]+\s*/g, '')     // prefijo "3 -" o "12."
+    .replace(/^[\s*\->#+]+/, '')              // caracteres especiales al inicio
+    .replace(/\(.*?\)/g, '')                 // paréntesis y su contenido
+    .replace(/\b(iv|sc|im|vo|sl)\b/gi, '')   // vías de administración
+    .trim();
+
+  // Eliminar stop-words (solo palabras completas, no subcadenas)
+  const stopRx = new RegExp(
+    `\\b(${SCAN_STOP_WORDS.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`,
+    'gi'
+  );
+  s = s.replace(stopRx, '').replace(/\s{2,}/g, ' ').trim();
+
+  // Capitalizar primera letra
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+/**
+ * Extrae y parsea frecuencia del texto dado, devolviendo
+ * la etiqueta y la cadena original limpiada.
+ *
+ * @param {string} text
+ * @returns {{ freq: string, cleaned: string }}
+ */
+function extractFrequency(text) {
+  for (const entry of FREQ_MAP) {
+    if (entry.rx.test(text)) {
+      return {
+        freq: entry.label,
+        cleaned: text.replace(entry.rx, '').trim(),
+      };
+    }
+  }
+  return { freq: '', cleaned: text };
+}
+
+/**
+ * Función principal del escáner — versión refactorizada.
+ *
+ * Estrategia de extracción por ancla de dosis:
+ *  1. Localizar la primera dosis numérica+unidad en la línea.
+ *  2. Todo lo que está a la IZQUIERDA es el nombre candidato.
+ *  3. Todo lo que está a la DERECHA se analiza para la frecuencia.
+ *  4. Si no hay ancla de dosis, intentar extraer solo el nombre y frecuencia.
+ *
+ * @param {string} raw - Texto completo pegado por el usuario
+ * @returns {string[]} - Array de líneas formateadas limpias
+ */
+function scanPrescriptionText(raw) {
+  const inputLines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+  const results    = [];
+
+  for (const line of inputLines) {
+    const doseMatch = line.match(RE_DOSE_ANCHOR);
+
+    let namePart  = '';
+    let doseStr   = '';
+    let afterDose = '';
+
+    if (doseMatch) {
+      // Estrategia principal: ancla de dosis
+      const doseIdx = doseMatch.index;
+      namePart  = line.substring(0, doseIdx);
+      doseStr   = doseMatch[0];
+      afterDose = line.substring(doseIdx + doseMatch[0].length);
+    } else {
+      // Fallback: tratar la línea entera como nombre
+      namePart  = line;
+      doseStr   = '';
+      afterDose = '';
+    }
+
+    // Extraer frecuencia del texto posterior a la dosis
+    const { freq, cleaned: afterCleaned } = extractFrequency(
+      (afterDose + ' ' + (doseMatch ? '' : namePart)).trim()
+    );
+
+    // Si la frecuencia estaba en el nombre (ej: "Paracetamol 1g 1-1-1"), re-extrae
+    const { freq: freqInName, cleaned: nameAfterFreq } = extractFrequency(namePart);
+    const finalFreq = freq || freqInName;
+    const finalName = sanitizeDrugName(freq ? namePart : nameAfterFreq);
+
+    if (!finalName) continue;
+
+    // Construir línea de salida: Nombre [dosis][frecuencia]
+    const parts = [finalName];
+    if (doseStr) parts.push(doseStr.replace(/\s+/g, ''));  // compactar dosis
+    if (finalFreq) parts.push(finalFreq);
+
+    const outputLine = parts.join(' ').trim();
+    if (outputLine && !results.includes(outputLine)) {
+      results.push(outputLine);
+    }
+  }
+
+  return results;
+}
+
+// ════════════════════════════════════════════════════════════════
+// MODAL DEL ESCÁNER — UI mejorada
+// ════════════════════════════════════════════════════════════════
+
+function openScanModal() {
+  document.getElementById('scan_input').value   = '';
+  document.getElementById('scan_preview').textContent = '—';
+  document.getElementById('scan_modal').classList.remove('hidden');
+  document.getElementById('scan_input').focus();
+}
+
+function closeScanModal() {
+  document.getElementById('scan_modal').classList.add('hidden');
+}
+
+/**
+ * Inserta los fármacos escaneados en el textarea principal,
+ * uno por línea, capitalizados, sin duplicados.
+ */
+function applyScan() {
+  const lines = scanPrescriptionText(document.getElementById('scan_input').value);
+  if (!lines.length) { alert('No se detectaron fármacos válidos.'); return; }
+
+  const ta      = document.getElementById('drug_input');
+  const existing = ta.value.trim()
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  // Deduplicar contra líneas ya presentes (comparación normalizada)
+  const newLines = lines.filter(l =>
+    !existing.some(e => normalize(e) === normalize(l))
+  );
+
+  if (!newLines.length) {
+    alert('Todos los fármacos detectados ya están en la lista.');
+    closeScanModal();
+    return;
+  }
+
+  ta.value = [...existing, ...newLines].join('\n');
+  closeScanModal();
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+}
+
+// ════════════════════════════════════════════════════════════════
+// EJEMPLO Y RESET
+// ════════════════════════════════════════════════════════════════
+
+function loadExample() {
+  document.getElementById('age').value        = 72;
+  document.getElementById('sex').value        = 'M';
+  document.getElementById('weight').value     = 80;
+  document.getElementById('height').value     = 174;
+  document.getElementById('creatinine').value = 2.1;
+  document.getElementById('drug_input').value =
+    'Metformina 850mg/12h\nAmikacina 500mg/24h\nAmoxicilina-clavulanico 500mg/8h\nOmeprazol 20mg/24h\nEnoxaparina 60mg/24h\nAlogliptina 25mg/24h\nMirabegron 50mg/24h\nDabigatran 150mg/12h';
+  setMode('normal');
+  updateFGDisplay();
+  analyze();
+}
+
+function clearAll() {
+  ['age','weight','height','creatinine','drug_input','fg_manual']
+    .forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('sex').value = '';
+  setMode('normal');
+  document.getElementById('results_area').innerHTML =
+    '<div class="empty-state"><div class="empty-icon">🩺</div><p>Datos limpios.</p></div>';
+  updateERCWidget();
+}
+
+// ════════════════════════════════════════════════════════════════
+// AUTOCOMPLETADO
+// ════════════════════════════════════════════════════════════════
+
+(function () {
+  const input = document.getElementById('ac_input');
+  const list  = document.getElementById('ac_list');
+  let selIdx = -1, matches = [];
+
+  function _esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  input.addEventListener('input', function () {
+    const q = normalizeSeparators(this.value);
+    list.innerHTML = ''; selIdx = -1;
+    if (!q) { list.classList.remove('open'); return; }
+
+    // Busca en nombre y alias usando normalizeSeparators para equivalencia
+    matches = DB.filter(d =>
+      [d.name, ...(d.al || [])].some(n => normalizeSeparators(n).includes(q))
+    ).slice(0, 14);
+
+    if (!matches.length) { list.classList.remove('open'); return; }
+
+    matches.forEach((d, i) => {
+      const item = document.createElement('div');
+      item.className = 'autocomplete-item';
+      item.innerHTML = `<span>${_esc(d.name)}</span><span class="ac-cat">${_esc(d.cat)}</span>`;
+      item.addEventListener('mousedown', e => { e.preventDefault(); addDrug(d.name); });
+      list.appendChild(item);
+    });
+    list.classList.add('open');
+  });
+
+  input.addEventListener('keydown', function (e) {
+    const items = list.querySelectorAll('.autocomplete-item');
+    if (e.key === 'ArrowDown') { e.preventDefault(); selIdx = Math.min(selIdx+1, items.length-1); highlight(items); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); selIdx = Math.max(selIdx-1, 0); highlight(items); }
+    else if (e.key === 'Enter' && selIdx >= 0) { e.preventDefault(); addDrug(matches[selIdx].name); }
+    else if (e.key === 'Escape') { list.classList.remove('open'); }
+  });
+
+  input.addEventListener('blur', () => setTimeout(() => list.classList.remove('open'), 150));
+
+  function highlight(items) {
+    items.forEach((it, i) => it.classList.toggle('selected', i === selIdx));
+  }
+
+  function addDrug(name) {
+    const ta  = document.getElementById('drug_input');
+    const cur = ta.value.trim();
+    ta.value  = cur ? cur + '\n' + name + ' ' : name + ' ';
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    input.value = ''; list.classList.remove('open'); selIdx = -1; matches = [];
+  }
+})();
+
+// ════════════════════════════════════════════════════════════════
+// INICIALIZACIÓN
+// ════════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Live preview del escáner
+  document.getElementById('scan_input').addEventListener('input', function () {
+    const lines = scanPrescriptionText(this.value);
+    document.getElementById('scan_preview').textContent =
+      lines.length ? lines.join('\n') : '—';
+  });
+  // Cierre del modal al clicar fuera
+  document.getElementById('scan_modal').addEventListener('click', function (e) {
+    if (e.target === this) closeScanModal();
+  });
+});
+
+window.onload = () => {
+  ['age','sex','weight','height','creatinine','cr_unit','fg_manual'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateFGDisplay);
+  });
+  updateERCWidget();
+};
+
+// ════════════════════════════════════════════════════════════════
+// DISCLAIMER — lógica de bloqueo/desbloqueo de interfaz
+// ════════════════════════════════════════════════════════════════
+
+/** Activa el botón de aceptación solo cuando el checkbox está marcado */
+function disclaimerCheckChanged() {
+  const cb  = document.getElementById('disclaimer-checkbox');
+  const btn = document.getElementById('disclaimer-accept-btn');
+  btn.disabled = !cb.checked;
+}
+
+/**
+ * Oculta el overlay del disclaimer e inicializa la aplicación.
+ * Solo se puede llamar desde el botón (no desde teclado ni clic externo).
+ */
+/** Acepta el disclaimer, lo guarda en localStorage y cierra el overlay */
+function acceptDisclaimer() {
+  try { localStorage.setItem('disclaimer_accepted', '1'); } catch(e) {}
+  const overlay = document.getElementById('disclaimer-overlay');
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity .35s ease';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    document.getElementById('age').focus();
+  }, 350);
+}
+
+/** Al cargar la página, oculta el disclaimer si ya fue aceptado previamente */
+(function checkDisclaimerStorage() {
+  try {
+    if (localStorage.getItem('disclaimer_accepted') === '1') {
+      const overlay = document.getElementById('disclaimer-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+  } catch(e) {}
+})();
+
+// Bloquear cierre con Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('disclaimer-overlay');
+    if (overlay && overlay.style.display !== 'none') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      // Pequeño shake visual para indicar que no se puede cerrar
+      const box = overlay.querySelector('.disclaimer-box');
+      box.style.transform = 'translateX(-6px)';
+      setTimeout(() => { box.style.transform = 'translateX(6px)'; }, 80);
+      setTimeout(() => { box.style.transform = 'translateX(0)'; box.style.transition = 'transform .15s'; }, 160);
+    }
+  }
+}, true);
+
+// Bloquear clic fuera del modal (el overlay NO cierra al clicar fuera)
+document.getElementById('disclaimer-overlay').addEventListener('click', function(e) {
+  if (e.target === this) {
+    const box = this.querySelector('.disclaimer-box');
+    box.style.transform = 'scale(1.015)';
+    box.style.transition = 'transform .12s ease';
+    setTimeout(() => { box.style.transform = 'scale(1)'; }, 150);
+  }
+});
+
+// ════════════════════════════════════════════════════════════════
+// EXPORTACIÓN A PDF — Informe Clínico Formal
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Habilita/deshabilita el botón de PDF según si hay resultados.
+ * Se llama desde analyze() tras generar cards.
+ */
+function updatePdfButtonState() {
+  const btn   = document.getElementById('pdf-btn');
+  const hasResults = document.querySelectorAll('.drug-card, .not-found-card').length > 0;
+  if (btn) btn.disabled = !hasResults;
+}
+
+/**
+ * Devuelve la clase de badge ERC para el PDF según el valor de FG.
+ */
+function getERCClass(fgVal, mode) {
+  if (mode === 'hd' || mode === 'hfvvc') return 'pdf-erc-hd';
+  if (fgVal === null) return '';
+  if (fgVal >= 90) return 'pdf-erc-g1';
+  if (fgVal >= 60) return 'pdf-erc-g2';
+  if (fgVal >= 45) return 'pdf-erc-g3a';
+  if (fgVal >= 30) return 'pdf-erc-g3b';
+  if (fgVal >= 15) return 'pdf-erc-g4';
+  return 'pdf-erc-g5';
+}
+
+/**
+ * Devuelve el texto del estadio ERC para el PDF.
+ */
+function getERCLabel(fgVal, mode) {
+  if (mode === 'hd')    return 'HD (G5D)';
+  if (mode === 'hfvvc') return 'HFVVC';
+  if (fgVal === null)   return 'No calculado';
+  if (fgVal >= 90) return 'G1 — ≥ 90 ml/min';
+  if (fgVal >= 60) return 'G2 — 60-89 ml/min';
+  if (fgVal >= 45) return 'G3a — 45-59 ml/min';
+  if (fgVal >= 30) return 'G3b — 30-44 ml/min';
+  if (fgVal >= 15) return 'G4 — 15-29 ml/min';
+  return 'G5 — < 15 ml/min';
+}
+
+/**
+ * Escapa HTML para uso seguro en el template del informe.
+ */
+function esc(s) {
+  return String(s || '—')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/**
+ * Lee los datos actuales del paciente desde el DOM.
+ */
+function readPatientData() {
+  return {
+    age      : document.getElementById('age').value        || '—',
+    sex      : document.getElementById('sex').value === 'M' ? 'Masculino' :
+               document.getElementById('sex').value === 'F' ? 'Femenino'  : '—',
+    weight   : document.getElementById('weight').value     || '—',
+    height   : document.getElementById('height').value     || '—',
+    creatinine: document.getElementById('creatinine').value || '—',
+    crUnit   : document.getElementById('cr_unit').value === 'umol' ? 'µmol/L' : 'mg/dL',
+    fgManual : document.getElementById('fg_manual').value  || '',
+  };
+}
+
+/**
+ * Lee los datos de resultados directamente del DOM generado por analyze().
+ * Devuelve un array de objetos { name, matchTerm, prescribed, reference, tramo, status, rec, cls }.
+ */
+function readResultsFromDOM() {
+  const rows = [];
+  document.querySelectorAll('.drug-card').forEach(card => {
+    rows.push({
+      name      : (card.querySelector('.drug-name')?.textContent || '').replace('💊 ','').trim(),
+      matchTerm : card.dataset.match || '—',
+      prescribed: card.querySelector('.dose-value')?.textContent?.trim() || '—',
+      reference : card.querySelector('.ref-value')?.textContent?.trim()  || '—',
+      tramo     : card.querySelector('.ajuste-label')?.textContent?.trim() || '—',
+      status    : card.querySelector('.ajuste-status')?.textContent?.trim() || '—',
+      rec       : card.querySelector('.ajuste-rec')?.textContent?.trim() || '—',
+      cls       : card.classList.contains('card-ok')   ? 'ok'   :
+                  card.classList.contains('card-warn')  ? 'warn' :
+                  card.classList.contains('card-err')   ? 'err'  : 'unk',
+    });
+  });
+  // Incluir también fármacos no encontrados
+  document.querySelectorAll('.not-found-card').forEach(card => {
+    rows.push({
+      name      : card.querySelector('.not-found-name')?.textContent?.trim() || '—',
+      matchTerm : '—',
+      prescribed: '—',
+      reference : '—',
+      tramo     : '—',
+      status    : '? Sin datos',
+      rec       : 'No encontrado en la base de datos',
+      cls       : 'unk',
+    });
+  });
+  return rows;
+}
+
+/**
+ * Genera el HTML del template del informe PDF.
+ */
+
+// ════════════════════════════════════════════════════════════════
+// EXPORTACIÓN A PDF — versión corregida
+// ════════════════════════════════════════════════════════════════
+
+/** Habilita/deshabilita el botón PDF según si hay resultados */
+function updatePdfButtonState() {
+  const btn = document.getElementById('pdf-btn');
+  const has = document.querySelectorAll('.drug-card, .not-found-card').length > 0;
+  if (btn) btn.disabled = !has;
+}
+
+/** Clase ERC para el badge del informe */
+function getERCClass(fgVal, mode) {
+  if (mode === 'hd' || mode === 'hfvvc') return 'pdf-erc-hd';
+  if (fgVal === null) return 'pdf-erc-g1';
+  if (fgVal >= 90) return 'pdf-erc-g1';
+  if (fgVal >= 60) return 'pdf-erc-g2';
+  if (fgVal >= 45) return 'pdf-erc-g3a';
+  if (fgVal >= 30) return 'pdf-erc-g3b';
+  if (fgVal >= 15) return 'pdf-erc-g4';
+  return 'pdf-erc-g5';
+}
+
+/** Etiqueta textual del estadio ERC */
+function getERCLabel(fgVal, mode) {
+  if (mode === 'hd')    return 'HD (G5D)';
+  if (mode === 'hfvvc') return 'HFVVC';
+  if (fgVal === null)   return 'No calculado';
+  if (fgVal >= 90) return 'G1 — ≥90 ml/min';
+  if (fgVal >= 60) return 'G2 — 60-89 ml/min';
+  if (fgVal >= 45) return 'G3a — 45-59 ml/min';
+  if (fgVal >= 30) return 'G3b — 30-44 ml/min';
+  if (fgVal >= 15) return 'G4 — 15-29 ml/min';
+  return 'G5 — <15 ml/min';
+}
+
+/** HTML-escape seguro para el template */
+function esc(s) {
+  return String(s || '—')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/** Lee los datos del paciente desde los inputs del DOM */
+function readPatientData() {
+  return {
+    age       : document.getElementById('age').value        || '—',
+    sex       : document.getElementById('sex').value === 'M' ? 'Masculino'
+              : document.getElementById('sex').value === 'F' ? 'Femenino' : '—',
+    weight    : document.getElementById('weight').value     || '—',
+    height    : document.getElementById('height').value     || '—',
+    creatinine: document.getElementById('creatinine').value || '—',
+    crUnit    : document.getElementById('cr_unit').value === 'umol' ? 'µmol/L' : 'mg/dL',
+  };
+}
+
+/** Lee las drug-cards ya renderizadas por analyze() */
+function readResultsFromDOM() {
+  const rows = [];
+  document.querySelectorAll('.drug-card').forEach(card => {
+    rows.push({
+      name      : (card.querySelector('.drug-name')?.textContent || '').replace('💊 ','').trim(),
+      matchTerm : card.dataset.match || '—',
+      prescribed: card.querySelector('.dose-value')?.textContent?.trim() || '—',
+      tramo     : card.querySelector('.ajuste-label')?.textContent?.trim() || '—',
+      rec       : card.querySelector('.ajuste-rec')?.textContent?.trim()   || '—',
+      status    : card.querySelector('.ajuste-status')?.textContent?.trim()|| '—',
+      cls       : card.classList.contains('card-ok')  ? 'ok'  :
+                  card.classList.contains('card-warn') ? 'warn':
+                  card.classList.contains('card-err')  ? 'err' : 'unk',
+    });
+  });
+  document.querySelectorAll('.not-found-card').forEach(card => {
+    rows.push({
+      name: card.querySelector('.not-found-name')?.textContent?.trim() || '—',
+      matchTerm:'—', prescribed:'—', tramo:'—',
+      rec:'No encontrado en la base de datos',
+      status:'? Sin datos', cls:'unk',
+    });
+  });
+  return rows;
+}
+
+/**
+ * Genera el HTML del informe con todos los estilos INLINE.
+ * Usar estilos inline es imprescindible: html2canvas ignora
+ * hojas de estilo externas y reglas de <style> en ciertos contextos.
+ */
+function buildPDFTemplate(patient, fg, rows) {
+  const fgVal = fg ? fg.val : null;
+  const fgText = fg
+    ? (fg.isManual
+        ? fgVal + ' ml/min (Manual)'
+        : fgVal + ' ml/min (Cockcroft-Gault)  ·  CKD-EPI: ' + fg.epi + ' ml/min')
+    : (MODE !== 'normal' ? MODE.toUpperCase() : 'No calculado');
+  const modeText = MODE === 'hd' ? 'Hemodiálisis (HD)'
+                 : MODE === 'hfvvc' ? 'HFVVC' : 'Filtrado Glomerular';
+  const ercLabel = getERCLabel(fgVal, MODE);
+
+  const now   = new Date();
+  const fecha = now.toLocaleDateString('es-ES', {day:'2-digit',month:'long',year:'numeric'});
+  const hora  = now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'});
+
+  const cnt = {ok:0,warn:0,err:0,unk:0};
+  rows.forEach(r => cnt[r.cls]++);
+  const total = rows.length;
+
+  // Colores de estado ERC (pastel, inline)
+  const ercColors = {
+    'G1 — ≥90 ml/min'      : {bg:'#e6f9ee',color:'#1a6b3a',border:'#aedec2'},
+    'G2 — 60-89 ml/min'    : {bg:'#f0f9e0',color:'#3d6600',border:'#b8dca0'},
+    'G3a — 45-59 ml/min'   : {bg:'#fff9e0',color:'#7a5500',border:'#f0d580'},
+    'G3b — 30-44 ml/min'   : {bg:'#fff3e0',color:'#8a4500',border:'#f0c080'},
+    'G4 — 15-29 ml/min'    : {bg:'#fff0e8',color:'#8a3000',border:'#f0b080'},
+    'G5 — <15 ml/min'      : {bg:'#fde8e8',color:'#8a1a1a',border:'#f0a0a0'},
+    'HD (G5D)'             : {bg:'#f0eaff',color:'#4a1a8a',border:'#c8a0f0'},
+    'HFVVC'                : {bg:'#e8fff0',color:'#006040',border:'#80d0b0'},
+    'No calculado'         : {bg:'#f4f4f4',color:'#555',   border:'#ccc'},
+  };
+  const ec = ercColors[ercLabel] || ercColors['No calculado'];
+
+  // Badge de estado inline
+  const badge = cls => {
+    const map = {
+      ok  : {bg:'#e8f9f0',color:'#1a6b3a',border:'#aadcbe',text:'✓ Estándar'},
+      warn: {bg:'#fff8e0',color:'#7a5500',border:'#f0d060',text:'⚠ Ajuste'},
+      err : {bg:'#fde8e8',color:'#8a1a1a',border:'#f0a0a0',text:'✕ Contraindicado'},
+      unk : {bg:'#f4f4f4',color:'#555555',border:'#cccccc',text:'? Sin datos'},
+    };
+    const s = map[cls] || map.unk;
+    return `<span style="display:inline-block;padding:2px 9px;border-radius:10px;
+      font-size:8pt;font-weight:700;border:1px solid ${s.border};
+      background:${s.bg};color:${s.color};white-space:nowrap">${s.text}</span>`;
+  };
+
+  // Filas de la tabla
+  const tableRows = rows.map((r, i) => {
+    const rowBg = i % 2 === 0 ? '#ffffff' : '#f8faff';
+    return `<tr style="page-break-inside:avoid;background:${rowBg}">
+      <td style="padding:7px 10px;border-bottom:1px solid #e8ecf4;vertical-align:top;font-size:9pt">
+        <strong style="color:#1a2f5e">${esc(r.name)}</strong>
+        <br><span style="font-size:7.5pt;color:#7a8aaa">${esc(r.matchTerm)}</span>
+      </td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e8ecf4;vertical-align:top;font-size:8.5pt;color:#445">${esc(r.tramo)}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e8ecf4;vertical-align:top;font-size:8.5pt;color:#223">${esc(r.rec)}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e8ecf4;vertical-align:top;text-align:center">${badge(r.cls)}</td>
+    </tr>`;
+  }).join('');
+
+  // Celdas de datos del paciente
+  const patCell = (label, value) =>
+    `<div style="background:#f4f6fb;border:1px solid #dde3f0;border-radius:4px;padding:7px 10px">
+      <div style="font-size:7.5pt;color:#7a8aaa;font-weight:600;text-transform:uppercase;letter-spacing:.4px">${label}</div>
+      <div style="font-size:11pt;font-weight:700;color:#1a2f5e;margin-top:2px">${value}</div>
+    </div>`;
+
+  // Cajas del resumen ejecutivo
+  const sumBox = (num, label, bg, color, border) =>
+    `<div style="flex:1;min-width:80px;padding:10px 14px;border-radius:6px;text-align:center;
+      border:1.5px solid ${border};background:${bg}">
+      <span style="font-size:22pt;font-weight:700;display:block;line-height:1.1;color:${color}">${num}</span>
+      <span style="font-size:7.5pt;text-transform:uppercase;letter-spacing:.5px;font-weight:600;color:${color}">${label}</span>
+    </div>`;
+
+  return `
+<div id="pdf-template" style="width:190mm;margin:0 auto;background:#fff;
+  color:#1a1a2e;font-family:Arial,Helvetica,sans-serif;font-size:10pt;line-height:1.5">
+
+  <!-- ENCABEZADO -->
+  <div style="background:#1a2f5e;color:#fff;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-radius:4px 4px 0 0">
+    <div>
+      <div style="font-size:13pt;font-weight:700;margin:0 0 3px 0;letter-spacing:.3px">
+        H. U. Puerto Real &nbsp;·&nbsp; Servicio de Farmacia
+      </div>
+      <div style="font-size:8.5pt;opacity:.85">
+        Informe de Ajuste Posológico según Función Renal
+      </div>
+    </div>
+    <div style="text-align:right;font-size:8.5pt;opacity:.85">
+      <strong style="font-size:10pt;display:block">${fecha}</strong>
+      ${hora} h
+    </div>
+  </div>
+
+  <!-- DATOS DEL PACIENTE -->
+  <div style="padding:12px 20px;border-bottom:1px solid #e8ecf4">
+    <div style="font-size:8pt;font-weight:700;text-transform:uppercase;
+      letter-spacing:.8px;color:#5a6a8a;margin-bottom:8px">Datos del Paciente</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      ${patCell('Edad', esc(patient.age) + ' años')}
+      ${patCell('Sexo', esc(patient.sex))}
+      ${patCell('Peso', patient.weight !== '—' ? patient.weight + ' kg' : '—')}
+      ${patCell('Talla', patient.height !== '—' ? patient.height + ' cm' : '—')}
+      ${patCell('Creatinina', patient.creatinine !== '—' ? patient.creatinine + ' ' + patient.crUnit : '—')}
+      <div style="grid-column:span 2;background:#f4f6fb;border:1px solid #dde3f0;border-radius:4px;padding:7px 10px">
+        <div style="font-size:7.5pt;color:#7a8aaa;font-weight:600;text-transform:uppercase;letter-spacing:.4px">
+          FG Estimado &nbsp;·&nbsp; ${esc(modeText)}
+        </div>
+        <div style="font-size:10pt;font-weight:700;color:#1a2f5e;margin-top:2px">${esc(fgText)}</div>
+      </div>
+      <div style="background:#f4f6fb;border:1px solid #dde3f0;border-radius:4px;padding:7px 10px">
+        <div style="font-size:7.5pt;color:#7a8aaa;font-weight:600;text-transform:uppercase;letter-spacing:.4px">
+          Estadio ERC (KDIGO)
+        </div>
+        <div style="margin-top:4px">
+          <span style="display:inline-block;padding:4px 14px;border-radius:20px;
+            font-size:9pt;font-weight:700;border:2px solid ${ec.border};
+            background:${ec.bg};color:${ec.color}">${esc(ercLabel)}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN EJECUTIVO -->
+  <div style="padding:12px 20px;border-bottom:1px solid #e8ecf4">
+    <div style="font-size:8pt;font-weight:700;text-transform:uppercase;
+      letter-spacing:.8px;color:#5a6a8a;margin-bottom:8px">Resumen Ejecutivo</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${sumBox(total, 'Total analizados', '#f0f4ff', '#1a2f7a', '#b0c0f0')}
+      ${sumBox(cnt.ok,   'Dosis estándar',   '#e8f9f0', '#1a6b3a', '#aadcbe')}
+      ${sumBox(cnt.warn, 'Requieren ajuste',  '#fff8e0', '#7a5500', '#f0d060')}
+      ${sumBox(cnt.err,  'Contraindicados',   '#fde8e8', '#8a1a1a', '#f0a0a0')}
+      ${cnt.unk ? sumBox(cnt.unk, 'Sin datos', '#f4f4f4', '#555', '#ccc') : ''}
+    </div>
+  </div>
+
+  <!-- TABLA DE MEDICACIÓN -->
+  <div style="padding:12px 20px">
+    <div style="font-size:8pt;font-weight:700;text-transform:uppercase;
+      letter-spacing:.8px;color:#5a6a8a;margin-bottom:8px">Medicación Analizada</div>
+    <table style="width:100%;border-collapse:collapse;font-size:9pt">
+      <thead>
+        <tr style="background:#1a2f5e;color:#fff">
+          <th style="padding:7px 10px;text-align:left;font-size:8pt;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;width:28%">Fármaco</th>
+          <th style="padding:7px 10px;text-align:left;font-size:8pt;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;width:20%">Situación</th>
+          <th style="padding:7px 10px;text-align:left;font-size:8pt;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;width:37%">Recomendación</th>
+          <th style="padding:7px 10px;text-align:left;font-size:8pt;font-weight:700;
+            text-transform:uppercase;letter-spacing:.5px;width:15%">Estado</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <div style="padding:10px 20px;border-top:2px solid #1a2f5e;
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:7.5pt;color:#7a8aaa;margin-top:8px">
+    <div>
+      <strong style="color:#1a2f5e">Yeray Reyes de la Mata</strong> &nbsp;·&nbsp; ydelamata01@gmail.com<br>
+      Ref: García Montemayor V et al. Ajuste de Fármacos en ERC. <em>Nefrología al día</em>. ISSN: 2659-2606 &nbsp;·&nbsp; nefrologiaaldia.org/325
+    </div>
+    <div style="font-size:7pt;color:#e05050;background:#fff0f0;border:1px solid #f0b0b0;
+      border-radius:3px;padding:3px 8px;white-space:nowrap;margin-left:12px">
+      ⚠ Herramienta de apoyo — NO producto sanitario validado
+    </div>
+  </div>
+
+</div>`;
+}
+
+/**
+ * Exporta el informe a PDF.
+ *
+ * Estrategia corregida:
+ *  1. Se crea un div overlay a pantalla completa con fondo blanco visible.
+ *  2. Se inserta el template dentro de ese overlay.
+ *  3. Se espera un frame de render con requestAnimationFrame + setTimeout
+ *     para que el navegador pinte el DOM antes de que html2canvas lo capture.
+ *  4. html2pdf captura el elemento ya pintado y genera el PDF.
+ *  5. Se elimina el overlay al finalizar.
+ *
+ * html2canvas NO puede capturar elementos con display:none, visibility:hidden
+ * ni fuera del viewport (left:-9999px). El overlay visible resuelve los tres.
+ */
+/**
+ * Genera y descarga un archivo .html autocontenido que es el informe clínico.
+ * El archivo incluye estilos @media print optimizados para que Ctrl+P / "Guardar como PDF"
+ * produzca un informe limpio y paginado correctamente en cualquier navegador.
+ */
+function exportToPDF() {
+  const rows = readResultsFromDOM();
+  if (!rows.length) {
+    alert('No hay resultados que exportar.\nAnaliza primero la medicación del paciente.');
+    return;
+  }
+
+  const btn = document.getElementById('pdf-btn');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Preparando informe…';
+
+  const patient = readPatientData();
+  const fg      = getFG();
+
+  // Construir el HTML del informe con sus propios estilos de impresión
+  const reportHTML = buildReportHTML(patient, fg, rows);
+
+  // Crear blob y lanzar descarga
+  const blob = new Blob([reportHTML], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const now  = new Date();
+  const stamp = now.getFullYear()
+    + String(now.getMonth()+1).padStart(2,'0')
+    + String(now.getDate()).padStart(2,'0');
+  const a = document.createElement('a');
+  a.href     = url;
+  a.download = 'Informe_Renal_HUPR_' + stamp + '.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  btn.disabled = false;
+  btn.innerHTML = originalHTML;
+}
+
+/**
+ * Construye el HTML completo y autocontenido del informe.
+ * Incluye @media print para impresión/guardado como PDF con Ctrl+P.
+ */
+function buildReportHTML(patient, fg, rows) {
+  const fgVal = fg ? fg.val : null;
+  const fgText = fg
+    ? (fg.isManual
+        ? fgVal + ' ml/min (Manual)'
+        : fgVal + ' ml/min (Cockcroft-Gault)  ·  CKD-EPI: ' + fg.epi + ' ml/min')
+    : (MODE !== 'normal' ? MODE.toUpperCase() : 'No calculado');
+  const modeText = MODE === 'hd' ? 'Hemodiálisis (HD)'
+                 : MODE === 'hfvvc' ? 'HFVVC' : 'Filtrado Glomerular';
+  const ercLabel = getERCLabel(fgVal, MODE);
+
+  const now   = new Date();
+  const fecha = now.toLocaleDateString('es-ES', {day:'2-digit', month:'long', year:'numeric'});
+  const hora  = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+
+  const cnt = {ok:0, warn:0, err:0, unk:0};
+  rows.forEach(r => cnt[r.cls]++);
+  const total = rows.length;
+
+  // Colores ERC
+  const ercPalette = {
+    'G1 — ≥90 ml/min'   : {bg:'#e6f9ee', color:'#1a6b3a', border:'#aedec2'},
+    'G2 — 60-89 ml/min' : {bg:'#f0f9e0', color:'#3d6600', border:'#b8dca0'},
+    'G3a — 45-59 ml/min': {bg:'#fff9e0', color:'#7a5500', border:'#f0d580'},
+    'G3b — 30-44 ml/min': {bg:'#fff3e0', color:'#8a4500', border:'#f0c080'},
+    'G4 — 15-29 ml/min' : {bg:'#fff0e8', color:'#8a3000', border:'#f0b080'},
+    'G5 — <15 ml/min'   : {bg:'#fde8e8', color:'#8a1a1a', border:'#f0a0a0'},
+    'HD (G5D)'          : {bg:'#f0eaff', color:'#4a1a8a', border:'#c8a0f0'},
+    'HFVVC'             : {bg:'#e8fff0', color:'#006040', border:'#80d0b0'},
+    'No calculado'      : {bg:'#f4f4f4', color:'#555',    border:'#ccc'},
+  };
+  const ec = ercPalette[ercLabel] || ercPalette['No calculado'];
+
+  // Filas de la tabla
+  const tableRows = rows.map((r, i) => {
+    const clsMap = {
+      ok  : {bg:'#e8f9f0', color:'#1a6b3a', border:'#aadcbe', text:'✓ Estándar'},
+      warn: {bg:'#fff8e0', color:'#7a5500', border:'#f0d060', text:'⚠ Ajuste'},
+      err : {bg:'#fde8e8', color:'#8a1a1a', border:'#f0a0a0', text:'✕ Contraindicado'},
+      unk : {bg:'#f4f4f4', color:'#555',    border:'#ccc',    text:'? Sin datos'},
+    };
+    const s = clsMap[r.cls] || clsMap.unk;
+    const rowBg = i % 2 === 0 ? '#ffffff' : '#f8faff';
+    const doseCell = (r.prescribed && r.prescribed !== '—')
+      ? `<strong style="color:#1a5e1a">${esc(r.prescribed)}</strong>`
+      : `<span style="color:#aaa;font-style:italic">—</span>`;
+    return `<tr class="drug-row" style="background:${rowBg}">
+      <td class="col-drug"><strong>${esc(r.name)}</strong><br>
+        <span class="sub">${esc(r.matchTerm)}</span></td>
+      <td class="col-dose">${doseCell}</td>
+      <td class="col-sit">${esc(r.tramo)}</td>
+      <td class="col-rec">${esc(r.rec)}</td>
+      <td class="col-sta">
+        <span class="badge" style="background:${s.bg};color:${s.color};border-color:${s.border}">${s.text}</span>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Informe Ajuste Posológico Renal — HUPR</title>
+<style>
+/* ── RESET Y BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Segoe UI',Arial,Helvetica,sans-serif;
+  font-size:11pt;color:#1a1a2e;background:#f0f2f5;
+  padding:20px;
+}
+
+/* ── INSTRUCCIÓN IMPRESIÓN (solo en pantalla) ── */
+.print-hint{
+  max-width:800px;margin:0 auto 16px auto;
+  background:#1a2f5e;color:#fff;
+  border-radius:8px;padding:12px 20px;
+  display:flex;align-items:center;gap:14px;
+  font-size:10.5pt;
+}
+.print-hint kbd{
+  background:#fff;color:#1a2f5e;
+  border-radius:4px;padding:2px 8px;
+  font-weight:700;font-size:10pt;
+  border:1px solid #a0b0d0;
+}
+.print-hint .hint-icon{font-size:22px;flex-shrink:0}
+
+/* ── CONTENEDOR DEL INFORME ── */
+.report{
+  max-width:800px;margin:0 auto;
+  background:#fff;border-radius:8px;
+  box-shadow:0 4px 24px rgba(0,0,0,.12);
+  overflow:hidden;
+}
+
+/* ── CABECERA INSTITUCIONAL ── */
+.rpt-header{
+  background:#1a2f5e;color:#fff;
+  padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.rpt-header h1{font-size:14pt;font-weight:700;margin-bottom:3px;letter-spacing:.3px}
+.rpt-header p{font-size:9pt;opacity:.8}
+.rpt-header-date{text-align:right;font-size:9pt;opacity:.8}
+.rpt-header-date strong{font-size:11pt;display:block;margin-bottom:2px}
+
+/* ── SECCIONES ── */
+.rpt-section{padding:14px 24px;border-bottom:1px solid #e8ecf4}
+.rpt-section:last-child{border-bottom:none}
+.section-title{
+  font-size:8pt;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;color:#5a6a8a;margin-bottom:10px;
+}
+
+/* ── GRID PACIENTE ── */
+.patient-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pcell{
+  background:#f4f6fb;border:1px solid #dde3f0;
+  border-radius:5px;padding:8px 11px;
+}
+.pcell .lbl{font-size:7.5pt;color:#7a8aaa;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.pcell .val{font-size:11.5pt;font-weight:700;color:#1a2f5e;margin-top:3px}
+.pcell.span2{grid-column:span 2}
+.erc-badge{
+  display:inline-block;padding:5px 16px;border-radius:20px;
+  font-size:9.5pt;font-weight:700;border:2px solid;margin-top:5px;
+  background:${ec.bg};color:${ec.color};border-color:${ec.border};
+}
+
+/* ── RESUMEN EJECUTIVO ── */
+.summary-bar{display:flex;gap:10px;flex-wrap:wrap}
+.sbox{
+  flex:1;min-width:90px;padding:11px 14px;border-radius:6px;
+  text-align:center;border:1.5px solid;
+}
+.sbox .num{font-size:22pt;font-weight:700;display:block;line-height:1.1}
+.sbox .lbl{font-size:7.5pt;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.s-total{background:#f0f4ff;color:#1a2f7a;border-color:#b0c0f0}
+.s-ok   {background:#e8f9f0;color:#1a6b3a;border-color:#aadcbe}
+.s-warn {background:#fff8e0;color:#7a5500;border-color:#f0d060}
+.s-err  {background:#fde8e8;color:#8a1a1a;border-color:#f0a0a0}
+.s-unk  {background:#f4f4f4;color:#555;border-color:#ccc}
+
+/* ── TABLA DE MEDICACIÓN ── */
+.drug-table{width:100%;border-collapse:collapse;font-size:9.5pt}
+.drug-table thead tr{background:#1a2f5e;color:#fff}
+.drug-table th{
+  padding:8px 11px;text-align:left;
+  font-size:8pt;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.drug-table td{padding:8px 11px;vertical-align:top}
+.drug-row{page-break-inside:avoid;break-inside:avoid}
+.col-drug{width:22%}
+.col-dose{width:12%;font-size:9pt;font-family:monospace}
+.col-sit {width:18%}
+.col-rec {width:33%}
+.col-sta {width:15%;text-align:center}
+.sub{font-size:7.5pt;color:#7a8aaa}
+.badge{
+  display:inline-block;padding:3px 9px;border-radius:10px;
+  font-size:8pt;font-weight:700;border:1px solid;white-space:nowrap;
+}
+
+/* ── PIE DE PÁGINA ── */
+.rpt-footer{
+  padding:12px 24px;border-top:2px solid #1a2f5e;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:8pt;color:#7a8aaa;background:#fafbff;
+}
+.rpt-footer a{color:#1a2f5e}
+.disclaimer-tag{
+  font-size:7.5pt;color:#c0392b;background:#fff5f5;
+  border:1px solid #f5c0c0;border-radius:4px;
+  padding:3px 10px;white-space:nowrap;margin-left:12px;
+}
+
+/* ══════════════════════════════════════
+   ESTILOS DE IMPRESIÓN — @media print
+   Ctrl+P → Guardar como PDF
+   ══════════════════════════════════════ */
+@media print {
+  /* Ocultar la barra de instrucciones en impresión */
+  .print-hint { display:none !important }
+
+  /* Quitar márgenes y fondo del body */
+  body { background:#fff !important; padding:0 !important }
+
+  /* El informe ocupa todo el ancho */
+  .report {
+    max-width:100% !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+  }
+
+  /* Evitar que las filas se corten entre páginas */
+  .drug-row { page-break-inside:avoid; break-inside:avoid }
+
+  /* Cabecera: forzar fondo de color en impresión */
+  .rpt-header {
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Asegurar que todos los colores de fondo se impriman */
+  * {
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Márgenes de página A4 */
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- INSTRUCCIÓN VISIBLE EN PANTALLA, OCULTA AL IMPRIMIR -->
+<div class="print-hint">
+  <span class="hint-icon">🖨️</span>
+  <span>Para guardar como PDF: pulse <kbd>Ctrl</kbd> + <kbd>P</kbd>
+  (o <kbd>⌘</kbd> + <kbd>P</kbd> en Mac), seleccione <strong>"Guardar como PDF"</strong>
+  y confirme. Los colores y el formato se preservarán automáticamente.</span>
+</div>
+
+<div class="report">
+
+  <!-- CABECERA -->
+  <div class="rpt-header">
+    <div>
+      <h1>🏥 H. U. Puerto Real &nbsp;·&nbsp; Servicio de Farmacia</h1>
+      <p>Informe de Ajuste Posológico según Función Renal</p>
+    </div>
+    <div class="rpt-header-date">
+      <strong>${fecha}</strong>${hora} h
+    </div>
+  </div>
+
+  <!-- DATOS DEL PACIENTE -->
+  <div class="rpt-section">
+    <div class="section-title">Datos del Paciente</div>
+    <div class="patient-grid">
+      <div class="pcell"><div class="lbl">Edad</div><div class="val">${esc(patient.age)} años</div></div>
+      <div class="pcell"><div class="lbl">Sexo</div><div class="val">${esc(patient.sex)}</div></div>
+      <div class="pcell"><div class="lbl">Peso</div><div class="val">${patient.weight !== '—' ? patient.weight + ' kg' : '—'}</div></div>
+      <div class="pcell"><div class="lbl">Talla</div><div class="val">${patient.height !== '—' ? patient.height + ' cm' : '—'}</div></div>
+      <div class="pcell"><div class="lbl">Creatinina</div><div class="val">${patient.creatinine !== '—' ? patient.creatinine + ' ' + patient.crUnit : '—'}</div></div>
+      <div class="pcell span2">
+        <div class="lbl">FG Estimado &nbsp;·&nbsp; ${esc(modeText)}</div>
+        <div class="val" style="font-size:10.5pt">${esc(fgText)}</div>
+      </div>
+      <div class="pcell">
+        <div class="lbl">Estadio ERC (KDIGO)</div>
+        <div><span class="erc-badge">${esc(ercLabel)}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN EJECUTIVO -->
+  <div class="rpt-section">
+    <div class="section-title">Resumen Ejecutivo</div>
+    <div class="summary-bar">
+      <div class="sbox s-total"><span class="num">${total}</span><span class="lbl">Total</span></div>
+      <div class="sbox s-ok">  <span class="num">${cnt.ok}</span>  <span class="lbl">Estándar</span></div>
+      <div class="sbox s-warn"><span class="num">${cnt.warn}</span><span class="lbl">Ajuste</span></div>
+      <div class="sbox s-err"> <span class="num">${cnt.err}</span> <span class="lbl">Contraindicado</span></div>
+      ${cnt.unk ? `<div class="sbox s-unk"><span class="num">${cnt.unk}</span><span class="lbl">Sin datos</span></div>` : ''}
+    </div>
+  </div>
+
+  <!-- TABLA DE MEDICACIÓN -->
+  <div class="rpt-section">
+    <div class="section-title">Medicación Analizada</div>
+    <table class="drug-table">
+      <thead>
+        <tr>
+          <th class="col-drug">Fármaco</th>
+          <th class="col-dose">Dosis prescrita</th>
+          <th class="col-sit">Situación</th>
+          <th class="col-rec">Recomendación de Ajuste</th>
+          <th class="col-sta">Estado</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <div class="rpt-footer">
+    <div>
+      <strong style="color:#1a2f5e">Yeray Reyes de la Mata</strong> &nbsp;·&nbsp; ydelamata01@gmail.com<br>
+      Ref: García Montemayor V et al. Ajuste de Fármacos en ERC. <em>Nefrología al día</em>.
+      ISSN: 2659-2606 &nbsp;·&nbsp; <a href="https://www.nefrologiaaldia.org/325">nefrologiaaldia.org/325</a>
+    </div>
+    <div class="disclaimer-tag">⚠ Herramienta de apoyo — NO producto sanitario validado</div>
+  </div>
+
+</div>
+</body>
+</html>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// PATCH sobre analyze(): habilitar PDF tras ejecutar análisis
+// ════════════════════════════════════════════════════════════════
+
+const _analyzeOriginal = analyze;
+analyze = function() {
+  _analyzeOriginal();
+  setTimeout(updatePdfButtonState, 80);
+};
+
+</script></body></html>
