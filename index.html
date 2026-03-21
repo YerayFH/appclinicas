@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YerayFH - de la Mata | Farmacia Hospitalaria</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/png" href="/appclinicas/img/icon.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-J830XBBQKF', { page_path: location.pathname });
+</script>
+
+<style>
+:root {
+  --primary-green: #2d6a4f;    
+  --light-green: #a5dcaf;      /* Mantenido intacto para tu nombre */
+  --bg-soft: #d5dad7;          /* Gris salvia opaco (muy relajante a la vista) */
+  --text-dark: #1b2e25;        /* Texto más profundo para asegurar alto contraste */
+  --text-muted: #6b7280;       /* Mantenido intacto para el Autor */
+  --card-bg: #e4e8e6;          /* Fondo de tarjetas mate anti-fatiga visual */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--bg-soft);
+  color: var(--text-dark);
+  padding: 2rem 1.5rem;
+}
+
+/* ================= HEADER ================= */
+header {
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-icon img {
+  width: 110px;
+  height: auto;
+  margin-bottom: 1.5rem;
+  border-radius: 0; 
+  box-shadow: none; 
+  background: transparent;
+}
+
+header h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--light-green); /* Color original respetado */
+  letter-spacing: -1.2px;
+  margin-bottom: 0.2rem;
+}
+
+header .subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #40916c; /* Color original respetado */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.2rem;
+}
+
+header .author {
+  font-size: 0.95rem;
+  color: var(--text-muted); /* Color original respetado */
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* Disclaimer rediseñado (Floating & Aesthetic) */
+.disclaimer {
+  background: none; 
+  border: none; 
+  padding: 0.2rem 0;
+  box-shadow: none; 
+  max-width: none;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #5c6660; 
+}
+
+.disclaimer-icon {
+  font-size: 1.1rem;
+  color: #856404; 
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.disclaimer p {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+  color: inherit;
+  line-height: 1.3;
+}
+
+/* ================= SEARCH ================= */
+.search-wrapper {
+  max-width: 600px;
+  margin: 0 auto 4rem auto;
+  position: relative;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+  border-radius: 18px;
+  border: 2px solid transparent;
+  background: #f0f4f2; /* Ligeramente más claro para la caja de texto */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: var(--light-green);
+  box-shadow: 0 10px 30px rgba(45, 106, 79, 0.12);
+}
+
+.search-wrapper::before {
+  content: '🔍';
+  position: absolute;
+  left: 1.3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  opacity: 0.5;
+}
+
+/* ================= GRID & CARDS ================= */
+.container {
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.section-group {
+  margin-bottom: 4.5rem;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--primary-green);
+}
+
+.section-title::after {
+  content: '';
+  height: 2px;
+  flex-grow: 1;
+  background: linear-gradient(90deg, #b0c2b8, transparent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid #d1d8d4;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(27, 46, 37, 0.08);
+  border-color: var(--primary-green);
+}
+
+.icon-box {
+  width: 100px;
+  height: 100px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: var(--transition);
+}
+
+.card img {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+}
+
+.card:hover .icon-box {
+  transform: scale(1.05);
+}
+
+/* COLORES PASTELES EMPOLVADOS (Darker Pastels, sin reflejo blanco) */
+.bg-green  { background: #a8c2b3; } /* Verde salvia antiguo */
+.bg-blue   { background: #a5bdd1; } /* Azul niebla/acero apagado */
+.bg-orange { background: #d9bfa5; } /* Arcilla/arena pastel */
+.bg-purple { background: #bbb1d4; } /* Malva ceniza */
+.bg-rose   { background: #d6b2b9; } /* Rosa viejo opaco */
+
+.card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1.8rem;
+  line-height: 1.5;
+  min-height: 3.5rem;
+}
+
+.card .btn {
+  width: 100%;
+  text-decoration: none;
+  background: #d4ddd8;
+  color: var(--primary-green);
+  padding: 0.9rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  border: 1px solid #c8d1cc;
+}
+
+.card:hover .btn {
+  background: var(--primary-green);
+  color: white;
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+}
+
+footer {
+  text-align: center;
+  padding: 5rem 0 3rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-top: 1px solid #d1d8d4;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card { animation: fadeInUp 0.5s ease backwards; }
+
+@media (max-width: 640px) {
+  header h1 { font-size: 2.1rem; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-icon">
+    <img src="/appclinicas/img/icon.png" alt="Logo YerayFH">
+  </div>
+  <div class="title-container">
+    <h1>YerayFH - de la Mata</h1>
+    <p class="subtitle">Farmacia Hospitalaria</p>
+    <p class="author">Autor: Yeray Reyes de la Mata</p>
+  </div>
+
+  <div class="disclaimer">
+    <div class="disclaimer-icon">!</div>
+    <p>No sustituye criterio facultativo</p>
+  </div>
+</header>
+
+<div class="container">
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" placeholder="Buscar protocolos o herramientas...">
+  </div>
+
+  <div class="section-group">
+    <h2 class="section-title">🩺 Diagnóstico y manejo clínico</h2>
+    <div class="grid">
+      
+      <div class="card">
+        <div class="icon-box bg-green">
+          <img src="/appclinicas/img/guiaempirica.png" alt="">
+        </div>
+        <h2>Antibioterapia empírica: guía HUPR 2025</h2>
+        <a href="guiaempirica/" class="btn">Acceder</a>
+      </div>
+
+      <div class="card">
+        <div class="icon-box bg-rose">
+          <img src="/appclinicas/img/gasometria.png" alt="Gasometría">
+        </div>
+        <h2>Gasometría: interpretación y orientación diagnóstica</h2>
+        <a href="gasometria/" class="btn">Interpretar</a>
+      </div>
+
+      <div class="card">
+        <div class="icon-box bg-blue">
+          <img src="/appclinicas/img/cerebro.png" alt="">
+        </div>
+        <h2>Ictus isquémico: motor terapéutico</h2>
+        <a href="ictus/" class="btn">Acceder</a>
+      </div>
+      
+      <div class="card">
+        <div class="icon-box bg-orange">
+          <img src="/appclinicas/img/antidoto.png" alt="">
+        </div>
+        <h2>Intoxicación: guía de antídotos y manejo</h2>
+        <a href="antidoto/" class="btn">Acceder</a>
+      </div>
+      
+      <div class="card">
+        <div class="icon-box bg-purple">
+          <img src="/appclinicas/img/bacteria.png" alt="">
+        </div>
+        <h2>Sepsis: diagnóstico y manejo</h2>
+        <a href="sepsis/" class="btn">Acceder</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-group">
+    <h2 class="section-title">💊 Farmacoterapia</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon-box bg-blue">
+          <img src="/appclinicas/img/funcionrenal.png" alt="">
+        </div>
+        <h2>Función renal: ajuste de fármacos</h2>
+        <a href="funcionrenal/" class="btn">Calcular</a>
+      </div>
+      <div class="card">
+        <div class="icon-box bg-orange">
+          <img src="/appclinicas/img/infucalc.png" alt="">
+        </div>
+        <h2>InfuCalc: bombas de perfusión</h2>
+        <a href="infucalc/" class="btn">Calcular</a>
+      </div>
+      <div class="card">
+        <div class="icon-box bg-green">
+          <img src="/appclinicas/img/anciano.png" alt="">
+        </div>
+        <h2>Polimedicados: anciano complejo</h2>
+        <a href="polimedicados/" class="btn">Revisar</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-group">
+    <h2 class="section-title">📚 Otros recursos</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon-box bg-purple">
+          <img src="/appclinicas/img/lecturacritica.png" alt="">
+        </div>
+        <h2>Lectura crítica: checklist</h2>
+        <a href="lecturacritica/" class="btn">Ver Herramienta</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 YerayFH - de la Mata <br>
+</footer>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const sections = document.querySelectorAll('.section-group');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  sections.forEach(section => {
+    const sectionCards = section.querySelectorAll('.card');
+    let visible = false;
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.style.display = 'flex';
+        visible = true;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    section.style.display = visible ? 'block' : 'none';
+  });
+});
+
+document.querySelectorAll(".grid").forEach(grid => {
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  cards.sort((a,b) => a.querySelector("h2").innerText.toLowerCase().localeCompare(b.querySelector("h2").innerText.toLowerCase()));
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.08}s`;
+    grid.appendChild(card);
+  });
+});
+</script>
+
+</body>
+</html>
