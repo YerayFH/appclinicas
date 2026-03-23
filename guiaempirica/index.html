@@ -400,7 +400,8 @@ main{max-width:940px;margin:0 auto;padding:22px 14px 60px}
 .rc:has(h3.pu)::before { background: #a78bfa; }
 .rc h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;display:flex;align-items:center;gap:5px}
 .rc h3.gr{color:var(--app-green)}.rc h3.yw{color:var(--app-yellow)}.rc h3.rd{color:var(--app-red)}.rc h3.bl{color:var(--app-accent)}.rc h3.or{color:var(--app-orange)}.rc h3.pu{color:#a78bfa}
-.rc p,.rc li{font-size:13px;line-height:1.6;color:var(--app-text)}.rc ul{padding-left:15px}.rc li{margin-bottom:2px}
+.rc p,.rc li,.tx-res{font-size:13px;line-height:1.6;color:var(--app-text)}
+.rc ul{padding-left:15px}.rc li{margin-bottom:2px}
 .tag {
   display: inline-flex;
   background: rgba(59, 130, 246, 0.12);
@@ -1666,16 +1667,16 @@ function selectScenario(id) {
   // Fallback seguro si no definimos un título alternativo especial
   const altTitle = r.altTitle || "Alternativas (Alergia a β-lactámicos o Resistencias)";
   
-  document.getElementById('rcontent').innerHTML = `
+      document.getElementById('rcontent').innerHTML = `
     <div class="rh">
       <h2>${mod ? mod.icon : ''} ${r.scenario}</h2>
       <p>Guía de Tratamiento Antimicrobiano Empírico — HUPR 2025</p>
     </div>
     <div class="rg">
       ${orgs ? `<div class="rc full"><h3 class="bl">🦠 Microorganismos Probables</h3><div>${orgs}</div></div>` : ''}
-      <div class="rc full"><h3 class="gr">💊 Tratamiento Empírico de Elección</h3><p>${r.treatment}</p></div>
-      ${r.alternative ? `<div class="rc full"><h3 class="rd">🚫 ${altTitle}</h3><p>${r.alternative}</p></div>` : ''}
-      ${r.proa ? `<div class="rc full"><h3 class="pu">📋 Observaciones Clínicas / PROA</h3><div class="pb"><p>${r.proa}</p></div></div>` : ''}
+      <div class="rc full"><h3 class="gr">💊 Tratamiento Empírico de Elección</h3><div class="tx-res">${r.treatment}</div></div>
+      ${r.alternative ? `<div class="rc full"><h3 class="rd">🚫 ${altTitle}</h3><div class="tx-res">${r.alternative}</div></div>` : ''}
+      ${r.proa ? `<div class="rc full"><h3 class="pu">📋 Observaciones Clínicas / PROA</h3><div class="pb"><div class="tx-res">${r.proa}</div></div></div>` : ''}
     </div>`;
     
   showScreen(4); 
