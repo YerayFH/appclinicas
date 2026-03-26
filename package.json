@@ -1,0 +1,16 @@
+{
+  "name": "appclinicas",
+  "version": "1.0.0",
+  "description": "Herramientas clínicas de soporte - Hospital Universitario Puerto Real",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "bash scripts/build.sh"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0",
+    "jsdom": "^24.0.0",
+    "html-minifier-terser": "^7.2.0"
+  }
+}

@@ -1793,7 +1793,7 @@ function render(){
   // --- NUEVO CABECERO ---
   h += `
   <header class="app-header">
-    <img src="/appclinicas/img/icon.png" class="app-logo" alt="Logo YerayFH">
+    <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" class="app-logo" alt="Logo YerayFH"></picture>
     
     <div class="badge-ictus">
       <span>🧠 ICTUS ISQUÉMICO AGUDO</span>
@@ -1849,7 +1849,12 @@ function render(){
     </div>`;
   }
 
-  app.innerHTML = h;
+  try {
+    app.innerHTML = h;
+  } catch(e) {
+    console.error('[Ictus] Error al renderizar:', e);
+    app.innerHTML = '<div style="padding:1.5rem;color:#ef4444;background:#ef444410;border-radius:8px;border:1px solid #ef444440;margin:1rem">⚠ Error inesperado al mostrar los datos. Recarga la página e inténtalo de nuevo.</div>';
+  }
 }
 
 render();

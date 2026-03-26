@@ -276,6 +276,23 @@ footer {
   header h1 { font-size: 2.1rem; }
   .grid { grid-template-columns: 1fr; }
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-green: #4ade80;
+    --light-green:   #86efac;
+    --bg-soft:       #0f1a14;
+    --text-dark:     #e2f0e6;
+    --text-muted:    #94a3a0;
+    --card-bg:       #1a2620;
+    --transition:    all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body { background-color: var(--bg-soft); color: var(--text-dark); }
+  .card { background: var(--card-bg); border-color: #2a3d30; }
+  .card h2 { color: var(--text-dark); }
+  .btn { background: var(--primary-green); color: #0f1a14; }
+  input[type="text"] { background: #1a2620; color: var(--text-dark); border-color: #2a3d30; }
+  footer { color: var(--text-muted); }
+}
 </style>
 </head>
 
@@ -283,7 +300,10 @@ footer {
 
 <header>
   <div class="header-icon">
-    <img src="/appclinicas/img/icon.png" alt="Logo YerayFH">
+    <picture>
+      <source srcset="/appclinicas/img/icon.webp" type="image/webp">
+      <img src="/appclinicas/img/icon.png" alt="Logo YerayFH">
+    </picture>
   </div>
   <div class="title-container">
     <h1>YerayFH - de la Mata</h1>
@@ -308,7 +328,7 @@ footer {
       
       <div class="card">
         <div class="icon-box bg-green">
-          <img src="/appclinicas/img/guiaempirica.png" alt="">
+          <picture><source srcset="/appclinicas/img/guiaempirica.webp" type="image/webp"><img src="/appclinicas/img/guiaempirica.png" alt="Antibioterapia empírica" loading="lazy"></picture>
         </div>
         <h2>Antibioterapia empírica: guía HUPR 2025</h2>
         <a href="guiaempirica/" class="btn">Acceder</a>
@@ -316,7 +336,7 @@ footer {
 
       <div class="card">
         <div class="icon-box bg-rose">
-          <img src="/appclinicas/img/gasometria.png" alt="Gasometría">
+          <picture><source srcset="/appclinicas/img/gasometria.webp" type="image/webp"><img src="/appclinicas/img/gasometria.png" alt="Gasometría" loading="lazy"></picture>
         </div>
         <h2>Gasometría: interpretación y orientación diagnóstica</h2>
         <a href="gasometria/" class="btn">Interpretar</a>
@@ -324,7 +344,7 @@ footer {
 
       <div class="card">
         <div class="icon-box bg-blue">
-          <img src="/appclinicas/img/cerebro.png" alt="">
+          <picture><source srcset="/appclinicas/img/cerebro.webp" type="image/webp"><img src="/appclinicas/img/cerebro.png" alt="Ictus isquémico" loading="lazy"></picture>
         </div>
         <h2>Ictus isquémico: motor terapéutico</h2>
         <a href="ictus/" class="btn">Acceder</a>
@@ -332,7 +352,7 @@ footer {
       
       <div class="card">
         <div class="icon-box bg-orange">
-          <img src="/appclinicas/img/antidoto.png" alt="">
+          <picture><source srcset="/appclinicas/img/antidoto.webp" type="image/webp"><img src="/appclinicas/img/antidoto.png" alt="Guía de antídotos" loading="lazy"></picture>
         </div>
         <h2>Intoxicación: guía de antídotos y manejo</h2>
         <a href="antidoto/" class="btn">Acceder</a>
@@ -340,7 +360,7 @@ footer {
       
       <div class="card">
         <div class="icon-box bg-purple">
-          <img src="/appclinicas/img/bacteria.png" alt="">
+          <picture><source srcset="/appclinicas/img/bacteria.webp" type="image/webp"><img src="/appclinicas/img/bacteria.png" alt="Sepsis" loading="lazy"></picture>
         </div>
         <h2>Sepsis: diagnóstico y manejo</h2>
         <a href="sepsis/" class="btn">Acceder</a>
@@ -354,21 +374,21 @@ footer {
     <div class="grid">
       <div class="card">
         <div class="icon-box bg-blue">
-          <img src="/appclinicas/img/funcionrenal.png" alt="">
+          <picture><source srcset="/appclinicas/img/funcionrenal.webp" type="image/webp"><img src="/appclinicas/img/funcionrenal.png" alt="Función renal" loading="lazy"></picture>
         </div>
         <h2>Función renal: ajuste de fármacos</h2>
         <a href="funcionrenal/" class="btn">Calcular</a>
       </div>
       <div class="card">
         <div class="icon-box bg-orange">
-          <img src="/appclinicas/img/infucalc.png" alt="">
+          <picture><source srcset="/appclinicas/img/infucalc.webp" type="image/webp"><img src="/appclinicas/img/infucalc.png" alt="InfuCalc bombas de perfusión" loading="lazy"></picture>
         </div>
         <h2>InfuCalc: bombas de perfusión</h2>
         <a href="infucalc/" class="btn">Calcular</a>
       </div>
       <div class="card">
         <div class="icon-box bg-green">
-          <img src="/appclinicas/img/anciano.png" alt="">
+          <picture><source srcset="/appclinicas/img/anciano.webp" type="image/webp"><img src="/appclinicas/img/anciano.png" alt="Polimedicados anciano complejo" loading="lazy"></picture>
         </div>
         <h2>Polimedicados: anciano complejo</h2>
         <a href="polimedicados/" class="btn">Revisar</a>
@@ -381,7 +401,7 @@ footer {
     <div class="grid">
       <div class="card">
         <div class="icon-box bg-purple">
-          <img src="/appclinicas/img/lecturacritica.png" alt="">
+          <picture><source srcset="/appclinicas/img/lecturacritica.webp" type="image/webp"><img src="/appclinicas/img/lecturacritica.png" alt="Lectura crítica" loading="lazy"></picture>
         </div>
         <h2>Lectura crítica: checklist</h2>
         <a href="lecturacritica/" class="btn">Ver Herramienta</a>

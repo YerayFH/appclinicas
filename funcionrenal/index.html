@@ -299,7 +299,7 @@ footer{background:#0e1e38;border-top:2px solid #1f4080;padding:15px;text-align:c
 <div class="header">
   <div class="header-top">
 <div class="hosp-icon">
-  <img src="/appclinicas/img/icon.png" alt="Logo" style="width:100%; height:auto;">
+  <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo" style="width:100%; height:auto;"></picture>
 </div>
 <div>
   <div class="hosp-name">YerayFH - de la Mata</div>
@@ -1200,11 +1200,17 @@ function classifyRec(recRaw, drug, fgVal) {
 // CÁLCULO DE FG
 // ════════════════════════════════════════════════════════════════
 
+// Superficie corporal — Du Bois & Du Bois. Arch Intern Med. 1916;17:863-871.
 function getBSA(w, h) {
   if (!w || !h) return null;
   return Math.sqrt((w * h) / 3600);
 }
 
+/**
+ * CKD-EPI 2021 (sin raza)
+ * Ref: Inker LA et al. New Creatinine- and Cystatin C-Based Equations to Estimate GFR
+ *      without Race. N Engl J Med. 2021;385:1737-1749. DOI: 10.1056/NEJMoa2102953
+ */
 function getCKDEPI(age, sex, cr) {
   if (!age || !sex || !cr || cr <= 0) return null;
   const kappa = sex === 'F' ? 0.7 : 0.9;
@@ -1217,6 +1223,12 @@ function getCKDEPI(age, sex, cr) {
   );
 }
 
+/**
+ * Aclaramiento de creatinina — Cockcroft-Gault (con ajuste por obesidad)
+ * Ref: Cockcroft DW, Gault MH. Prediction of creatinine clearance from serum creatinine.
+ *      Nephron. 1976;16(1):31-41. DOI: 10.1159/000180580
+ * Ajuste por obesidad: usa peso ajustado si peso > 1.3 × IBW.
+ */
 function getFG() {
   const manual = parseFloat(document.getElementById('fg_manual').value);
   if (!isNaN(manual) && manual >= 0) return { val: manual, method: 'Manual', isManual: true };
@@ -1381,10 +1393,18 @@ function buildInfoRows(drug, fgVal, cls, recDisplay, matchedTerm) {
 // FUNCIÓN ANALYZE() — limpia DOM antes de ejecutar (req. 4)
 // ════════════════════════════════════════════════════════════════
 
+function _showInlineMsg(msg, type) {
+  // type: 'error' | 'info'
+  const area = document.getElementById('results_area');
+  if (!area) { alert(msg); return; }
+  const bg = type === 'error' ? 'var(--red,#e53935)' : 'var(--cyan,#0097a7)';
+  area.innerHTML = `<div style="padding:1rem;border-radius:8px;background:${bg}18;border:1px solid ${bg}40;color:${bg};font-size:14px;margin-top:.5rem;">⚠ ${msg}</div>`;
+}
+
 function analyze() {
   const raw   = document.getElementById('drug_input').value;
   const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  if (!lines.length) { alert('Escribe al menos un fármaco.'); return; }
+  if (!lines.length) { _showInlineMsg('Escribe al menos un fármaco en el campo de texto.', 'error'); return; }
 
   const fg    = getFG();
   const fgVal = fg ? fg.val : null;
@@ -1693,7 +1713,7 @@ function closeScanModal() {
  */
 function applyScan() {
   const lines = scanPrescriptionText(document.getElementById('scan_input').value);
-  if (!lines.length) { alert('No se detectaron fármacos válidos.'); return; }
+  if (!lines.length) { _showInlineMsg('No se detectaron fármacos válidos en el texto escaneado.', 'error'); return; }
 
   const ta      = document.getElementById('drug_input');
   const existing = ta.value.trim()
@@ -1707,7 +1727,7 @@ function applyScan() {
   );
 
   if (!newLines.length) {
-    alert('Todos los fármacos detectados ya están en la lista.');
+    _showInlineMsg('Todos los fármacos detectados ya están en la lista.', 'info');
     closeScanModal();
     return;
   }
@@ -2287,7 +2307,7 @@ function buildPDFTemplate(patient, fg, rows) {
 function exportToPDF() {
   const rows = readResultsFromDOM();
   if (!rows.length) {
-    alert('No hay resultados que exportar.\nAnaliza primero la medicación del paciente.');
+    _showInlineMsg('No hay resultados que exportar. Analiza primero la medicación del paciente.', 'error');
     return;
   }
 
