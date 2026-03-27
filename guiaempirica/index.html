@@ -773,7 +773,8 @@ const SUBS = {
     { id: "osteo_vertebral", label: "Osteomielitis Vertebral", desc: "Biopsia requerida" },
     { id: "artritis_aguda", label: "Artritis Aguda", desc: "Comunitaria y Nosocomial" },
     { id: "bursitis_aguda", label: "Bursitis Aguda", desc: "Leve y grave" },
-    { id: "infeccion_protesica_aguda", label: "Infección Protésica Aguda", desc: "< 1 mes de implantación" }
+    { id: "infeccion_protesica_aguda", label: "Infección Protésica Aguda", desc: "< 1 mes de implantación" },
+    { id: "infeccion_protesica_tardia", label: "Infección Protésica Tardía/Crónica", desc: "> 1 mes síntomas, no tratar empírico salvo sepsis" }
   ],
   orl: [
     { id: "orl_candidiasis", label: "Candidiasis Oral", desc: "Inmunocompetente e Inmunodeprimido" },
@@ -808,6 +809,8 @@ const SUBS = {
     { id: "pal_traqueo", label: "Infección de Traqueostomía", desc: "Tópico vs sistémico" },
     { id: "pal_nac", label: "Neumonía en Paliativos", desc: "Comunitaria y Aspirativa" },
     { id: "pal_piel_celulitis", label: "Celulitis / Erisipela", desc: "Control de síntomas en piel" },
+    { id: "pal_piel_necrosante", label: "Infecciones Necrosantes de Piel", desc: "Fascitis necrosante, miositis" },
+    { id: "pal_ulceras", label: "Úlceras por Presión / Abscesos", desc: "Flora mixta, cultivo por punción" },
     { id: "pal_abd", label: "Infecciones Intraabdominales", desc: "Peritonitis, abscesos, biliar" }
   ],
   pediatria: [
@@ -1682,6 +1685,7 @@ its_agresion: {
     scenario: "Cistitis aguda no complicada",
     organisms: ["E. coli (90%) y otras enterobacterias", "Staphylococcus saprophyticus"],
     treatment: `<span class="drug">FOSFOMICINA-TROMETANOL 3g vo</span> (preferible dosis nocturna).<br>Puede repetirse dosis a las 48-72h si persiste clínica.`,
+    altTitle: "Alternativa",
     alternative: `<span class="drug">Nitrofurantoína 100mg/12h</span> 5 días o<br><span class="drug">Amoxicilina/clavulánico 500mg/8 h</span> 5 días o<br><span class="drug">Cotrimoxazol 800/160 mg/12h</span> 3 días (Evitar primer mes de embarazo)`,
     proa: `Criterios microbiológicos: Mujeres sintomáticas con ≥10^2 UFC/mL en urocultivo.<br>Criterios clínicos: Mujer premenopáusica, no embarazada, sin anormalidades urológicas o comorbilidades. No indicado urocultivo, excepto en recidivas, sospecha de pielonefritis aguda o síntomas atípicos.`
   },
@@ -1689,6 +1693,7 @@ its_agresion: {
     scenario: "Cistitis aguda complicada",
     organisms: ["E. coli y otras enterobacterias", "Staphylococcus saprophyticus"],
     treatment: `<span class="drug">Fosfomicina 3 g</span> 2 dosis separadas 48 h o<br><span class="drug">Amoxicilina/clavulánico 500 mg/8h</span> 7 días`,
+    altTitle: "Alternativa",
     alternative: `<span class="drug">Nitrofurantoína 100mg/12h</span> 7 días o<br><span class="drug">Cotrimoxazol 800/160 mg /12h</span> 7 días o<br><span class="drug">Cefuroxima 500 mg/12h</span> 7 días.`,
     proa: `Criterios: Alteraciones tracto urinario, embarazo, varones, inmunodeprimidos, DM, recurrentes, manipulación reciente. Es preciso realizar urocultivo en todos los casos. En varones considerar diagnóstico de prostatitis aguda.`
   },
@@ -1858,7 +1863,7 @@ its_agresion: {
     treatment: `Rara vez precisan tratamiento empírico urgente. En caso necesario: <span class="drug">Cloxacilina 2 g/4-6h IV</span> + <span class="drug">Ceftriaxona 2 g/24h</span>.<br>Sospecha SARM: Añadir <span class="drug">Vancomicina 15-20 mg/kg/12h IV</span> o <span class="drug">Linezolid 600 mg/12h IV/VO</span>.`,
     altTitle: "Alergia a β-lactámicos",
     alternative: `<span class="drug">Vancomicina 1 g/12h</span> + <span class="drug">Aztreonam 2 g/8h IV</span>`,
-    proa: `Biopsia vertebral obligada, HC, serología Brucella, descartar TBC. Tratamiento empírico sólo si gravedad, bacteriemia previa o contraindicación de biopsia. Duración: 2 sem IV y 4-6 sem VO.`
+    proa: `Biopsia vertebral obligada, HC, serología Brucella, descartar TBC. Tratamiento empírico sólo si gravedad, bacteriemia previa o contraindicación de biopsia. Duración: 2 sem IV y 4-6 sem VO. En SARM: 4 semanas IV y duración total de al menos 12 semanas.`
   },
   artritis_aguda: {
     scenario: "Artritis aguda",
@@ -1883,6 +1888,14 @@ its_agresion: {
     altTitle: "Alergia a β-lactámicos",
     alternative: `<span class="drug">Vancomicina 15-20 mg/kg/12h</span> + <span class="drug">aztreonam 2 g/8h</span> ± <span class="drug">amikacina 15 mg/kg/24h</span>.`,
     proa: `Desbridamiento con retención del implante y recambio del polietileno en las primeras 24-48h (inmediato si sepsis). Enviar ≥6 muestras quirúrgicas.`
+  },
+  infeccion_protesica_tardia: {
+    scenario: "Infección protésica TARDÍA o CRÓNICA (>1 mes desde cirugía y >1 mes de síntomas)",
+    organisms: ["Staphylococcus epidermidis y otros CoNS (40%)", "S. aureus", "BGN", "Polimicrobiana", "Cutibacterium acnes (cadera)"],
+    treatment: `<strong>No iniciar ATB empírico hasta decisión quirúrgica</strong> (salvo sepsis, en cuyo caso usar misma pauta que infección protésica aguda).<br>Decisión: retirada del implante en 1 o 2 tiempos (rara vez retención con desbridamiento y supresión crónica oral).`,
+    altTitle: "Consideraciones",
+    alternative: `Obtener ≥3 muestras quirúrgicas + material protésico para sonicación antes de ATB.<br>Tratamiento definitivo dirigido por cultivos.<br>Supresión crónica oral (si no retirable): elegir según antibiograma fármaco con buena biodisponibilidad oral (p. ej. rifampicina combinada, cotrimoxazol, fluoroquinolonas).`,
+    proa: `No tratar de forma empírica salvo sepsis. Notificar a Enfermedades Infecciosas. Cirugía es el pilar del tratamiento. Duración ATB postquirúrgica: 3 meses (cadera) o 6 meses (rodilla) si recambio en dos tiempos; 3-6 meses si retención con desbridamiento.`
   },
 
   // =========================================================
@@ -2099,13 +2112,29 @@ its_agresion: {
     alternative: `SARM: <span class="drug">Clindamicina 300-600mg/8h iv-vo</span> o <span class="drug">Linezolid 600mg/12h iv-vo</span>.<br>P. aeruginosa: <span class="drug">Piperacilina/Tazobactam 4,5g/8-6h iv</span> o <span class="drug">Meropenem 1g/8h iv</span>.`,
     proa: `Evitar Cloxacilina por vía oral. Obtener hemocultivos en complicadas. Dalvabancina u Oritavancina serían opciones para tratar gram+.`
   },
+  pal_piel_necrosante: {
+    scenario: "Infecciones necrosantes de piel y tejidos blandos (Paliativos)",
+    organisms: ["S. pyogenes (monomicrobiana tipo II)", "Flora mixta polimicrobiana: E. coli, Bacteroides, Clostridium, anaerobios (tipo I)"],
+    treatment: `<span class="drug">Piperacilina/Tazobactam 4g/6h IV</span> + <span class="drug">Clindamicina 600mg/8h IV</span> (inhibe toxinas estafilocócicas/estreptocócicas).<br>Riesgo SARM: Añadir <span class="drug">Vancomicina 15-20 mg/kg/12h</span> o <span class="drug">Linezolid 600mg/12h IV</span>.`,
+    altTitle: "Alergia a β-lactámicos",
+    alternative: `<span class="drug">Meropenem 1g/8h IV</span> + <span class="drug">Clindamicina 600mg/8h IV</span>.<br>Alergia β-lactámicos: <span class="drug">Aztreonam 2g/8h</span> + <span class="drug">Vancomicina</span> + <span class="drug">Metronidazol 500mg/8h</span>.`,
+    proa: `Urgencia quirúrgica. El objetivo en paliativos es el control del dolor y de los síntomas. Hemocultivos antes del tratamiento. TC para extensión si situación lo permite. Valorar con equipo el beneficio del desbridamiento quirúrgico según pronóstico.`
+  },
+  pal_ulceras: {
+    scenario: "Úlceras por presión y abscesos (Paliativos)",
+    organisms: ["S. aureus", "BGN (E. coli, Klebsiella, Proteus)", "Anaerobios (Bacteroides)", "Flora mixta polimicrobiana"],
+    treatment: `<strong>Absceso:</strong> Drenaje quirúrgico. ATB sistémico solo si signos sistémicos de infección.<br><strong>Úlcera por presión con signos sistémicos:</strong> <span class="drug">Amoxicilina/clavulánico 875-125mg/8h VO</span> o <span class="drug">Cloxacilina 2g/4-6h IV</span> + <span class="drug">Metronidazol 500mg/8h</span>.`,
+    altTitle: "Alergia β-lactámicos / SARM",
+    alternative: `Alergia: <span class="drug">Clindamicina 300-600mg/8h VO/IV</span> + <span class="drug">Aztreonam 1g/8h IV</span>.<br>SARM: <span class="drug">Linezolid 600mg/12h VO/IV</span> o <span class="drug">Vancomicina 15-20 mg/kg/12h IV</span>.`,
+    proa: `Cultivo por punción aspirada, no por frotis superficial. En úlceras crónicas la colonización es la norma; no tratar sin signos sistémicos. Control del dolor. Considerar desbridamiento para control de síntomas.`
+  },
   pal_abd: {
     scenario: "Infecciones intraabdominales (Primaria, Secundaria, Terciaria, Vía biliar - Paliativos)",
-    organisms: ["E. coli, enterobacterias", "BGN BLEE", "Candida", "Anaerobios"],
-    treatment: `<strong>Peritonitis Primaria:</strong> <span class="drug">Ceftriaxona 1-2g iv o SC</span>.<br><strong>Peritonitis Secundaria (Comunitaria sin sepsis):</strong> <span class="drug">Amoxicilina-clavulánico 875-125mg/8h vo</span> o <span class="drug">Ciprofloxacino</span> + <span class="drug">Metronidazol</span>.<br><strong>Colecistitis/Colangitis:</strong> <span class="drug">Piperacilina/Tazobactam 4,5g/6h iv</span>.`,
-    altTitle: "Sepsis / Riesgo BLEE",
-    alternative: `<span class="drug">Meropenem 1g/8h iv</span> o <span class="drug">Piperacilina/Tazobactam</span> +/- <span class="drug">Vancomicina</span>.<br>Alergia a β-lactámicos: <span class="drug">Aztreonam</span> + <span class="drug">Vancomicina</span> + <span class="drug">Metronidazol</span> (o Tigeciclina).`,
-    proa: `Importancia de control del foco infeccioso (cirugía o drenaje).`
+    organisms: ["E. coli, enterobacterias", "BGN BLEE", "Candida", "Anaerobios", "SARM (terciaria)"],
+    treatment: `<strong>Peritonitis Primaria:</strong> <span class="drug">Ceftriaxona 1-2g IV/SC</span>. Riesgo BLEE: <span class="drug">Ertapenem 1g/24h</span>.<br><strong>Peritonitis Secundaria (comunitaria):</strong> <span class="drug">Amoxicilina/clavulánico 875-125mg/8h VO</span> o <span class="drug">Piperacilina/Tazobactam 4,5g/6h IV</span>. Sepsis: <span class="drug">Meropenem 1g/8h IV</span>.<br><strong>Peritonitis Terciaria:</strong> <span class="drug">Meropenem 1g/8h IV</span> + <span class="drug">Vancomicina 15-20 mg/kg/12h</span> ± <span class="drug">Fluconazol 400mg/24h</span>.<br><strong>Colecistitis/Colangitis:</strong> <span class="drug">Piperacilina/Tazobactam 4,5g/6h IV</span>. Riesgo BLEE: <span class="drug">Ertapenem 1g/24h</span> o <span class="drug">Meropenem 1g/8h IV</span>.`,
+    altTitle: "Alergia a β-lactámicos",
+    alternative: `<span class="drug">Aztreonam 1-2g/8h</span> + <span class="drug">Vancomicina</span> + <span class="drug">Metronidazol 500mg/8h</span> (o Tigeciclina).`,
+    proa: `Importancia del control del foco infeccioso (cirugía o drenaje). En paliativos, valorar el beneficio-riesgo de procedimientos invasivos según pronóstico y objetivos del paciente.`
   },
 
   // =========================================================
