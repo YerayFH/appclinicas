@@ -14,7 +14,7 @@ gtag('config','G-J830XBBQKF',{page_path:location.pathname});
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Optimizador Terapéutico Geriátrico</title>
+<title>GeriFit®</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -29,51 +29,15 @@ gtag('config','G-J830XBBQKF',{page_path:location.pathname});
 }
 body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
 /* --- CABECERO CORREGIDO --- */
-.app-header {
-    background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-blue) 100%);
-    color: #fff;
-    padding: 15px 24px;
-    border-bottom: 4px solid var(--c-amber-md);
-}
-
-.header-container {
-    max-width: 1180px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.app-logo {
-    height: 55px; /* Tamaño ideal para que no descuadre */
-    width: auto;
-    flex-shrink: 0;
-}
-
-.header-text-group { 
-    flex: 1; 
-    text-align: left; 
-}
-
-.app-header h1 {
-    font-size: 19px; 
-    font-weight: 700;
-    margin: 0;
-    line-height: 1.2;
-}
-
-.app-header .sub {
-    font-size: 12px;
-    opacity: 0.9;
-    margin-top: 2px;
-}
-
-/* Para que en móviles el contacto no se amontone */
-@media (max-width: 600px) {
-    .header-container { flex-direction: column; text-align: center; gap: 10px; }
-    .header-text-group { text-align: center; }
-    .app-header h1 { font-size: 17px; }
-}
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:linear-gradient(135deg,#1e3a5f,#2563a8);border-bottom:4px solid var(--c-amber-md)}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:#fff}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:#fff}
+.hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#f59e0b}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
 .wrap{max-width:1180px;margin:0 auto;padding:18px 14px}
 .card {
     background: #fff;
@@ -379,26 +343,6 @@ tr:hover td{background:var(--c-slate-lt)}
 .btn-disc-accept{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:8px;border:1.5px solid #059669;background:#059669;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .16s;white-space:nowrap}
 .btn-disc-accept:hover:not(:disabled){background:#047857;box-shadow:0 0 0 3px rgba(5,150,105,.22)}
 .btn-disc-accept:disabled{opacity:.38;cursor:not-allowed}
-@media(prefers-color-scheme:dark){
-  :root{
-    --c-navy:#93c5fd;--c-blue:#60a5fa;--c-blue-lt:#172554;--c-blue-dk:#93c5fd;
-    --c-amber:#fcd34d;--c-amber-lt:#422006;--c-amber-md:#f59e0b;
-    --c-red:#fca5a5;--c-red-lt:#3d1515;--c-red-dk:#fca5a5;
-    --c-green:#86efac;--c-green-lt:#052e16;
-    --c-purple:#c4b5fd;--c-purple-lt:#2e1065;
-    --c-slate:#94a3b8;--c-slate-lt:#1e293b;--c-border:#334155;
-  }
-  body{background:#0f172a;color:#e2e8f0}
-  .app-header{background:linear-gradient(135deg,#020817 0%,#0f172a 100%)}
-  .disc-overlay{background:rgba(0,0,0,.85)}
-  .disc-modal{background:#1e293b;border-color:#334155}
-  .disc-header{background:#0f172a}
-  .disc-consent-text{color:#cbd5e1}
-  .disc-consent-text strong{color:#e2e8f0}
-  .disc-footer{background:#1e293b;border-top-color:#334155}
-  .disc-footer-meta{color:#64748b}
-  .disc-footer-meta strong{color:#94a3b8}
-}
 </style>
 </head>
 <body>
@@ -442,18 +386,13 @@ tr:hover td{background:var(--c-slate-lt)}
 
 <div class="dup-toast" id="dup-toast"></div>
 
-<header class="app-header">
-    <div class="header-container">
-        <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo Farmacia" class="app-logo"></picture>
-        
-        <div class="header-text-group">
-            <h1>Optimizador terapéutico geriátrico</h1>
-            <div class="sub">
-                YerayFH - de la Mata &middot; FARMACIA HOSPITALARIA<br>
-                Autor: Yeray Reyes de la Mata &nbsp;&middot;&nbsp; <span id="contacto-email"></span>
-            </div>
-        </div>
-    </div>
+<header class="app-header-unified">
+  <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo"></picture>
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">GeriFit&#174;</div>
+  </div>
 </header>
 
 <div class="wrap">
@@ -2291,5 +2230,6 @@ loadFormState();
 /* ═══════════════════════════════════════════════ */
 
 </script>
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 </body>
 </html>
