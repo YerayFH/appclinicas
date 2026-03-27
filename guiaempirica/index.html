@@ -683,7 +683,8 @@ const MODS = [
   { id: "paliativo", label: "14. Paciente paliativo", icon: "🕊️" },
   { id: "pediatria", label: "15. Paciente pediátrico", icon: "👶" },
   { id: "proa", label: "16. Recomendaciones PROA", icon: "📋" },
-  { id: "anexos", label: "17. Anexos", icon: "📎" }
+  { id: "anexos", label: "17. Anexos", icon: "📎" },
+  { id: "telefonos", label: "18. Teléfonos de interés", icon: "📞" }
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -835,13 +836,18 @@ const SUBS = {
   proa: [
     { id: "proa_curb65", label: "Escala CURB-65 (NAC)", desc: "Estratificación de gravedad en neumonía" },
     { id: "proa_interpretacion", label: "Categoría 'I' Sensible", desc: "Nueva definición EUCAST" },
+    { id: "proa_dosis_incrementadas", label: "Dosis S vs I (principales ATB)", desc: "Tablas de dosis estándar e incrementadas" },
     { id: "proa_perfusion", label: "Perfusión Extendida", desc: "Maximización CMI beta-lactámicos" },
     { id: "proa_hemocultivos", label: "Claves de Hemocultivos", desc: "Extracción y contaminantes" }
   ],
   anexos: [
-    { id: "anexo_riesgos", label: "Factores de Riesgo", desc: "SARM, BLEE, Pseudomonas, Candida" },
-    { id: "anexo_sepsis", label: "Detección de Sepsis", desc: "Manejo en la primera hora" },
-    { id: "anexo_aureus_candida", label: "Manejo Bacteriemias", desc: "S. aureus y Candidemia" }
+    { id: "anexo_riesgos", label: "Factores de Riesgo", desc: "SARM, BLEE, Enterococos, Candida, Acinetobacter" },
+    { id: "anexo_sepsis", label: "Detección de Sepsis", desc: "Criterios y manejo urgente" },
+    { id: "anexo_aureus", label: "Bacteriemia por S. aureus", desc: "Tratamiento, medidas y duración" },
+    { id: "anexo_candida", label: "Candidemia", desc: "Tratamiento, medidas y duración" }
+  ],
+  telefonos: [
+    { id: "tel_interes", label: "Teléfonos de interés", desc: "Enf. Infecciosas, Farmacia, Microbiología" }
   ]
 };
 
@@ -1026,7 +1032,8 @@ proa: `
       <br>
       <strong>CLAVES EN EL MANEJO:</strong><br>
       - URGENCIA MÉDICA: 1ª dosis en la 1ª hora.<br>
-      - Hemocultivo previo siempre.
+      - Hemocultivo previo siempre.<br><br>
+      <div class="ab">📎 <span>Si sepsis grave o shock séptico → <strong>Ver Anexo 17.2: Detección de Sepsis</strong> (módulo Anexos).</span></div>
     `
   },
   febril_nosocomial: {
@@ -1124,7 +1131,7 @@ nac_comunitaria: {
     `,
     altTitle: "Alergia a β-lactámicos",
     alternative: `<span class="drug">Aztreonam 2 g/8h</span>.`,
-    proa: `Solicitar Cultivo esputo, HC y Ag en orina (Legionella/Neumococo). <strong>Avisar a Micro</strong> de potenciales etiologías inhabituales.`
+    proa: `Solicitar Cultivo esputo, HC y Ag en orina (Legionella/Neumococo). <strong>Avisar a Micro</strong> de potenciales etiologías inhabituales.<br><div class="ab">📎 <span>Factores de riesgo de BLEE → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>`
   },
 
   nac_especiales: {
@@ -1225,7 +1232,8 @@ proa: `
       
       <strong>DURACIÓN DEL TRATAMIENTO:</strong><br>
       - General: 7-8 días según evolución.<br>
-      - <strong>Pseudomonas o Acinetobacter: 14 DÍAS.</strong>
+      - <strong>Pseudomonas o Acinetobacter: 14 DÍAS.</strong><br><br>
+      <div class="ab">📎 <span>Factores de riesgo de SARM, BLEE o Acinetobacter → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>
     `
   },
 
@@ -1286,7 +1294,9 @@ proa: `
       
       <strong>RETIRADA OBLIGADA DEL CATÉTER:</strong><br>
       A) <strong>Transitorios:</strong> Siempre que se confirme BRC.<br>
-      B) <strong>Permanentes si:</strong> Shock séptico, S. aureus, Candida, multirresistentes, complicaciones a distancia, HC persistentes, neutropenia o microorganismos productores de endocarditis (Staph, Enterococcus) en portadores de dispositivos.
+      B) <strong>Permanentes si:</strong> Shock séptico, S. aureus, Candida, multirresistentes, complicaciones a distancia, HC persistentes, neutropenia o microorganismos productores de endocarditis (Staph, Enterococcus) en portadores de dispositivos.<br><br>
+      <div class="ab">📎 <span>Si bacteriemia por <em>S. aureus</em> → <strong>Ver Anexo 17.3: Bacteriemia por S. aureus</strong> (módulo Anexos).</span></div>
+      <div class="ab">📎 <span>Si bacteriemia por <em>Candida spp.</em> → <strong>Ver Anexo 17.4: Candidemia</strong> (módulo Anexos).</span></div>
     `
   },
 
@@ -1316,7 +1326,9 @@ proa: `
       • Etiología <strong>S. aureus, Candida sp.</strong> o multirresistentes.<br>
       • Complicaciones a distancia (osteomielitis, endocarditis).<br>
       • HC persistentes tras tto. adecuado.<br>
-      • Paciente con neutropenia.
+      • Paciente con neutropenia.<br><br>
+      <div class="ab">📎 <span>Si bacteriemia por <em>S. aureus</em> → <strong>Ver Anexo 17.3: Bacteriemia por S. aureus</strong> (módulo Anexos).</span></div>
+      <div class="ab">📎 <span>Si bacteriemia por <em>Candida spp.</em> → <strong>Ver Anexo 17.4: Candidemia</strong> (módulo Anexos).</span></div>
     `
   },
 
@@ -1356,7 +1368,9 @@ proa: `
       
       <strong>3. ABSCESO:</strong> Valorar drenaje quirúrgico.<br>
       <strong>4. DURACIÓN:</strong> 5 días en no complicadas; 10-14 días en complicadas.<br>
-      <strong>5. OTRAS MEDIDAS:</strong> Elevación del área afecta (<strong>férula de Brawn</strong> en MMII), hidratación de la piel y presoterapia en linfedema.
+      <strong>5. OTRAS MEDIDAS:</strong> Elevación del área afecta (<strong>férula de Brawn</strong> en MMII), hidratación de la piel y presoterapia en linfedema.<br><br>
+      <div class="ab">📎 <span>Si bacteriemia por <em>S. aureus</em> confirmada → <strong>Ver Anexo 17.3: Bacteriemia por S. aureus</strong> (módulo Anexos).</span></div>
+      <div class="ab">📎 <span>Para valorar factores de riesgo de SARM → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>
     `
   },
 
@@ -1418,7 +1432,8 @@ piel_necrosante: {
       
       <strong>3. IMAGEN:</strong> Rx comparada (> 2 semanas de úlcera) o RMN si mala evolución.<br>
       <strong>4. DURACIÓN:</strong> Según evolución. Si osteomielitis: mínimo 6 semanas.<br>
-      <strong>5. LIMPIEZA QUIRÚRGICA:</strong> Imprescindible para el éxito terapéutico.
+      <strong>5. LIMPIEZA QUIRÚRGICA:</strong> Imprescindible para el éxito terapéutico.<br><br>
+      <div class="ab">📎 <span>Para valorar factores de riesgo de SARM o BLEE → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>
     `
   },
   piel_carne_pescado: {
@@ -1726,7 +1741,7 @@ its_agresion: {
     treatment: `<strong>SIN SEPSIS GRAVE O SHOCK SÉPTICO:</strong><br>Sin factores riesgo BLEE: <span class="drug">Ceftriaxona 1g/24h</span><br>Con factores riesgo BLEE: <span class="drug">Ceftriaxona 2g/24h</span> + <span class="drug">Amikacina 15 mg/Kg/d</span> ó <span class="drug">Ertapenem 1g/d</span> ó <span class="drug">Piperacilina-Tazobactam 4g/6h</span><hr class="div"><strong>SEPSIS GRAVE o SHOCK SÉPTICO:</strong><br><span class="drug">Meropenem 1g/8h</span><br>Riesgo de enterococos: Añadir <span class="drug">Ampicilina 1-2g/4-6h</span> ó <span class="drug">Vancomicina 15-20 mg/kg/12h</span> (si shock séptico).`,
     altTitle: "Alergia a β-lactámicos",
     alternative: `<span class="drug">Aztreonam 1 gr/8h IV</span>.<br>Si sepsis grave o shock: <span class="drug">Aztreonam 2g/8h</span> + <span class="drug">Amikacina 15 mg/Kg/24h</span> (una dosis diaria).`,
-    proa: `Urocultivo previo al inicio. Tras defervescencia, valorar secuenciación a tratamiento oral hasta completar 7 días (10-14 días si alteraciones de vía urinaria).`
+    proa: `Urocultivo previo al inicio. Tras defervescencia, valorar secuenciación a tratamiento oral hasta completar 7 días (10-14 días si alteraciones de vía urinaria).<br><div class="ab">📎 <span>Para valorar factores de riesgo de BLEE o Enterococos → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div><div class="ab">📎 <span>Si sepsis grave o shock séptico → <strong>Ver Anexo 17.2: Detección de Sepsis</strong> (módulo Anexos).</span></div>`
   },
   uro_sepsis_nosocomial: {
     scenario: "Sepsis urinaria de origen nosocomial",
@@ -1734,7 +1749,7 @@ its_agresion: {
     treatment: `<span class="drug">Piperacilina/Tazobactam 4gr/8h</span>.<hr class="div">Riesgo BLEE: <span class="drug">Meropenem 1 gr/8h</span> o <span class="drug">Imipenem 500 mg/6h</span><br>Riesgo enterococos: Añadir <span class="drug">Vancomicina 15-20mg/kg/12h</span><br>Riesgo Candida (≥2 factores): Añadir <span class="drug">Fluconazol 800 mg IV 1ª dosis</span> seguido de 400 mg/24h.`,
     altTitle: "Alergias o Alternativas",
     alternative: `Alergia β-lactámicos: <span class="drug">Aztreonam 2g/8h</span> + <span class="drug">Amikacina 15 mg/kg/24h IV</span>.<br>Sustituir Fluconazol por Anidulafungina si: shock séptico, uso previo azoles o colonización por levaduras resistentes.`,
-    proa: `Urocultivo y hemocultivo previo al tratamiento. Adecuar antibioterapia a estudios microbiológicos. Descartar otros focos.`
+    proa: `Urocultivo y hemocultivo previo al tratamiento. Adecuar antibioterapia a estudios microbiológicos. Descartar otros focos.<br><div class="ab">📎 <span>Factores de riesgo de BLEE, Candida → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div><div class="ab">📎 <span>Si sepsis grave o shock séptico → <strong>Ver Anexo 17.2: Detección de Sepsis</strong> (módulo Anexos).</span></div>`
   },
   uro_epididimitis: {
     scenario: "Epididimitis y orquitis",
@@ -1778,7 +1793,7 @@ its_agresion: {
     treatment: `<span class="drug">Amoxicilina/clavulánico 1-2 g/8h IV</span> o <span class="drug">Ceftriaxona 2g/24h</span> + <span class="drug">Metronidazol 500 mg/8h</span>.<hr class="div">- Si ATB mes previo: <span class="drug">Piperacilina/tazobactam 4 g/ cada 6 h</span><br>- Si riesgo de BLEE: <span class="drug">Ertapenem 1 g/24 h</span> ó <span class="drug">Meropenem 1g/8 h</span> (si datos de sepsis).`,
     altTitle: "Alergia a β-lactámicos",
     alternative: `1ª opción: <span class="drug">Aztreonam 1 g/8h</span> + <span class="drug">Metronidazol 500 mg/8h</span><br>Alternativa: <span class="drug">Tigeciclina 100 mg (1ª dosis)</span> seguido de 50 mg/12h.`,
-    proa: `Realizar TAC. Recomendable enviar muestras quirúrgicas a Micro. Drenaje radiológico o quirúrgico de las colecciones. Duración: 3-5 días (Apendicitis/Colecistitis compl), ≥7 días el resto.`
+    proa: `Realizar TAC. Recomendable enviar muestras quirúrgicas a Micro. Drenaje radiológico o quirúrgico de las colecciones. Duración: 3-5 días (Apendicitis/Colecistitis compl), ≥7 días el resto.<br><div class="ab">📎 <span>Factores de riesgo de BLEE → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>`
   },
   abd_peritonitis_nosocomial: {
     scenario: "Peritonitis Secundaria o Absceso intraabdominal nosocomial o postquirúrgico",
@@ -1786,7 +1801,7 @@ its_agresion: {
     treatment: `<span class="drug">Amoxicilina/clavulánico 1 g/8h IV</span> o <span class="drug">Ceftriaxona 2g/24h</span> + <span class="drug">Metronidazol 500 mg/8h</span><br>o <span class="drug">Piperacilina/tazobactam 4 g/ cada 6 h</span>.<hr class="div"><strong>Riesgo SARM o E. faecium:</strong> Piperacilina/tazobactam + <span class="drug">vancomicina 1 g/12h</span>.<br><strong>Riesgo BLEE:</strong> <span class="drug">Meropenem 1 g/8h</span> +/- <span class="drug">Vancomicina 1 g/12h</span>.<br><strong>Riesgo Candida (≥2 factores):</strong> añadir <span class="drug">Fluconazol 800 mg (1ª dosis)</span> seguido de 400 mg/24h.`,
     altTitle: "Alergia a β-lactámicos",
     alternative: `1ª opción: <span class="drug">Aztreonam 1 g/8h</span> + <span class="drug">Vancomicina 1 g/12h</span> ó <span class="drug">Linezolid 600 mg/12 h</span> + <span class="drug">Metronidazol 500 mg/8h</span><br>Alternativa: sustituir Vancomicina/Metronidazol por <span class="drug">Tigeciclina</span>.`,
-    proa: `Realizar TAC y enviar muestras quirúrgicas. Drenaje radiológico o quirúrgico. Duración: ≥7 días.`
+    proa: `Realizar TAC y enviar muestras quirúrgicas. Drenaje radiológico o quirúrgico. Duración: ≥7 días.<br><div class="ab">📎 <span>Factores de riesgo de SARM, BLEE o Candida → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>`
   },
   abd_peritonitis_terciaria: {
     scenario: "Peritonitis Terciaria (ATB previo amplio espectro, recidiva peritonitis nosocomial)",
@@ -1794,7 +1809,7 @@ its_agresion: {
     treatment: `<span class="drug">Meropenem 1 g /8 h</span> + <span class="drug">Vancomicina 1 g/12 h</span> ó <span class="drug">Linezolid 600 mg/12 h</span> + <span class="drug">Fluconazol 800 mg (1ª dosis)</span> seguido de 400 mg/24 h.`,
     altTitle: "Alergia a β-lactámicos",
     alternative: `1ª opción: <span class="drug">Aztreonam 1 g/8h</span> + <span class="drug">Vancomicina 1 g/12h</span> + <span class="drug">Metronidazol 500 mg/8h</span><br>Alternativa: <span class="drug">Aztreonam 1 g/8 h</span> + <span class="drug">Tigeciclina</span>.`,
-    proa: `Drenaje quirúrgico y/o radiológico. Sustituir Fluconazol por Anidulafungina si: shock séptico, tratamiento previo azoles, colonización resistente. Duración: ≥7 días.`
+    proa: `Drenaje quirúrgico y/o radiológico. Sustituir Fluconazol por Anidulafungina si: shock séptico, tratamiento previo azoles, colonización resistente. Duración: ≥7 días.<br><div class="ab">📎 <span>Factores de riesgo de BLEE o Candida → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div><div class="ab">📎 <span>Si candidemia confirmada → <strong>Ver Anexo 17.4: Candidemia</strong> (módulo Anexos).</span></div>`
   },
   abd_diverticulitis_amb: {
     scenario: "Diverticulitis Aguda No Complicada (Tratamiento Ambulatorio)",
@@ -1810,7 +1825,7 @@ its_agresion: {
     treatment: `Si sepsis, manipulación biliar previa, nosocomial o riesgo enterococo: <span class="drug">Piperacilina/tazobactam 4 g/8 h</span>.<hr class="div">Si riesgo BLEE: <span class="drug">Ertapenem 1 g/24 h</span> ó <span class="drug">Meropenem 1g/8 h</span> (preferible si sepsis).`,
     altTitle: "Alergia a β-lactámicos",
     alternative: `<span class="drug">Aztreonam 1 g/8h</span> o <span class="drug">Amikacina 15 mg/kg/24h</span> + <span class="drug">Tigeciclina 100 mg (1ª dosis)</span> seguido de 50 mg/d.`,
-    proa: `Si colecistitis: considerar cirugía <48h. Si colangitis: drenaje biliar (CPRE preferible). Duración: 5-7 días.`
+    proa: `Si colecistitis: considerar cirugía <48h. Si colangitis: drenaje biliar (CPRE preferible). Duración: 5-7 días.<br><div class="ab">📎 <span>Factores de riesgo de BLEE → <strong>Ver Anexo 17.1: Factores de Riesgo</strong> (módulo Anexos).</span></div>`
   },
   abd_colecistitis_alitiasica: {
     scenario: "Colecistitis aguda alitiásica",
@@ -2299,56 +2314,221 @@ its_agresion: {
     proa: `El CURB-65 es una escala validada para estratificar la gravedad de la NAC en urgencias. Complementar con criterios clínicos: saturación O2, afectación multilobar, descompensación de comorbilidades y capacidad de seguimiento ambulatorio.`
   },
   proa_interpretacion: {
-    scenario: "Interpretación del antibiograma: 'I' es SENSIBLE",
+    scenario: "Interpretación del antibiograma: 'I' es SENSIBLE incrementando la exposición",
     organisms: ["Categorías EUCAST 2019 (S, I, R)"],
-    treatment: `Un microorganismo se clasifica como <strong>"I" (Sensible incrementando la exposición)</strong> cuando existe una alta probabilidad de éxito terapéutico si se aumenta la dosis o la exposición al fármaco.<br><br>Por tanto, NO significa "intermedio" con éxito incierto. Significa que ES POSIBLE USAR EL ANTIBIÓTICO, pero a <strong>dosis incrementada</strong>.`,
-    altTitle: "Dosis incrementadas comunes",
-    alternative: `Ejemplos de dosis "I":<br><strong>Amoxicilina-clav:</strong> 875/125 mg c/8h.<br><strong>Cefepime:</strong> 2 g c/8h.<br><strong>Meropenem:</strong> 2 g c/8h (pasar en 30 min).<br><strong>Levofloxacino:</strong> 750 mg c/24h.`,
-    proa: `La única diferencia entre "S" (dosis estándar) e "I" es la cantidad de fármaco necesaria en el lugar de la infección para alcanzar respuesta clínica. Ejemplo: Pseudomonas ya nunca será "S" a quinolonas, sólo "I" o "R".`
+    treatment: `<strong>S — Sensible a dosis estándar:</strong> alta probabilidad de éxito con dosis habitual.<br><strong>I — Sensible incrementando la exposición:</strong> alta probabilidad de éxito si se aumenta la dosis o la concentración en el lugar de infección. <em>No significa "intermedio" ni fracaso incierto.</em><br><strong>R — Resistente:</strong> alta probabilidad de fracaso incluso con mayor exposición.<br><br>Por tanto, cuando un ATB aparece como <strong>"I", ES POSIBLE USARLO</strong>, pero a dosis incrementada. Los nuevos puntos de corte EUCAST hacen que muchos antibióticos pasen a categoría "I": no son más resistentes, pero requieren dosis altas para mayor eficacia.`,
+    altTitle: "Ejemplo práctico",
+    alternative: `Pseudomonas aeruginosa ya nunca será "S" a quinolonas, sólo "I" o "R".<br>Si es "I": usar <span class="drug">Ciprofloxacino 750 mg/12h VO</span> o <span class="drug">Levofloxacino 750 mg/24h VO/IV</span>.<br><br>Ver tabla completa de dosis S/I en → <em>16. PROA → Dosis S vs I (principales ATB)</em>`,
+    proa: `La única diferencia entre "S" (dosis estándar) e "I" es la cantidad de fármaco necesaria en el lugar de la infección para alcanzar respuesta clínica adecuada. Con la misma CMI, antes se informaba como "S".`
+  },
+  proa_dosis_incrementadas: {
+    scenario: "Dosis recomendadas según categoría S o I — principales antibióticos",
+    organisms: ["Penicilinas", "Cefalosporinas", "Carbapenémicos", "Quinolonas"],
+    treatment: `<strong>PENICILINAS</strong><hr class="div"><strong>Ampicilina:</strong> S: 2g/8h IV · I: 2g/6h IV (meningitis: 2g/4h)<br><strong>Amoxicilina IV:</strong> S: 1g/8-6h · I: 2g/4h IV<br><strong>Amoxicilina VO:</strong> S: 500mg/8h · I: 750mg-1g/8h<br><strong>Amox-clavulánico IV:</strong> S: 1g amox/8h IV · I: 2g/4h IV<br><strong>Amox-clavulánico VO:</strong> S: 500/125mg/8h · I: 875/125mg/8h<br><strong>Pip-Tazobactam:</strong> S: 4g/8h en perf. extendida 4h · I: 4g/6h en perf. extendida 3h<hr class="div"><strong>CEFALOSPORINAS</strong><hr class="div"><strong>Cefepime:</strong> S: 2g/8h IV o 1g/6h · I: 2g/8h IV<br><strong>Cefotaxima:</strong> S: 2g/8h o 1g/6h IV · I: 2g/8h o 1g/4h IV (meningitis: 2g/8h o 1g/4h)<br><strong>Ceftazidima:</strong> S: 1g/8h IV · I: 2g/8h o 1g/4h IV<br><strong>Cefuroxima IV:</strong> S: 750mg/8h · I: 1500mg/8h<br><strong>Cefuroxima VO:</strong> S: 250-500mg/12h · I: 500-750mg/12h`,
+    altTitle: "Carbapenémicos y Quinolonas",
+    alternative: `<strong>CARBAPENÉMICOS</strong><hr class="div"><strong>Imipenem:</strong> S: 500mg/6h en 1h · I: 1g/6h en 30 min<br><strong>Meropenem:</strong> S: 1g/8h en 30 min · I: 2g/8h en 30 min (meningitis: 2g/8h)<br><strong>Meropenem-vaborbactam:</strong> S e I: 2g/8h en 3h<hr class="div"><strong>QUINOLONAS</strong><hr class="div"><strong>Ciprofloxacino IV:</strong> S: 400mg/12h · I: 400mg/8h (meningitis: 400mg/12h)<br><strong>Ciprofloxacino VO:</strong> S: 500mg/12h · I: 750mg/12h<br><strong>Levofloxacino IV:</strong> S: 500mg/24h · I: 750mg/24h o 500mg/12h<br><strong>Levofloxacino VO:</strong> S: 500mg/24h · I: 750mg/24h o 500mg/12h`,
+    proa: `Estas dosis se aplican cuando el antibiograma informa el microorganismo como "I" (sensible incrementando la exposición). Para dosis ajustadas a función renal, consultar ficha técnica o Farmacia Hospitalaria.`
   },
   proa_perfusion: {
-    scenario: "Perfusión extendida de antibióticos",
-    organisms: ["Maximización del tiempo sobre CMI en β-lactámicos"],
-    treatment: `<strong>Cefepime:</strong> Bolo inicial de 2g (30 min). Perfusión extendida: 2g a pasar en 3 horas / cada 8h.<br><strong>Piperacilina-Tazobactam:</strong> Bolo de 4g (30 min). Perfusión: 4g a pasar en 4 horas / cada 6h. (Incompatible con Ringer lactato).<br><strong>Meropenem:</strong> Bolo de 2g (30 min). Perfusión: 2g a pasar en 3 horas / cada 8h.`,
-    altTitle: "Ajuste renal",
-    alternative: `Obligatorio ajustar las frecuencias y/o dosis según ClCr (ver tablas del protocolo). En P-T y Meropenem, utilizar administración intermitente si HD/HFVVC o fallo renal grave.`,
-    proa: `Farmacocinética tiempo-dependiente: su eficacia clínica depende del tiempo que las concentraciones estén por encima de la CMI. Beneficio especialmente en infecciones graves por BGN. Se asocia a mejor pronóstico.`
+    scenario: "Perfusión extendida de antibióticos β-lactámicos",
+    organisms: ["Maximización del tiempo sobre CMI en Cefepime, Pip-Tazo y Meropenem"],
+    treatment: `<strong>CEFEPIME</strong> (estabilidad ≥12h en SSF/SG5%)<br>Bolo inicial: 2g en 30 min → Perfusión extendida: 2g en 3h / cada 8h<br><em>Ajuste renal:</em> CrCl >120: 2g/6h · 60-120: 2g/8h · 30-60: 2g/12h · &lt;30: 2g/24h<br>⚠️ Precaución con toxicidad SNC en IR grave<hr class="div"><strong>PIPERACILINA-TAZOBACTAM</strong> (estabilidad ≤24h en SSF/SG5%)<br>Bolo inicial: 4g en 30 min → Perfusión extendida: 4g en 4h / cada 6h<br><em>Ajuste renal:</em> CrCl >40: 4g/6h · 20-40: 3g/6h · &lt;20 o HD/HFVVC: administración intermitente<br>⚠️ Incompatible con bicarbonato sódico y Ringer lactato. No administrar junto a aminoglucósidos (los inactiva)<hr class="div"><strong>MEROPENEM</strong> (estabilidad ≤4h en SSF/SG5%)<br>Bolo inicial: 2g en 30 min → Perfusión extendida: 2g en 3h / cada 8h<br><em>Ajuste renal:</em> CrCl ≥51: 2g/8h · 26-50: 1g/8h · &lt;26 o HD/HFVVC: administración intermitente`,
+    altTitle: "Indicaciones y fundamento",
+    alternative: `Indicado en:<br>- Infecciones graves por BGN con CMI sensibles pero elevadas (categoría "I")<br>- Tratamiento empírico en sepsis grave por BGN con alta sospecha de CMI elevada<br><br>La farmacocinética β-lactámica es <strong>tiempo-dependiente</strong>: la eficacia depende del tiempo en que las concentraciones superen la CMI. La perfusión extendida es superior a la perfusión corta para alcanzar la diana terapéutica, y se asocia a mejor pronóstico.`,
+    proa: `Preparar siempre en suero fisiológico 0,9% (o SG 5% si incompatibilidad). Respetar estabilidad: Meropenem debe prepararse en el momento (≤4h). Si hay duda sobre compatibilidad o ajuste renal, consultar Farmacia Hospitalaria (Busca: 641.792).`
   },
   proa_hemocultivos: {
     scenario: "Claves en la toma de hemocultivos",
-    organisms: ["Detección de bacteriemias y contaminación"],
-    treatment: `<strong>Indicaciones:</strong> Sepsis/FOD, neumonía, endocarditis, etc.<br><strong>Extracción aséptica:</strong> Guantes/mascarilla. Limpiar tapones con clorhexidina. Desinfección piel 30 seg (clorhexidina). Inocular primero frasco anaerobio.<br><strong>Obtención:</strong> 2 extracciones periféricas separadas 5-60 min. Adultos 20ml por extracción (10 aerobio / 10 anaerobio). NUNCA por catéter salvo HC diferencial.`,
-    altTitle: "Hemocultivos de control",
-    alternative: `Realizar HC de control a las 72h si S. aureus o S. lugdunensis; a las 48h si Candida spp.<br>También en endocarditis, foco en catéter o persistencia de fiebre.`,
-    proa: `Errores comunes: Extracción de volumen insuficiente y Hemocultivo único.<br>No contaminantes (siempre tratar): S. aureus, S. pyogenes, S. pneumoniae, BGN, Candida.<br>Contaminantes (frecuentes): S. coagulasa negativos, Cutibacterium, Bacillus.`
+    organisms: ["Bacteriemias y contaminación — obtención, técnica, interpretación"],
+    treatment: `<strong>Indicaciones:</strong> Todo cuadro febril/sepsis en paciente hospitalizado o que va a ingresar. FOD. Sepsis con cualquier focalidad (pielonefritis, meningitis, artritis, osteomielitis, neumonía, piel/tejidos blandos, vía biliar, abdomen, sospecha de endocarditis).<hr class="div"><strong>Técnica aséptica:</strong><br>1. Guantes y mascarilla. Limpiar tapones con clorhexidina.<br>2. Desinfectar piel con clorhexidina (30 seg) o povidona yodada (1,5-2 min).<br>3. Punción sin tocar la piel ya desinfectada.<br>4. Inocular primero frasco anaerobio (evitar entrada de aire), después aerobio.<hr class="div"><strong>Normas de obtención:</strong><br>- 2 extracciones de sangre periférica en punciones diferentes, con 5-60 min de intervalo.<br>- Adultos: 20 ml por extracción (10 ml por frasco). Nunca extracción única.<br>- NUNCA obtener por catéter salvo protocolo BRC (bacteriemia relacionada con catéter).<br>- Enviar inmediatamente al laboratorio. Si no es posible: temperatura ambiente, NUNCA refrigerado.`,
+    altTitle: "Hemocultivos de control y errores comunes",
+    alternative: `<strong>Cuándo realizar HC de control:</strong><br>- S. aureus o S. lugdunensis: a las 72h<br>- Candida spp.: a las 48h<br>- Enterococcus ssp.: valorar (se relaciona con pronóstico)<br>- Catéter larga duración: >72h y retirada si bacteriemia persistente<br>- Sospecha de endocarditis o infección endovascular<br>- Persistencia o reaparición de fiebre durante el tratamiento<hr class="div"><strong>Errores comunes:</strong><br>1. Contaminación por mala antisepsia → usar clorhexidina/povidona estrictamente<br>2. Volumen insuficiente (extraer 8-10 ml/frasco en adultos)<br>3. Hemocultivo único (siempre mínimo 2 extracciones distintas)<br>4. Extracción por catéter sin justificación`,
+    proa: `Contaminantes habituales (pueden no ser significativos si único HC+): S. coagulasa negativos, Bacillus spp., Corynebacterium spp., Micrococcus, Cutibacterium (Propionibacterium).<br>No contaminantes (SIEMPRE significativos): S. aureus, S. pyogenes, S. pneumoniae, H. influenzae, Enterobacterias, Bacteroides spp., Pseudomonas aeruginosa, Candida spp.`
   },
 
   // =========================================================
   // 17. ANEXOS Y FACTORES DE RIESGO
   // =========================================================
   anexo_riesgos: {
-    scenario: "Factores de Riesgo de gérmenes específicos",
+    scenario: "Factores de Riesgo de gérmenes específicos (Anexo 17.1)",
     organisms: ["SARM", "BLEE", "Enterococos", "Candida", "Acinetobacter"],
-    treatment: `<strong>SARM:</strong> Nosocomial, residencia, colonización previa, inmigrantes sudamérica con lesiones necróticas.<br><strong>BLEE:</strong> Sepsis grave + uso quinolonas/cefalosporinas, ITU repetición, sonda, DM, nosocomial.<br><strong>Enterococos (ITU):</strong> Ancianos con HBP, postoperados, sonda, uso previo cefalosporinas o aztreonam.`,
+    treatment: `
+      <strong>SARM:</strong><br>
+      • Infección nosocomial o procedente de residencia.<br>
+      • Colonización previa conocida por SARM.<br>
+      • Herida necrótica, piodermitis o lesiones cutáneas abscesificadas.<br>
+      • Inmigrantes procedentes de Sudamérica con lesiones necróticas.<br>
+      • Uso previo de ATB con selección de SARM (quinolonas, cefalosporinas).<br><hr class="div">
+      <strong>BLEE:</strong><br>
+      <em>Con sepsis grave / shock séptico → iniciar carbapenem directamente:</em><br>
+      • Cualquier factor de riesgo es indicación de cubrir BLEE.<br><br>
+      <em>Sin sepsis grave → ≥ 2 factores:</em><br>
+      • ATB previo últimos 3 meses (quinolonas o cefalosporinas).<br>
+      • Hospitalización previa en los últimos 3 meses.<br>
+      • ITU de repetición o manipulación urológica reciente.<br>
+      • Portador de sonda vesical permanente.<br>
+      • Diabetes mellitus con complicaciones.<br>
+      • Inmunodepresión (trasplante, corticoterapia crónica, VIH).<br>
+      • Viaje reciente a área endémica (India, Sudeste asiático, Magreb).<br><hr class="div">
+      <strong>Enterococos (especialmente en ITU):</strong><br>
+      • Varones ancianos con hiperplasia benigna de próstata (HBP).<br>
+      • Postoperados abdominales o urológicos.<br>
+      • Portadores de sonda vesical.<br>
+      • Uso previo de cefalosporinas o aztreonam (selección natural).
+    `,
     altTitle: "Candida y Acinetobacter",
-    alternative: `<strong>Candida:</strong> Colonización previa, cirugía abdominal, NPT, UCI, pancreatitis grave, antibióticos último año.<br><strong>Acinetobacter:</strong> Estancia UCI, ATB previo (carbapenemas), ventilación mecánica, APACHE II elevado.`,
-    proa: `Valora estos factores a la hora de decidir la cobertura antibiótica empírica de amplio espectro en urgencias o ingresos.`
+    alternative: `
+      <strong>Candida (≥ 2 factores = cobertura empírica):</strong><br>
+      • Colonización previa documentada en ≥ 2 focos distintos.<br>
+      • Cirugía abdominal mayor reciente (especialmente perforaciones).<br>
+      • Nutrición parenteral total (NPT).<br>
+      • Estancia prolongada en UCI (> 7 días).<br>
+      • Pancreatitis grave o necrosis pancreática.<br>
+      • Antibioterapia de amplio espectro prolongada en el último año.<br>
+      • Portador de catéter femoral (riesgo aumentado de candidemia).<br><hr class="div">
+      <strong>Acinetobacter baumannii:</strong><br>
+      <em>Factores de riesgo generales:</em><br>
+      • Estancia prolongada en UCI (especialmente > 15 días).<br>
+      • ATB previo con carbapenemas (selección directa).<br>
+      • Ventilación mecánica invasiva prolongada.<br>
+      • APACHE II elevado (>15), paciente quemado o trauma severo.<br><br>
+      <em>Acinetobacter resistente a carbapenemas:</em><br>
+      • Tratamiento combinado: <span class="drug">Colistina</span> + <span class="drug">Sulbactam</span> ± <span class="drug">Tigeciclina</span>.<br>
+      • Consultar con Enf. Infecciosas y Microbiología para sinergias.<br><br>
+      <em>Bacteriemia nosocomial (no VAP):</em><br>
+      • Terapia combinada con antibióticos activos frente a A. baumannii.<br>
+      • Retirada/revisión de todos los catéteres y dispositivos.<br><br>
+      <em>VAP por Acinetobacter:</em><br>
+      • Esquema combinado (sulbactam, colistina inhalada ± tigeciclina IV).<br>
+      • Contactar con Microbiología para antibiograma urgente.
+    `,
+    proa: `Identifica factores de riesgo ANTES de prescribir. El tratamiento empírico de amplio espectro sólo está justificado cuando existe evidencia clínica o epidemiológica suficiente. Recuerda desescalar en cuanto se disponga del antibiograma.`
   },
   anexo_sepsis: {
-    scenario: "Detección y manejo precoz de sepsis grave / shock",
-    organisms: ["Identificación temprana"],
-    treatment: `<strong>Actuación inmediata urgente:</strong><br>1. Solicitar lactato sérico.<br>2. Realizar hemocultivos (2 extracciones) INMEDIATAMENTE.<br>3. Administrar antibióticos INMEDIATAMENTE tras el HC.<br>4. Aporte agresivo volumen IV: 20 ml/kg cristaloides (500-1000 ml en 15 min).<br>5. Valorar vasopresores si no hay respuesta a fluidos.<br>6. Control del foco (drenaje, cirugía).`,
-    altTitle: "Criterios",
-    alternative: `Sospecha si: Hipotensión, infiltrados pulmonares, oliguria/creatinina elevada, plaquetopenia, INR alto, Lactato >3, Glasgow alterado.`,
-    proa: `Avisar a UCI / Enf. Infecciosas urgente. Objetivos: TAS >90 o TAM ≥ 65 mmHg, Diuresis ≥ 0.5 ml/kg/h, SatO2 >93%.`
+    scenario: "Detección precoz y manejo de sepsis grave / shock séptico (Anexo 17.2)",
+    organisms: ["Identificación temprana", "qSOFA", "SOFA"],
+    treatment: `
+      <strong>PASO 1 — ¿Puede descartarse sepsis?</strong><br>
+      La sepsis puede descartarse si el paciente NO presenta NINGUNO de los siguientes:<br>
+      1. Temperatura &lt; 36°C o &gt; 38°C.<br>
+      2. Frecuencia cardíaca &gt; 90 lpm.<br>
+      3. Frecuencia respiratoria &gt; 20 rpm.<br>
+      4. Leucocitos &gt; 12.000 o &lt; 4.000/mm³ o &gt; 10% cayados.<br>
+      5. Alteración del nivel de consciencia (Glasgow &lt; 15).<br>
+      6. Glucemia &gt; 110 mg/dl en paciente sin DM conocida.<br>
+      7. PCR &gt; 2 mg/dL o PCT &gt; 0,5 ng/mL de forma brusca.<br><hr class="div">
+      <strong>PASO 2 — Criterios de Sepsis Grave / Shock Séptico:</strong><br>
+      <em>Sepsis grave</em> (SIRS + disfunción de órgano):<br>
+      • Lactato sérico &gt; 2 mmol/L.<br>
+      • Oliguria (diuresis &lt; 0,5 ml/kg/h durante &gt; 2h) o creatinina &gt; 2 mg/dL.<br>
+      • Plaquetas &lt; 100.000/mm³ o INR &gt; 1,5.<br>
+      • Bilirrubina &gt; 2 mg/dL.<br>
+      • Saturación venosa mixta (SvO2) &lt; 70%.<br><br>
+      <em>Shock séptico</em>:<br>
+      • TAS &lt; 90 mmHg o TAM &lt; 65 mmHg refractaria a fluidoterapia adecuada.<br>
+      • Necesidad de vasopresores para mantener TAM ≥ 65 mmHg.<br>
+      • Lactato &gt; 4 mmol/L independientemente de la tensión arterial.
+    `,
+    altTitle: "Actuación Inmediata (10 pasos)",
+    alternative: `
+      <strong>ACTUACIÓN INMEDIATA URGENTE — primeros 60 minutos:</strong><br>
+      1. Solicitar <strong>lactato sérico urgente</strong> (marcador pronóstico clave).<br>
+      2. Extraer <strong>hemocultivos × 2</strong> (sitios y tiempos distintos) <em>ANTES</em> del ATB.<br>
+      3. Administrar <strong>antibiótico de amplio espectro</strong> en la primera hora (según foco).<br>
+      4. <strong>Fluidoterapia agresiva IV:</strong> 30 ml/kg de cristaloides (SF o Ringer) en 30-60 min.<br>
+      5. Si TAS &lt; 90 tras fluidos → iniciar <strong>Noradrenalina</strong> (objetivo TAM ≥ 65 mmHg).<br>
+      6. <strong>Control del foco</strong>: drenaje de abscesos, retirada de catéteres infectados, cirugía urgente.<br>
+      7. Control de lactato a las 2h si inicial &gt; 2 mmol/L (objetivo: reducción &gt; 10%).<br>
+      8. Monitorizar <strong>diuresis</strong>: objetivo ≥ 0,5 ml/kg/h (sondaje si inestable).<br>
+      9. <strong>Avisar a UCI</strong> si: lactato &gt; 4, shock refractario, fallo multiorgánico.<br>
+      10. Reevaluar ATB en 24-48h → <strong>desescalada</strong> en cuanto sea posible.
+    `,
+    proa: `Avisar a Enf. Infecciosas / UCI ante sepsis grave o shock séptico. Objetivos hemodinámicos: TAM ≥ 65 mmHg, Diuresis ≥ 0,5 ml/kg/h, SatO2 > 93%, Lactato decreciente. Reducir el tiempo hasta el antibiótico a &lt; 60 minutos salva vidas.`
   },
-  anexo_aureus_candida: {
-    scenario: "Manejo de S. aureus y Candidemia",
-    organisms: ["S. aureus", "Candida"],
-    treatment: `<strong>S. aureus:</strong><br>SASM: <span class="drug">Cloxacilina 2g/4-6 hs</span>. SARM/Alergia: <span class="drug">Vancomicina</span> o <span class="drug">Daptomicina</span>.<br>Obligatorio HC de control a los 3 días y ecocardiograma si complicada.<br>Duración: 14 días (no complicada), 4 semanas (complicada), 4-6 sem (endo/osteo).<hr class="div"><strong>Candidemia:</strong><br>Sensible: <span class="drug">Fluconazol 800 mg (carga) luego 400 mg/d</span>. Resistente/Shock: <span class="drug">Caspofungina o Anidulafungina</span>.<br>Obligatorio: Retirar catéter, HC de control, Fondo de Ojo y Ecocardiograma.`,
-    altTitle: "Contactos PROA",
-    alternative: `El manejo requiere seguimiento estrecho. Duración de candidemia: 14 días tras último HC negativo (4 semanas si coriorretinitis).`,
-    proa: `Reducen significativamente la mortalidad (30%). Retirada precoz de catéteres y control de focos abscesificados obligatorio.`
+  anexo_aureus: {
+    scenario: "Bacteriemia por S. aureus — Tratamiento y seguimiento (Anexo 17.3)",
+    organisms: ["SASM", "SARM"],
+    treatment: `
+      <strong>SASM (Sensible a meticilina):</strong><br>
+      • <span class="drug">Cloxacilina 2g/4h IV</span> — primera elección siempre.<br>
+      • Alternativa: <span class="drug">Cefazolina 2g/8h IV</span> (equivalente y mejor tolerada).<br><hr class="div">
+      <strong>SARM o alergia grave a β-lactámicos:</strong><br>
+      • <span class="drug">Vancomicina 15-20 mg/kg/8-12h IV</span> (monitorizar niveles, objetivo AUC/CMI 400-600).<br>
+      • <span class="drug">Daptomicina 6-10 mg/kg/24h IV</span> (alternativa si intolerancia/fallo a vancomicina).<br><hr class="div">
+      <strong>Alergia no grave a β-lactámicos (SASM):</strong><br>
+      • <span class="drug">Cefazolina 2g/8h IV</span> (riesgo de reacción cruzada &lt; 2%).<br>
+      • Si alergia grave documentada → Vancomicina o Daptomicina.
+    `,
+    altTitle: "Medidas obligatorias y duración",
+    alternative: `
+      <strong>MEDIDAS ADICIONALES OBLIGATORIAS:</strong><br>
+      1. <strong>HC de control a las 72h</strong> y cada 48-72h hasta negativización.<br>
+      2. <strong>Ecocardiograma</strong>: transtorácico (ETT); si negativo y sospecha persistente → transesofágico (ETE).<br>
+      3. <strong>Búsqueda de focos metastásicos</strong>: RMN columna (espondilodiscitis), articulaciones, TC/PET si prolongada.<br>
+      4. <strong>Retirada de material protésico</strong> si posible (CVC, marcapasos, prótesis).<br>
+      5. Consulta obligatoria a <strong>Enfermedades Infecciosas</strong>.<br><hr class="div">
+      <strong>BACTERIEMIA COMPLICADA si:</strong><br>
+      • HC positivos &gt; 72h con tratamiento adecuado.<br>
+      • Foco metastásico (espondilodiscitis, artritis séptica, absceso).<br>
+      • Endocarditis infecciosa.<br>
+      • Material protésico no retirado.<br>
+      • Inmunodepresión grave.<br><hr class="div">
+      <strong>DURACIÓN DEL TRATAMIENTO:</strong><br>
+      • No complicada: <strong>14 días IV</strong> (desde primer HC negativo).<br>
+      • Complicada: <strong>4 semanas IV</strong>.<br>
+      • Endocarditis / osteomielitis: <strong>4-6 semanas IV</strong>.
+    `,
+    proa: `La bacteriemia por S. aureus tiene mortalidad del 20-30%. Nunca retirar el ATB sin al menos 14 días IV completados. Reevaluar si fiebre persiste > 72h con tratamiento adecuado → buscar foco metastásico. Consultar siempre con Enf. Infecciosas.`
+  },
+  anexo_candida: {
+    scenario: "Candidemia — Tratamiento y seguimiento (Anexo 17.4)",
+    organisms: ["C. albicans", "C. glabrata", "C. parapsilosis", "C. tropicalis"],
+    treatment: `
+      <strong>C. albicans o C. parapsilosis (sensibles a azoles, paciente estable):</strong><br>
+      • <span class="drug">Fluconazol 800 mg IV (dosis carga)</span> → luego <span class="drug">400 mg/24h IV o VO</span>.<br><hr class="div">
+      <strong>C. glabrata, C. krusei, shock séptico o azoles previos:</strong><br>
+      • <span class="drug">Caspofungina 70 mg IV (carga)</span> → luego <span class="drug">50 mg/24h IV</span>.<br>
+      • O <span class="drug">Anidulafungina 200 mg IV (carga)</span> → luego <span class="drug">100 mg/24h IV</span>.<br>
+      • Paso a Fluconazol VO posible tras estabilización y sensibilidad confirmada.<br><hr class="div">
+      <strong>En caso de Candida no albicans o especie desconocida:</strong><br>
+      • Iniciar equinocandina; ajustar según antifungigrama.
+    `,
+    altTitle: "Medidas obligatorias y duración",
+    alternative: `
+      <strong>MEDIDAS ADICIONALES OBLIGATORIAS:</strong><br>
+      1. <strong>Retirar el catéter venoso central INMEDIATAMENTE</strong> (especialmente si es femoral).<br>
+      2. <strong>HC de control a las 48-72h</strong> y cada 48h hasta negativización.<br>
+      3. <strong>Fondo de ojo</strong>: descartar coriorretinitis/endoftalmitis candidiásica.<br>
+      4. <strong>Ecocardiograma</strong> si candidemia persistente o factores de riesgo de endocarditis.<br>
+      5. Consulta a <strong>Enfermedades Infecciosas</strong> para seguimiento.<br><hr class="div">
+      <strong>DURACIÓN DEL TRATAMIENTO:</strong><br>
+      • <strong>14 días</strong> desde el primer HC negativo (en ausencia de complicaciones).<br>
+      • <strong>4 semanas</strong> si existe coriorretinitis o endoftalmitis.<br>
+      • Mayor duración si endocarditis, artritis séptica u osteomielitis.
+    `,
+    proa: `La candidemia tiene mortalidad del 30-40%. La retirada del catéter reduce la mortalidad a la mitad. Nunca usar Fluconazol empírico si hay shock, azoles previos o alta sospecha de C. glabrata. Siempre consultar con Enf. Infecciosas y solicitar fondo de ojo.`
+  },
+  tel_interes: {
+    scenario: "Teléfonos de interés — Sección 18",
+    organisms: ["Enfermedades Infecciosas", "Farmacia Hospitalaria", "Microbiología Clínica"],
+    treatment: `
+      <strong>📞 ENFERMEDADES INFECCIOSAS:</strong><br>
+      • Busca: <strong>691.682</strong> / <strong>691.747</strong><br>
+      • Consultas: <strong>405.403</strong> / <strong>405.349</strong><br><hr class="div">
+      <strong>💊 FARMACIA HOSPITALARIA:</strong><br>
+      • Busca: <strong>641.792</strong><br>
+      • Despacho: <strong>405.527</strong><br><hr class="div">
+      <strong>🔬 MICROBIOLOGÍA CLÍNICA:</strong><br>
+      • Busca: <strong>757.696</strong><br>
+      • Despacho: <strong>405.527</strong>
+    `,
+    altTitle: "¿Cuándo llamar?",
+    alternative: `
+      <strong>Enfermedades Infecciosas:</strong> bacteriemia por S. aureus o Candida, endocarditis, infecciones complejas, desescalada ATB, dudas terapéuticas urgentes.<br><br>
+      <strong>Farmacia Hospitalaria:</strong> ajuste de dosis en insuficiencia renal/hepática, perfusión extendida de β-lactámicos, farmacocinética/farmacodinámica (PK/PD), interacciones farmacológicas.<br><br>
+      <strong>Microbiología Clínica:</strong> interpretación de resultados, antibiogramas, técnicas diagnósticas especiales, sospecha de brotes.
+    `,
+    proa: `El PROA (Programa de Optimización de Antibióticos) del HUPR coordina la actividad de los tres servicios. Para consultas PROA urgentes contactar directamente con Enf. Infecciosas.`
   }
 };
 
@@ -2519,6 +2699,6 @@ function handleSearch(query) {
 }
 init();
 </script>
-<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata &nbsp;|&nbsp; ISBN 978-84-09-74658-3</footer>
 </body>
 </html>
