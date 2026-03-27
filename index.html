@@ -249,14 +249,14 @@ header .author {
 /* Info button — positioned absolutely so title stays centered */
 .info-btn {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 8px;
+  right: 8px;
   background: none;
   border: 1px solid #b0bfb8;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 11px;
+  width: 44px;
+  height: 44px;
+  font-size: 13px;
   cursor: pointer;
   color: var(--text-muted);
   display: flex;
@@ -265,6 +265,8 @@ header .author {
   transition: var(--transition);
   padding: 0;
   flex-shrink: 0;
+  /* touch-action explícito para mobile */
+  touch-action: manipulation;
 }
 .info-btn:hover { background: var(--primary-green); color: #fff; border-color: var(--primary-green); }
 
@@ -358,7 +360,7 @@ footer {
     <div class="grid">
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre Guía antibioterapia empírica">ℹ</button>
         <div class="icon-box bg-green">
           <img src="/appclinicas/img/guiaempirica.png" alt="Antibioterapia empírica" class="card-img" loading="lazy">
         </div>
@@ -369,7 +371,7 @@ footer {
       </div>
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre AeroLab">ℹ</button>
         <div class="icon-box bg-rose">
           <img src="/appclinicas/img/gasometria.png" alt="Gasometría" class="card-img" loading="lazy">
         </div>
@@ -380,7 +382,7 @@ footer {
       </div>
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre StrokePilot">ℹ</button>
         <div class="icon-box bg-blue">
           <img src="/appclinicas/img/cerebro.png" alt="Ictus isquémico" class="card-img" loading="lazy">
         </div>
@@ -391,7 +393,7 @@ footer {
       </div>
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre ToxoGuard">ℹ</button>
         <div class="icon-box bg-orange">
           <img src="/appclinicas/img/antidoto.png" alt="Guía de antídotos" class="card-img" loading="lazy">
         </div>
@@ -402,7 +404,7 @@ footer {
       </div>
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre SepsAlert">ℹ</button>
         <div class="icon-box bg-purple">
           <img src="/appclinicas/img/bacteria.png" alt="Sepsis" class="card-img" loading="lazy">
         </div>
@@ -420,7 +422,7 @@ footer {
     <div class="grid">
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre NefroCalc">ℹ</button>
         <div class="icon-box bg-blue">
           <img src="/appclinicas/img/funcionrenal.png" alt="Función renal" class="card-img" loading="lazy">
         </div>
@@ -431,7 +433,7 @@ footer {
       </div>
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre InfuCalc">ℹ</button>
         <div class="icon-box bg-orange">
           <img src="/appclinicas/img/infucalc.png" alt="InfuCalc bombas de perfusión" class="card-img" loading="lazy">
         </div>
@@ -442,7 +444,7 @@ footer {
       </div>
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre GeriFit">ℹ</button>
         <div class="icon-box bg-green">
           <img src="/appclinicas/img/anciano.png" alt="Polimedicados anciano complejo" class="card-img" loading="lazy">
         </div>
@@ -460,7 +462,7 @@ footer {
     <div class="grid">
 
       <div class="card">
-        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre EvidScore">ℹ</button>
         <div class="icon-box bg-purple">
           <img src="/appclinicas/img/lecturacritica.png" alt="Lectura crítica" class="card-img" loading="lazy">
         </div>
