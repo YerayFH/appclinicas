@@ -786,8 +786,11 @@ const SUBS = {
     { id: "orl_rinosinusitis", label: "Rinosinusitis No Complicada", desc: "Manejo ambulatorio" },
     { id: "orl_rinosinusitis_complicada", label: "Rinosinusitis Complicada", desc: "Requiere TAC" },
     { id: "orl_rinosinusitis_fungica", label: "Rinosinusitis Fúngica Invasiva", desc: "Mucor, urgencia" },
-    { id: "orl_otitis_externa", label: "Otitis Externa", desc: "Circunscrita, difusa y maligna" },
-    { id: "orl_otitis_media", label: "Otitis Media Aguda (OMA)", desc: "Manejo y complicaciones (Mastoiditis)" }
+    { id: "orl_otitis_externa", label: "Otitis Externa", desc: "Circunscrita, difusa, otomicosis y maligna" },
+    { id: "orl_pericondritis", label: "Pericondritis Auricular", desc: "Pseudomona aeruginosa" },
+    { id: "orl_otitis_media", label: "Otitis Media Aguda (OMA) y Mastoiditis", desc: "Manejo y complicaciones" },
+    { id: "orl_zoster_otico", label: "Zoster Ótico", desc: "Virus varicela-zoster, Sd Ramsay-Hunt" },
+    { id: "orl_otohematoma", label: "Otohematoma", desc: "Drenaje y vendaje compresivo" }
   ],
   oftalmo: [
     { id: "oftalmo_celulitis", label: "Celulitis Orbitaria", desc: "Foco otógeno, sinusitis o trauma" },
@@ -810,12 +813,24 @@ const SUBS = {
   pediatria: [
     { id: "ped_oma", label: "Otitis Media Aguda (OMA)", desc: "Lactantes y niños mayores" },
     { id: "ped_faringitis", label: "Faringoamigdalitis Aguda", desc: "Criterios Mc Isaac" },
+    { id: "ped_adenitis", label: "Adenitis Cervical Aguda", desc: "S. aureus, S. pyogenes" },
+    { id: "ped_otitis_ext_ped", label: "Otitis Externa", desc: "Difusa, maligna y otomicosis" },
+    { id: "ped_otomastoiditis", label: "Otomastoiditis", desc: "Aguda y crónica" },
+    { id: "ped_sinusitis_ped", label: "Sinusitis Aguda", desc: "Viral y bacteriana" },
     { id: "ped_celulitis_orb", label: "Celulitis Orbitaria/Preseptal", desc: "Con y sin criterios de ingreso" },
+    { id: "ped_bucodental", label: "Infección Bucodental", desc: "Criterios de ingreso" },
+    { id: "ped_absceso_ped", label: "Absceso Periamigdalino / Retrofaríngeo", desc: "Ingreso hospitalario" },
     { id: "ped_fsf", label: "Fiebre sin foco (< 36 meses)", desc: "Escalas YIOS, Yale y Rochester" },
+    { id: "ped_impetigo", label: "Impétigo", desc: "S. aureus y S. pyogenes" },
+    { id: "ped_celulitis_piel", label: "Celulitis / Erisipela", desc: "Criterios de ingreso" },
+    { id: "ped_heridas", label: "Heridas por tipo", desc: "Mordeduras, agua, tierra, zapato" },
+    { id: "ped_forúnculo", label: "Forúnculo / Absceso / Panadizo", desc: "Drenaje e incisión" },
+    { id: "ped_bacteriuria_ped", label: "Bacteriuria Asintomática", desc: "Indicaciones muy limitadas" },
     { id: "ped_itu", label: "Infección del Tracto Urinario", desc: "Cistitis y Pielonefritis" },
     { id: "ped_nac", label: "Neumonía Comunitaria", desc: "Típica y Atípica" }
   ],
   proa: [
+    { id: "proa_curb65", label: "Escala CURB-65 (NAC)", desc: "Estratificación de gravedad en neumonía" },
     { id: "proa_interpretacion", label: "Categoría 'I' Sensible", desc: "Nueva definición EUCAST" },
     { id: "proa_perfusion", label: "Perfusión Extendida", desc: "Maximización CMI beta-lactámicos" },
     { id: "proa_hemocultivos", label: "Claves de Hemocultivos", desc: "Extracción y contaminantes" }
@@ -1632,18 +1647,23 @@ its_agresion: {
   },
   snc_absceso_primario: {
     scenario: "Absceso cerebral primario",
-    organisms: ["Único: S. grupo viridans, anaerobios (Enterobacterias/Pseudomonas si foco ótico)", "Múltiple: Hematógeno (S. aureus), Pulmonar (Nocardia), ID (Toxoplasma, Listeria, Hongos)"],
-    treatment: `<span class="drug">Ceftriaxona 2g/12h</span> o <span class="drug">Cefotaxima</span> + <span class="drug">Metronidazol 500 mg/8 h</span>.<br>En ID: Añadir <span class="drug">Cotrimoxazol</span> +/- <span class="drug">Voriconazol</span>. En VIH, cubrir toxoplasma con <span class="drug">Sulfadicina + pirimetamina + folínico</span>.<br>Sospecha Listeria: considerar añadir <span class="drug">ampicilina 2 g/4 h IV</span>.`,
+    organisms: [
+      "Único: Streptococcus grupo viridans, anaerobios. Si foco ótico: enterobacterias y Pseudomonas spp. En ID: Listeria, Nocardia, Toxoplasma, hongos",
+      "Múltiple hematógeno: S. aureus, estreptococos, enterobacterias, Listeria, Actinomices",
+      "Múltiple pulmonar: Nocardia, Criptococcus, Actinomices, polimicrobiana",
+      "Múltiple ID: Toxoplasma, Nocardia, Criptococcus, TBC"
+    ],
+    treatment: `<span class="drug">Ceftriaxona 2g/12h</span> ó <span class="drug">Cefotaxima 150-350 mg/kg/24h</span> en 4-6 dosis (máx 24g/día) + <span class="drug">Metronidazol 500 mg/8h</span>.<br><br><strong>En inmunodeprimidos:</strong> Añadir <span class="drug">Cotrimoxazol 15-20 mg/kg/d de Trimetroprim</span> en 4 dosis +/- <span class="drug">Voriconazol 6mg/kg/12h</span> el 1er día, seguido de 4mg/kg/12h.<br><strong>En VIH:</strong> Cubrir toxoplasma con <span class="drug">Sulfadicina 1-1,5 g/6h</span> + <span class="drug">pirimetamina 75mg/d</span> + <span class="drug">folínico 15-50 mg/d</span>.<br><strong>Sospecha Listeria</strong> (&gt;50 años con inmunodepresión, DM, cirrosis o corticoides): añadir <span class="drug">Ampicilina 2g/4h IV</span>.`,
     altTitle: "Alergia a β-lactámicos",
-    alternative: `<span class="drug">Vancomicina 30-45 mg/Kg/d</span> o <span class="drug">Linezolid 600mg/12h</span> + <span class="drug">Aztreonam 2g/6h</span> + <span class="drug">Metronidazol 500mg/8h</span>`,
-    proa: `Contraindicada la PL. Duración tto: 6-8 semanas. Comentar con Neurocirugía (aspiración lo antes posible salvo toxoplasmosis). Valorar dexametasona si edema severo. No indicada profilaxis anticomicial.`
+    alternative: `<span class="drug">Vancomicina 30-45 mg/Kg/d</span> en 2-3 dosis ó <span class="drug">Linezolid 600mg/12h</span> + <span class="drug">Aztreonam 2g/6h</span> + <span class="drug">Metronidazol 500mg/8h</span>`,
+    proa: `Contraindicada la PL.<br>Duración tto: 6-8 semanas, con controles periódicos mediante TC/RMN cada 2 semanas según evolución clínica.<br>Comentar con Neurocirugía; valorar aspiración para toma de muestras lo antes posible (excepto toxoplasmosis).<br><strong>Manejo conservador si:</strong> Absceso &lt;2,5 cm y GCS &gt;12 / Fase cerebritis precoz / Localización inaccesible / Absceso en bacteriemia / Respuesta clínica y reducción rápida del tamaño.<br><strong>Edema cerebral:</strong> Dexametasona 10 mg IV seguidos de 4 mg/6h durante 3-4 días.<br>No indicada profilaxis anticomicial primaria.`
   },
   snc_absceso_secundario: {
     scenario: "Absceso cerebral secundario (postraumático o postquirúrgico)",
     organisms: ["Postraumático: S. aureus, Streptococcus, enterobacterias", "Postquirúrgico: S. aureus, enterobacterias, Pseudomonas, Cutibacterium"],
-    treatment: `<strong>Postraumático:</strong> <span class="drug">Cloxacilina IV 2g/4 h</span> + <span class="drug">Ceftriaxona IV 2 g/12h</span> +/- <span class="drug">Metronidazol 500mg/8h</span>.<br><strong>Postquirúrgico:</strong> <span class="drug">Vancomicina 30-45 mg/Kg</span> o <span class="drug">Linezolid 600 mg/12h</span> + <span class="drug">Meropenem 2g/8h</span> (perfusión extendida).`,
+    treatment: `<strong>Postraumático:</strong> <span class="drug">Cloxacilina IV 2g/4h</span> + <span class="drug">Ceftriaxona IV 2g/12h</span> +/- <span class="drug">Metronidazol 500mg/8h</span>.<br><strong>Postquirúrgico:</strong> <span class="drug">Vancomicina 30-45 mg/Kg</span> en 2-3 dosis ó <span class="drug">Linezolid 600 mg/12h</span> + <span class="drug">Meropenem 2g/8h</span> (*Valorar administración en perfusión extendida en 3h ó continua 3g/12h).`,
     altTitle: "Alergia a β-lactámicos",
-    alternative: `<span class="drug">Vancomicina 30-45 mg/Kg/d</span> + <span class="drug">Aztreonam 2g/6h</span> o <span class="drug">Ciprofloxacino 400mg/8h</span> + <span class="drug">Metronidazol 500mg/8h</span>`,
+    alternative: `<span class="drug">Vancomicina 30-45 mg/Kg/d</span> en 2-3 dosis + <span class="drug">Aztreonam 2g/6h</span> ó <span class="drug">Ciprofloxacino 400mg/8h</span> + <span class="drug">Metronidazol 500mg/8h</span>`,
     proa: `Contraindicada PL. Comentar con Neurocirugía para drenaje/toma de muestras.`
   },
 
@@ -1951,10 +1971,35 @@ its_agresion: {
     proa: `No mojar el oído. En OE Maligna (factores ID, DM, ≥ 65 años) valorar solicitar TC peñascos.`
   },
   orl_otitis_media: {
-    scenario: "Otitis media aguda (OMA) y complicaciones",
-    organisms: ["S. pneumoniae", "H. influenzae", "S. pyogenes"],
-    treatment: `<strong>OMA:</strong> Sintomático 48-72h. Si no mejora: <span class="drug">Amoxicilina 1 gr/12h</span> (10 días). Si fiebre alta/otalgia: <span class="drug">Amox/Clav 500mg/8h</span>. (Alergias: Azitromicina o Levofloxacino).<br><strong>Mastoiditis o Complicada (Parálisis, Laberintitis):</strong> <span class="drug">Ceftriaxona 2g/24h IV</span> o <span class="drug">Amox-clav 1-2g/8h IV</span>.<br><strong>Mastoiditis sec a Crónica:</strong> <span class="drug">Piperacilina/tazobactam 4g/6-8h IV</span> o <span class="drug">Ceftazidima</span> + <span class="drug">Vancomicina</span>.`,
-    proa: `Criterios riesgo OMA: <2 años, bilateral, recurrente. En complicaciones: TC de peñascos, miringotomía y drenaje.`
+    scenario: "Otitis Media Aguda (OMA), Mastoiditis y OMA complicada",
+    organisms: ["OMA: S. pneumoniae, H. influenzae, S. pyogenes, S. aureus", "Mastoiditis OMC: S. aureus, P. aeruginosa, Klebsiella"],
+    treatment: `<strong>OMA:</strong> Sintomático 48-72h. Si no mejora o criterios riesgo*: <span class="drug">Amoxicilina 1 gr/12h</span> 10 días. Si fiebre alta/otalgia intensa: <span class="drug">Amox/Clav 500mg/8h</span> 10 días. Si otorrea: añadir <span class="drug">Ciprofloxacino/fluocinolona gotas</span>.<hr class="div"><strong>Mastoiditis aguda (sec. OMA):</strong> <span class="drug">Ceftriaxona 2g/24h IV</span>. Si tímpano íntegro: miringotomía y drenaje transtimpánico.<br><strong>Mastoiditis secundaria a OMC:</strong> <span class="drug">Piperacilina/tazobactam 4g/6-8h IV</span>.<hr class="div"><strong>OMA complicada (parálisis facial / laberintitis / petrositis):</strong> <span class="drug">Ceftriaxona 2g/24h IV</span>. Si tímpano íntegro: miringotomía y drenaje transtimpánico.`,
+    altTitle: "Alternativas",
+    alternative: `OMA: Alergia: <span class="drug">Azitromicina 500mg/24h</span> 3-5 días o <span class="drug">Levofloxacino 500mg/24h</span> 7-10 días.<br>Mastoiditis aguda alt: <span class="drug">Amox-clav 1-2g/8h IV</span>. Alergia: <span class="drug">Levofloxacino 1g/24h</span> 1ª dosis, luego 500mg/24h.<br>Mastoiditis OMC alt: <span class="drug">Ceftazidima 2g/8h IV</span> + <span class="drug">Vancomicina 1g/12h IV</span>. Alergia: <span class="drug">Ciprofloxacino 400mg/8h IV</span> + <span class="drug">Metronidazol 500mg/8h IV</span>.<br>OMA complicada alt: <span class="drug">Ceftazidima 2g/8h IV</span>. Alergia: <span class="drug">Levofloxacino 1g/24h IV</span> + <span class="drug">Vancomicina 1g/12h IV</span>.`,
+    proa: `*Criterios riesgo OMA: &lt;2 años, fiebre &gt;39° o dolor no controlado, OMA bilateral o recurrente, AF complicaciones óticas.<br>En complicaciones: solicitar TC de peñascos. Si no mejoría en 24-48h: valorar cirugía.`
+  },
+
+  orl_pericondritis: {
+    scenario: "Pericondritis auricular",
+    organisms: ["Pseudomona aeruginosa"],
+    treatment: `<span class="drug">Ciprofloxacino 500mg/12h</span> 7 días VO`,
+    proa: `Si asocia absceso, drenaje.`
+  },
+  orl_zoster_otico: {
+    scenario: "Zoster ótico",
+    organisms: ["Virus varicela-zoster"],
+    treatment: `Antiviral VO en las primeras 72h: <span class="drug">Aciclovir 800mg/4h</span> 7 días (dar 5 dosis omitiendo dosis de madrugada).<br>Si parálisis facial: Síndrome Ramsay-Hunt → Asociar corticoides sistémicos.`,
+    altTitle: "Alternativas (mayor cumplimiento)",
+    alternative: `<span class="drug">Valaciclovir 1g/8h</span> 7 días o <span class="drug">Famciclovir 500mg/8h</span> 7 días<br>(Mayor índice de cumplimiento por posología más sencilla)`,
+    proa: `Antiséptico tópico en vesículas del pabellón auricular: mupirocina o ácido fusídico.<br>Si dolor intenso: diazepam 5mg a pasar lento diluido en 100cc SSF/8-12h hasta control de síntomas.<br>Si vértigo: asociar sedantes vestibulares.`
+  },
+  orl_otohematoma: {
+    scenario: "Otohematoma",
+    organisms: ["Pseudomona aeruginosa"],
+    treatment: `<span class="drug">Ciprofloxacino 500mg/12h</span> 7 días`,
+    altTitle: "Alternativa",
+    alternative: `<span class="drug">Amoxicilina-clavulánica 875/125mg/8h</span> 7 días`,
+    proa: `Drenaje y vendaje compresivo.`
   },
 
   // =========================================================
@@ -2099,25 +2144,116 @@ its_agresion: {
     proa: `Usar Escalas YIOS, YALE y Rochester modificado. Si fiebre sin foco >12h, solicitar PCR y Procalcitonina.`
   },
   ped_itu: {
-    scenario: "Infecciones del Tracto Urinario (Pediatría)",
-    organisms: ["E. coli", "P. mirabilis", "Klebsiella"],
-    treatment: `<strong>Cistitis:</strong> <span class="drug">Fosfomicina</span> o <span class="drug">TMP-SMX vo</span> o <span class="drug">Amoxicilina-clavulánico</span> 3-5 días.<hr class="div"><strong>Pielonefritis (Ambulatorio):</strong> <span class="drug">Cefixima vo 8 mg/kg/día</span> 7-10 días.<br><strong>Pielonefritis (Ingreso):</strong> <span class="drug">Ampicilina + Gentamicina/Cefotaxima</span> (≤3 meses) o <span class="drug">Gentamicina/Cefotaxima</span> (>3 meses).`,
-    altTitle: "Criterios",
-    alternative: `Recoger SIEMPRE urocultivo por sondaje en lactantes con fiebre sin foco o uropatía. Hemocultivo antes de IV.`,
-    proa: `Ingreso si: <3 meses, aspecto séptico, uropatía grave, vómitos, riesgo social.`
+    scenario: "Infección del Tracto Urinario (Pediatría)",
+    organisms: ["E. coli", "P. mirabilis", "P. aeruginosa", "E. faecalis", "S. epidermidis", "Klebsiella"],
+    treatment: `<strong>ITU afebril/Cistitis:</strong><br>&lt;6 años: <span class="drug">Fosfomicina vo sol 60 mg/kg/día</span> c/8h.<br>6-12 años: <span class="drug">Fosfomicina 2g</span> dosis única (2 dosis separadas 24h si recurrente).<br>&gt;12 años: <span class="drug">Fosfomicina 3g</span> dosis única (2 dosis separadas 24h si recurrente). Duración 3-5 días.<hr class="div"><strong>ITU febril/Pielonefritis (Ambulatorio):</strong> <span class="drug">Cefixima vo 8 mg/kg/día</span> c/24h 7-10 días.<br><strong>Pielonefritis (Ingreso ≤3 meses):</strong> <span class="drug">Ampicilina IV 100 mg/kg/día</span> c/6h + <span class="drug">Gentamicina IV 7,5 mg/kg/día</span> c/24h (o Cefotaxima si IR).<br><strong>Pielonefritis (Ingreso &gt;3 meses):</strong> <span class="drug">Gentamicina IV 7,5 mg/kg/24h</span>. Si mal estado/nefropatía: <span class="drug">Cefotaxima 150 mg/kg/d</span> c/6-8h o <span class="drug">Ceftriaxona 100 mg/kg/día</span> c/24h.`,
+    altTitle: "Alternativa Cistitis / Criterios de ingreso",
+    alternative: `Cistitis: <span class="drug">TMP-SMX vo 1ml/kg/día</span> c/12h o <span class="drug">Amox-Clavulánico vo 50 mg/kg/día</span> c/8h.<hr class="div">Criterios de ingreso ITU febril: &lt;3 meses, aspecto séptico, uropatía/nefropatía grave, IR, intolerancia oral, riesgo social, inmunodeficiencia.`,
+    proa: `Recoger SIEMPRE urocultivo por sondaje antes del tratamiento. Hemocultivo antes de IV. Si bacteriemia por BGN: completar 10 días IV.`
   },
   ped_nac: {
     scenario: "Neumonía adquirida en la comunidad (Pediatría)",
-    organisms: ["Virus", "S. pneumoniae", "M. pneumoniae"],
-    treatment: `<strong>NAC típica:</strong> <span class="drug">Amoxicilina 80 mg/kg/día v.o.</span> 7 días. (Usar <span class="drug">Amox/Clav</span> si no vacunado Hib, <6m).<br><strong>NAC atípica:</strong> <span class="drug">Azitromicina 10 mg/kg/día VO</span> 3 días.<hr class="div"><strong>Si ingreso:</strong> <span class="drug">Ampicilina IV 200 mg/kg/día</span> o <span class="drug">Penicilina G sódica</span>.`,
-    altTitle: "Alergias o Ingreso",
-    alternative: `Alergia a β-lactámicos: <span class="drug">Levofloxacino</span>.<br>Alternativa en ingreso: <span class="drug">Ceftriaxona</span> o <span class="drug">Cefotaxima IV</span>.`,
-    proa: `Criterios ingreso: <3 meses, dificultad respiratoria, intolerancia oral, derrame/complicación, hipoxemia.`
+    organisms: ["1m-3m: Virus, Chlamydia, S. pneumoniae, S. aureus", "4m-4a: Virus, S. pneumoniae, S. pyogenes, M. pneumoniae", "5-14a: M. pneumoniae, S. pneumoniae, Virus, C. pneumoniae"],
+    treatment: `<strong>NAC típica:</strong> <span class="drug">Amoxicilina 80 mg/kg/día v.o.</span> c/8h (máx 6g/día) 7 días. Si no vacunado Hib, &lt;6m, bronquiectasias o aspiración: <span class="drug">Amox/Clav 80 mg/kg/d</span> 7 días.<br><strong>NAC atípica:</strong> &lt;4-5 años (virus): sintomático. &gt;4-5 años: <span class="drug">Azitromicina 10 mg/kg/día VO</span> 3 días.<br><strong>Indeterminada:</strong> Amoxicilina + macrólido.<hr class="div"><strong>Si ingreso (1-3m):</strong> <span class="drug">Ampicilina 200mg/kg/día</span> c/6h + <span class="drug">Cefotaxima 200mg/kg/día</span> c/8h IV.<br><strong>Si ingreso (&gt;6m):</strong> <span class="drug">Ampicilina IV 200 mg/kg/día</span> c/6h o <span class="drug">Penicilina G sódica 250.000 UI/kg/día</span> c/4h.`,
+    altTitle: "Alergia a β-lactámicos / Alternativa ingreso",
+    alternative: `Alergia: <span class="drug">Levofloxacino</span> (&lt;5a: 20mg/kg/día c/12h; &gt;5a: 10mg/kg/día c/24h máx 750mg) 7 días.<br>Alternativa ingreso: <span class="drug">Ceftriaxona 100 mg/kg/día</span> c/12-24h (máx 4g) o <span class="drug">Cefotaxima IV</span>.`,
+    proa: `Criterios ingreso: &lt;3 meses, dificultad respiratoria importante, intolerancia oral, hipoxemia, complicaciones (derrame, absceso, neumotórax), enfermedad crónica subyacente, sospecha sepsis.`
+  },
+
+  ped_adenitis: {
+    scenario: "Adenitis cervical aguda (Pediatría)",
+    organisms: ["S. aureus", "S. pyogenes"],
+    treatment: `<span class="drug">Cefadroxilo 30 mg/Kg/día</span> c/12h.<br>Si origen dental o periodontal: <span class="drug">Amoxicilina-Clavulánico 50 mg/Kg/día</span> en 3 dosis (7-10 días).<hr class="div"><strong>Si ingreso:</strong> <span class="drug">Cloxacilina 100 mg/Kg/día</span> en 4 dosis o <span class="drug">Amoxicilina-Clavulánico 100 mg/Kg/día</span> en 3 dosis.`,
+    altTitle: "Alergia a β-lactámicos",
+    alternative: `<span class="drug">Clindamicina vo 30 mg/kg/día</span> c/8-12h (máx 900 mg/día)`,
+    proa: `Criterios de ingreso: 1. No garantía de seguimiento. 2. Intolerancia digestiva. 3. Afectación del estado general. 4. &lt;3 meses. 5. Mala respuesta al tratamiento empírico oral inicial en 48-72h.`
+  },
+  ped_otitis_ext_ped: {
+    scenario: "Otitis externa difusa (Pediatría)",
+    organisms: ["Pseudomona aeruginosa (más frecuente)", "S. aureus", "Hongos (otomicosis)"],
+    treatment: `<strong>OE no complicada:</strong> <span class="drug">Ciprofloxacino gotas óticas</span> 2-3 veces/día, 7-10 días (asociar corticoides/fluocinolona si dolor o inflamación importante).<br><strong>Celulitis del pabellón auricular:</strong> <span class="drug">Ciprofloxacino 30 mg/kg/día</span> en 2 dosis, 7-10 días.<br><strong>OE maligna:</strong> IC a ORL e ingreso para <span class="drug">Ceftazidima IV 150 mg/kg/día</span> c/8h, previo cultivo + desbridamiento quirúrgico urgente.<br><strong>Otomicosis:</strong> <span class="drug">Clotrimazol tópico 1%</span> 8 gotas c/12h 14 días o <span class="drug">Alcohol boricado 75%</span> 3-4 gotas c/6h 5-7 días.`,
+    proa: `Mantener el oído limpio y seco. Sospechar OE maligna si evolución rápida, invasiva y necrosis (prurito, otalgia con signo del trago positivo y otorrea).`
+  },
+  ped_otomastoiditis: {
+    scenario: "Otomastoiditis (Pediatría)",
+    organisms: ["Formas agudas: S. pneumoniae, H. influenzae, S. pyogenes, S. aureus", "Formas crónicas o ID: P. aeruginosa y BGN", "Sd Lemierre: Fusobacterium necrophorum"],
+    treatment: `<span class="drug">Amoxicilina-Clavulánico IV 100 mg/Kg/día</span> c/8h o <span class="drug">Ceftriaxona IV 100 mg/Kg/día</span> c/12-24h. Duración: 14 días en no complicados; 4-6 semanas si complicaciones.<hr class="div"><strong>Crónicas/inmunodeprimidos:</strong> <span class="drug">Cefepime 150 mg/kg/día</span> en 3 dosis (máx 6 g/día) + <span class="drug">Metronidazol 30 mg/kg/c6h</span> (máx 4 g/día).`,
+    altTitle: "Alergia a β-lactámicos",
+    alternative: `<span class="drug">Levofloxacino IV</span> (6m-5años: 10mg/Kg/12h; &gt;5años: 10mg/kg/24h)`,
+    proa: `IC a ORL y Pediatría para ingreso. Cultivo siempre si timpanocentesis o drenaje. TC si mala evolución, dudas diagnósticas o sospecha de complicación intracraneal. Pasar a oral tras mejoría clínica y afebril 48-72h.<br>Diagnóstico clínico: OMA + eritema/hinchazón/dolor retroauricular + desplazamiento anteroinferior del pabellón auricular.`
+  },
+  ped_sinusitis_ped: {
+    scenario: "Sinusitis aguda (Pediatría)",
+    organisms: ["Viral: 80-90% (rinovirus, influenza, parainfluenza)", "Bacteriana: S. pneumoniae, H. influenzae no tipable, M. catarrhalis"],
+    treatment: `<strong>Rinosinusitis viral:</strong> Tratamiento sintomático.<hr class="div"><strong>Sospecha bacteriana 1ª elección:</strong> <span class="drug">Amoxicilina 80 mg/Kg/d</span> en 3 dosis, 7-10 días tras desaparición de síntomas.<br><strong>Casos especiales</strong> (&lt;2 años, esfenoidal/frontal, celulitis preseptal, inmunodeprimidos, síntomas intensos o &gt;1 mes, no respuesta 48-72h a amoxicilina): <span class="drug">Amox-Clavulánico 80 mg/Kg/d</span> en 3 dosis, 7-10 días.`,
+    altTitle: "Alergia a β-lactámicos",
+    alternative: `No graves: <span class="drug">Claritromicina 15 mg/kg/día</span> c/12h 10 días o <span class="drug">Azitromicina 10 mg/kg/d</span> c/24h 3 días.<br>Graves o fracaso macrólidos: <span class="drug">Levofloxacino</span> (6m-5a: 10mg/Kg/12h; &gt;5a: 10mg/kg/24h)`,
+    proa: `Sospecha bacteriana si: fiebre ≥39° y rinorrea purulenta ≥3 días / dolor facial o edema / empeoramiento tras mejoría inicial / enfermedad persistente &gt;10 días sin mejoría.<br>No indicadas técnicas imagen en no complicada. TAC si graves o sospecha complicaciones (celulitis orbitaria la más frecuente). Cultivo de material de punción si complicados (IC a ORL).`
+  },
+  ped_bucodental: {
+    scenario: "Infección bucodental (Pediatría)",
+    organisms: ["Polimicrobiana: Streptococcus, Lactobacillus, Actinomyces, Staphylococcus"],
+    treatment: `<span class="drug">Amoxicilina 50 mg/kg/d</span> c/8h, 7 días.<br>Si no mejoría en 48h: <span class="drug">Amoxicilina/Clavulánico 50 mg/kg/día</span> c/8h, 7 días.<hr class="div"><strong>Si ingreso:</strong> <span class="drug">Amoxicilina-Clavulánico IV 100 mg/kg/día</span> c/6h, 7 días.`,
+    altTitle: "Alternativa",
+    alternative: `<span class="drug">Metronidazol 30 mg/kg/d</span> c/8h, 7 días`,
+    proa: `Derivar a odontólogo si ambulatorio. Ortopantomografía selectiva. Si ingreso: valorar corticoides y IC con Cirugía Maxilofacial para drenaje.<br><strong>Criterios ingreso:</strong> Extensión a espacios parafaríngeos (sublingual, submandibular, laterofaríngeo), fiebre &gt;39°C, celulitis odontógenas (osteítis/osteomielitis), trismus intenso, dificultad respiratoria/deglutoria/fonatoria, respuesta inadecuada a oral, inmunodeprimidos.`
+  },
+  ped_absceso_ped: {
+    scenario: "Absceso periamigdalino / Retrofaríngeo (Pediatría)",
+    organisms: ["Etiología polimicrobiana incluyendo anaerobios"],
+    treatment: `<span class="drug">Amoxicilina/Clavulánico 100 mg/kg/día</span> c/6h IV.<hr class="div"><strong>Formas graves:</strong> <span class="drug">Ceftriaxona 100 mg/kg/día</span> c/12-24h + <span class="drug">Clindamicina 30 mg/kg/día</span> c/8h.<br>Duración: 10-14 días, pasando a oral con mejoría clínica y analítica.`,
+    altTitle: "Alergia a β-lactámicos",
+    alternative: `<span class="drug">Levofloxacino IV</span> (20mg/kg/día c/2 dosis &lt;5 años; 10mg/kg/día 1 dosis ≥5 años) + <span class="drug">Clindamicina 30 mg/kg/día</span> c/8h`,
+    proa: `IC a ORL +/- Pediatría e ingreso hospitalario. Asociar corticoides. Rx lateral de cuello como cribado. Si celulitis retrofaríngea &gt;7 meses: valorar TAC con contraste. Siempre cultivo del material drenado.`
+  },
+  ped_impetigo: {
+    scenario: "Impétigo (Pediatría)",
+    organisms: ["S. aureus", "S. pyogenes"],
+    treatment: `<strong>Lesiones leves localizadas:</strong> <span class="drug">Ácido fusídico tópico 1%</span> o <span class="drug">mupirocina 2%</span> c/8h hasta desaparición de las lesiones.<hr class="div"><strong>Si criterios de oral:</strong> <span class="drug">Cefadroxilo 30 mg/kg/día</span> c/12h (máx 2 g/día).<br><strong>Sospecha SAMR:</strong> <span class="drug">Clindamicina 25 mg/kg/día</span> c/6-8h (máx 600mg/d) o <span class="drug">Cotrimoxazol 10 mg/kg/día TMP</span> c/12h (máx 800mg).`,
+    altTitle: "Alternativa β-lactámico",
+    alternative: `<span class="drug">Cloxacilina 100 mg/kg/día</span> c/6h (máx 2 g/día)`,
+    proa: `ATB sistémico si: lesiones muy extensas, numerosas o fracaso del tratamiento tópico. Si ingreso: aislamiento de contacto. Higiene exhaustiva y aislamiento cutáneo en domicilio. Si recurrencia: descartar estado de portador.`
+  },
+  ped_celulitis_piel: {
+    scenario: "Celulitis / Erisipela (Pediatría)",
+    organisms: ["S. aureus", "S. pyogenes", "BGN en neonatos e ID"],
+    treatment: `<strong>Tratamiento domiciliario:</strong> <span class="drug">Cefadroxilo 30 mg/kg/día</span> c/12h (máx 1 g/día) o <span class="drug">Cloxacilina 100 mg/kg/día</span> c/6h (máx 2 g/día).<br>Sospecha SAMR: <span class="drug">Clindamicina 25 mg/kg/día</span> c/6-8h o <span class="drug">Cotrimoxazol 10 mg/kg/día TMP</span> c/12h.<br>Sospecha BGN (ID, mala evolución): <span class="drug">Amox-Clavulánico VO 50 mg/kg/día</span> c/8h (máx 2 g/día).`,
+    altTitle: "Si ingreso (mantener 10 días totales)",
+    alternative: `<span class="drug">Cloxacilina IV 100 mg/kg/día</span> c/6h (máx 6 g/día).<br>SAMR/Alergia: <span class="drug">Clindamicina IV 40 mg/kg/día</span> c/8h (máx 600mg/día) o <span class="drug">Vancomicina 40 mg/kg/día</span> c/6h (máx 1g/dosis).<br>BGN: <span class="drug">Amox-Clavulánico IV 100 mg/kg/día</span> c/8h (máx 2 g/día).`,
+    proa: `Criterios de ingreso: lactante, enfermedad de base, afectación sistémica, linfangitis o no respuesta a oral. En ingreso: hemograma, hemocultivo y PCR. Continuar oral hasta 10 días totales.`
+  },
+  ped_heridas: {
+    scenario: "Heridas por tipo (Pediatría)",
+    organisms: ["Mordeduras: Pasteurella ssp.", "Agua dulce: Aeromonas hydrophila", "Agua salada: Vibrio vulnificus", "Puntura en zapato: S. aureus, Pseudomonas (>7 días)", "Tierra: amplio espectro"],
+    treatment: `<strong>Mordeduras:</strong> <span class="drug">Amox-Clavulánico VO 50 mg/kg/día</span> c/8h (máx 2 g/día).<br><strong>Agua dulce:</strong> <span class="drug">Ciprofloxacino VO 30 mg/kg/día</span> c/12h (máx 1,5 g/día).<br><strong>Agua salada:</strong> <span class="drug">Ciprofloxacino VO 30 mg/kg/día</span> c/12h (máx 1,5 g/día).<br><strong>Zapato &lt;7 días:</strong> <span class="drug">Cefadroxilo</span> o <span class="drug">Amox-Clavulánico VO</span>. Si &gt;7 días: <span class="drug">Ciprofloxacino VO 30 mg/kg/día</span> c/12h.<br><strong>Tierra:</strong> <span class="drug">Ciprofloxacino VO 30 mg/kg/día</span> c/12h (máx 1,5 g/día).`,
+    altTitle: "Si ingreso necesario",
+    alternative: `Mordeduras grave: <span class="drug">Amox-Clavulánico IV 100 mg/kg/día</span> c/6-8h (máx 2 g/día).<br>Agua dulce grave: <span class="drug">Ceftazidima IV 150 mg/kg/día</span> c/8h + <span class="drug">Gentamicina IV 7,5 mg/kg/día</span> c/24h.<br>Agua salada grave: <span class="drug">Ceftazidima IV</span> + <span class="drug">Doxiciclina IV 3 mg/kg/día</span> c/12h (máx 200mg).<br>Zapato &gt;7d grave: <span class="drug">Ceftazidima IV 150 mg/kg/d</span> c/6h (máx 4 g) + <span class="drug">Gentamicina 7,5 mg/kg/d</span>.<br>Tierra extensa: <span class="drug">Pip-Tazobactam IV</span> o <span class="drug">Meropenem 20 mg/kg</span> c/8h.`,
+    proa: `Antiséptico. Desbridamiento y sutura si indicados. Valorar profilaxis antitetánica según vacunación.`
+  },
+  ped_forúnculo: {
+    scenario: "Forúnculo / Absceso subcutáneo / Panadizo (Pediatría)",
+    organisms: ["S. aureus", "S. pyogenes"],
+    treatment: `<strong>Forúnculo/Absceso simple</strong> sin signos de inflamación sistémica: Drenaje e incisión cuando fluctúe.<br><strong>Con signos de inflamación sistémica:</strong> Igual que impétigo.<hr class="div"><strong>Panadizo no fluctuante:</strong> No precisa tratamiento.<br><strong>Panadizo no fluctuante que no mejora:</strong> Igual que tratamiento tópico de impétigo.<br><strong>Panadizo fluctuante:</strong> Igual que absceso cutáneo.`,
+    proa: `El tratamiento principal es el drenaje. El ATB está indicado principalmente si hay afectación sistémica o inflamación regional extensa.`
+  },
+  ped_bacteriuria_ped: {
+    scenario: "Bacteriuria asintomática (Pediatría)",
+    organisms: ["E. coli"],
+    treatment: `Indicado tratamiento únicamente en:<br>- Procedimientos invasivos<br>- 3-6 meses post-trasplante renal<hr class="div">Tratamiento en función de antibiograma y sólo si está indicado.`,
+    proa: `Salvo las excepciones indicadas, no está indicado repetir urocultivo ni tratar.`
   },
 
   // =========================================================
   // 16. RECOMENDACIONES PROA
   // =========================================================
+  proa_curb65: {
+    scenario: "Escala CURB-65 — Estratificación de gravedad en NAC",
+    organisms: ["Aplicable en Neumonía Adquirida en la Comunidad (NAC)"],
+    treatment: `<strong>C</strong> — Confusión (desorientación nueva de persona, lugar o tiempo)<br><strong>U</strong> — Urea &gt; 7 mmol/L (BUN &gt; 19 mg/dL)<br><strong>R</strong> — Frecuencia respiratoria ≥ 30 rpm<br><strong>B</strong> — Blood pressure: TAS &lt; 90 mmHg o TAD ≤ 60 mmHg<br><strong>65</strong> — Edad ≥ 65 años<hr class="div"><strong>Puntuación (1 punto por criterio):</strong><br><strong>0–1:</strong> Bajo riesgo → Tratamiento ambulatorio<br><strong>2:</strong> Riesgo moderado → Valorar ingreso o tratamiento supervisado<br><strong>3–5:</strong> Alto riesgo → Ingreso hospitalario<br><strong>4–5:</strong> Valorar ingreso en UCI`,
+    altTitle: "Criterios de ingreso / UCI",
+    alternative: `- CURB-65 &gt;2, derrame pleural significativo, imposibilidad de tto oral o ambulatorio → Ingreso en planta.<br>- CURB-65 4-5, insuficiencia respiratoria grave o shock séptico → Valoración por UCI.`,
+    proa: `El CURB-65 es una escala validada para estratificar la gravedad de la NAC en urgencias. Complementar con criterios clínicos: saturación O2, afectación multilobar, descompensación de comorbilidades y capacidad de seguimiento ambulatorio.`
+  },
   proa_interpretacion: {
     scenario: "Interpretación del antibiograma: 'I' es SENSIBLE",
     organisms: ["Categorías EUCAST 2019 (S, I, R)"],
