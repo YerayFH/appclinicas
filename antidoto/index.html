@@ -11,7 +11,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Guía de antídotos. Farmacia Hospitalaria.">
-  <title>Toxicología clínica</title>
+  <title>ToxoGuard®</title>
   <link rel="icon" type="image/png" href="/appclinicas/img/antidoto.png">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -50,47 +50,15 @@
     .app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
     .scr{display:none;padding:18px 16px 28px;flex:1;overflow-y:auto}
     .scr.on{display:block}
-/* --- CABECERO UNIFICADO GLOBAL --- */
-.app-header {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2563a8 100%);
-    color: #fff;
-    padding: 15px 20px;
-    border-bottom: 4px solid #f59e0b; /* Color ámbar corporativo */
-}
-
-.header-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.app-logo {
-    height: 45px; /* Tamaño adaptado para esta app móvil */
-    width: auto;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
-
-.header-text-group {
-    flex: 1;
-    text-align: left;
-}
-
-.app-header .sub-hospital {
-    font-size: 11px;
-    opacity: 0.95;
-    line-height: 1.3;
-    margin-top: 2px;
-}
-
-.app-header h1 {
-    font-size: 18px; /* Ajuste para que el título no sea demasiado grande */
-    font-weight: 700;
-    margin: 0;
-    color: #fff;
-}
-    .footer{background:var(--header-bg);border-top:1px solid var(--brd);padding:10px 16px;text-align:center}
-    .footer p{font-size:11px;color:var(--txt3);line-height:1.7}
-    .footer a{color:var(--accent);text-decoration:none}
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--header-bg);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:100}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:var(--txt)}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--txt)}
+.hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#2E86C1}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
     h1{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-.2px;color:var(--txt)}
     h2{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--txt)}
     .sub{font-size:12px;color:var(--txt2);margin-bottom:18px;line-height:1.55}
@@ -188,18 +156,13 @@
 <body>
 <div class="app">
 
-<header class="app-header">
-    <div class="header-container">
-        <img src="/appclinicas/img/icon.png" alt="Logo" class="app-logo">
-        
-        <div class="header-text-group">
-            <h1>⚕ TOXICOLOGÍA CLÍNICA</h1>
-            <div class="sub-hospital">
-                <strong>YerayFH - de la Mata</strong><br>
-                FARMACIA HOSPITALARIA
-            </div>
-        </div>
-    </div>
+<header class="app-header-unified">
+  <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo"></picture>
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">ToxoGuard&#174;</div>
+  </div>
 </header>
 
   <div id="s-home" class="scr on">
@@ -302,10 +265,7 @@
     <div id="acont"></div>
   </div>
 
-  <div class="footer">
-    <p>Autor: Yeray Reyes de la Mata · <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></p>
-    <p>Referencia: Red de Antídotos</p>
-  </div>
+  <footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 
 </div><!-- .app -->
 

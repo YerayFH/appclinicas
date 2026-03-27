@@ -228,14 +228,20 @@ header .author {
 .bg-purple { background: #b1a6c9; } /* Violeta ceniza */
 .bg-rose   { background: #cca3ab; } /* Rosa oscuro mate */
 
+.card-title-row { width: 100%; display: flex; align-items: flex-start; justify-content: center; gap: 6px; margin-bottom: 1.8rem; }
 .card h2 {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-dark);
-  margin-bottom: 1.8rem;
+  margin-bottom: 0;
   line-height: 1.5;
   min-height: 3.5rem;
+  flex: 1;
 }
+.info-btn { background: none; border: 1px solid #b0bfb8; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer; color: var(--text-muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: var(--transition); margin-top: 3px; padding: 0; }
+.info-btn:hover { background: var(--primary-green); color: #fff; border-color: var(--primary-green); }
+.info-desc { display: none; background: #eaf0ec; border-radius: 12px; padding: 10px 14px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem; text-align: left; width: 100%; }
+.info-desc.open { display: block; }
 
 .card .btn {
   width: 100%;
@@ -283,7 +289,10 @@ footer {
 
 <header>
   <div class="header-icon">
-    <img src="/appclinicas/img/icon.png" alt="Logo YerayFH">
+    <picture>
+      <source srcset="/appclinicas/img/icon.webp" type="image/webp">
+      <img src="/appclinicas/img/icon.png" alt="Logo YerayFH">
+    </picture>
   </div>
   <div class="title-container">
     <h1>YerayFH - de la Mata</h1>
@@ -308,41 +317,61 @@ footer {
       
       <div class="card">
         <div class="icon-box bg-green">
-          <img src="/appclinicas/img/guiaempirica.png" alt="">
+          <picture><source srcset="/appclinicas/img/guiaempirica.webp" type="image/webp"><img src="/appclinicas/img/guiaempirica.png" alt="Antibioterapia empírica" loading="lazy"></picture>
         </div>
-        <h2>Antibioterapia empírica: guía HUPR 2025</h2>
+        <div class="card-title-row">
+          <h2>Antibioterapia empírica: guía HUPR 2025</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Protocolos de antibioterapia empírica del Hospital Universitario Puerto Real 2025. Consulta por localización de la infección o microorganismo, con recomendaciones actualizadas.</div>
         <a href="guiaempirica/" class="btn">Acceder</a>
       </div>
 
       <div class="card">
         <div class="icon-box bg-rose">
-          <img src="/appclinicas/img/gasometria.png" alt="Gasometría">
+          <picture><source srcset="/appclinicas/img/gasometria.webp" type="image/webp"><img src="/appclinicas/img/gasometria.png" alt="Gasometría" loading="lazy"></picture>
         </div>
-        <h2>Gasometría: interpretación y orientación diagnóstica</h2>
+        <div class="card-title-row">
+          <h2>AeroLab®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Interpretación de gasometrías arteriales. Analiza el equilibrio ácido-base, identifica alteraciones primarias y calcula las compensaciones esperadas.</div>
         <a href="gasometria/" class="btn">Interpretar</a>
       </div>
 
       <div class="card">
         <div class="icon-box bg-blue">
-          <img src="/appclinicas/img/cerebro.png" alt="">
+          <picture><source srcset="/appclinicas/img/cerebro.webp" type="image/webp"><img src="/appclinicas/img/cerebro.png" alt="Ictus isquémico" loading="lazy"></picture>
         </div>
-        <h2>Ictus isquémico: motor terapéutico</h2>
+        <div class="card-title-row">
+          <h2>StrokePilot®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Motor de decisión para ictus isquémico agudo. Guía el uso de fibrinólisis iv y trombectomía mecánica según guías ESO 2023 / AHA-ASA 2026.</div>
         <a href="ictus/" class="btn">Acceder</a>
       </div>
-      
+
       <div class="card">
         <div class="icon-box bg-orange">
-          <img src="/appclinicas/img/antidoto.png" alt="">
+          <picture><source srcset="/appclinicas/img/antidoto.webp" type="image/webp"><img src="/appclinicas/img/antidoto.png" alt="Guía de antídotos" loading="lazy"></picture>
         </div>
-        <h2>Intoxicación: guía de antídotos y manejo</h2>
+        <div class="card-title-row">
+          <h2>ToxoGuard®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Guía de antídotos y manejo de intoxicaciones agudas. Identifica el tóxico por síndrome clínico y proporciona recomendaciones de antídotos basadas en evidencia.</div>
         <a href="antidoto/" class="btn">Acceder</a>
       </div>
-      
+
       <div class="card">
         <div class="icon-box bg-purple">
-          <img src="/appclinicas/img/bacteria.png" alt="">
+          <picture><source srcset="/appclinicas/img/bacteria.webp" type="image/webp"><img src="/appclinicas/img/bacteria.png" alt="Sepsis" loading="lazy"></picture>
         </div>
-        <h2>Sepsis: diagnóstico y manejo</h2>
+        <div class="card-title-row">
+          <h2>SepsAlert®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Apoyo a la decisión en sepsis y shock séptico. Aplica criterios SOFA, qSOFA y SIRS con recomendaciones de manejo según SSC 2021 y guías NICE 2025.</div>
         <a href="sepsis/" class="btn">Acceder</a>
       </div>
 
@@ -354,23 +383,35 @@ footer {
     <div class="grid">
       <div class="card">
         <div class="icon-box bg-blue">
-          <img src="/appclinicas/img/funcionrenal.png" alt="">
+          <picture><source srcset="/appclinicas/img/funcionrenal.webp" type="image/webp"><img src="/appclinicas/img/funcionrenal.png" alt="Función renal" loading="lazy"></picture>
         </div>
-        <h2>Función renal: ajuste de fármacos</h2>
+        <div class="card-title-row">
+          <h2>NefroCalc®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Ajuste posológico de fármacos en insuficiencia renal. Calcula el FG por CKD-EPI 2021 y Cockcroft-Gault, con recomendaciones de dosis para más de 200 fármacos.</div>
         <a href="funcionrenal/" class="btn">Calcular</a>
       </div>
       <div class="card">
         <div class="icon-box bg-orange">
-          <img src="/appclinicas/img/infucalc.png" alt="">
+          <picture><source srcset="/appclinicas/img/infucalc.webp" type="image/webp"><img src="/appclinicas/img/infucalc.png" alt="InfuCalc bombas de perfusión" loading="lazy"></picture>
         </div>
-        <h2>InfuCalc: bombas de perfusión</h2>
+        <div class="card-title-row">
+          <h2>InfuCalc®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Calculadora de bombas de perfusión para UCI. Calcula ritmos y dosis para vasoactivos, sedoanalgesia, antibióticos y electrólitos (AEMPS / UpToDate).</div>
         <a href="infucalc/" class="btn">Calcular</a>
       </div>
       <div class="card">
         <div class="icon-box bg-green">
-          <img src="/appclinicas/img/anciano.png" alt="">
+          <picture><source srcset="/appclinicas/img/anciano.webp" type="image/webp"><img src="/appclinicas/img/anciano.png" alt="Polimedicados anciano complejo" loading="lazy"></picture>
         </div>
-        <h2>Polimedicados: anciano complejo</h2>
+        <div class="card-title-row">
+          <h2>GeriFit®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Optimizador terapéutico geriátrico. Detecta medicación inapropiada en el anciano mediante criterios STOPP/START v3, Beers 2023 y ajuste renal automático.</div>
         <a href="polimedicados/" class="btn">Revisar</a>
       </div>
     </div>
@@ -381,9 +422,13 @@ footer {
     <div class="grid">
       <div class="card">
         <div class="icon-box bg-purple">
-          <img src="/appclinicas/img/lecturacritica.png" alt="">
+          <picture><source srcset="/appclinicas/img/lecturacritica.webp" type="image/webp"><img src="/appclinicas/img/lecturacritica.png" alt="Lectura crítica" loading="lazy"></picture>
         </div>
-        <h2>Lectura crítica: checklist</h2>
+        <div class="card-title-row">
+          <h2>EvidScore®</h2>
+          <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción">ℹ</button>
+        </div>
+        <div class="info-desc">Herramienta de lectura crítica basada en MBE. Checklists estructurados para evaluar la calidad metodológica de ensayos clínicos, estudios observacionales y revisiones sistemáticas.</div>
         <a href="lecturacritica/" class="btn">Ver Herramienta</a>
       </div>
     </div>
@@ -424,6 +469,11 @@ document.querySelectorAll(".grid").forEach(grid => {
     grid.appendChild(card);
   });
 });
+
+function toggleInfo(btn) {
+  const desc = btn.closest('.card-title-row').nextElementSibling;
+  desc.classList.toggle('open');
+}
 </script>
 
 </body>

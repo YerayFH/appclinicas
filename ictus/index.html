@@ -16,7 +16,7 @@ gtag('config', 'G-J830XBBQKF', {
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <link rel="icon" type="image/png" href="/appclinicas/img/cerebro.png">
-<title>YerayFH - de la Mata — Ictus isquémico agudo: motor terapéutico</title>
+<title>StrokePilot®</title>
 <style>
 /* ═══════════════ CSS VARIABLES ═══════════════ */
 :root {
@@ -320,57 +320,16 @@ a{color:var(--brand-primary);text-decoration:none}
 }
 .input-missing { border-color:#ef4444 !important; box-shadow:0 0 0 2px #ef444440 !important; }
 @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-/* --- CABECERO PREMIUM YERAYFH --- */
-.app-header {
-  text-align: center;
-  margin-bottom: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.app-logo {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 0 12px rgba(14,165,233,0.25));
-}
-
-.badge-ictus {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(51, 65, 85, 0.5);
-  border-radius: 100px;
-  padding: 6px 16px;
-  margin-bottom: 14px;
-  backdrop-filter: blur(4px);
-}
-
-.badge-ictus span {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--brand-primary);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.branding-signature {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.app-main-title {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-  letter-spacing: -0.5px;
-}
+/* --- CABECERO UNIFICADO --- */
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:#020817;border-bottom:1px solid #1e293b;position:sticky;top:0;z-index:100}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:var(--text-secondary)}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--text-secondary)}
+.hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#0ea5e9}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
 </style>
 </head>
 <body>
@@ -1768,15 +1727,7 @@ function renderStep5(){
 }
 
 function footer(){
-  return `<div class="footer-app" style="margin-top:16px">⚕️ Herramienta de apoyo a la decisión clínica para profesionales sanitarios.<br>
-    Guías ESO 2021/2023 · AHA/ASA 2026 · WAKE-UP · EXTEND · DAWN/DEFUSE-3 · SEN · SEMES<br>
-    <strong>No sustituye el juicio clínico del facultativo responsable.</strong><br>
-    Prototipo no validado — ver Aviso Legal al inicio.<br>
-    YerayFH - de la Mata Farmacia Hospitalaria</div>
-  <div class="footer-credit">
-    <div style="font-size:13px;color:#64748b;font-weight:600">Autor: <span style="color:#94a3b8">Yeray Reyes de la Mata</span></div>
-    <div style="font-size:12px;color:#475569">Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
-  </div>`;
+  return `<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>`;
 }
 
 // ═══════════════ RENDER PRINCIPAL ═══════════════
@@ -1790,25 +1741,14 @@ function render(){
 
   let h = "";
   
-  // --- NUEVO CABECERO ---
+  // --- CABECERO UNIFICADO ---
   h += `
-  <header class="app-header">
-    <img src="/appclinicas/img/icon.png" class="app-logo" alt="Logo YerayFH">
-    
-    <div class="badge-ictus">
-      <span>🧠 ICTUS ISQUÉMICO AGUDO</span>
-    </div>
-
-    <div class="branding-signature">
-      <span class="brand-sub" style="font-size: 13px; color: #94a3b8; font-weight: 500;">YerayFH - de la Mata · Farmacia Hospitalaria</span>
-    </div>
-
-    <h1 class="app-main-title">Motor de decisión terapéutica</h1>
-    
-    <div style="margin-bottom: 24px;">
-      <p style="font-size: 12px; color: #64748b; margin: 0;">
-        Guías ESO 2023 / AHA-ASA 2026 · <span style="color: #ef444499; font-weight: 600;">Prototipo no validado</span>
-      </p>
+  <header class="app-header-unified">
+    <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" class="hdr-logo" alt="Logo YerayFH"></picture>
+    <div class="hdr-text">
+      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+      <div class="hdr-dept">Farmacia Hospitalaria</div>
+      <div class="hdr-app-name">StrokePilot&#174;</div>
     </div>
   </header>
   `;
@@ -1849,7 +1789,12 @@ function render(){
     </div>`;
   }
 
-  app.innerHTML = h;
+  try {
+    app.innerHTML = h;
+  } catch(e) {
+    console.error('[Ictus] Error al renderizar:', e);
+    app.innerHTML = '<div style="padding:1.5rem;color:#ef4444;background:#ef444410;border-radius:8px;border:1px solid #ef444440;margin:1rem">⚠ Error inesperado al mostrar los datos. Recarga la página e inténtalo de nuevo.</div>';
+  }
 }
 
 render();

@@ -14,7 +14,7 @@ gtag('config','G-J830XBBQKF',{page_path:location.pathname});
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Optimizador Terapéutico Geriátrico</title>
+<title>GeriFit®</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -29,51 +29,15 @@ gtag('config','G-J830XBBQKF',{page_path:location.pathname});
 }
 body{font-family:'Inter',system-ui,sans-serif;font-size:14px;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
 /* --- CABECERO CORREGIDO --- */
-.app-header {
-    background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-blue) 100%);
-    color: #fff;
-    padding: 15px 24px;
-    border-bottom: 4px solid var(--c-amber-md);
-}
-
-.header-container {
-    max-width: 1180px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.app-logo {
-    height: 55px; /* Tamaño ideal para que no descuadre */
-    width: auto;
-    flex-shrink: 0;
-}
-
-.header-text-group { 
-    flex: 1; 
-    text-align: left; 
-}
-
-.app-header h1 {
-    font-size: 19px; 
-    font-weight: 700;
-    margin: 0;
-    line-height: 1.2;
-}
-
-.app-header .sub {
-    font-size: 12px;
-    opacity: 0.9;
-    margin-top: 2px;
-}
-
-/* Para que en móviles el contacto no se amontone */
-@media (max-width: 600px) {
-    .header-container { flex-direction: column; text-align: center; gap: 10px; }
-    .header-text-group { text-align: center; }
-    .app-header h1 { font-size: 17px; }
-}
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:linear-gradient(135deg,#1e3a5f,#2563a8);border-bottom:4px solid var(--c-amber-md)}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:#fff}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:#fff}
+.hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#f59e0b}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
 .wrap{max-width:1180px;margin:0 auto;padding:18px 14px}
 .card {
     background: #fff;
@@ -422,18 +386,13 @@ tr:hover td{background:var(--c-slate-lt)}
 
 <div class="dup-toast" id="dup-toast"></div>
 
-<header class="app-header">
-    <div class="header-container">
-        <img src="/appclinicas/img/icon.png" alt="Logo Farmacia" class="app-logo">
-        
-        <div class="header-text-group">
-            <h1>Optimizador terapéutico geriátrico</h1>
-            <div class="sub">
-                YerayFH - de la Mata &middot; FARMACIA HOSPITALARIA<br>
-                Autor: Yeray Reyes de la Mata &nbsp;&middot;&nbsp; <span id="contacto-email"></span>
-            </div>
-        </div>
-    </div>
+<header class="app-header-unified">
+  <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo"></picture>
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">GeriFit&#174;</div>
+  </div>
 </header>
 
 <div class="wrap">
@@ -697,6 +656,7 @@ function setAllComorb(val){
 /* ═══════════════════════════════════════════════
    FG DUAL: CKD-EPI 2021 (sin raza) + Cockcroft-Gault
 ═══════════════════════════════════════════════ */
+// CKD-EPI 2021 (sin raza). Ref: Inker LA et al. N Engl J Med. 2021;385:1737-1749.
 function calcCKDEPI2021(scr,age,sex){
   if(!scr||!age) return null;
   var kappa=(sex==='female')?0.7:0.9;
@@ -706,6 +666,7 @@ function calcCKDEPI2021(scr,age,sex){
   if(sex==='female') gfr*=1.012;
   return Math.round(gfr);
 }
+// Cockcroft-Gault. Ref: Cockcroft DW, Gault MH. Nephron. 1976;16(1):31-41.
 function calcCrCl(age,weight,creatinine,sex){
   if(!age||!weight||!creatinine) return null;
   var v=((140-age)*weight)/(72*creatinine);
@@ -1299,6 +1260,7 @@ function buildAlerts(inp,fg,matched,totalAC){
 /* ═══════════════════════════════════════════════
    CHA2DS2-VASc
 ═══════════════════════════════════════════════ */
+// CHA2DS2-VASc. Ref: Lip GYH et al. Chest. 2010;137(2):263-272. DOI: 10.1378/chest.09-1584
 function calcCHA2DS2VA(inp){
   var sc=0,br=[];
   if(inp.ecv_ic){sc+=1;br.push('IC/ECV (+1)');}
@@ -2268,5 +2230,6 @@ loadFormState();
 /* ═══════════════════════════════════════════════ */
 
 </script>
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 </body>
 </html>

@@ -13,7 +13,7 @@ gtag('config', 'G-J830XBBQKF', {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ajuste posológico renal</title>
+<title>NefroCalc®</title>
 <link rel="icon" type="image/png" href="/appclinicas/img/funcionrenal.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -167,7 +167,15 @@ textarea{resize:vertical;min-height:120px;font-family:monospace;font-size:12px;l
 .modal-preview{background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:var(--cyan);min-height:40px;max-height:120px;overflow-y:auto;white-space:pre-wrap;line-height:1.6}
 .modal-preview-label{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
-footer{background:#0e1e38;border-top:2px solid #1f4080;padding:15px;text-align:center;color:var(--text2);font-size:12px;flex-shrink:0}
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:#0e1e38;border-bottom:1px solid #1f4080;position:sticky;top:0;z-index:100;flex-shrink:0}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:var(--text)}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--text)}
+.hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#2f81f7}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7;flex-shrink:0}
 .footer-ref{font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5}
 .footer-ref a{color:#4a8fd4;text-decoration:none}
 .footer-ref a:hover{text-decoration:underline}
@@ -296,20 +304,14 @@ footer{background:#0e1e38;border-top:2px solid #1f4080;padding:15px;text-align:c
   </div>
 </div>
 
-<div class="header">
-  <div class="header-top">
-<div class="hosp-icon">
-  <img src="/appclinicas/img/icon.png" alt="Logo" style="width:100%; height:auto;">
-</div>
-<div>
-  <div class="hosp-name">YerayFH - de la Mata</div>
-  <div class="hosp-sub">Farmacia Hospitalaria</div>
-</div>
-  <div class="header-main">
-    <div class="header-icon">💊</div>
-    <div class="header-title">Ajuste Posológico Renal</div>
+<header class="app-header-unified">
+  <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo"></picture>
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">NefroCalc&#174;</div>
   </div>
-</div>
+</header>
 <div class="main">
   <div class="sidebar">
     <div class="card">
@@ -407,13 +409,11 @@ footer{background:#0e1e38;border-top:2px solid #1f4080;padding:15px;text-align:c
     </div>
   </div>
 </div>
-<footer>
-  Yeray Reyes de la Mata · Contacto: ydelamata01@gmail.com
-  <div class="footer-ref">
-    Referencia: García Montemayor V, Sanchez-Agesta Martínez M, Naranjo Muñoz J. Ajuste de Fármacos en la Enfermedad Renal Crónica. En: Lorenzo V., López Gómez JM (Eds). <em>Nefrología al día</em>. ISSN: 2659-2606.
-    <a href="https://www.nefrologiaaldia.org/325" target="_blank" rel="noopener">https://www.nefrologiaaldia.org/325</a>
-  </div>
-</footer>
+<div class="footer-ref" style="padding:8px 20px;font-size:10px;color:var(--text3);line-height:1.5">
+  Referencia: García Montemayor V, Sanchez-Agesta Martínez M, Naranjo Muñoz J. Ajuste de Fármacos en la Enfermedad Renal Crónica. En: Lorenzo V., López Gómez JM (Eds). <em>Nefrología al día</em>. ISSN: 2659-2606.
+  <a href="https://www.nefrologiaaldia.org/325" target="_blank" rel="noopener">https://www.nefrologiaaldia.org/325</a>
+</div>
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 <script>
 const DB = [
 // ══ AMINOGLUCÓSIDOS ══
@@ -1200,11 +1200,17 @@ function classifyRec(recRaw, drug, fgVal) {
 // CÁLCULO DE FG
 // ════════════════════════════════════════════════════════════════
 
+// Superficie corporal — Du Bois & Du Bois. Arch Intern Med. 1916;17:863-871.
 function getBSA(w, h) {
   if (!w || !h) return null;
   return Math.sqrt((w * h) / 3600);
 }
 
+/**
+ * CKD-EPI 2021 (sin raza)
+ * Ref: Inker LA et al. New Creatinine- and Cystatin C-Based Equations to Estimate GFR
+ *      without Race. N Engl J Med. 2021;385:1737-1749. DOI: 10.1056/NEJMoa2102953
+ */
 function getCKDEPI(age, sex, cr) {
   if (!age || !sex || !cr || cr <= 0) return null;
   const kappa = sex === 'F' ? 0.7 : 0.9;
@@ -1217,6 +1223,12 @@ function getCKDEPI(age, sex, cr) {
   );
 }
 
+/**
+ * Aclaramiento de creatinina — Cockcroft-Gault (con ajuste por obesidad)
+ * Ref: Cockcroft DW, Gault MH. Prediction of creatinine clearance from serum creatinine.
+ *      Nephron. 1976;16(1):31-41. DOI: 10.1159/000180580
+ * Ajuste por obesidad: usa peso ajustado si peso > 1.3 × IBW.
+ */
 function getFG() {
   const manual = parseFloat(document.getElementById('fg_manual').value);
   if (!isNaN(manual) && manual >= 0) return { val: manual, method: 'Manual', isManual: true };
@@ -1381,10 +1393,18 @@ function buildInfoRows(drug, fgVal, cls, recDisplay, matchedTerm) {
 // FUNCIÓN ANALYZE() — limpia DOM antes de ejecutar (req. 4)
 // ════════════════════════════════════════════════════════════════
 
+function _showInlineMsg(msg, type) {
+  // type: 'error' | 'info'
+  const area = document.getElementById('results_area');
+  if (!area) { alert(msg); return; }
+  const bg = type === 'error' ? 'var(--red,#e53935)' : 'var(--cyan,#0097a7)';
+  area.innerHTML = `<div style="padding:1rem;border-radius:8px;background:${bg}18;border:1px solid ${bg}40;color:${bg};font-size:14px;margin-top:.5rem;">⚠ ${msg}</div>`;
+}
+
 function analyze() {
   const raw   = document.getElementById('drug_input').value;
   const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  if (!lines.length) { alert('Escribe al menos un fármaco.'); return; }
+  if (!lines.length) { _showInlineMsg('Escribe al menos un fármaco en el campo de texto.', 'error'); return; }
 
   const fg    = getFG();
   const fgVal = fg ? fg.val : null;
@@ -1693,7 +1713,7 @@ function closeScanModal() {
  */
 function applyScan() {
   const lines = scanPrescriptionText(document.getElementById('scan_input').value);
-  if (!lines.length) { alert('No se detectaron fármacos válidos.'); return; }
+  if (!lines.length) { _showInlineMsg('No se detectaron fármacos válidos en el texto escaneado.', 'error'); return; }
 
   const ta      = document.getElementById('drug_input');
   const existing = ta.value.trim()
@@ -1707,7 +1727,7 @@ function applyScan() {
   );
 
   if (!newLines.length) {
-    alert('Todos los fármacos detectados ya están en la lista.');
+    _showInlineMsg('Todos los fármacos detectados ya están en la lista.', 'info');
     closeScanModal();
     return;
   }
@@ -2287,7 +2307,7 @@ function buildPDFTemplate(patient, fg, rows) {
 function exportToPDF() {
   const rows = readResultsFromDOM();
   if (!rows.length) {
-    alert('No hay resultados que exportar.\nAnaliza primero la medicación del paciente.');
+    _showInlineMsg('No hay resultados que exportar. Analiza primero la medicación del paciente.', 'error');
     return;
   }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gasometría</title>
+  <title>AeroLab®</title>
   <link rel="icon" href="/appclinicas/img/gasometria.png" type="image/png" />
 
   <!-- Google Analytics -->
@@ -144,29 +144,15 @@
     #app.visible { display: flex; }
 
     /* HEADER */
-    header {
-      position: sticky; top: 0; z-index: 100;
-      border-bottom: 1px solid var(--border);
-      background: rgba(17,23,32,0.92);
-      backdrop-filter: blur(12px);
-      padding: 0.8rem 1.75rem;
-      display: flex; align-items: center; gap: 0.85rem;
-    }
-    .header-logo { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; }
-    .header-brand {
-      font-family: 'Fraunces', serif;
-      font-size: 0.95rem; font-weight: 700; color: #fff; line-height: 1.2;
-    }
-    .header-brand em { color: var(--accent-blue); font-style: normal; }
-    .header-dept { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.09em; text-transform: uppercase; }
-    .header-ver {
-      margin-left: auto; flex-shrink: 0;
-      background: rgba(52,211,153,0.08);
-      color: var(--accent-green);
-      border: 1px solid rgba(52,211,153,0.18);
-      font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 0.18rem 0.6rem; border-radius: 999px;
-    }
+    .app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:#111720;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+    .hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+    .hdr-text{display:flex;flex-direction:column;gap:2px}
+    .hdr-meta{font-size:11px;opacity:0.75;color:var(--fg)}
+    .hdr-meta a{color:inherit;text-decoration:none}
+    .hdr-meta a:hover{text-decoration:underline}
+    .hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--fg)}
+    .hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#38bdf8}
+    .app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
 
     /* ============================================================
        MAIN & VIEWS
@@ -633,13 +619,13 @@
 ================================================================ -->
 <div id="app">
 
-  <header>
-    <img class="header-logo" src="/appclinicas/img/icon.png" alt="Logo" onerror="this.style.display='none'">
-    <div>
-      <div class="header-brand"><em>YerayFH</em> – de la Mata</div>
-      <div class="header-dept">Farmacia Hospitalaria</div>
+  <header class="app-header-unified">
+    <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo"></picture>
+    <div class="hdr-text">
+      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+      <div class="hdr-dept">Farmacia Hospitalaria</div>
+      <div class="hdr-app-name">AeroLab&#174;</div>
     </div>
-    <div class="header-ver">v5.0 · Gasometría</div>
   </header>
 
   <main>
@@ -816,11 +802,8 @@
 
   </main>
 
-  <footer>
-    <strong>YerayFH – de la Mata · Farmacia Hospitalaria</strong><br>
-    Herramienta de apoyo clínico. No sustituye el criterio del profesional sanitario.<br>
-    Ref: Rose &amp; Post · Marino's ICU Book · Guías SEPAR
-  </footer>
+  <div style="padding:8px 20px;font-size:10px;color:var(--muted);line-height:1.5">Ref: Rose &amp; Post · Marino's ICU Book · Guías SEPAR</div>
+  <footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 
 </div><!-- /app -->
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YerayFH - de la Mata — Guía empírica de antibioterapia HUPR 2025</title>
+  <title>Guía antibioterapia empírica HUPR 2025</title>
   <link rel="icon" type="image/png" href="/appclinicas/img/guiaempirica.png">
   
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
@@ -297,40 +297,15 @@
    ══════════════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--app-bg);color:var(--app-text);font-family:'Inter',system-ui,sans-serif;min-height:100vh}
-.top-bar{background:#0d1020;border-bottom:1px solid #1e2235;padding:7px 20px;font-size:11px;color:var(--app-muted);line-height:1.7}
-.top-bar strong{color:#93c5fd}
-header {
-  background: rgba(30, 34, 53, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--app-border);
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.logo {
-    width: 42px; 
-    height: 42px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    overflow: hidden; /* Corta la imagen si es mayor al contenedor */
-    background: rgba(255,255,255,0.05); /* Fondo sutil */
-}
-
-.logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Ajusta la imagen sin deformar */
-}
-header h1{font-size:13px;font-weight:700;line-height:1.3}
-header p{font-size:11px;color:var(--app-muted)}
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:#1e2235;border-bottom:1px solid var(--app-border);position:sticky;top:0;z-index:100}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:var(--app-text)}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--app-text)}
+.hdr-app-name{font-size:17px;font-weight:800;letter-spacing:0.3px;color:#3b82f6}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
 .bc{display:flex;align-items:center;gap:5px;padding:9px 20px;font-size:12px;color:var(--app-muted);flex-wrap:wrap;border-bottom:1px solid var(--app-border);background:var(--app-card)}
 .bc span{cursor:pointer;transition:color .2s}.bc span:hover{color:var(--app-accent)}.bc .sep{color:var(--app-border)}.bc .act{color:var(--app-text);font-weight:600}
 main{max-width:940px;margin:0 auto;padding:22px 14px 60px}
@@ -618,20 +593,13 @@ main{max-width:940px;margin:0 auto;padding:22px 14px 60px}
 <!-- ══════════════════════════════════════════════
      TOP BAR + HEADER
      ══════════════════════════════════════════════ -->
-<div class="top-bar">
-    <strong>YerayFH - de la Mata</strong> &nbsp;|&nbsp; 
-    Farmacia Hospitalaria &nbsp;|&nbsp; 
-    Contacto: ydelamata01@gmail.com
-</div>
-
-<header>
-    <div class="logo">
-        <img src="/appclinicas/img/icon.png" alt="Logo">
-    </div>
-    <div>
-        <h1>Guía de tratamiento antimicrobiano empírico HUPR 2025</h1>
-        <p>Farmacia Hospitalaria &middot; YerayFH - de la Mata</p>
-    </div>
+<header class="app-header-unified">
+  <picture><source srcset="/appclinicas/img/icon.webp" type="image/webp"><img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo"></picture>
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">Guía antibioterapia empírica HUPR 2025</div>
+  </div>
 </header>
 <div class="bc" id="bc"><span class="act">Inicio</span></div>
 <main>
@@ -2371,5 +2339,6 @@ function handleSearch(query) {
 }
 init();
 </script>
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 </body>
 </html>
