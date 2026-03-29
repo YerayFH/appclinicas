@@ -1058,6 +1058,13 @@ function interpret() {
   const co2Lo  = pco2 < 35, co2Hi  = pco2 > 45;
   const hco3Lo = hco3 < 22, hco3Hi = hco3 > 26;
 
+  // ── ZONAS DE PELIGRO CRÍTICO (compatibilidad con la vida en riesgo) ─────
+  let criticalAlerts = [];
+  if (ph < 6.9)  criticalAlerts.push(`<strong style="color:var(--accent-red)">⚠ pH &lt; 6.9: EMERGENCIA VITAL.</strong> Riesgo de colapso cardiovascular, fibrilación ventricular y coma. Intervención urgente e inmediata.`);
+  if (ph > 7.7)  criticalAlerts.push(`<strong style="color:var(--accent-cyan)">⚠ pH &gt; 7.7: ALCALOSIS CRÍTICA.</strong> Riesgo de arritmias malignas, convulsiones, broncoespasmo severo y tetania. Corrección urgente.`);
+  if (pco2 > 80) criticalAlerts.push(`pCO₂ &gt; 80 mmHg: hipercapnia severa. Valorar soporte ventilatorio urgente e intubación.`);
+  if (pco2 < 20) criticalAlerts.push(`pCO₂ &lt; 20 mmHg: hiperventilación extrema. Evaluar causa de manera urgente.`);
+
   let dxName, dxSub;
 
   if (phNorm && !co2Lo && !co2Hi && !hco3Lo && !hco3Hi) {
@@ -1079,28 +1086,41 @@ function interpret() {
   } else if (phLow && co2Hi && !hco3Lo) {
     pType = 'acidosis'; pMech = 'respiratoria';
     dxName = 'Acidosis Respiratoria';
-    dxSub = 'pH↓ · pCO₂↑ → hipoventilación alveolar como trastorno primario.';
+    dxSub  = 'pH↓ · pCO₂↑ → hipoventilación alveolar como trastorno primario.';
+    // ── Detectar alcalosis metabólica concomitante: HCO₃⁻ > esperado por compensación crónica máxima
+    // Compensación crónica máxima: HCO₃⁻ = 24 + 0.35 × ΔpCO₂
+    const maxExpHCO3_resp = 24 + 0.35 * (pco2 - 40);
+    if (hco3Hi && hco3 > maxExpHCO3_resp + 3) {
+      dxSub += ` <br><span style="color:var(--accent-cyan);font-size:0.82em;">⚠ <strong>Alcalosis metabólica concomitante</strong>: HCO₃⁻ (${hco3}) excede la compensación crónica máxima esperada (${maxExpHCO3_resp.toFixed(1)} mEq/L). Trastorno mixto.</span>`;
+    }
   } else if (phLow && hco3Lo && !co2Hi) {
     pType = 'acidosis'; pMech = 'metabolica';
     dxName = 'Acidosis Metabólica';
-    dxSub = 'pH↓ · HCO₃⁻↓ → pérdida o consumo de bases, o acumulación de ácidos.';
+    dxSub  = 'pH↓ · HCO₃⁻↓ → pérdida o consumo de bases, o acumulación de ácidos.';
   } else if (phHigh && co2Lo && !hco3Hi) {
     pType = 'alcalosis'; pMech = 'respiratoria';
     dxName = 'Alcalosis Respiratoria';
-    dxSub = 'pH↑ · pCO₂↓ → hiperventilación alveolar como trastorno primario.';
+    dxSub  = 'pH↑ · pCO₂↓ → hiperventilación alveolar como trastorno primario.';
+    // ── Detectar acidosis metabólica concomitante (normal o alto AG):
+    // HCO₃⁻ más bajo de lo esperado por la compensación máxima crónica
+    // Compensación crónica máxima alcalosis resp.: HCO₃⁻ = 24 − 0.4 × ΔpCO₂
+    const minExpHCO3_alk = 24 - 0.4 * (40 - pco2);
+    if (hco3Lo && hco3 < minExpHCO3_alk - 3) {
+      dxSub += ` <br><span style="color:var(--accent-red);font-size:0.82em;">⚠ <strong>Acidosis metabólica concomitante</strong>: HCO₃⁻ (${hco3}) por debajo de la compensación crónica mínima esperada (${minExpHCO3_alk.toFixed(1)} mEq/L). Evaluar causa: diarrea, ATR, pérdida de bases.</span>`;
+    }
   } else if (phHigh && hco3Hi && !co2Lo) {
     pType = 'alcalosis'; pMech = 'metabolica';
     dxName = 'Alcalosis Metabólica';
-    dxSub = 'pH↑ · HCO₃⁻↑ → ganancia de bases o pérdida de ácidos.';
+    dxSub  = 'pH↑ · HCO₃⁻↑ → ganancia de bases o pérdida de ácidos.';
   } else if (phLow && co2Hi && hco3Lo) {
     pType = 'mixed'; dxName = 'Trastorno Mixto: Acidosis Resp. + Metabólica';
-    dxSub = 'pCO₂↑ y HCO₃⁻↓ simultáneos → trastorno mixto acidótico.';
+    dxSub  = 'pCO₂↑ y HCO₃⁻↓ simultáneos → trastorno mixto acidótico. Situación de máximo riesgo vital, sin mecanismo compensador efectivo.';
   } else if (phHigh && co2Hi && hco3Hi) {
-    pType = 'mixed'; dxName = 'Alcalosis Metabólica con Retención CO₂';
-    dxSub = 'HCO₃⁻↑ con retención CO₂. Descartar mezcla con acidosis respiratoria crónica.';
+    pType = 'mixed'; dxName = 'Trastorno Mixto: Alcalosis Metabólica + Acidosis Respiratoria';
+    dxSub  = 'HCO₃⁻↑ con CO₂↑. Alcalosis metabólica con fallo compensatorio o acidosis respiratoria concomitante (ej: paciente con vómitos + EPOC reagudizado).';
   } else {
     pType = 'mixed'; dxName = 'Trastorno Complejo / Mixto';
-    dxSub = 'Combinación atípica. Evalúe el contexto clínico y considere trastorno mixto.';
+    dxSub  = 'Combinación atípica. Evalúe el contexto clínico y considere trastorno mixto con análisis por componentes.';
   }
 
   // ── ALERTA OCULTA AG: si el trastorno primario NO es acidosis metabólica
@@ -1108,8 +1128,8 @@ function interpret() {
   const isExplicitMetabolicAcidosis = (pType === 'acidosis' && pMech === 'metabolica');
   if (agHigh && !isExplicitMetabolicAcidosis) {
     dxSub += `<br><span style="color:var(--accent-red);font-size:0.8em;">`
-           + `⚠ Atención: Anion Gap elevado indica una Acidosis Metabólica oculta concomitante `
-           + `(Trastorno Mixto/Triple).</span>`;
+           + `⚠ Anion Gap elevado → Acidosis Metabólica AG(+) oculta concomitante `
+           + `(Trastorno Mixto/Triple). Buscar causa: lactato, cetoacidosis, uremia, tóxicos.</span>`;
   }
 
   // ── COMPENSATION ─────────────────────────────────────────────
@@ -1360,7 +1380,7 @@ function interpret() {
     const bePos    = be > 2;
     const beSevNeg = be < -10;
     const beSevPos = be > 10;
-    const beColor  = beNorm ? 'var(--accent-green)' : (beNeg ? 'var(--accent-red)' : 'var(--accent-blue)');
+    const beColor  = beNorm ? 'var(--accent-green)' : (beNeg ? 'var(--accent-red)' : 'var(--accent-cyan)');
     const beLabel  = beNorm ? 'Normal' : (beNeg ? `Déficit de bases (acidosis metabólica)` : `Exceso de bases (alcalosis metabólica)`);
     let beAlert = '';
     if (beNorm) {
@@ -1433,7 +1453,15 @@ function interpret() {
     ${chip('HCO₃⁻', hco3, 'mEq/L', 22, 26, 10, 45)}
     ${!isNaN(na)  ? chip('Na⁺',   na,   'mEq/L', 136, 145, 125, 155) : ''}
     ${!isNaN(cl)  ? chip('Cl⁻',   cl,   'mEq/L', 98, 106, 85, 120) : ''}
-    ${!isNaN(be)  ? chip('BE', be, 'mEq/L', -2, 2, -15, 15) : ''}
+    ${!isNaN(be)  ? (() => {
+      const beChipColor = (be >= -2 && be <= 2) ? 'var(--accent-green)'
+                        : (be < -2) ? 'var(--accent-red)'
+                        : 'var(--accent-cyan)';
+      return `<div class="chip" style="border-color:${beChipColor}22">
+        <div class="chip-name">BE</div>
+        <div class="chip-val" style="color:${beChipColor}">${be > 0 ? '+' : ''}${be.toFixed(1)}</div>
+        <div class="chip-unit">mEq/L</div></div>`;
+    })() : ''}
     ${!isNaN(ag)  ? `<div class="chip ${agHigh ? 'c-critical' : (ag < 6 ? 'c-low' : 'c-normal')}">
       <div class="chip-name">AG</div>
       <div class="chip-val">${ag.toFixed(1)}</div>
@@ -1462,10 +1490,21 @@ function interpret() {
     : pType === 'acidosis' ? `${svgIcon('trending-down',11)} Acidosis`
     :                        `${svgIcon('trending-up',11)} Alcalosis`;
 
+  // ── Render alertas críticas de pH/pCO₂ ──────────────────────
+  const criticalBannerHTML = criticalAlerts.length > 0 ? `
+    <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.45);border-radius:var(--radius);padding:0.85rem 1.1rem;margin-bottom:1rem;animation:pulse-border 1.2s ease infinite;">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
+        ${svgIcon('zap', 15)}
+        <span style="font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent-red);font-weight:700">ALERTA CRÍTICA</span>
+      </div>
+      ${criticalAlerts.map(a => `<div style="font-size:0.78rem;line-height:1.65;color:var(--text);margin-top:0.2rem;">${a}</div>`).join('')}
+    </div>` : '';
+
   document.getElementById('results-content').innerHTML = `
     <div class="view-title">${dxName}</div>
     <div class="view-sub" style="margin-bottom:1rem;">${dxSub}</div>
 
+    ${criticalBannerHTML}
     ${chipsHTML}
 
     <div class="dx-banner ${pType}">
