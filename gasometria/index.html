@@ -646,8 +646,8 @@
         <div class="field">
           <label class="field-label" for="inp-ph"><strong>pH</strong> * — Potencial de Hidrógeno</label>
           <div class="field-row">
-            <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-ph" step="0.01" min="6.8" max="7.8" placeholder="7.40" oninput="updateBar('ph'); clearError('inp-ph')">
-            <span class="field-unit">6.8–7.8</span>
+            <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-ph" step="0.01" min="6.5" max="8.0" placeholder="7.40" oninput="updateBar('ph'); clearError('inp-ph')">
+            <span class="field-unit">6.5–8.0</span>
           </div>
           <div class="range-bar"><div class="range-track" id="track-ph"><div class="range-fill" id="fill-ph" style="width:0%"></div><div class="range-dot" id="dot-ph" style="left:0%"></div></div></div>
         </div>
@@ -731,6 +731,14 @@
                 <div class="range-bar"><div class="range-track" id="track-lactato"><div class="range-fill" id="fill-lactato" style="width:0%"></div><div class="range-dot" id="dot-lactato" style="left:0%"></div></div></div>
               </div>
               <div class="field">
+                <label class="field-label" for="inp-be"><strong>BE</strong> — Exceso de Base</label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="-?[0-9]*\.?[0-9]*" id="inp-be" step="0.1" min="-30" max="30" placeholder="0.0" oninput="updateBar('be'); clearError('inp-be')">
+                  <span class="field-unit">mEq/L</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-be"><div class="range-fill" id="fill-be" style="width:0%"></div><div class="range-dot" id="dot-be" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
                 <label class="field-label" for="inp-po2"><strong>pO₂</strong></label>
                 <div class="field-row">
                   <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-po2" step="1" min="20" max="600" placeholder="95" oninput="updateBar('po2'); clearError('inp-po2')">
@@ -771,10 +779,11 @@
             <tr><td>HCO₃⁻</td><td>22 – 26 mEq/L</td></tr>
             <tr><td>Na⁺</td><td>136 – 145 mEq/L</td></tr>
             <tr><td>Cl⁻</td><td>98 – 106 mEq/L</td></tr>
-            <tr><td>Anion Gap</td><td>8 – 12 mEq/L</td></tr>
+            <tr><td>Anion Gap</td><td>6 – 10 mEq/L</td></tr>
             <tr><td>Albúmina</td><td>3.5 – 5.0 g/dL</td></tr>
             <tr><td>K⁺</td><td>3.5 – 5.0 mEq/L</td></tr>
             <tr><td>Lactato</td><td>&lt; 2.0 mmol/L</td></tr>
+            <tr><td>BE (Exc. Base)</td><td>−2 a +2 mEq/L</td></tr>
             <tr><td>pO₂</td><td>80 – 100 mmHg</td></tr>
             <tr><td>PAFI (pO₂/FiO₂)</td><td>&gt; 300 mmHg</td></tr>
           </tbody>
@@ -848,7 +857,7 @@ function goBack() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   showView('view-input');
   // Si ya había valores en campos avanzados, abrir el panel para que sean visibles
-  const advancedIds = ['inp-na','inp-cl','inp-alb','inp-k','inp-lactato','inp-po2','inp-fio2'];
+  const advancedIds = ['inp-na','inp-cl','inp-alb','inp-k','inp-lactato','inp-be','inp-po2','inp-fio2'];
   const hasAdvanced = advancedIds.some(id => {
     const el = document.getElementById(id);
     return el && el.value.trim() !== '';
@@ -861,7 +870,7 @@ function goBack() {
    Range bars config
 ---------------------------------------------------------------- */
 const RANGE_CFG = {
-  ph:      { min: 6.8,  max: 7.8,  nMin: 7.35, nMax: 7.45 },
+  ph:      { min: 6.5,  max: 8.0,  nMin: 7.35, nMax: 7.45 },
   pco2:    { min: 5,    max: 120,  nMin: 35,   nMax: 45   },
   hco3:    { min: 2,    max: 60,   nMin: 22,   nMax: 26   },
   na:      { min: 100,  max: 180,  nMin: 136,  nMax: 145  },
@@ -869,6 +878,7 @@ const RANGE_CFG = {
   alb:     { min: 1,    max: 6,    nMin: 3.5,  nMax: 5.0  },
   k:       { min: 1,    max: 9,    nMin: 3.5,  nMax: 5.0  },
   lactato: { min: 0,    max: 15,   nMin: 0,    nMax: 2.0  },
+  be:      { min: -30,  max: 30,   nMin: -2,   nMax: 2    },
   po2:     { min: 20,   max: 600,  nMin: 80,   nMax: 100  },
   fio2:    { min: 21,   max: 100,  nMin: 21,   nMax: 21   },
 };
@@ -905,7 +915,7 @@ function showFieldErrors(msgs, ids) {
   // Si algún campo en error está dentro del panel avanzado, abrirlo automáticamente
   const adv = document.getElementById('advanced-details');
   if (adv) {
-    const advancedIds = ['inp-na','inp-cl','inp-alb','inp-k','inp-lactato','inp-po2','inp-fio2'];
+    const advancedIds = ['inp-na','inp-cl','inp-alb','inp-k','inp-lactato','inp-be','inp-po2','inp-fio2'];
     if (ids.some(id => advancedIds.includes(id))) adv.open = true;
   }
   const fe = document.getElementById('form-error');
@@ -963,7 +973,7 @@ function svgIcon(name, size = 16, cls = '') {
    Reset
 ---------------------------------------------------------------- */
 function resetAll() {
-  ['ph','pco2','hco3','na','cl','alb','k','lactato','po2','fio2'].forEach(k => {
+  ['ph','pco2','hco3','na','cl','alb','k','lactato','be','po2','fio2'].forEach(k => {
     const el = document.getElementById('inp-' + k);
     if (el) { el.value = ''; el.classList.remove('error'); }
     const f = document.getElementById('fill-' + k);
@@ -992,6 +1002,7 @@ function interpret() {
   const alb     = parseFloat(document.getElementById('inp-alb').value);
   const k       = parseFloat(document.getElementById('inp-k').value);
   const lactato = parseFloat(document.getElementById('inp-lactato').value);
+  const be      = parseFloat(document.getElementById('inp-be').value);
   const po2     = parseFloat(document.getElementById('inp-po2').value);
   const fio2    = parseFloat(document.getElementById('inp-fio2').value);
 
@@ -1007,6 +1018,7 @@ function interpret() {
   if (!isNaN(k)       && (k  < 1    || k  > 9))    { errors.push('Potasio fuera de rango biológico (1–9 mEq/L)');         errorIds.push('inp-k'); }
   if (!isNaN(alb)     && (alb < 1   || alb > 6))   { errors.push('Albúmina fuera de rango biológico (1–6 g/dL)');         errorIds.push('inp-alb'); }
   if (!isNaN(lactato) && (lactato < 0 || lactato > 20)) { errors.push('Lactato fuera de rango biológico (0–20 mmol/L)'); errorIds.push('inp-lactato'); }
+  if (!isNaN(be)      && (be < -30   || be > 30))  { errors.push('BE fuera de rango biológico (−30 a +30 mEq/L)');        errorIds.push('inp-be'); }
   if (!isNaN(po2)     && (po2 < 20  || po2 > 600)) { errors.push('pO₂ fuera de rango biológico (20–600 mmHg)');           errorIds.push('inp-po2'); }
 
   // FiO₂: si el campo tiene valor pero es < 21, el usuario ha introducido decimal (ej: 0.21)
@@ -1017,7 +1029,7 @@ function interpret() {
 
   // Si hay errores en campos opcionales, abrir el panel avanzado antes de mostrarlos
   if (errors.length) {
-    const advancedOptIds = ['inp-na','inp-cl','inp-k','inp-alb','inp-lactato','inp-fio2'];
+    const advancedOptIds = ['inp-na','inp-cl','inp-k','inp-alb','inp-lactato','inp-be','inp-fio2'];
     if (errorIds.some(id => advancedOptIds.includes(id))) {
       const adv = document.getElementById('advanced-details');
       if (adv) adv.open = true;
@@ -1036,7 +1048,7 @@ function interpret() {
     }
   }
   const agEff = !isNaN(agCorr) ? agCorr : ag; // Use corrected if available
-  const agHigh = !isNaN(agEff) && agEff > 12;
+  const agHigh = !isNaN(agEff) && agEff > 10;
 
   // ── PRIMARY DISORDER ─────────────────────────────────────────
   let pType = 'normal'; // acidosis | alcalosis | normal | mixed
@@ -1050,7 +1062,20 @@ function interpret() {
 
   if (phNorm && !co2Lo && !co2Hi && !hco3Lo && !hco3Hi) {
     pType = 'normal'; dxName = 'Gasometría Normal';
-    dxSub = 'Todos los parámetros dentro de los rangos de referencia.';
+    // Detección de valores en extremos opuestos del rango normal → posible trastorno compensado
+    const phBorderLow   = ph   >= 7.35 && ph   < 7.37;
+    const phBorderHigh  = ph   > 7.43  && ph   <= 7.45;
+    const co2BorderHigh = pco2 > 43    && pco2 <= 45;
+    const co2BorderLow  = pco2 >= 35   && pco2 < 37;
+    const hco3Hi2       = hco3 > 24    && hco3 <= 26;
+    const hco3Lo2       = hco3 >= 22   && hco3 < 23;
+    if (phBorderLow && co2BorderHigh && hco3Hi2) {
+      dxSub = 'Parámetros en extremos opuestos del rango normal. ⚠ <strong>Posible acidosis respiratoria crónica compensada</strong> — evaluar contexto (EPOC, SAHS, obesidad-hipoventilación).';
+    } else if (phBorderHigh && co2BorderLow && hco3Lo2) {
+      dxSub = 'Parámetros en extremos opuestos del rango normal. ⚠ <strong>Posible alcalosis respiratoria compensada</strong> — evaluar contexto (embarazo, hepatopatía crónica, altitud, ansiedad crónica).';
+    } else {
+      dxSub = 'Todos los parámetros dentro de los rangos de referencia.';
+    }
   } else if (phLow && co2Hi && !hco3Lo) {
     pType = 'acidosis'; pMech = 'respiratoria';
     dxName = 'Acidosis Respiratoria';
@@ -1128,19 +1153,19 @@ function interpret() {
   // ── ANION GAP BLOCK HTML ─────────────────────────────────────
   let agHTML = '';
   if (hasElec) {
-    const agColor = agHigh ? 'var(--accent-red)' : (ag < 8 ? 'var(--accent-blue)' : 'var(--accent-green)');
+    const agColor = agHigh ? 'var(--accent-red)' : (ag < 6 ? 'var(--accent-blue)' : 'var(--accent-green)');
     const agPct   = Math.min(100, Math.max(0, (ag / 35) * 100));
-    const agStatus = agHigh ? 'Elevado — Acidosis con AG (+)' : (ag < 8 ? 'Bajo — Descartar hipoalbuminemia / mieloma' : 'Normal (8–12 mEq/L)');
+    const agStatus = agHigh ? 'Elevado — Acidosis con AG (+)' : (ag < 6 ? 'Bajo — Descartar hipoalbuminemia / mieloma' : 'Normal (6–10 mEq/L)');
 
     let agCorrHTML = '';
     if (!isNaN(agCorr)) {
-      const agCHigh = agCorr > 12;
-      const agCColor = agCHigh ? 'var(--accent-red)' : (agCorr < 8 ? 'var(--accent-blue)' : 'var(--accent-green)');
+      const agCHigh = agCorr > 10;
+      const agCColor = agCHigh ? 'var(--accent-red)' : (agCorr < 6 ? 'var(--accent-blue)' : 'var(--accent-green)');
       agCorrHTML = `
         <div class="metric-alert info" style="margin-top:0.6rem;">
           ${svgIcon('flask', 13, 'cause-icon c-purple')} 
           <strong>AG corregido</strong> = AG + 2.5 × (4.0 − Alb) = ${ag.toFixed(1)} + 2.5 × (4.0 − ${alb.toFixed(1)}) = <strong style="color:${agCColor}">${agCorr.toFixed(1)} mEq/L</strong>
-          ${agCHigh && ag <= 12 ? ' · La hipoalbuminemia enmascaraba la acidosis AG(+).' : ''}
+          ${agCHigh && ag <= 10 ? ' · La hipoalbuminemia enmascaraba la acidosis AG(+).' : ''}
         </div>`;
     }
 
@@ -1148,7 +1173,7 @@ function interpret() {
     // del trastorno primario. Un AG alto implica acidosis metabólica presente.
     let ddHTML = '';
     if (agHigh) {
-      const dAG    = agEff - 12;
+      const dAG    = agEff - 10;
       const dHCO3  = 24 - hco3;
       const dd     = Math.abs(dHCO3) > 0.1 ? (dAG / dHCO3) : 999;
       let ddColor = 'var(--muted)', ddTxt = '';
@@ -1204,16 +1229,22 @@ function interpret() {
     const lacPct    = Math.min(100, (lactato / 15) * 100);
     let lacAlert = '';
     if (lacSevere && agHigh) {
-      // Acidosis láctica confirmada: Lactato > 4 + AG elevado → siempre, sin importar pH
-      lacAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Acidosis Láctica confirmada</strong> (Lactato &gt; 4 mmol/L + AG elevado). Causa principal independientemente del pH. Priorizar identificación y corrección del foco.</div>`;
+      // Acidosis láctica confirmada: Lactato > 4 + AG elevado
+      lacAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Acidosis Láctica confirmada</strong> (Lactato &gt; 4 mmol/L + AG elevado).
+        <div style="margin-top:0.45rem;font-size:0.7rem;line-height:1.65;border-top:1px solid rgba(248,113,113,0.2);padding-top:0.4rem;">
+          <strong style="color:var(--accent-red)">Tipo A</strong> — Hipoperfusión tisular: sepsis/shock séptico, shock cardiogénico/hemorrágico, isquemia mesentérica, PCR → <em>reanimación urgente: volumen, vasopresores, identificar y tratar foco</em><br>
+          <strong style="color:var(--accent-orange)">Tipo B</strong> — Sin hipoperfusión evidente: metformina, déficit de tiamina (B1), insuficiencia hepática grave, neoplasias hematológicas (linfoma, leucemia), VIH/TARV, alcohol → <em>retirar causa, soporte, tiamina 100 mg IV empírica</em>
+        </div></div>`;
     } else if (lacSevere) {
-      // Lactato > 4 pero sin AG calculado o normal: alerta roja igualmente
-      lacAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Lactato crítico</strong> (&gt; 4 mmol/L). Hipoperfusión tisular severa o acidosis láctica. Evaluación urgente independientemente del pH.</div>`;
+      lacAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Lactato crítico</strong> (&gt; 4 mmol/L).
+        <div style="margin-top:0.45rem;font-size:0.7rem;line-height:1.65;border-top:1px solid rgba(248,113,113,0.2);padding-top:0.4rem;">
+          <strong style="color:var(--accent-red)">Tipo A</strong> — Hipoperfusión: sepsis, shock, isquemia → reanimación urgente, valorar UCI<br>
+          <strong style="color:var(--accent-orange)">Tipo B</strong> — Sin hipoperfusión: metformina, déficit tiamina, hepatopatía grave → retirar causa, tiamina IV empírica
+        </div></div>`;
     } else if (lacHigh) {
-      // Lactato 2–4: hiperlactatemia, siempre avisar sin importar pType
-      lacAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hiperlactatemia</strong> (2–4 mmol/L). Descartar sepsis, shock, insuficiencia hepática, metformina, isquemia. Vigilar evolución.</div>`;
+      lacAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hiperlactatemia</strong> (2–4 mmol/L). Evaluar signos de hipoperfusión (<strong>Tipo A</strong>: sepsis precoz, shock incipiente, isquemia) o causa metabólica (<strong>Tipo B</strong>: metformina, hepatopatía, déficit tiamina). Vigilar tendencia y correlacionar con clínica.</div>`;
     } else {
-      lacAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} Lactato normal (&lt; 2.0 mmol/L).</div>`;
+      lacAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} Lactato normal (&lt; 2.0 mmol/L). Sin evidencia de hipoperfusión tisular significativa.</div>`;
     }
     lactatoHTML = `
       <div class="sec-label">Lactato</div>
@@ -1258,6 +1289,19 @@ function interpret() {
       { label: 'SDRA Grave', range: '≤ 100', active: pafi <= 100, color: 'var(--accent-red)' },
     ];
 
+    // Gradiente A-a O₂
+    const pao2  = (fio2 / 100) * 713 - pco2 / 0.8;
+    const gaa   = pao2 - po2;
+    const gaaColor = gaa > 35 ? 'var(--accent-red)' : (gaa > 15 ? 'var(--accent-orange)' : 'var(--accent-green)');
+    const gaaStatus = gaa <= 15 ? 'Normal (&lt;15 mmHg)' : (gaa <= 35 ? 'Elevado leve-moderado (15–35 mmHg)' : 'Elevado — fallo de intercambio gaseoso');
+    const gaaHTML = `
+      <div class="metric-alert ${gaa > 35 ? 'danger' : (gaa > 15 ? 'warn' : 'ok')}" style="margin-top:0.6rem;">
+        ${svgIcon(gaa > 15 ? 'alert-triangle' : 'check-circle', 13)}
+        <strong>Gradiente A-a O₂</strong> = PAO₂ − pO₂ = ${pao2.toFixed(1)} − ${po2} = <strong style="color:${gaaColor}">${gaa.toFixed(1)} mmHg</strong>
+        <span style="font-size:0.68rem;color:var(--muted)"> · ${gaaStatus}</span>
+        ${gaa > 15 ? `<div style="font-size:0.68rem;margin-top:0.25rem;color:var(--muted)">GA-a elevado → patología intrapulmonar (neumonía, edema, TEP, SDRA). Normal: &lt;15 mmHg en jóvenes, hasta 35 mmHg en &gt;65 años.</div>` : ''}
+      </div>`;
+
     pafiHTML = `
       <div class="sec-label">Índice de Oxigenación (PAFI)</div>
       <div class="metric-block">
@@ -1273,6 +1317,7 @@ function interpret() {
           </div>`).join('')}
         </div>
         ${pafiAlert}
+        ${gaaHTML}
       </div>`;
   }
 
@@ -1301,20 +1346,70 @@ function interpret() {
           <span class="metric-label">K⁺ sérico</span>
           <span><span class="metric-val" style="color:${kColor}">${k.toFixed(1)}</span><span class="metric-unit">mEq/L</span></span>
         </div>
-        <div class="metric-sub">Esperado para este pH (~${kExpected} mEq/L) · Regla: ±0.6 mEq/L K⁺ por cada 0.1 de pH</div>
+        <div class="metric-sub">K⁺ esperado para pH ${ph.toFixed(2)}: ~<strong>${kExpected} mEq/L</strong> · Regla: ±0.6 mEq/L por cada 0.1 de pH</div>
         ${kAlert}
+        <div class="metric-alert info" style="margin-top:0.45rem;font-size:0.68rem;">${svgIcon('info', 12)} <strong>Limitación en ERC/Anuria:</strong> en insuficiencia renal crónica o anuria el K⁺ puede estar elevado de forma independiente al pH (retención extrarrenal). Esta fórmula puede <strong>subestimar hiperpotasemia real</strong> — interpretar siempre en contexto clínico y función renal.</div>
       </div>`;
   }
+
+  // ── EXCESO DE BASE (BE) BLOCK ─────────────────────────────────
+  let beHTML = '';
+  if (!isNaN(be)) {
+    const beNorm   = be >= -2 && be <= 2;
+    const beNeg    = be < -2;
+    const bePos    = be > 2;
+    const beSevNeg = be < -10;
+    const beSevPos = be > 10;
+    const beColor  = beNorm ? 'var(--accent-green)' : (beNeg ? 'var(--accent-red)' : 'var(--accent-blue)');
+    const beLabel  = beNorm ? 'Normal' : (beNeg ? `Déficit de bases (acidosis metabólica)` : `Exceso de bases (alcalosis metabólica)`);
+    let beAlert = '';
+    if (beNorm) {
+      beAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} BE normal (−2 a +2 mEq/L). Sin componente metabólico significativo.</div>`;
+    } else if (beSevNeg) {
+      beAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Déficit de bases severo</strong> (BE &lt; −10). Acidosis metabólica importante. Correlaciona con AG, lactato y clínica para identificar causa (cetoacidosis, acidosis láctica, intoxicación).</div>`;
+    } else if (beNeg) {
+      beAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Déficit de bases</strong> (BE ${be.toFixed(1)}). Componente de acidosis metabólica. Evaluar con HCO₃⁻ y AG para identificar mecanismo.</div>`;
+    } else if (beSevPos) {
+      beAlert = `<div class="metric-alert danger">${svgIcon('alert-circle', 13)} <strong>Exceso de bases severo</strong> (BE &gt; +10). Alcalosis metabólica marcada. Evaluar causa (vómitos, diuréticos, hiperaldosteronismo). Riesgo de hipoventilación compensatoria.</div>`;
+    } else {
+      beAlert = `<div class="metric-alert info">${svgIcon('info', 13)} <strong>Exceso de bases</strong> (BE ${be.toFixed(1)}). Componente de alcalosis metabólica. Correlacionar con HCO₃⁻ y contexto clínico.</div>`;
+    }
+    beHTML = `
+      <div class="sec-label">Exceso de Base (BE / SBE)</div>
+      <div class="metric-block">
+        <div class="metric-header">
+          <span class="metric-label">Base Excess</span>
+          <span><span class="metric-val" style="color:${beColor}">${be > 0 ? '+' : ''}${be.toFixed(1)}</span><span class="metric-unit">mEq/L · ${beLabel}</span></span>
+        </div>
+        <div class="metric-sub">Ref: −2 a +2 mEq/L · &lt;−2 acidosis metabólica · &gt;+2 alcalosis metabólica</div>
+        ${beAlert}
+      </div>`;
+  }
+
+  // ── MANAGEMENT ORIENTATION ────────────────────────────────────
+  const pafiVal = (!isNaN(po2) && !isNaN(fio2) && fio2 > 0) ? po2 / (fio2 / 100) : NaN;
+  const mgmtData = getManagement(pType, pMech, agEff, lactato, k, ph, pafiVal);
+  const priorityColors = { urgent: 'danger', high: 'warn', normal: 'info' };
+  const priorityIcons  = { urgent: 'zap', high: 'alert-triangle', normal: 'info' };
+  const mgmtHTML = mgmtData.length > 0 ? `
+    <div class="sec-label">Orientación de Manejo</div>
+    <ul class="causes-list">
+      ${mgmtData.map(m => `
+        <li class="cause-item${m.priority === 'urgent' ? ' highlight' : ''}">
+          <span class="cause-icon ${m.priority === 'urgent' ? 'c-red' : (m.priority === 'high' ? 'c-orange' : 'c-blue')}">${svgIcon(m.icon || priorityIcons[m.priority], 14)}</span>
+          <span>${m.text}</span>
+        </li>`).join('')}
+    </ul>` : '';
 
   // ── CAUSES ────────────────────────────────────────────────────
   const causesData = getCauses(pType, pMech, agEff, lactato);
   const causesHTML = `
-    <div class="sec-label">Causas Frecuentes</div>
+    <div class="sec-label">Diagnóstico Diferencial — Causas Frecuentes</div>
     <ul class="causes-list">
       ${causesData.map(c => c.isSeparator
-        ? `<li class="cause-item highlight" style="justify-content:center;text-align:center;font-size:0.7rem;letter-spacing:0.05em;">
-             <span class="cause-icon c-red">${svgIcon(c.icon, 13)}</span>
-             <span>${c.text}</span>
+        ? `<li class="cause-item" style="background:rgba(79,163,224,0.04);border-color:rgba(79,163,224,0.2);font-size:0.68rem;font-weight:600;letter-spacing:0.03em;padding:0.4rem 0.8rem;">
+             <span class="cause-icon ${c.cls || 'c-red'}">${svgIcon(c.icon, 13)}</span>
+             <span style="color:var(--text)">${c.text}</span>
            </li>`
         : `<li class="cause-item${c.highlight ? ' highlight' : ''}">
              <span class="cause-icon ${c.cls || ''}">${svgIcon(c.icon, 14)}</span>
@@ -1338,7 +1433,8 @@ function interpret() {
     ${chip('HCO₃⁻', hco3, 'mEq/L', 22, 26, 10, 45)}
     ${!isNaN(na)  ? chip('Na⁺',   na,   'mEq/L', 136, 145, 125, 155) : ''}
     ${!isNaN(cl)  ? chip('Cl⁻',   cl,   'mEq/L', 98, 106, 85, 120) : ''}
-    ${!isNaN(ag)  ? `<div class="chip ${agHigh ? 'c-critical' : (ag < 8 ? 'c-low' : 'c-normal')}">
+    ${!isNaN(be)  ? chip('BE', be, 'mEq/L', -2, 2, -15, 15) : ''}
+    ${!isNaN(ag)  ? `<div class="chip ${agHigh ? 'c-critical' : (ag < 6 ? 'c-low' : 'c-normal')}">
       <div class="chip-name">AG</div>
       <div class="chip-val">${ag.toFixed(1)}</div>
       <div class="chip-unit">mEq/L</div></div>` : ''}
@@ -1381,8 +1477,10 @@ function interpret() {
     ${compHTML}
     ${agHTML}
     ${lactatoHTML}
+    ${beHTML}
     ${pafiHTML}
     ${kHTML}
+    ${mgmtHTML}
     ${causesHTML}
 
     <div class="disclaimer">
@@ -1405,7 +1503,7 @@ function interpret() {
 function getCauses(type, mech, agEff, lactato) {
   const lacHigh = !isNaN(lactato) && lactato > 2.0;
   const lacSevere = !isNaN(lactato) && lactato > 4.0;
-  const agHigh  = !isNaN(agEff) && agEff > 12;
+  const agHigh  = !isNaN(agEff) && agEff > 10;
 
   // ── Causas de acidosis metabólica con AG elevado (bloque reutilizable)
   // Se construyen dinámicamente para poder colocar lactato como primera causa.
@@ -1454,12 +1552,16 @@ function getCauses(type, mech, agEff, lactato) {
     ];
   } else if (type === 'alcalosis' && mech === 'metabolica') {
     primary = [
-      { icon: 'wave',         cls: 'c-orange', text: 'Vómitos severos o aspiración nasogástrica — pérdida de HCl gástrico.', highlight: false, _id: 'vomitos' },
-      { icon: 'pill',         cls: 'c-yellow', text: 'Diuréticos de asa o tiazídicos — contracción de volumen y pérdida de K⁺ y Cl⁻.', highlight: false, _id: 'diureticos' },
+      { icon: 'info', cls: 'c-blue', text: '<strong>Sensible al Cloruro</strong> (Cl⁻ urinario &lt;20 mEq/L) — responde a suero salino + KCl:', isSeparator: true, _id: 'alc-cl-sens' },
+      { icon: 'wave',         cls: 'c-orange', text: 'Vómitos severos / aspiración nasogástrica — pérdida de HCl gástrico. Patrón: hipocloremia, hipopotasemia, orina ácida paradójica.', highlight: false, _id: 'vomitos' },
+      { icon: 'pill',         cls: 'c-yellow', text: 'Diuréticos de asa o tiazídicos — contracción de volumen, pérdida de K⁺ y Cl⁻. Frecuente en IC y cirrosis.', highlight: false, _id: 'diureticos' },
+      { icon: 'activity',     cls: 'c-purple', text: 'Post-hipercapnia — corrección brusca de acidosis respiratoria crónica sin corregir el HCO₃⁻ retenido.', highlight: false, _id: 'posthipercap' },
       { icon: 'flask',        cls: 'c-blue',   text: 'Administración exógena de bicarbonato o antiácidos (síndrome lácteo-alcalino).', highlight: false, _id: 'bicarbonato' },
-      { icon: 'heart-pulse',  cls: 'c-red',    text: 'Hiperaldosteronismo primario (Conn) o síndrome de Cushing — retención de HCO₃⁻.', highlight: false, _id: 'conn' },
-      { icon: 'activity',     cls: 'c-purple', text: 'Post-hipercapnia: corrección brusca de acidosis respiratoria crónica.', highlight: false, _id: 'posthipercap' },
-      { icon: 'trending-down',cls: 'c-blue',   text: 'Hipopotasemia severa — intercambio K⁺/H⁺ intracelular genera alcalosis metabólica.', highlight: false, _id: 'hipok-alc' },
+      { icon: 'alert-triangle', cls: 'c-red', text: '<strong>Resistente al Cloruro</strong> (Cl⁻ urinario &gt;20 mEq/L) — NO responde a salino, requiere tratar la causa:', isSeparator: true, _id: 'alc-cl-res' },
+      { icon: 'heart-pulse',  cls: 'c-red',    text: 'Hiperaldosteronismo primario (Conn) — HTA, hipopotasemia, renina baja. Estudio con aldosterona plasmática.', highlight: false, _id: 'conn' },
+      { icon: 'shield',       cls: 'c-orange', text: 'Síndrome de Cushing — exceso cortisol (actividad mineralcorticoide). Asocia obesidad central, estrías, DM.', highlight: false, _id: 'cushing' },
+      { icon: 'trending-down',cls: 'c-blue',   text: 'Hipopotasemia severa (&lt;2.5 mEq/L) — intercambio K⁺/H⁺ intracelular. La corrección del K⁺ es imprescindible.', highlight: false, _id: 'hipok-alc' },
+      { icon: 'kidney',       cls: 'c-purple', text: 'Síndrome de Bartter / Gitelman — tubulopatías con pérdida renal crónica de K⁺/Cl⁻ sin respuesta al salino.', highlight: false, _id: 'bartter' },
     ];
   } else if (type === 'alcalosis' && mech === 'respiratoria') {
     primary = [
@@ -1486,7 +1588,6 @@ function getCauses(type, mech, agEff, lactato) {
     const existingIds = new Set(primary.map(c => c._id));
     const extra = agPlusCauses().filter(c => !existingIds.has(c._id));
     if (extra.length > 0) {
-      // Separador visual insertado como causa especial
       primary.push({
         icon: 'alert-triangle',
         cls: 'c-red',
@@ -1500,6 +1601,81 @@ function getCauses(type, mech, agEff, lactato) {
   }
 
   return primary;
+}
+
+/* ----------------------------------------------------------------
+   MANAGEMENT ORIENTATION
+   Devuelve HTML con orientación terapéutica según el trastorno.
+---------------------------------------------------------------- */
+function getManagement(type, mech, agEff, lactato, k, ph, pafi) {
+  const agHigh   = !isNaN(agEff) && agEff > 10;
+  const lacHigh  = !isNaN(lactato) && lactato > 2.0;
+  const lacSevere= !isNaN(lactato) && lactato > 4.0;
+  const kLow     = !isNaN(k) && k < 3.5;
+  const kHigh    = !isNaN(k) && k > 5.0;
+  const sdraRisk = !isNaN(pafi) && pafi <= 300;
+  const sdraGrave= !isNaN(pafi) && pafi <= 100;
+
+  const items = []; // { priority: 'urgent'|'high'|'normal', icon, text }
+
+  if (type === 'normal') {
+    items.push({ priority: 'normal', icon: 'check-circle', text: 'Gasometría dentro de la normalidad. Continuar monitorización según contexto clínico.' });
+    return items;
+  }
+
+  // ── Acidosis metabólica
+  if (type === 'acidosis' && mech === 'metabolica') {
+    if (ph < 7.1) items.push({ priority: 'urgent', icon: 'zap', text: '<strong>pH &lt; 7.1:</strong> acidosis grave con riesgo vital. Valorar bicarbonato IV (NaHCO₃ 1M) con objetivo pH &gt; 7.2; calcular déficit: 0.3 × peso × (24 − HCO₃⁻). Monitorización en UCI.' });
+    else if (ph < 7.2) items.push({ priority: 'high', icon: 'alert-triangle', text: '<strong>pH 7.1–7.2:</strong> acidosis moderada-grave. Vigilancia estrecha. Tratar causa primaria con urgencia.' });
+    if (agHigh) {
+      items.push({ priority: 'high', icon: 'activity', text: '<strong>AG elevado → buscar MUDPILES:</strong> Metanol, Uremia, DKA, Propilen glicol/Paraldehído, Isoniazida/Hierro, Lactato, Etilenglicol, Salicilatos. Solicitar tóxicos, cetonas, función renal.' });
+      if (lacSevere) items.push({ priority: 'urgent', icon: 'heart-pulse', text: '<strong>Acidosis láctica &gt; 4 mmol/L:</strong> Tipo A → reanimación urgente (volumen, vasopresores si shock, tratar foco infeccioso). Tipo B → retirar metformina, administrar tiamina 100 mg IV si sospecha déficit.' });
+    }
+    if (kLow) items.push({ priority: 'urgent', icon: 'alert-circle', text: '<strong>Hipopotasemia con acidosis:</strong> al corregir el pH el K⁺ descenderá (~0.6 mEq/L por 0.1 de pH). Reponer K⁺ ANTES de corregir la acidosis para evitar hipopotasemia grave e hipopotasemia post-corrección.' });
+    if (kHigh) items.push({ priority: 'high', icon: 'info', text: '<strong>Hiperpotasemia en acidosis:</strong> al corregir el pH el K⁺ descenderá. Monitorizar para evitar hipopotasemia de rebote. En ERC puede persistir independiente del pH.' });
+    items.push({ priority: 'normal', icon: 'stethoscope', text: 'Monitorizar pH, HCO₃⁻ y K⁺ seriados. Corregir lentamente para evitar alcalosis post-corrección.' });
+  }
+
+  // ── Acidosis respiratoria
+  if (type === 'acidosis' && mech === 'respiratoria') {
+    if (ph < 7.25) items.push({ priority: 'urgent', icon: 'zap', text: '<strong>Acidosis respiratoria aguda grave (pH &lt; 7.25):</strong> riesgo de paro respiratorio. Valorar intubación e inicio de VMI de forma urgente. Llamar a UCI.' });
+    items.push({ priority: 'high', icon: 'lungs', text: '<strong>Soporte ventilatorio:</strong> VMNI (BiPAP/CPAP) como primera línea en EPOC descompensado y edema agudo de pulmón hipercápnico. VMI si fracaso de VMNI, apnea o inestabilidad hemodinámica.' });
+    items.push({ priority: 'high', icon: 'pill', text: '<strong>Si depresión por opioides:</strong> naloxona 0.4–2 mg IV/IM/SC, repetir c/2–3 min hasta FR adecuada (infusión si precisa). Si benzodiacepinas: flumazenil 0.2 mg IV (con cautela en epilepsia o dependencia).' });
+    items.push({ priority: 'normal', icon: 'stethoscope', text: 'No administrar O₂ a alto flujo en EPOC crónico hipercápnico sin monitorización (riesgo de depresión del drive hipóxico). Objetivo SaO₂ 88–92%.' });
+    items.push({ priority: 'normal', icon: 'activity', text: 'Buscar causa tratable: infección respiratoria, broncoespasmo, derrame pleural, neumotórax. Tratar con broncodilatadores, antibióticos, drenaje según corresponda.' });
+  }
+
+  // ── Alcalosis metabólica
+  if (type === 'alcalosis' && mech === 'metabolica') {
+    if (ph > 7.6) items.push({ priority: 'urgent', icon: 'alert-circle', text: '<strong>pH &gt; 7.6:</strong> alcalosis grave. Riesgo de arritmias, convulsiones, tetania. Monitorización cardiaca urgente. Corrección activa.' });
+    items.push({ priority: 'high', icon: 'wave', text: '<strong>Cl-sensible (vómitos, diuréticos):</strong> reposición IV con NaCl 0.9% + KCl según déficit. La corrección del Cl⁻ y K⁺ suele resolver la alcalosis.' });
+    items.push({ priority: 'high', icon: 'shield', text: '<strong>Cl-resistente (hiperaldosteronismo, Cushing):</strong> NO responde al suero salino. Tratar causa subyacente. Espironolactona/amilorida en hiperaldosteronismo. Referir a endocrinología.' });
+    if (kLow) items.push({ priority: 'urgent', icon: 'trending-down', text: '<strong>Hipopotasemia en alcalosis:</strong> la hipopotasemia perpetúa la alcalosis (intercambio K⁺/H⁺). Reposición de K⁺ es esencial para resolver el trastorno. Objetivo K⁺ &gt; 3.5 mEq/L.' });
+    items.push({ priority: 'normal', icon: 'pill', text: 'Revisar y retirar o reducir diuréticos si clínicamente posible. Corregir ingesta de antiácidos/bicarbonato si causa iatrogénica.' });
+  }
+
+  // ── Alcalosis respiratoria
+  if (type === 'alcalosis' && mech === 'respiratoria') {
+    items.push({ priority: 'high', icon: 'stethoscope', text: '<strong>Identificar y tratar la causa:</strong> hipoxemia → O₂ y estudio pulmonar; sepsis precoz → hemocultivos y antibioterapia empírica urgente; ansiedad → técnicas de relajación, benzodiacepina si crisis grave.' });
+    items.push({ priority: 'normal', icon: 'wind', text: '<strong>Hiperventilación psicógena:</strong> respiración controlada, bolsa (rebreathing controlado). Evitar O₂ suplementario (no indicado). Tratar ansiedad subyacente.' });
+    items.push({ priority: 'normal', icon: 'activity', text: '<strong>Ventilación mecánica inadecuada:</strong> reducir frecuencia respiratoria o volumen corriente hasta normalizar CO₂. Objetivo pCO₂ 35–45 mmHg.' });
+    if (ph > 7.55) items.push({ priority: 'high', icon: 'alert-triangle', text: '<strong>Alcalosis grave (pH &gt; 7.55):</strong> riesgo de vasoconstricción cerebral, arritmias. Corrección urgente de la causa. Considerar sedoanalgesia si VM.' });
+  }
+
+  // ── Trastorno mixto
+  if (type === 'mixed') {
+    items.push({ priority: 'high', icon: 'zap', text: '<strong>Trastorno mixto:</strong> evaluar y tratar cada componente por separado. Priorizar el componente que genera mayor riesgo vital (generalmente la acidosis severa o el fallo respiratorio).' });
+    items.push({ priority: 'normal', icon: 'microscope', text: 'Valorar UCI para monitorización y soporte multiorgánico. Descartar causas simultáneas (ej: EPOC + vómitos, sepsis + alcalosis metabólica previa).' });
+  }
+
+  // ── Hiperpotasemia general
+  if (kHigh && ph >= 7.35) items.push({ priority: 'high', icon: 'alert-circle', text: '<strong>Hiperpotasemia:</strong> ECG urgente (ondas T picudas, QRS ancho). Si cambios ECG o K⁺ &gt; 6.5: gluconato cálcico IV, insulina + glucosa, bicarbonato, salbutamol nebulizado. Valorar hemodiálisis.' });
+
+  // ── SDRA
+  if (sdraGrave) items.push({ priority: 'urgent', icon: 'lungs', text: '<strong>SDRA grave (PAFI ≤ 100):</strong> VMI protectora (Vt 6 ml/kg IBW, PEEP ≥ 10), decúbito prono ≥ 16h/día, valorar ECMO en centro especializado, corticoides sistémicos según protocolo.' });
+  else if (sdraRisk) items.push({ priority: 'high', icon: 'wind', text: '<strong>SDRA leve-moderado (PAFI 100–300):</strong> PEEP ≥ 5 cmH₂O, VMI protectora, considerar decúbito prono si PAFI &lt; 150. Tratar causa subyacente (neumonía, sepsis, aspiración).' });
+
+  return items;
 }
 </script>
 </body>
