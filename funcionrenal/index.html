@@ -346,7 +346,7 @@ textarea{resize:vertical;min-height:120px;font-family:monospace;font-size:12px;l
       <div class="section-title">Manual / Estimado</div>
       <div class="form-group">
         <label>FG Manual (ml/min)</label>
-        <input type="number" id="fg_manual" placeholder="Prioritario si se rellena" class="manual-input">
+        <input type="number" id="fg_manual" placeholder="Prioritario si se rellena" class="manual-input" min="1" max="200">
       </div>
     </div>
     <div class="card">
@@ -356,11 +356,11 @@ textarea{resize:vertical;min-height:120px;font-family:monospace;font-size:12px;l
         <div class="form-group"><label>Sexo</label><select id="sex"><option value="">-</option><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Peso (kg)</label><input type="number" id="weight" step="0.1"></div>
-        <div class="form-group"><label>Altura (cm)</label><input type="number" id="height"></div>
+        <div class="form-group"><label>Peso (kg)</label><input type="number" id="weight" step="0.1" min="10" max="300"></div>
+        <div class="form-group"><label>Altura (cm)</label><input type="number" id="height" min="80" max="250" step="1"></div>
       </div>
       <div class="form-row" style="grid-template-columns:2fr 1fr;">
-        <div class="form-group"><label>Creatinina</label><input type="number" id="creatinine" step="0.01"></div>
+        <div class="form-group"><label>Creatinina</label><input type="number" id="creatinine" step="0.01" min="0.1" max="30"></div>
         <div class="form-group"><label>Unidad</label><select id="cr_unit"><option value="mg">mg/dL</option><option value="umol">µmol/L</option></select></div>
       </div>
       <div class="form-group full" id="fg_row">
@@ -441,9 +441,9 @@ const DB = [
 {name:"gentamicina",al:["gentamycin"],dn:"1.5 mg/kg/8h",met:"D e I",r1:"Cada 8-12h",r2:"30-70%/12-24h",r3:"20-30%/24-48h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Aminoglucósidos"},
 {name:"tobramicina",al:["tobramycin"],dn:"1.5 mg/kg/8h",met:"D e I",r1:"Cada 8-12h",r2:"30-70%/12-24h",r3:"20-30%/24-48h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Aminoglucósidos"},
 // ══ CARBAPENEM ══
-{name:"ertapenem",al:[],dn:"1 g/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Carbapenem"},
+{name:"ertapenem",al:["invanz"],dn:"1 g/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Carbapenem"},
 {name:"imipenem",al:["imipenem-cilastatina","imipenem cilastatina"],dn:"250mg-1g/6h (Máx 4g/día)",met:"D e I",r1:"100%",r2:"50%",r3:"25%",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Carbapenem"},
-{name:"meropenem",al:[],dn:"1-2g/8h",met:"D e I",r1:"100%",r2:"50%/12h",r3:"50%/24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Carbapenem"},
+{name:"meropenem",al:["meronem","merrem"],dn:"1-2g/8h",met:"D e I",r1:"100%",r2:"50%/12h",r3:"50%/24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Carbapenem"},
 // ══ CEFALOSPORINAS ══
 {name:"cefazolina",al:["cefazolin"],dn:"500mg-1g/8h (Máx. 2g/8h)",met:"I",r1:"Cada 8h",r2:"Cada 8-12h",r3:"Cada 18-24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
 {name:"cefepima",al:["cefepime"],dn:"1-2g/12h",met:"D e I",r1:"1-2g/12h",r2:"500mg-2g/24h",r3:"250-500mg/24h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Cefalosporinas"},
@@ -455,6 +455,7 @@ const DB = [
 {name:"cefuroxima",al:["cefuroxime"],dn:"0.75-1.5g/8h",met:"I",r1:"Cada 8h",r2:"Cada 8-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Cefalosporinas"},
 {name:"ceftazidima-avibactam",al:["ceftazidime-avibactam","avycaz","ceftazidima avibactam"],dn:"2/0.5g/8h",met:"D e I",r1:"100%",r2:"CCr 50-31: 1/0.25g/8h; CCr 30-16: 0.75/0.1875g/12h",r3:"CCr 15-10: 0.75/0.1875g/12h; <10: 0.75/0.1875g/24h",hd:"0.75/0.1875g/48h",hv:"—",cat:"Cefalosporinas"},
 {name:"ceftolozano-tazobactam",al:["ceftolozane-tazobactam","zerbaxa","ceftolozano tazobactam"],dn:"1/0.5g/8h",met:"D",r1:"100%",r2:"CCr 50-30: 1g/500mg/8h; CCr 29-15: 500mg/250mg/8h",r3:"500mg/250mg/8h",hd:"Carga 1.5g/750mg; Mant 100-300mg/8h",hv:"—",cat:"Cefalosporinas"},
+{name:"cefiderocol",al:["fetcroja"],dn:"2g/8h IV (infusión 3h)",met:"D",r1:"2g/8h (infusión 3h)",r2:"CCr 30-49: 1.5g/8h; CCr 15-29: 1g/12h",r3:"0.75g/12h",hd:"0.75g/12h (extra 0.75g postHD)",hv:"1g/8h",cat:"Cefalosporinas"},
 // ══ FLUORQUINOLONAS ══
 {name:"ciprofloxacino",al:["ciprofloxacin","cipro"],dn:"500-750mg/12h",met:"D",r1:"100%",r2:"50-75%",r3:"50%",hd:"Dosis postdiálisis",hv:"—",cat:"Fluorquinolonas"},
 {name:"delafloxacino",al:["delafloxacin"],dn:"300mg/12h",met:"D",r1:"100%",r2:"100%; CCr<30: 200mg/12h",r3:"No recomendado",hd:"No recomendado",hv:"—",cat:"Fluorquinolonas"},
@@ -474,6 +475,7 @@ const DB = [
 {name:"dalbavancina",al:["dalvance"],dn:"1000mg sem1; 500mg sem2",met:"D",r1:"100%",r2:"100%; CCr<30: 750mg sem1+375mg sem2",r3:"750mg sem1+375mg sem2",hd:"750mg sem1+375mg sem2. No dosis extra",hv:"—",cat:"Miscelánea Antibact."},
 {name:"daptomicina",al:["daptomycin","cubicin"],dn:"4-6 mg/kg/24h",met:"I",r1:"100%",r2:"Cada 48h",r3:"Cada 48h",hd:"Cada 48h (postHD)",hv:"—",cat:"Miscelánea Antibact."},
 {name:"eravaciclina",al:["eravacycline"],dn:"1 mg/kg/12h",met:"D",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Miscelánea Antibact."},
+{name:"fidaxomicina",al:["dificlir","fidaxomicin"],dn:"200mg/12h × 10 días",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"100%",cat:"Miscelánea Antibact."},
 {name:"linezolid",al:["linezolida","zyvox"],dn:"400-600mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"Dosis postdiálisis",hv:"—",cat:"Miscelánea Antibact."},
 {name:"metronidazol",al:["metronidazole","flagyl"],dn:"500mg/6-8h",met:"I",r1:"100%",r2:"100%",r3:"Cada 8-12h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Miscelánea Antibact."},
 {name:"nitrofurantoina",al:["nitrofurantoin","macrobid"],dn:"50-100mg/6h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"—",hv:"—",cat:"Miscelánea Antibact."},
@@ -488,7 +490,7 @@ const DB = [
 {name:"amoxicilina",al:["amoxicillin","amoxycillin"],dn:"875mg/12h; 250-500mg/8h",met:"I",r1:"100%",r2:"Cada 8-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Penicilinas"},
 {name:"amoxicilina-clavulanico",al:["amoxicilina clavulanico","augmentine","co-amoxiclav","amoxicilina clavulanato","amoxi clavulanico"],dn:"500/125mg/8h",met:"D e I",r1:"500/125mg/8h",r2:"250/125mg/12h",r3:"250/125mg/24h",hd:"Dosis postdiálisis",hv:"—",cat:"Penicilinas"},
 {name:"ampicilina",al:["ampicillin"],dn:"250mg-2g/6h",met:"I",r1:"100%",r2:"Cada 6-12h",r3:"Cada 24h",hd:"Dosis postdiálisis",hv:"—",cat:"Penicilinas"},
-{name:"aztreonam",al:[],dn:"1-2g/8h",met:"D",r1:"100%",r2:"1-2g x1; seguir 500mg/6-8h",r3:"1-2g x1; seguir 500mg/6-12h",hd:"Extra 250mg postdiálisis",hv:"—",cat:"Penicilinas"},
+{name:"aztreonam",al:["azactam"],dn:"1-2g/8h",met:"D",r1:"100%",r2:"1-2g x1; seguir 500mg/6-8h",r3:"1-2g x1; seguir 500mg/6-12h",hd:"Extra 250mg postdiálisis",hv:"—",cat:"Penicilinas"},
 {name:"penicilina g",al:["bencilpenicilina","penicilina"],dn:"0.5-4 millones U/4-6h",met:"D",r1:"100%",r2:"75%",r3:"20-50%",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Penicilinas"},
 {name:"piperacilina",al:[],dn:"3-4g/4-6h",met:"I",r1:"100%",r2:"Cada 6-12h",r3:"Cada 12h",hd:"Dosis postdiálisis",hv:"CCr=50-10 ml/min",cat:"Penicilinas"},
 {name:"piperacilina-tazobactam",al:["pip-tazo","piptazo","piperacilina tazobactam","tazobactam"],dn:"3.375-4.5g/6h",met:"D e I",r1:"100%",r2:"2.25g/6h (FG<20: 2.25g/8h)",r3:"2.25g/8h",hd:"Extra 0.75g postHD",hv:"—",cat:"Penicilinas"},
@@ -586,7 +588,7 @@ const DB = [
 {name:"paracetamol",al:["acetaminophen","acetaminofeno"],dn:"0.5-1g/6-8h",met:"I",r1:"0.5-1g/6-8h",r2:"500mg/6h",r3:"500mg/8h",hd:"No",hv:"—",cat:"Analgésicos/Opioides"},
 {name:"rizatriptan",al:["rizatriptán"],dn:"10mg",met:"D",r1:"50%",r2:"50%; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Analgésicos/Opioides"},
 {name:"tapentadol",al:[],dn:"50-250mg/12h",met:"D",r1:"100%",r2:"100%; CCr<30: No recomendado",r3:"No recomendado",hd:"Sin datos",hv:"—",cat:"Analgésicos/Opioides"},
-{name:"tramadol",al:[],dn:"50-100mg/6-8h",met:"I",r1:"Cada 8h",r2:"Cada 12h",r3:"Evitar",hd:"No",hv:"—",cat:"Analgésicos/Opioides"},
+{name:"tramadol",al:["tramal","adolonta","contramal","tramadol hcl"],dn:"50-100mg/6-8h",met:"I",r1:"Cada 8h",r2:"Cada 12h",r3:"Evitar",hd:"No",hv:"—",cat:"Analgésicos/Opioides"},
 {name:"zolmitriptan",al:["zolmitriptán"],dn:"2.5-10mg/24h",met:"D",r1:"100%",r2:"100%; CCr<15: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Analgésicos/Opioides"},
 // ══ AINEs ══
 {name:"celecoxib",al:["celebrex"],dn:"200mg/24h",met:"D",r1:"100-75%",r2:"75-50%; Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"AINEs"},
@@ -616,7 +618,7 @@ const DB = [
 {name:"diazepam",al:["valium"],dn:"10mg/24h",met:"D",r1:"100%",r2:"100-75%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
 {name:"haloperidol",al:[],dn:"1-3 o 10-20mg/8h",met:"D",r1:"100%",r2:"100-75%",r3:"50% (Precaución)",hd:"50% (Precaución)",hv:"—",cat:"Psicolépticos"},
 {name:"ketazolam",al:[],dn:"15-75mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50% (Precaución)",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
-{name:"litio",al:["carbonato de litio","lithium"],dn:"400-1200mg/24h",met:"D",r1:"100%",r2:"75-50%",r3:"50-25% (Control litemia estricto)",hd:"Dosis postdiálisis",hv:"—",cat:"Psicolépticos"},
+{name:"litio",al:["carbonato de litio","lithium"],dn:"400-1200mg/24h",met:"D",r1:"100%",r2:"75-50% (Monitorizar litemia; objetivo 0.6-0.8 mmol/L)",r3:"50-25% (Control litemia estricto; objetivo 0.4-0.6 mmol/L)",hd:"Dosis postdiálisis",hv:"—",cat:"Psicolépticos"},
 {name:"lorazepam",al:[],dn:"2-10mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
 {name:"lormetazepam",al:[],dn:"1-2mg/24h",met:"D",r1:"100%",r2:"100%",r3:"50%",hd:"Sin datos",hv:"—",cat:"Psicolépticos"},
 {name:"lurasidona",al:["lurasidone"],dn:"37-148mg/24h",met:"D",r1:"100%; CCr<60: 18.5-74mg/24h",r2:"18.5-74mg/24h",r3:"18.5-74mg/24h; No recomendado",hd:"No recomendado",hv:"—",cat:"Psicolépticos"},
@@ -747,7 +749,7 @@ const DB = [
 {name:"sacubitrilo-valsartan",al:["entresto"],dn:"24/26 a 97/103mg/12h",met:"D",r1:"100%",r2:"CCr<30: Dosis inicial 24/26mg",r3:"24/26mg",hd:"No recomendado",hv:"—",cat:"Diuréticos/AntiHTA"},
 // ══ CARDIOVASCULARES (Antiarrítmicos, inotrópicos, otros) ══
 {name:"amiodarona",al:["trangorex"],dn:"200mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
-{name:"digoxina",al:["digoxin"],dn:"0.125-0.25mg/24h",met:"D e I",r1:"100%",r2:"75-25% o /36h",r3:"25-10% o /48h",hd:"25-10% o /48h",hv:"—",cat:"Cardiovasculares"},
+{name:"digoxina",al:["digoxin"],dn:"0.125-0.25mg/24h",met:"D e I",r1:"100%",r2:"FG 25-49: 50-75%; FG 10-24: 25-50% o /36-48h",r3:"25% o /48-72h; Monitorizar digoxinemia",hd:"25% o /48-72h (Monitorizar niveles)",hv:"—",cat:"Cardiovasculares"},
 {name:"disopiramida",al:[],dn:"100mg/6h",met:"I",r1:"100mg/6h",r2:"100mg/8-12h",r3:"100mg/24h",hd:"100mg/24h",hv:"—",cat:"Cardiovasculares"},
 {name:"dobutamina",al:[],dn:"2.5-10 mcg/kg/min",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
 {name:"dopamina",al:[],dn:"5-20 mcg/kg/min",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Cardiovasculares"},
@@ -776,7 +778,7 @@ const DB = [
 {name:"dalteparina",al:["fragmin"],dn:"Variable",met:"D",r1:"100%",r2:"Monitorizar Anti-Xa si CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Hematología/Coagulación"},
 {name:"fondaparinux",al:["arixtra"],dn:"2.5mg/24h",met:"D",r1:"100%",r2:"CCr 50-20: Precaución; CCr<20: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Hematología/Coagulación"},
 // ══ ENDOCRINOS Y ANTIDIABÉTICOS ══
-{name:"metformina",al:["metformin","dianben"],dn:"500-850mg/12h",met:"D",r1:"100% (FG≥45: usar con precaución; reducir si FG 45-60)",r2:"FG 30-44: reducir dosis al 25-50%; FG<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
+{name:"metformina",al:["metformin","dianben"],dn:"500-850mg/12h",met:"D",r1:"Dosis habitual si FG≥60; Precaución si FG 50-59 (reducir al 50% si precisa)",r2:"FG 45-49: Precaución (máx. 1700mg/día); FG 30-44: 50% dosis; FG<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
 {name:"glibenclamida",al:["daonil"],dn:"2.5-15mg/día",met:"D",r1:"Precaución",r2:"Precaución; CCr<30: Contraindicado",r3:"Contraindicado",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
 {name:"gliclazida",al:["diamicron"],dn:"30-120mg/día",met:"D",r1:"50-100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
 {name:"glimepirida",al:["amaryl"],dn:"1-4mg/día",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
@@ -786,12 +788,12 @@ const DB = [
 {name:"saxagliptina",al:["onglyza"],dn:"5mg/24h",met:"D",r1:"100%",r2:"2.5mg/24h",r3:"2.5mg/24h",hd:"2.5mg/24h postdiálisis",hv:"—",cat:"Endocrinos"},
 {name:"alogliptina",al:["vipidia"],dn:"25mg/24h",met:"D",r1:"100%",r2:"12.5mg/24h si CCr<50; 6.25mg si CCr<30",r3:"6.25mg/24h",hd:"6.25mg/24h",hv:"—",cat:"Endocrinos"},
 {name:"linagliptina",al:["trajenta"],dn:"5mg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
-{name:"empagliflozina",al:["jardiance"],dn:"10-25mg/24h",met:"D",r1:"100%",r2:"No iniciar si CCr<60; Interrumpir si CCr<45",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
-{name:"dapagliflozina",al:["forxiga"],dn:"5-10mg/24h",met:"D",r1:"100%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"empagliflozina",al:["jardiance"],dn:"10-25mg/24h",met:"D",r1:"100%",r2:"Continuar si ya iniciado; no iniciar nuevo si CCr<60; Interrumpir si CCr<45",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"dapagliflozina",al:["forxiga"],dn:"5-10mg/24h",met:"D",r1:"100%",r2:"Indicación CKD/IC: usar si CCr≥25; No eficaz para glucemia si CCr<45",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
 {name:"canagliflozina",al:["invokana"],dn:"100-300mg/24h",met:"D",r1:"100%",r2:"CCr<60: máx 100mg; Interrumpir si CCr<45",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
 {name:"dulaglutida",al:["trulicity"],dn:"0.75-1.5mg/sem",met:"No",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
 {name:"liraglutida",al:["victoza","saxenda"],dn:"0.6-3mg/24h",met:"No",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
-{name:"semaglutida",al:["ozempic","rybelsus"],dn:"0.25-1mg/sem",met:"No",r1:"100%",r2:"100%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
+{name:"semaglutida",al:["ozempic","rybelsus","wegovy"],dn:"0.25-1mg/sem",met:"No",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Endocrinos"},
 {name:"pioglitazona",al:["actos"],dn:"15-30mg/día",met:"No",r1:"100%",r2:"100%",r3:"100% (Precaución por retención hídrica)",hd:"Contraindicado",hv:"—",cat:"Endocrinos"},
 {name:"insulina",al:["lantus","toujeo","novorapid","humalog","actrapid"],dn:"Variable",met:"D",r1:"100%",r2:"75% (Ajuste individual)",r3:"50% (Ajuste individual)",hd:"Monitorización estrecha",hv:"—",cat:"Endocrinos"},
 {name:"levotiroxina",al:["eutirox","dexnon"],dn:"50-150mcg/24h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Endocrinos"},
@@ -832,7 +834,7 @@ const DB = [
 {name:"rifaximina",al:["spiraxin"],dn:"400-550mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Digestivo"},
 // ══ REUMATOLÓGICOS Y GOTA ══
 {name:"alopurinol",al:["allopurinol","zyloric"],dn:"100-300mg/día",met:"D",r1:"75%",r2:"50%",r3:"25%",hd:"Dosis postdiálisis",hv:"—",cat:"Reumatología"},
-{name:"colchicina",al:["colchicine"],dn:"0.5-1mg/día",met:"D",r1:"100%",r2:"50%; Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
+{name:"colchicina",al:["colchicine"],dn:"0.5-1mg/día",met:"D",r1:"FG≥60: dosis habitual; FG 50-59: 0.5mg/día (Precaución)",r2:"0.5mg/día; Evitar CCr<30",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
 {name:"febuxostat",al:["adenuric"],dn:"80-120mg/día",met:"D",r1:"100%",r2:"100%",r3:"Precaución. Máx 40mg/día",hd:"Precaución",hv:"—",cat:"Reumatología"},
 {name:"leflunomida",al:["arava"],dn:"10-20mg/día",met:"D",r1:"Evitar",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
 {name:"metotrexato",al:["methotrexate"],dn:"7.5-25mg/semana",met:"D",r1:"50%",r2:"Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Reumatología"},
@@ -861,9 +863,12 @@ const DB = [
 {name:"asciminib",al:[],dn:"40mg/12h",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"atelozimumab",al:["tecentriq"],dn:"1200mg/3 semanas",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"avelumab",al:["bavencio"],dn:"10mg/kg/2 semanas",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"nivolumab",al:["opdivo"],dn:"240mg/2 sem o 480mg/4 sem",met:"No",r1:"100%",r2:"100%",r3:"Sin datos suficientes (Precaución)",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"pembrolizumab",al:["keytruda"],dn:"200mg/3 sem o 400mg/6 sem",met:"No",r1:"100%",r2:"100%",r3:"Sin datos suficientes (Precaución)",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"axitinib",al:[],dn:"5mg/12h",met:"D",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"azacitidina",al:["vidaza"],dn:"75mg/m²/día (7d)",met:"D",r1:"100%",r2:"100%",r3:"Precaución",hd:"Precaución",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"baricitinib",al:[],dn:"4-2mg/24h",met:"D",r1:"100%",r2:"50%",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
+{name:"upadacitinib",al:["rinvoq"],dn:"15-30mg/24h",met:"D",r1:"100%",r2:"100%; CCr<30: Evitar",r3:"Evitar",hd:"Evitar",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"benralizumab",al:["fasenra"],dn:"30mg/4 sem",met:"No",r1:"100%",r2:"100%",r3:"100%",hd:"100%",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"bertuzumab",al:[],dn:"420-840mg/3 sem",met:"No",r1:"100%",r2:"100%",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
 {name:"bevacizumab",al:["avastin"],dn:"5-15 mg/kg",met:"No",r1:"100%",r2:"Sin datos",r3:"Sin datos",hd:"Sin datos",hv:"—",cat:"Oncológicos/Biológicos"},
@@ -1192,10 +1197,8 @@ function classifyRec(recRaw, drug, fgVal) {
   const NORMAL_CONSTANTS = ['100%', 'dosis habitual', 'sin ajuste', 'no requiere ajuste'];
   if (NORMAL_CONSTANTS.some(c => normalize(rec) === normalize(c))) return 'ok';
 
-  // — FG ≥ 50 en modo normal: uso del tramo r1
-  if (MODE === 'normal' && fgVal !== null && fgVal >= 50) return 'ok';
-
-  // — Detección de palabras de exclusión
+  // — Detección de palabras de exclusión ANTES de la regla FG≥50
+  //   Evita que drogas con r1:"Evitar" o "Contraindicado" muestren ✅ en modo normal
   const hasExclusion = EXCLUSION_WORDS.some(w => recLow.includes(normalize(w)));
 
   if (hasExclusion) {
@@ -1205,6 +1208,13 @@ function classifyRec(recRaw, drug, fgVal) {
     if (hasAltDose) return 'warn';
     // Solo exclusión, sin pauta alternativa → rojo
     return 'err';
+  }
+
+  // — FG ≥ 50 en modo normal: uso del tramo r1
+  //   Si el texto contiene "precaución" o umbrales de CCr condicionales → amarillo
+  if (MODE === 'normal' && fgVal !== null && fgVal >= 50) {
+    const hasConditional = recLow.includes('precaucion') || recLow.includes('ccr<');
+    return hasConditional ? 'warn' : 'ok';
   }
 
   // — Si hay texto y difiere de r1 → ajuste
@@ -2072,13 +2082,6 @@ function getERCLabel(fgVal, mode) {
   if (fgVal >= 30) return 'G3b — 30-44 ml/min';
   if (fgVal >= 15) return 'G4 — 15-29 ml/min';
   return 'G5 — <15 ml/min';
-}
-
-/** HTML-escape seguro para el template */
-function esc(s) {
-  return String(s || '—')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 /** Lee los datos del paciente desde los inputs del DOM */
