@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YerayFH - de la Mata | Farmacia Hospitalaria</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/png" href="/appclinicas/img/icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/appclinicas/img/icon.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-J830XBBQKF', { page_path: location.pathname });
+</script>
+
+<style>
+:root {
+  --primary-green: #24523d;
+  --light-green: #a5dcaf;
+  --bg-soft: #ced4d1;
+  --text-dark: #15291f;
+  --text-muted: #5a635f;
+  --card-bg: #dde3df;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--bg-soft);
+  color: var(--text-dark);
+  padding: 2rem 1.5rem;
+}
+
+/* ================= HEADER ================= */
+header {
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-icon img {
+  width: 110px;
+  height: auto;
+  margin-bottom: 1.5rem;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+header h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--light-green);
+  letter-spacing: -1.2px;
+  margin-bottom: 0.2rem;
+}
+
+header .subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #40916c;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.2rem;
+}
+
+header .author {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.disclaimer {
+  background: none;
+  border: none;
+  padding: 0.2rem 0;
+  box-shadow: none;
+  max-width: none;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #5c6660;
+}
+
+.disclaimer-icon {
+  font-size: 1.1rem;
+  color: #856404;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.disclaimer p {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+  color: inherit;
+  line-height: 1.3;
+}
+
+/* ================= SEARCH ================= */
+.search-wrapper {
+  max-width: 600px;
+  margin: 0 auto 4rem auto;
+  position: relative;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+  border-radius: 18px;
+  border: 2px solid transparent;
+  background: #f0f4f2;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: var(--light-green);
+  box-shadow: 0 10px 30px rgba(45, 106, 79, 0.12);
+}
+
+.search-wrapper::before {
+  content: '🔍';
+  position: absolute;
+  left: 1.3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  opacity: 0.5;
+}
+
+/* ================= GRID & CARDS ================= */
+.container {
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.section-group {
+  margin-bottom: 4.5rem;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--primary-green);
+}
+
+.section-title::after {
+  content: '';
+  height: 2px;
+  flex-grow: 1;
+  background: linear-gradient(90deg, #b0c2b8, transparent);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.8rem;
+  align-items: stretch;
+}
+
+/* ---- CARD ---- */
+.card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 2rem 1.8rem 1.8rem;
+  border: 1px solid #d1d8d4;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(27, 46, 37, 0.10);
+  border-color: var(--primary-green);
+}
+
+/* Icon box */
+.icon-box {
+  width: 90px;
+  height: 90px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.4rem;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.card img.card-img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+}
+
+.card:hover .icon-box {
+  transform: scale(1.06);
+}
+
+/* Colores pastel */
+.bg-green  { background: #96bba6; }
+.bg-blue   { background: #9eb5c9; }
+.bg-orange { background: #d6b392; }
+.bg-purple { background: #b1a6c9; }
+.bg-rose   { background: #cca3ab; }
+
+/* Title */
+.card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.45;
+  margin-bottom: 0.5rem;
+  min-height: 3.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Info button — positioned absolutely so title stays centered */
+.info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: 1px solid #b0bfb8;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  padding: 0;
+  flex-shrink: 0;
+  /* touch-action explícito para mobile */
+  touch-action: manipulation;
+}
+.info-btn:hover { background: var(--primary-green); color: #fff; border-color: var(--primary-green); }
+
+.info-desc {
+  display: none;
+  background: #eaf0ec;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+  text-align: left;
+  width: 100%;
+}
+.info-desc.open { display: block; }
+
+/* Push button to bottom */
+.card .spacer { flex: 1; }
+
+.card .btn {
+  width: 100%;
+  text-decoration: none;
+  background: #d4ddd8;
+  color: var(--primary-green);
+  padding: 0.9rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  border: 1px solid #c8d1cc;
+  margin-top: 1rem;
+}
+
+.card:hover .btn {
+  background: var(--primary-green);
+  color: white;
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+}
+
+/* Etiqueta Neón Validando */
+.badge-neon-green {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #00a651; /* Color verde brillante */
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 12px rgba(0, 166, 81, 0.7); /* Brillo verde */
+  border: 1px solid #4ade80; /* Borde verde más clarito */
+  z-index: 5;
+}
+.badge-neon-orange {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff7300;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 12px rgba(255, 115, 0, 0.7);
+  border: 1px solid #ffaa6b;
+  z-index: 5;
+}
+
+/* ================= FOOTER ================= */
+footer {
+  text-align: center;
+  padding: 5rem 0 3rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-top: 1px solid #d1d8d4;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card { animation: fadeInUp 0.5s ease backwards; }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 640px) {
+  header h1 { font-size: 2.1rem; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-icon">
+    <img src="/appclinicas/img/icon.png" alt="Logo YerayFH">
+  </div>
+  <div class="title-container">
+    <h1>YerayFH - de la Mata</h1>
+    <p class="subtitle">Farmacia Hospitalaria</p>
+    <p class="author">Autor: Yeray Reyes de la Mata</p>
+  </div>
+  <div class="disclaimer">
+    <div class="disclaimer-icon">!</div>
+    <p>No sustituye criterio facultativo</p>
+  </div>
+</header>
+
+<div class="container">
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" placeholder="Buscar protocolos o herramientas...">
+  </div>
+
+  <div class="section-group">
+    <h2 class="section-title">🩺 Diagnóstico y manejo clínico</h2>
+    <div class="grid">
+
+      <div class="card">
+        <span class="badge-neon-orange">Validando...</span>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre Guía antibioterapia empírica">ℹ</button>
+        <div class="icon-box bg-green">
+          <img src="/appclinicas/img/guiaempirica.png" alt="Antibioterapia empírica" class="card-img" loading="lazy">
+        </div>
+        <h2>Guía antibioterapia empírica HUPR 2025</h2>
+        <div class="info-desc">Guía de tratamiento antimicrobiano empírico del Hospital Universitario Puerto Real, 2025. Ordenado por tipo de infección.</div>
+        <div class="spacer"></div>
+        <a href="guiaempirica/" class="btn">Acceder</a>
+      </div>
+
+      <div class="card">
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre AeroLab">ℹ</button>
+        <div class="icon-box bg-rose">
+          <img src="/appclinicas/img/gasometria.png" alt="Gasometría" class="card-img" loading="lazy">
+        </div>
+        <h2>AeroLab®</h2>
+        <div class="info-desc">Interpretación de gasometría según valores y orientación diagnóstica. Basado en: Rose &amp; Post · Marino's ICU Book · Guías SEPAR.</div>
+        <div class="spacer"></div>
+        <a href="gasometria/" class="btn">Interpretar</a>
+      </div>
+
+      <div class="card">
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre StrokePilot">ℹ</button>
+        <div class="icon-box bg-blue">
+          <img src="/appclinicas/img/cerebro.png" alt="Ictus isquémico" class="card-img" loading="lazy">
+        </div>
+        <h2>StrokePilot®</h2>
+        <div class="info-desc">Motor de decisión farmacoterapéutica para ictus isquémico agudo. Basado en guías ESO 2023 y AHA/ASA 2026.</div>
+        <div class="spacer"></div>
+        <a href="ictus/" class="btn">Acceder</a>
+      </div>
+
+      <div class="card">
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre ToxoGuard">ℹ</button>
+        <div class="icon-box bg-orange">
+          <img src="/appclinicas/img/antidoto.png" alt="Guía de antídotos" class="card-img" loading="lazy">
+        </div>
+        <h2>ToxoGuard®</h2>
+        <div class="info-desc">Guía de antídotos y manejo de intoxicaciones agudas. Basado en la Red de Antídotos.</div>
+        <div class="spacer"></div>
+        <a href="antidoto/" class="btn">Acceder</a>
+      </div>
+
+      <div class="card">
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre SepsAlert">ℹ</button>
+        <div class="icon-box bg-purple">
+          <img src="/appclinicas/img/bacteria.png" alt="Sepsis" class="card-img" loading="lazy">
+        </div>
+        <h2>SepsAlert®</h2>
+        <div class="info-desc">Motor de diagnóstico y manejo de sepsis. Basado en: SSC 2021, NICE NG253 (2025) y J-SSCG 2024.</div>
+        <div class="spacer"></div>
+        <a href="sepsis/" class="btn">Acceder</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-group">
+    <h2 class="section-title">💊 Farmacoterapia</h2>
+    <div class="grid">
+
+      <div class="card">
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre NefroCalc">ℹ</button>
+        <div class="icon-box bg-blue">
+          <img src="/appclinicas/img/funcionrenal.png" alt="Función renal" class="card-img" loading="lazy">
+        </div>
+        <h2>NefroCalc®</h2>
+        <div class="info-desc">Ajuste posológico de fármacos en pacientes con insuficiencia renal. Referencia: García Montemayor V, Sanchez-Agesta Martínez M, Naranjo Muñoz J. Ajuste de Fármacos en la Enfermedad Renal Crónica. En: Lorenzo V., López Gómez JM (Eds). <em>Nefrología al día</em>. ISSN: 2659-2606.</div>
+        <div class="spacer"></div>
+        <a href="funcionrenal/" class="btn">Calcular</a>
+      </div>
+
+      <div class="card">
+        <span class="badge-neon-orange">Validando...</span>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre InfuCalc">ℹ</button>
+        <div class="icon-box bg-orange">
+          <img src="/appclinicas/img/infucalc.png" alt="InfuCalc bombas de perfusión" class="card-img" loading="lazy">
+        </div>
+        <h2>InfuCalc®</h2>
+        <div class="info-desc">Calculadora para el apoyo en el cálculo de ritmos o dosis en bombas de perfusión, enfocado en pacientes críticos o urgencias. Basado en UpToDate y FT de la AEMPS.</div>
+        <div class="spacer"></div>
+        <a href="infucalc/" class="btn">Calcular</a>
+      </div>
+
+      <div class="card">
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre GeriFit">ℹ</button>
+        <div class="icon-box bg-green">
+          <img src="/appclinicas/img/anciano.png" alt="Polimedicados anciano complejo" class="card-img" loading="lazy">
+        </div>
+        <h2>GeriFit®</h2>
+        <div class="info-desc">Optimizador del tratamiento farmacoterapéutico en paciente polimedicado, anciano y crónico complejo. Basado en criterios STOPP/START, Beers, PRISCUS, EU(7)PIM y deprescribing.org.</div>
+        <a href="polimedicados/" class="btn">Revisar</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-group">
+    <h2 class="section-title">📚 Otros recursos</h2>
+    <div class="grid">
+
+<div class="card">
+        <span class="badge-neon-green">Validado</span>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre EvidScore">ℹ</button>
+        <div class="icon-box bg-purple">
+          <img src="/appclinicas/img/lecturacritica.png" alt="Lectura crítica" class="card-img" loading="lazy">
+        </div>
+        <h2>EvidScore®</h2>
+        <div class="info-desc">Checklist de lectura crítica que incluye ensayos clínicos aleatorizados, metanálisis en red y comparaciones indirectas. Validado en contenido 04/2026.</div>
+        <div class="spacer"></div>
+        <a href="lecturacritica/" class="btn">Ver Herramienta</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 YerayFH - de la Mata
+</footer>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const sections = document.querySelectorAll('.section-group');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  sections.forEach(section => {
+    const sectionCards = section.querySelectorAll('.card');
+    let visible = false;
+    sectionCards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      if (text.includes(query)) {
+        card.style.display = 'flex';
+        visible = true;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    section.style.display = visible ? 'block' : 'none';
+  });
+});
+
+document.querySelectorAll(".grid").forEach(grid => {
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  cards.sort((a,b) => a.querySelector("h2").innerText.toLowerCase().localeCompare(b.querySelector("h2").innerText.toLowerCase()));
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.08}s`;
+    grid.appendChild(card);
+  });
+});
+
+function toggleInfo(btn) {
+  const desc = btn.closest('.card').querySelector('.info-desc');
+  desc.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
