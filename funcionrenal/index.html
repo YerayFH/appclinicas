@@ -1559,143 +1559,210 @@ const SCAN_STOP_WORDS = [
   'liberacion','prolongada','inmediata','bucodispersable','odt',
   'sodica','sodico','potasica','potasico','calcica','calcico',
   'clorhidrato','sulfato','fosfato','lactato','gluconato','maleato','mesilato',
+  'gracea','gragea','grageas','puff','inhalacion','inhalación','spray',
+  'transdermico','transdérmico','parche','gotas','unidad','unidades',
 ];
 
 /**
- * Mapa de frecuencias ampliado con soporte para lenguaje natural
- * e insensible a mayúsculas/minúsculas.
+ * Mapa de frecuencias — equivalente al de polimedicados:
+ * 37 patrones con soporte para lenguaje natural, alias latinos,
+ * intervalos dinámicos y formatos numéricos de comida.
  */
 const FREQ_MAP = [
-  // Patrón SOS / a demanda
-  { rx: /\b(sos|si\s*precisa|a\s*demanda|si\s*necesario|prn)\b/i,                   label: '(si precisa)' },
-  // Cada 6h
-  { rx: /\b(cada\s*6\s*h(oras?)?|c\/?6\s*h|q\.?6\s*h|6h|1-1-1-1)\b/i,             label: '/6h' },
-  // Cada 8h
-  { rx: /\b(cada\s*8\s*h(oras?)?|c\/?8\s*h|q\.?8\s*h|8h|1-1-1|tres\s*veces)\b/i,  label: '/8h' },
-  // Cada 12h
-  { rx: /\b(cada\s*12\s*h(oras?)?|c\/?12\s*h|q\.?12\s*h|12h|1-0-1|dos\s*veces|ma[nñ]ana\s*y\s*noche)\b/i, label: '/12h' },
-  // Cada 24h / una vez al día
-  { rx: /\b(cada\s*24\s*h(oras?)?|c\/?24\s*h|q\.?24\s*h|24h|1-0-0|0-0-1|0-1-0|una\s*vez\s*al\s*d[ií]a|diario|cada\s*ma[nñ]ana|cada\s*noche)\b/i, label: '/24h' },
-  // Cada 48h
-  { rx: /\b(cada\s*48\s*h(oras?)?|c\/?48\s*h|q\.?48\s*h|48h|dias?\s*alternos?)\b/i, label: '/48h' },
-  // Cada 72h
-  { rx: /\b(cada\s*72\s*h(oras?)?|c\/?72\s*h|72h)\b/i,                              label: '/72h' },
-  // Semanal
-  { rx: /\b(semanal(mente)?|una\s*vez\s*a\s*la\s*semana|1\s*vez\s*semana)\b/i,      label: '/sem' },
+  // Formatos numéricos de comida
+  { rx: /\b1[-–\/\s]1[-–\/\s]1[-–\/\s]1\b/,              label: '/6h' },
+  { rx: /\b1[-–\/\s]1[-–\/\s]1\b/,                        label: '/8h' },
+  { rx: /\b1[-–\/\s]0[-–\/\s]0[-–\/\s]1\b/,              label: '/12h' },
+  { rx: /\b1[-–\/\s]0[-–\/\s]1\b/,                        label: '/12h' },
+  { rx: /\b1[-–\/\s]1[-–\/\s]0\b/,                        label: '/12h' },
+  { rx: /\b1[-–\/\s]0[-–\/\s]0\b/,                        label: '/24h' },
+  { rx: /\b0[-–\/\s]0[-–\/\s]1\b/,                        label: '/24h (noche)' },
+  { rx: /\b0[-–\/\s]1[-–\/\s]0\b/,                        label: '/24h (mediodía)' },
+  // Horarios de comida en español
+  { rx: /\ben\s+el\s+desayuno\b/i,                         label: '/24h (mañana)' },
+  { rx: /\ben\s+(?:la\s+)?cena\b/i,                        label: '/24h (noche)' },
+  { rx: /\ben\s+(?:la\s+)?comida\b/i,                      label: '/24h (mediodía)' },
+  { rx: /\bcon\s+el\s+desayuno\b/i,                        label: '/24h (mañana)' },
+  { rx: /\bcon\s+(?:la\s+)?cena\b/i,                       label: '/24h (noche)' },
+  // Intervalos fijos con abreviaturas
+  { rx: /\bc\s*[\/.]?\s*6\s*h(?:oras?)?\b/i,               label: '/6h' },
+  { rx: /\bcada\s+6\s*h(?:oras?)?\b/i,                     label: '/6h' },
+  { rx: /\bc\s*[\/.]?\s*8\s*h(?:oras?)?\b/i,               label: '/8h' },
+  { rx: /\bcada\s+8\s*h(?:oras?)?\b/i,                     label: '/8h' },
+  { rx: /\bc\s*[\/.]?\s*12\s*h(?:oras?)?\b/i,              label: '/12h' },
+  { rx: /\bcada\s+12\s*h(?:oras?)?\b/i,                    label: '/12h' },
+  { rx: /\bc\s*[\/.]?\s*24\s*h(?:oras?)?\b/i,              label: '/24h' },
+  { rx: /\bcada\s+24\s*h(?:oras?)?\b/i,                    label: '/24h' },
+  // Intervalo dinámico: "cada N h" → /Nh
+  { rx: /\bcada\s+(\d+)\s*h(?:oras?)?\b/i,                 label: (m) => { const n = m[0].match(/\d+/); return n ? '/'+n[0]+'h' : '/xh'; } },
+  { rx: /\/\s*(\d+)\s*h(?:oras?)?\b/i,                     label: (m) => { const n = m[0].match(/\d+/); return n ? '/'+n[0]+'h' : '/xh'; } },
+  // Alias latinos
+  { rx: /\bqd\b|\bonce\s*(?:al\s*d[ií]a|daily)?\b/i,      label: '/24h' },
+  { rx: /\bbid\b|\bbd\b/i,                                  label: '/12h' },
+  { rx: /\btid\b/i,                                         label: '/8h' },
+  { rx: /\bqid\b/i,                                         label: '/6h' },
+  { rx: /\bqn\b|\bnightly\b/i,                             label: '/24h (noche)' },
+  // Momentos del día
+  { rx: /\bpor\s+(?:la\s+)?noche\b|\bal\s+acostarse\b|\bnoche\b/i, label: '/24h (noche)' },
+  { rx: /\bpor\s+(?:la\s+)?mañana\b|\bmatutino\b/i,       label: '/24h (mañana)' },
+  // Intervalos largos
+  { rx: /\bdías?\s+alternos?\b|\bcada\s+2\s*días?\b/i,    label: '/48h' },
+  { rx: /\b48\s*h\b/i,                                     label: '/48h' },
+  { rx: /\b72\s*h\b/i,                                     label: '/72h' },
+  { rx: /\bsemanal(?:mente)?\b|\buna\s+vez\s+(?:a\s+la|por\s+la)\s+semana\b/i, label: '/sem' },
+  // Barras explícitas
+  { rx: /\/24\s*h\b/i,                                     label: '/24h' },
+  { rx: /\/12\s*h\b/i,                                     label: '/12h' },
+  { rx: /\/8\s*h\b/i,                                      label: '/8h' },
+  { rx: /\/6\s*h\b/i,                                      label: '/6h' },
+  // SOS / a demanda
+  { rx: /\bsos\b|\bsi\s+precisa\b|\ba\s+demanda\b|\bprn\b|\bsi\s+dolor\b|\bsi\s+fiebre\b/i, label: '(si precisa)' },
 ];
 
 /**
- * Regex anclado a dosis: detecta magnitud+unidad.
- * Captura el texto anterior (nombre del fármaco) y posterior (frecuencia).
+ * Regex anclado a dosis — equivalente al de polimedicados:
+ * Soporta fracciones unicode, mg/kg, mg/h, parches, gotas, puff, etc.
+ * Compatible Safari/iOS (sin lookbehind moderno): usa grupo separador.
+ * Grupo 1: separador previo | Grupo 2: cantidad | Grupo 3: unidad
  */
-const RE_DOSE_ANCHOR = /(?<!\d)(\d+[.,]?\d*)\s*(mg|mcg|ug|µg|g|ui|u\.i\.|ml|comp|cap|amp|via|unid)\b/i;
+const RE_DOSE_ANCHOR = /(^|[^.\d])((?:\d+[.,]?\d*)|(?:1\/[234])|\u00bd|\u00bc|\u00be)\s*(mcg|ug|\u03bcg|mg\/(?:kg|h|d[ií]a|dia)|mg|g\/(?:kg|h)|g|ui|iu|ml|comp(?:rimido)?s?|c[aá]p(?:sula)?s?|cap(?:sula)?s?|cp|amp(?:olla)?s?|vial(?:es)?|sobr(?:e)?s?|grag(?:ea)?s?|par(?:che)?s?|inh(?:alaci[oó]n)?|spr|puff|gtt|gotas?|unidad(?:es)?)\b/i;
 
 /**
- * Sanitiza el nombre del principio activo extraído:
- * - Elimina IDs del sistema (≥5 dígitos consecutivos)
- * - Elimina prefijos numéricos tipo "3 -"
- * - Elimina caracteres especiales de inicio (* - > #)
+ * Limpia el nombre del principio activo:
+ * - Elimina iconos Unicode del HIS (Área de Uso Privado)
+ * - Elimina IDs largos del sistema (≥5 dígitos)
+ * - Elimina prefijos de prescripción (R/, Rp:, Rx:, "3 -", "12.")
+ * - Elimina caracteres especiales de inicio/fin
+ * - Elimina vías de administración
+ * - Elimina paréntesis y su contenido
  * - Elimina stop-words clínicas
- * - Capitaliza la primera letra
- *
- * @param {string} raw
- * @returns {string}
+ * - Convierte MAYÚSCULAS a Title case
  */
 function sanitizeDrugName(raw) {
-  let s = raw
-    .replace(/\b\d{5,}\b/g, '')              // IDs numéricos largos
-    .replace(/^\s*\d+\s*[-–.]+\s*/g, '')     // prefijo "3 -" o "12."
-    .replace(/^[\s*\->#+]+/, '')              // caracteres especiales al inicio
-    .replace(/\(.*?\)/g, '')                 // paréntesis y su contenido
-    .replace(/\b(iv|sc|im|vo|sl)\b/gi, '')   // vías de administración
-    .trim();
-
-  // Eliminar stop-words (solo palabras completas, no subcadenas)
   const stopRx = new RegExp(
     `\\b(${SCAN_STOP_WORDS.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`,
     'gi'
   );
-  s = s.replace(stopRx, '').replace(/\s{2,}/g, ' ').trim();
+  let s = raw
+    .replace(/[\uE000-\uF8FF\u2022\u25CF\u25A0\u2713\u2714\u2611\u2610]/g, '') // iconos HIS
+    .replace(/\b\d{5,}\b/g, '')                                                   // IDs largos
+    .replace(/^\s*(?:R\/|Rp\s*:|Rx\s*:)\s*/i, '')                                // Rp/Rx
+    .replace(/^\s*\d+\s*[-–.]+\s*/g, '')                                          // "3 -" / "12."
+    .replace(/^[\s*\->#|·•\d.,:;()\[\]]+/, '')                                   // prefijos
+    .replace(/[\s*\->#|·•,:;()\[\]]+$/, '')                                       // sufijos
+    .replace(/\b(iv|sc|im|vo|sl|v\.o\.?|i\.v\.?|i\.m\.?|s\.c\.?|s\.l\.?)\b/gi, '') // vías
+    .replace(/\(.*?\)/g, '')                                                       // paréntesis
+    .replace(stopRx, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 
-  // Capitalizar primera letra
   if (!s) return '';
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  // MAYÚSCULAS → Title case; resto capitaliza primera letra
+  if (s === s.toUpperCase() && s.length > 2) {
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 /**
- * Extrae y parsea frecuencia del texto dado, devolviendo
- * la etiqueta y la cadena original limpiada.
- *
- * @param {string} text
- * @returns {{ freq: string, cleaned: string }}
+ * Extrae frecuencia del texto devolviendo etiqueta y cadena limpia.
+ * Soporta funciones como label para intervalos dinámicos.
  */
 function extractFrequency(text) {
   for (const entry of FREQ_MAP) {
-    if (entry.rx.test(text)) {
-      return {
-        freq: entry.label,
-        cleaned: text.replace(entry.rx, '').trim(),
-      };
+    const m = text.match(entry.rx);
+    if (m) {
+      const label = typeof entry.label === 'function' ? entry.label(m) : entry.label;
+      return { freq: label, cleaned: text.replace(entry.rx, '').trim() };
     }
   }
   return { freq: '', cleaned: text };
 }
 
 /**
- * Función principal del escáner — versión refactorizada.
+ * Preprocesa el texto completo antes de parsear línea a línea:
+ * - Limpia iconos HIS y viñetas Unicode
+ * - Convierte fechas en separadores de línea
+ * - Normaliza saltos de línea
+ * - Separa medicamentos pegados por | o ;
+ * - Separa cuando dosis+unidad precede mayúscula
+ */
+function preprocessText(text) {
+  return text
+    .replace(/[\uE000-\uF8FF\u2022\u25CF\u25A0\u2713\u2714\u2611\u2610]/g, '')
+    .replace(/(?:\d+)?\s*(?:ene|feb|mar|abr|apr|may|jun|jul|ago|aug|sep|oct|nov|dic|dec)[a-z]*\.?\s+\d{4}/gi, '\n')
+    .replace(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/g, '\n')
+    .replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+    .replace(/[|;]\s*(?=[A-ZÁÉÍÓÚÜÑ])/g, '\n')
+    .replace(/((?:mg|mcg|ml|g|ui)\/?\d*h?)\s+(?=[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ])/g, '$1\n');
+}
+
+/**
+ * Función principal del escáner.
  *
- * Estrategia de extracción por ancla de dosis:
- *  1. Localizar la primera dosis numérica+unidad en la línea.
- *  2. Todo lo que está a la IZQUIERDA es el nombre candidato.
- *  3. Todo lo que está a la DERECHA se analiza para la frecuencia.
- *  4. Si no hay ancla de dosis, intentar extraer solo el nombre y frecuencia.
+ * Estrategia de extracción por ancla de dosis (compatible con polimedicados):
+ *  1. Preprocesar texto completo (fechas, HIS, separadores)
+ *  2. Por cada línea: localizar dosis → nombre a la izquierda, frecuencia a la derecha
+ *  3. Fallback sin dosis: extraer solo nombre y frecuencia
+ *  4. Deduplicación por nombre normalizado
  *
  * @param {string} raw - Texto completo pegado por el usuario
  * @returns {string[]} - Array de líneas formateadas limpias
  */
 function scanPrescriptionText(raw) {
-  const inputLines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-  const results    = [];
+  const processed = preprocessText(raw);
+  const inputLines = processed.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+  const results = [];
+  const seen = {};
 
   for (const line of inputLines) {
-    const doseMatch = line.match(RE_DOSE_ANCHOR);
+    // Filtrar cabeceras de documento
+    if (/^[\d\s.\/\-:]+$/.test(line)) continue;
+    if (/^(?:fecha|date|hora|paciente|patient|nombre|history|n[uú]m|cod|m[eé]dico|doctor|dosis|prescripci[oó]n|diagnostico)[\s:]/i.test(line)) continue;
 
-    let namePart  = '';
-    let doseStr   = '';
+    const dm = line.match(RE_DOSE_ANCHOR);
+
+    let namePart = '';
+    let doseStr  = '';
     let afterDose = '';
 
-    if (doseMatch) {
-      // Estrategia principal: ancla de dosis
-      const doseIdx = doseMatch.index;
-      namePart  = line.substring(0, doseIdx);
-      doseStr   = doseMatch[0];
-      afterDose = line.substring(doseIdx + doseMatch[0].length);
+    if (dm) {
+      // dm[1]=sep, dm[2]=cantidad, dm[3]=unidad
+      const matchStart = dm.index + dm[1].length;
+      namePart  = line.substring(0, matchStart);
+      const doseVal  = dm[2].replace(',', '.');
+      const doseUnit = dm[3].toLowerCase()
+        .replace('\u03bcg', 'mcg').replace('ug', 'mcg')
+        .replace(/comprimidos?/, 'comp').replace(/c[aá]psulas?/, 'cap').replace(/capsulas?/, 'cap')
+        .replace(/ampollas?/, 'amp').replace(/parches?/, 'parch').replace(/gotas?/, 'gtt');
+      doseStr   = doseVal + doseUnit;
+      afterDose = line.substring(dm.index + dm[0].length).trim();
     } else {
-      // Fallback: tratar la línea entera como nombre
       namePart  = line;
-      doseStr   = '';
-      afterDose = '';
     }
 
-    // Extraer frecuencia del texto posterior a la dosis
+    // Frecuencia del texto tras la dosis
     const { freq, cleaned: afterCleaned } = extractFrequency(
-      (afterDose + ' ' + (doseMatch ? '' : namePart)).trim()
+      (afterDose + ' ' + (dm ? '' : namePart)).trim()
     );
 
-    // Si la frecuencia estaba en el nombre (ej: "Paracetamol 1g 1-1-1"), re-extrae
+    // Frecuencia embebida en el nombre (ej: "Paracetamol 1-1-1")
     const { freq: freqInName, cleaned: nameAfterFreq } = extractFrequency(namePart);
     const finalFreq = freq || freqInName;
     const finalName = sanitizeDrugName(freq ? namePart : nameAfterFreq);
 
-    if (!finalName) continue;
+    if (!finalName || finalName.length < 2) continue;
+    if (/^[\d\s.,\-\/]+$/.test(finalName)) continue;
+    if (/^(?:total|subtotal|firmado|lote|caducidad|v[ií]a|forma\s+farmac)/i.test(finalName)) continue;
 
-    // Construir línea de salida: Nombre [dosis][frecuencia]
     const parts = [finalName];
-    if (doseStr) parts.push(doseStr.replace(/\s+/g, ''));  // compactar dosis
+    if (doseStr) parts.push(doseStr);
     if (finalFreq) parts.push(finalFreq);
 
     const outputLine = parts.join(' ').trim();
-    if (outputLine && !results.includes(outputLine)) {
+    const dedupeKey = finalName.toLowerCase().replace(/\s+/g, '');
+    if (outputLine && !seen[dedupeKey]) {
+      seen[dedupeKey] = true;
       results.push(outputLine);
     }
   }
