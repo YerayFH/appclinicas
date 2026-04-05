@@ -496,6 +496,26 @@ main{max-width:940px;margin:0 auto;padding:22px 14px 60px}
   transform: rotate(180deg);
 }
 
+/* --- Sección PROA en modo acordeón dentro de .rc --- */
+.rc.proa-accordion {
+  padding: 0;
+}
+.rc.proa-accordion > .accordion {
+  margin-top: 0;
+  border: none;
+  border-radius: var(--app-radius);
+  background: transparent;
+  overflow: hidden;
+}
+.rc.proa-accordion > .accordion > .accordion-header {
+  padding: 13px 13px 13px 20px;
+}
+.rc.proa-accordion > .accordion > .accordion-content {
+  padding: 0 13px 13px 16px;
+  background: transparent;
+  border-top: 1px solid var(--app-border);
+}
+
 /* --- Estilos del Buscador --- */
 .search-container {
   margin-bottom: 20px;
@@ -4961,7 +4981,7 @@ function selectScenario(id) {
       ${orgs ? `<div class="rc full"><h3 class="bl">🦠 Microorganismos Probables</h3><div>${orgs}</div></div>` : ''}
       <div class="rc full"><h3 class="gr">💊 Tratamiento Empírico de Elección</h3><div class="tx-res">${r.treatment}</div></div>
       ${r.alternative ? `<div class="rc full"><h3 class="rd">🚫 ${altTitle}</h3><div class="tx-res">${r.alternative}</div></div>` : ''}
-      ${r.proa ? `<div class="rc full"><h3 class="pu">📋 Observaciones Clínicas / PROA</h3><div class="pb"><div class="tx-res">${r.proa}</div></div></div>` : ''}
+      ${r.proa ? `<div class="rc full proa-accordion"><div class="accordion"><div class="accordion-header" onclick="toggleAccordion(this)"><h3 class="pu" style="margin-bottom:0">📋 Observaciones Clínicas / PROA</h3><span class="icon-arr">▼</span></div><div class="accordion-content"><div class="pb"><div class="tx-res">${r.proa}</div></div></div></div></div>` : ''}
     </div>`;
     
   showScreen(4); 
