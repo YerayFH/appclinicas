@@ -159,15 +159,56 @@ textarea{resize:vertical;min-height:120px;font-family:monospace;font-size:12px;l
 .erc-g3b{background:#2a2008;color:#f08000;border:1px solid #4a3000}
 .erc-g4 {background:#2a1808;color:#e05000;border:1px solid #4a2800}
 .erc-g5 {background:#2d1515;color:#ff7b72;border:1px solid #4a2020}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.hidden{display:none}
-.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:560px;padding:20px;display:flex;flex-direction:column;gap:12px}
-.modal-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
-.modal-desc{font-size:12px;color:var(--text2);line-height:1.55}
-.modal-box textarea{min-height:150px;font-family:monospace;font-size:12px;line-height:1.6;border-color:var(--purple)}
-.modal-preview{background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:var(--cyan);min-height:40px;max-height:120px;overflow-y:auto;white-space:pre-wrap;line-height:1.6}
-.modal-preview-label{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+/* ══ SCANNER MODAL (NLP v2) ══ */
+#scan_overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(3px);z-index:8000;align-items:center;justify-content:center;padding:20px;animation:scanFadeIn .18s ease}
+#scan_overlay.open{display:flex}
+@keyframes scanFadeIn{from{opacity:0}to{opacity:1}}
+#scan_modal_box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.55);width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;animation:scanSlideUp .22s cubic-bezier(.34,1.4,.64,1);overflow:hidden}
+@keyframes scanSlideUp{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+.scan-hd{background:linear-gradient(135deg,#0e1e38 0%,var(--blue2) 100%);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.scan-hd-left{display:flex;align-items:center;gap:10px}
+.scan-hd-icon{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.scan-hd h3{font-size:14px;font-weight:700;margin-bottom:1px;color:#fff}
+.scan-hd p{font-size:12px;opacity:.82}
+#scan_close{width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;line-height:1;font-family:inherit}
+#scan_close:hover{background:rgba(255,255,255,.22)}
+.scan-body{padding:16px 18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:13px}
+.scan-lbl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.scan-lbl-badge{background:rgba(47,129,247,.15);color:#79c0ff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;border:1px solid var(--blue2)}
+#scan_input{width:100%;min-height:120px;max-height:190px;background:var(--bg4);border:1.5px solid var(--border2);border-radius:8px;color:var(--text);font-size:12.5px;font-family:'Cascadia Code','Fira Mono','Consolas',monospace;padding:10px 13px;resize:vertical;outline:none;line-height:1.65;transition:border .15s}
+#scan_input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,129,247,.15)}
+#scan_input::placeholder{font-family:'Segoe UI',sans-serif;font-style:italic;color:var(--text3);font-size:13px}
+#scan_stats{display:none;gap:10px;flex-wrap:wrap;padding:8px 12px;background:rgba(47,129,247,.1);border:1px solid var(--blue2);border-radius:8px;font-size:12px;color:#79c0ff;align-items:center}
+.scan-stat{display:flex;align-items:center;gap:4px}
+.scan-stat-v{font-weight:700;color:var(--blue)}
+.scan-stat-sep{color:var(--border2)}
+#scan_fmt_row{display:none;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 11px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;font-size:12px;color:var(--text2)}
+#scan_fmt_row label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text);font-weight:400}
+#scan_fmt_row input[type=radio]{accent-color:var(--blue);width:13px;height:13px}
+.scan-fmt-sep{color:var(--border2)}
+#scan_empty{text-align:center;padding:24px 16px;color:var(--text3);font-size:13px}
+#scan_empty svg{opacity:.3;margin:0 auto 8px;display:block}
+#scan_list{display:none;flex-direction:column;gap:4px}
+.scan-item{display:flex;align-items:center;gap:9px;padding:8px 11px;background:var(--bg4);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;font-size:13px}
+.scan-item.no-dose{border-left-color:var(--yellow);background:rgba(227,179,65,.07);border-color:rgba(227,179,65,.35)}
+.scan-item-name{flex:1;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.scan-item-badges{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.sc-badge-dose{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(47,129,247,.15);color:#79c0ff;border:1px solid var(--blue2);white-space:nowrap;font-family:'Cascadia Code','Consolas',monospace}
+.sc-badge-freq{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(63,185,80,.12);color:var(--green);border:1px solid #1a4228;white-space:nowrap;font-family:'Cascadia Code','Consolas',monospace}
+.sc-badge-sos{background:rgba(255,123,114,.12);color:var(--red);border-color:var(--err-border)}
+.sc-badge-warn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(227,179,65,.12);color:var(--yellow);border:1px solid var(--warn-border);white-space:nowrap}
+.scan-del{width:20px;height:20px;border-radius:4px;border:1px solid transparent;background:transparent;color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;line-height:1;padding:0;font-family:inherit}
+.scan-del:hover{background:var(--err-bg);color:var(--red);border-color:var(--err-border)}
+.scan-ft{border-top:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--bg3);flex-shrink:0}
+.scan-ft-info{flex:1;font-size:12px;color:var(--text2);min-width:100px}
+.scan-ft-info strong{color:var(--text)}
+.scan-ft-append{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer}
+.scan-ft-append input{accent-color:var(--blue);width:13px;height:13px}
+.btn-scan-cancel{padding:7px 15px;border-radius:6px;border:1.5px solid var(--border2);background:var(--bg4);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .14s}
+.btn-scan-cancel:hover{background:var(--bg3)}
+.btn-scan-ok{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;border-radius:6px;border:1.5px solid #059669;background:#059669;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .14s;box-shadow:0 1px 0 rgba(255,255,255,.15) inset}
+.btn-scan-ok:hover{background:#047857}
+.btn-scan-ok:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
 .app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:#0e1e38;border-bottom:1px solid #1f4080;position:sticky;top:0;z-index:100;flex-shrink:0}
 .hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
 .hdr-text{display:flex;flex-direction:column;gap:2px}
@@ -410,22 +451,51 @@ textarea{resize:vertical;min-height:120px;font-family:monospace;font-size:12px;l
     </div>
   </div>
 </div>
-<!-- SCAN MODAL -->
-<div class="modal-overlay hidden" id="scan_modal">
-  <div class="modal-box">
-    <div class="modal-title">📋 Escanear Lista de Prescripción</div>
-    <div class="modal-desc">
-      Pega aquí el texto copiado de tu sistema de prescripción hospitalario.<br>
-      El escáner detecta fármacos, dosis y frecuencias automáticamente.
+<!-- SCAN MODAL (NLP v2) -->
+<div id="scan_overlay" role="dialog" aria-modal="true" aria-labelledby="scan_title">
+  <div id="scan_modal_box">
+    <div class="scan-hd">
+      <div class="scan-hd-left">
+        <div class="scan-hd-icon">&#128302;</div>
+        <div><h3 id="scan_title">Escanear medicación desde HIS</h3><p>Pega el texto del sistema clínico &mdash; extracción automática por ancla de dosis</p></div>
+      </div>
+      <button id="scan_close" onclick="closeScanModal()" title="Cerrar" aria-label="Cerrar">&#10005;</button>
     </div>
-    <textarea id="scan_input" placeholder="Pega aquí el texto del sistema de prescripción…&#10;&#10;Ejemplos aceptados:&#10;12345 METFORMINA 850MG/12H&#10;Omeprazol 20 mg cada 24 horas&#10;AMIKACINA 500 MG/8H IV&#10;3 - Enoxaparina sódica 60mg sc/24h&#10;Paracetamol 1g - 1-1-1 oral"></textarea>
-    <div>
-      <div class="modal-preview-label">Vista previa — líneas que se añadirán:</div>
-      <div class="modal-preview" id="scan_preview">—</div>
+    <div class="scan-body">
+      <div>
+        <div class="scan-lbl">Texto de origen <span class="scan-lbl-badge">HIS / EPR / Lista de planta</span></div>
+        <textarea id="scan_input" rows="6" placeholder="Pega aquí el texto del HIS. El escáner reconoce múltiples formatos:&#10;&#10;12345 METFORMINA 850MG/12H&#10;Omeprazol 20 mg cada 24 horas&#10;AMIKACINA 500 MG/8H IV&#10;3 - Enoxaparina sódica 60mg sc/24h&#10;Paracetamol 1g - 1-1-1 oral"></textarea>
+      </div>
+      <div id="scan_stats" style="display:none">
+        <div class="scan-stat">&#128269; Detectados: <span class="scan-stat-v" id="sc_n">0</span></div>
+        <span class="scan-stat-sep">&middot;</span>
+        <div class="scan-stat">Con dosis: <span class="scan-stat-v" id="sc_d">0</span></div>
+        <span class="scan-stat-sep">&middot;</span>
+        <div class="scan-stat">Con frecuencia: <span class="scan-stat-v" id="sc_f">0</span></div>
+        <span class="scan-stat-sep">&middot;</span>
+        <div class="scan-stat" style="color:var(--yellow)">Sin dosis: <span class="scan-stat-v" id="sc_nd" style="color:var(--yellow)">0</span></div>
+      </div>
+      <div id="scan_fmt_row" style="display:none">
+        Formato: &nbsp;
+        <label><input type="radio" name="scan_fmt" value="completo" checked> Nombre Dosis/Freq</label>
+        <span class="scan-fmt-sep">|</span>
+        <label><input type="radio" name="scan_fmt" value="nombre_dosis"> Nombre + dosis</label>
+        <span class="scan-fmt-sep">|</span>
+        <label><input type="radio" name="scan_fmt" value="nombre"> Solo nombre</label>
+      </div>
+      <div id="scan_preview_wrap">
+        <div id="scan_empty">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Pega texto del HIS para detectar fármacos automáticamente
+        </div>
+        <div id="scan_list"></div>
+      </div>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeScanModal()">Cancelar</button>
-      <button class="btn btn-scan" onclick="applyScan()">✓ Añadir al listado</button>
+    <div class="scan-ft">
+      <div class="scan-ft-info" id="scan_ft_info">Inserta en el campo <strong>Medicación actual</strong></div>
+      <label class="scan-ft-append"><input type="checkbox" id="scan_append"> Añadir a lo existente</label>
+      <button class="btn-scan-cancel" onclick="closeScanModal()">Cancelar</button>
+      <button class="btn-scan-ok" id="scan_ok" disabled onclick="applyScan()">&#10003; Insertar medicación</button>
     </div>
   </div>
 </div>
@@ -1562,210 +1632,190 @@ function copySummary() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// SCANNER DE PRESCRIPCIÓN — VERSIÓN REFACTORIZADA (req. 3 scanner)
+// SCANNER DE PRESCRIPCIÓN — NLP v2
+// — sin lookbehind (soporte Safari/iOS <16.4)
+// — parseo robusto de textos sucios HIS
+// — compatible con navegadores legacy (sin trimEnd)
 // ════════════════════════════════════════════════════════════════
 
-/**
- * Stop-words clínicas: términos que aparecen junto al principio activo
- * en los sistemas de prescripción pero no forman parte del nombre del fármaco.
- */
-const SCAN_STOP_WORDS = [
-  'comprimido','comprimidos','comp','sobre','sobres','capsulas','capsula',
-  'cap','ampolla','ampollas','amp','vial','viales','via','oral','intravenoso',
-  'iv','im','sc','sublingual','sl','topico','patch','parche','parches',
-  'administrar','tomar','usar','aplicar','solución','solucion','suspension',
-  'jarabe','pomada','crema','gel','polvo','efervescente','retard','lp',
-  'liberacion','prolongada','inmediata','bucodispersable','odt',
-  'sodica','sodico','potasica','potasico','calcica','calcico',
-  'clorhidrato','sulfato','fosfato','lactato','gluconato','maleato','mesilato',
+/* Ancla de dosis SIN lookbehind — compatible Safari/iOS */
+/* Grupo 1: separador previo | Grupo 2: cantidad | Grupo 3: unidad */
+var SC_DOSE_RE=/(^|[^.\d])((?:\d+[.,]?\d*)|(?:1\/[234])|\u00bd|\u00bc|\u00be)\s*(mcg|ug|\u03bcg|mg\/(?:kg|h|d[ií]a|dia)|mg|g\/(?:kg|h)|g|ui|iu|ml|mci|mmol|meq|mEq|comp(?:rimido)?s?|c[aá]p(?:sula)?s?|cap(?:sula)?s?|cp|amp(?:olla)?s?|vial(?:es)?|sobr(?:e)?s?|grag(?:ea)?s?|par(?:che)?s?|inh(?:alaci[oó]n)?|spr|puff|gtt|gotas?|unidad(?:es)?)\b/i;
+
+var SC_FREQ_MAP=[
+  {re:/\b1[-–\/\s]1[-–\/\s]1[-–\/\s]1\b/,out:'/6h'},
+  {re:/\b1[-–\/\s]1[-–\/\s]1\b/,out:'/8h'},
+  {re:/\b1[-–\/\s]0[-–\/\s]0[-–\/\s]1\b/,out:'/12h'},
+  {re:/\b1[-–\/\s]0[-–\/\s]1\b/,out:'/12h'},
+  {re:/\b1[-–\/\s]1[-–\/\s]0\b/,out:'/12h'},
+  {re:/\b1[-–\/\s]0[-–\/\s]0\b/,out:'/24h'},
+  {re:/\b0[-–\/\s]0[-–\/\s]1\b/,out:'/24h (noche)'},
+  {re:/\b0[-–\/\s]1[-–\/\s]0\b/,out:'/24h (mediod\xeda)'},
+  {re:/\ben\s+el\s+desayuno\b/i,out:'/24h (ma\xf1ana)'},
+  {re:/\ben\s+(?:la\s+)?cena\b/i,out:'/24h (noche)'},
+  {re:/\ben\s+(?:la\s+)?comida\b/i,out:'/24h (mediod\xeda)'},
+  {re:/\bcon\s+el\s+desayuno\b/i,out:'/24h (ma\xf1ana)'},
+  {re:/\bcon\s+(?:la\s+)?cena\b/i,out:'/24h (noche)'},
+  {re:/\bc\s*[\/.]?\s*6\s*h(?:oras?)?\b/i,out:'/6h'},
+  {re:/\bcada\s+6\s*h(?:oras?)?\b/i,out:'/6h'},
+  {re:/\bc\s*[\/.]?\s*8\s*h(?:oras?)?\b/i,out:'/8h'},
+  {re:/\bcada\s+8\s*h(?:oras?)?\b/i,out:'/8h'},
+  {re:/\bc\s*[\/.]?\s*12\s*h(?:oras?)?\b/i,out:'/12h'},
+  {re:/\bcada\s+12\s*h(?:oras?)?\b/i,out:'/12h'},
+  {re:/\bc\s*[\/.]?\s*24\s*h(?:oras?)?\b/i,out:'/24h'},
+  {re:/\bcada\s+24\s*h(?:oras?)?\b/i,out:'/24h'},
+  {re:/\bcada\s+(\d+)\s*h(?:oras?)?\b/i,out:function(m){var n=m[0].match(/\d+/);return n?'/'+n[0]+'h':'/xh';}},
+  {re:/\/\s*(\d+)\s*h(?:oras?)?\b/i,out:function(m){var n=m[0].match(/\d+/);return n?'/'+n[0]+'h':'/xh';}},
+  {re:/\bqd\b|\bonce\s*(?:al\s*d[ií]a|daily)?\b/i,out:'/24h'},
+  {re:/\bbid\b|\bbd\b/i,out:'/12h'},
+  {re:/\btid\b/i,out:'/8h'},
+  {re:/\bqid\b/i,out:'/6h'},
+  {re:/\bqn\b|\bnightly\b/i,out:'/24h (noche)'},
+  {re:/\bpor\s+(?:la\s+)?noche\b|\bal\s+acostarse\b|\bnoche\b/i,out:'/24h (noche)'},
+  {re:/\bpor\s+(?:la\s+)?ma\xf1ana\b|\bmatutino\b/i,out:'/24h (ma\xf1ana)'},
+  {re:/\bd[ií]as?\s+altern[oa]s?\b|\balt(?:ernos?)?\b|\bcada\s+2\s*d[ií]as?\b/i,out:'/48h'},
+  {re:/\b48\s*h\b/i,out:'/48h'},
+  {re:/\bsemanal(?:mente)?\b|\buna\s+vez\s+(?:a\s+la|por\s+la)\s+semana\b/i,out:'/168h'},
+  {re:/\/24\s*h\b/i,out:'/24h'},
+  {re:/\/12\s*h\b/i,out:'/12h'},
+  {re:/\/8\s*h\b/i,out:'/8h'},
+  {re:/\/6\s*h\b/i,out:'/6h'},
+  {re:/\bsos\b|\bsi\s+precisa\b|\ba\s+demanda\b|\bprn\b|\bsi\s+dolor\b|\bsi\s+fiebre\b|\bsi\s+agitaci[o\xf3]n\b/i,out:'(si precisa)'},
 ];
 
-/**
- * Mapa de frecuencias ampliado con soporte para lenguaje natural
- * e insensible a mayúsculas/minúsculas.
- */
-const FREQ_MAP = [
-  // Patrón SOS / a demanda
-  { rx: /\b(sos|si\s*precisa|a\s*demanda|si\s*necesario|prn)\b/i,                   label: '(si precisa)' },
-  // Cada 6h
-  { rx: /\b(cada\s*6\s*h(oras?)?|c\/?6\s*h|q\.?6\s*h|6h|1-1-1-1)\b/i,             label: '/6h' },
-  // Cada 8h
-  { rx: /\b(cada\s*8\s*h(oras?)?|c\/?8\s*h|q\.?8\s*h|8h|1-1-1|tres\s*veces)\b/i,  label: '/8h' },
-  // Cada 12h
-  { rx: /\b(cada\s*12\s*h(oras?)?|c\/?12\s*h|q\.?12\s*h|12h|1-0-1|dos\s*veces|ma[nñ]ana\s*y\s*noche)\b/i, label: '/12h' },
-  // Cada 24h / una vez al día
-  { rx: /\b(cada\s*24\s*h(oras?)?|c\/?24\s*h|q\.?24\s*h|24h|1-0-0|0-0-1|0-1-0|una\s*vez\s*al\s*d[ií]a|diario|cada\s*ma[nñ]ana|cada\s*noche)\b/i, label: '/24h' },
-  // Cada 48h
-  { rx: /\b(cada\s*48\s*h(oras?)?|c\/?48\s*h|q\.?48\s*h|48h|dias?\s*alternos?)\b/i, label: '/48h' },
-  // Cada 72h
-  { rx: /\b(cada\s*72\s*h(oras?)?|c\/?72\s*h|72h)\b/i,                              label: '/72h' },
-  // Semanal
-  { rx: /\b(semanal(mente)?|una\s*vez\s*a\s*la\s*semana|1\s*vez\s*semana)\b/i,      label: '/sem' },
-];
-
-/**
- * Regex anclado a dosis: detecta magnitud+unidad.
- * Captura el texto anterior (nombre del fármaco) y posterior (frecuencia).
- */
-const RE_DOSE_ANCHOR = /(?<!\d)(\d+[.,]?\d*)\s*(mg|mcg|ug|µg|g|ui|u\.i\.|ml|comp|cap|amp|via|unid)\b/i;
-
-/**
- * Sanitiza el nombre del principio activo extraído:
- * - Elimina IDs del sistema (≥5 dígitos consecutivos)
- * - Elimina prefijos numéricos tipo "3 -"
- * - Elimina caracteres especiales de inicio (* - > #)
- * - Elimina stop-words clínicas
- * - Capitaliza la primera letra
- *
- * @param {string} raw
- * @returns {string}
- */
-function sanitizeDrugName(raw) {
-  let s = raw
-    .replace(/\b\d{5,}\b/g, '')              // IDs numéricos largos
-    .replace(/^\s*\d+\s*[-–.]+\s*/g, '')     // prefijo "3 -" o "12."
-    .replace(/^[\s*\->#+]+/, '')              // caracteres especiales al inicio
-    .replace(/\(.*?\)/g, '')                 // paréntesis y su contenido
-    .replace(/\b(iv|sc|im|vo|sl)\b/gi, '')   // vías de administración
+function scCleanName(raw){
+  var s=raw
+    .replace(/^[\s*\->#|·•\d]{0,6}[\s.,:;()\[\]]*/,'')
+    .replace(/^(?:R\/|Rp\s*:|Rx\s*:)\s*/i,'')
+    .replace(/\s+(?:oral|v\.?o\.?|i\.?v\.?|i\.?m\.?|s\.?c\.?|s\.?l\.?|t\.?d\.?|inh(?:alado)?|transd(?:\xe9rmico)?)\s*$/i,'')
+    .replace(/^(?:\d+\/\d+|½|¼|¾|\d+)\s*(?:comp(?:rimido)?s?|c[aá]psulas?|capsulas?|cp|grag(?:ea)?s?|amp(?:olla)?s?|par(?:che)?s?|gtt|gotas?|unidades?|puff)\s+(?:de\s+)?/i,'')
+    .replace(/^\d+\s+(?=[A-Za-z\xe1\xe9\xed\xf3\xfa\xf1\xc1\xc9\xcd\xd3\xda\xd1])/,'')
+    .replace(/^[\s*\->#|·•\d.,:;()\[\]]+/,'')
+    .replace(/[\s*\->#|·•,:;()\[\]]+$/,'')
+    .replace(/\s{2,}/g,' ')
     .trim();
-
-  // Eliminar stop-words (solo palabras completas, no subcadenas)
-  const stopRx = new RegExp(
-    `\\b(${SCAN_STOP_WORDS.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`,
-    'gi'
-  );
-  s = s.replace(stopRx, '').replace(/\s{2,}/g, ' ').trim();
-
-  // Capitalizar primera letra
-  if (!s) return '';
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  if(s&&s===s.toUpperCase()&&s.length>2) s=s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
+  return s;
 }
 
-/**
- * Extrae y parsea frecuencia del texto dado, devolviendo
- * la etiqueta y la cadena original limpiada.
- *
- * @param {string} text
- * @returns {{ freq: string, cleaned: string }}
- */
-function extractFrequency(text) {
-  for (const entry of FREQ_MAP) {
-    if (entry.rx.test(text)) {
-      return {
-        freq: entry.label,
-        cleaned: text.replace(entry.rx, '').trim(),
-      };
-    }
+function scGetFreq(text){
+  for(var i=0;i<SC_FREQ_MAP.length;i++){
+    var e=SC_FREQ_MAP[i],m=text.match(e.re);
+    if(m){var f=typeof e.out==='function'?e.out(m):e.out;return{freq:f,rest:text.replace(e.re,'').trim()};}
   }
-  return { freq: '', cleaned: text };
+  return{freq:null,rest:text};
 }
 
-/**
- * Función principal del escáner — versión refactorizada.
- *
- * Estrategia de extracción por ancla de dosis:
- *  1. Localizar la primera dosis numérica+unidad en la línea.
- *  2. Todo lo que está a la IZQUIERDA es el nombre candidato.
- *  3. Todo lo que está a la DERECHA se analiza para la frecuencia.
- *  4. Si no hay ancla de dosis, intentar extraer solo el nombre y frecuencia.
- *
- * @param {string} raw - Texto completo pegado por el usuario
- * @returns {string[]} - Array de líneas formateadas limpias
- */
-function scanPrescriptionText(raw) {
-  const inputLines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-  const results    = [];
+function scParseLine(raw){
+  var line=raw.trim();
+  if(!line||line.length<3) return null;
+  if(/^[\d\s.\/\-:]+$/.test(line)) return null;
+  if(/^(?:fecha|date|hora|paciente|patient|nombre|history|n[uú]m|cod|m[eé]dico|doctor|dosis|prescripci[oó]n|diagnostico)[\s:]/i.test(line)) return null;
 
-  for (const line of inputLines) {
-    const doseMatch = line.match(RE_DOSE_ANCHOR);
-
-    let namePart  = '';
-    let doseStr   = '';
-    let afterDose = '';
-
-    if (doseMatch) {
-      // Estrategia principal: ancla de dosis
-      const doseIdx = doseMatch.index;
-      namePart  = line.substring(0, doseIdx);
-      doseStr   = doseMatch[0];
-      afterDose = line.substring(doseIdx + doseMatch[0].length);
-    } else {
-      // Fallback: tratar la línea entera como nombre
-      namePart  = line;
-      doseStr   = '';
-      afterDose = '';
-    }
-
-    // Extraer frecuencia del texto posterior a la dosis
-    const { freq, cleaned: afterCleaned } = extractFrequency(
-      (afterDose + ' ' + (doseMatch ? '' : namePart)).trim()
-    );
-
-    // Si la frecuencia estaba en el nombre (ej: "Paracetamol 1g 1-1-1"), re-extrae
-    const { freq: freqInName, cleaned: nameAfterFreq } = extractFrequency(namePart);
-    const finalFreq = freq || freqInName;
-    const finalName = sanitizeDrugName(freq ? namePart : nameAfterFreq);
-
-    if (!finalName) continue;
-
-    // Construir línea de salida: Nombre [dosis][frecuencia]
-    const parts = [finalName];
-    if (doseStr) parts.push(doseStr.replace(/\s+/g, ''));  // compactar dosis
-    if (finalFreq) parts.push(finalFreq);
-
-    const outputLine = parts.join(' ').trim();
-    if (outputLine && !results.includes(outputLine)) {
-      results.push(outputLine);
-    }
+  var dm=SC_DOSE_RE.exec(line);
+  if(dm){
+    var matchStart=dm.index+dm[1].length;
+    var nameRaw=line.substring(0,matchStart).trim();
+    var doseVal=dm[2].replace(',','.');
+    var doseUnit=dm[3].toLowerCase()
+      .replace('\u03bcg','mcg').replace('ug','mcg')
+      .replace(/comprimidos?/,'comp').replace(/c[aá]psulas?/,'cap').replace(/capsulas?/,'cap')
+      .replace(/ampollas?/,'amp').replace(/parches?/,'parch');
+    var after=line.substring(dm.index+dm[0].length).trim();
+    var fr=scGetFreq(after);
+    var name=scCleanName(nameRaw);
+    if(!name||name.length<2) name=scCleanName(fr.rest);
+    if(!name||name.length<2) return null;
+    if(/^[\d\s.,\-\/]+$/.test(name)) return null;
+    return{name:name,dose:doseVal+doseUnit,freq:fr.freq,hasDose:true,isSOS:fr.freq==='(si precisa)',raw:line};
   }
 
-  return results;
+  var fr2=scGetFreq(line);
+  var name2=scCleanName(fr2.rest||line);
+  if(!name2||name2.length<3) return null;
+  if(/^[\d\s.,:;\-\/]+$/.test(name2)) return null;
+  if(/^(?:total|subtotal|firmado|firma|prescrito|dispensado|preparado|lote|caducidad|v[ií]a|forma\s+farmac)/i.test(name2)) return null;
+  return{name:name2,dose:null,freq:fr2.freq,hasDose:false,isSOS:fr2.freq==='(si precisa)',raw:line};
 }
 
-// ════════════════════════════════════════════════════════════════
-// MODAL DEL ESCÁNER — UI mejorada
-// ════════════════════════════════════════════════════════════════
-
-function openScanModal() {
-  document.getElementById('scan_input').value   = '';
-  document.getElementById('scan_preview').textContent = '—';
-  document.getElementById('scan_modal').classList.remove('hidden');
-  document.getElementById('scan_input').focus();
+function scProcessText(text){
+  var normalized=text
+    .replace(/[\uE000-\uF8FF\u2022\u25CF\u25A0\u2713\u2714\u2611\u2610]/g,'')
+    .replace(/(?:\d+)?\s*(?:ene|feb|mar|abr|apr|may|jun|jul|ago|aug|sep|oct|nov|dic|dec)[a-z]*\.?\s+\d{4}/gi,'\n')
+    .replace(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/g,'\n')
+    .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .replace(/[|;]\s*(?=[A-Z\xc1\xc9\xcd\xd3\xda\xd1])/g,'\n')
+    .replace(/((?:mg|mcg|ml|g|ui)\/?(?:\d+h)?)\s+(?=[A-Z\xc1\xc9\xcd\xd3\xda\xd1][a-z\xe1\xe9\xed\xf3\xfa\xf1])/g,'$1\n');
+  var seen={};
+  return normalized.split('\n')
+    .map(scParseLine).filter(Boolean)
+    .filter(function(item){var k=item.name.toLowerCase().replace(/\s+/g,'');if(seen[k])return false;seen[k]=true;return true;});
 }
 
-function closeScanModal() {
-  document.getElementById('scan_modal').classList.add('hidden');
+function scFormatItem(item,mode){
+  if(mode==='nombre') return item.name;
+  if(mode==='nombre_dosis') return item.dose?item.name+' '+item.dose:item.name;
+  if(item.dose&&item.freq) return item.name+' '+item.dose+item.freq;
+  if(item.dose) return item.name+' '+item.dose;
+  if(item.freq) return item.name+' '+item.freq;
+  return item.name;
 }
 
-/**
- * Inserta los fármacos escaneados en el textarea principal,
- * uno por línea, capitalizados, sin duplicados.
- */
-function applyScan() {
-  const lines = scanPrescriptionText(document.getElementById('scan_input').value);
-  if (!lines.length) { _showInlineMsg('No se detectaron fármacos válidos en el texto escaneado.', 'error'); return; }
+function scEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-  const ta      = document.getElementById('drug_input');
-  const existing = ta.value.trim()
-    .split('\n')
-    .map(l => l.trim())
-    .filter(Boolean);
+var _scItems=[];
 
-  // Deduplicar contra líneas ya presentes (comparación normalizada)
-  const newLines = lines.filter(l =>
-    !existing.some(e => normalize(e) === normalize(l))
-  );
+function scRender(){
+  var list=document.getElementById('scan_list');
+  var empty=document.getElementById('scan_empty');
+  var stats=document.getElementById('scan_stats');
+  var fmtRow=document.getElementById('scan_fmt_row');
+  var okBtn=document.getElementById('scan_ok');
+  var ftInfo=document.getElementById('scan_ft_info');
+  if(!_scItems.length){list.style.display='none';list.innerHTML='';empty.style.display='block';stats.style.display='none';fmtRow.style.display='none';okBtn.disabled=true;return;}
+  document.getElementById('sc_n').textContent=_scItems.length;
+  document.getElementById('sc_d').textContent=_scItems.filter(function(i){return i.hasDose;}).length;
+  document.getElementById('sc_f').textContent=_scItems.filter(function(i){return i.freq;}).length;
+  document.getElementById('sc_nd').textContent=_scItems.filter(function(i){return!i.hasDose;}).length;
+  stats.style.display='flex';fmtRow.style.display='flex';okBtn.disabled=false;
+  ftInfo.innerHTML='<strong>'+_scItems.length+' f\xe1rmaco'+(_scItems.length!==1?'s':'')+'</strong> &rarr; campo <strong>Medicaci\xf3n actual</strong>';
+  list.innerHTML=_scItems.map(function(item,idx){
+    var db=item.dose?'<span class="sc-badge-dose">'+scEsc(item.dose)+'</span>':'<span class="sc-badge-warn">sin dosis</span>';
+    var fb=item.freq?'<span class="sc-badge-freq'+(item.isSOS?' sc-badge-sos':'')+'">'+scEsc(item.freq)+'</span>':'';
+    return '<div class="scan-item'+(item.hasDose?'':' no-dose')+'"><span class="scan-item-name">'+scEsc(item.name)+'</span><span class="scan-item-badges">'+db+fb+'</span><button class="scan-del" onclick="scDelItem('+idx+')" title="Eliminar">\u2715</button></div>';
+  }).join('');
+  list.style.display='flex';empty.style.display='none';
+}
 
-  if (!newLines.length) {
-    _showInlineMsg('Todos los fármacos detectados ya están en la lista.', 'info');
-    closeScanModal();
-    return;
-  }
+function scGetFmt(){var r=document.querySelector('input[name="scan_fmt"]:checked');return r?r.value:'completo';}
+function scDelItem(idx){_scItems.splice(idx,1);scRender();}
 
-  ta.value = [...existing, ...newLines].join('\n');
+function openScanModal(){
+  _scItems=[];
+  document.getElementById('scan_input').value='';
+  scRender();
+  document.getElementById('scan_overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){document.getElementById('scan_input').focus();},80);
+}
+
+function closeScanModal(){
+  document.getElementById('scan_overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function applyScan(){
+  if(!_scItems.length) return;
+  var append=document.getElementById('scan_append').checked;
+  var ta=document.getElementById('drug_input');
+  var text=_scItems.map(function(i){return scFormatItem(i,scGetFmt());}).join('\n');
+  ta.value=(append&&ta.value.trim())?ta.value.replace(/\s+$/,'')+'\n'+text:text;
+  ta.dispatchEvent(new Event('input',{bubbles:true}));
+  var n=_scItems.length;
   closeScanModal();
+  setTimeout(function(){_scItems=[];document.getElementById('scan_input').value='';scRender();},300);
   ta.focus();
-  ta.setSelectionRange(ta.value.length, ta.value.length);
+  ta.setSelectionRange(ta.value.length,ta.value.length);
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1858,16 +1908,16 @@ function clearAll() {
 // INICIALIZACIÓN
 // ════════════════════════════════════════════════════════════════
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Live preview del escáner
-  document.getElementById('scan_input').addEventListener('input', function () {
-    const lines = scanPrescriptionText(this.value);
-    document.getElementById('scan_preview').textContent =
-      lines.length ? lines.join('\n') : '—';
-  });
+document.addEventListener('DOMContentLoaded', function() {
+  // Live scan del escáner NLP v2
+  var scanInp=document.getElementById('scan_input');
+  if(scanInp) scanInp.addEventListener('input',function(){_scItems=scProcessText(this.value);scRender();});
   // Cierre del modal al clicar fuera
-  document.getElementById('scan_modal').addEventListener('click', function (e) {
-    if (e.target === this) closeScanModal();
+  var scanOv=document.getElementById('scan_overlay');
+  if(scanOv) scanOv.addEventListener('click',function(e){if(e.target===this)closeScanModal();});
+  // Cierre con Escape
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){var ov=document.getElementById('scan_overlay');if(ov&&ov.classList.contains('open'))closeScanModal();}
   });
 });
 
