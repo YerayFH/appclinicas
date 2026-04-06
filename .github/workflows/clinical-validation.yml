@@ -1,0 +1,67 @@
+name: Clinical Validation
+
+# Ejecuta la batería de 900+ tests clínicos en cada push y pull request.
+# Si CUALQUIER test falla, el despliegue queda bloqueado.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  clinical-tests:
+    name: "Validación Clínica (9 aplicaciones)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "📥 Descargar código fuente"
+        uses: actions/checkout@v4
+
+      - name: "🟢 Configurar Node.js 20"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: "📦 Instalar dependencias"
+        run: npm ci
+
+      - name: "🧪 Ejecutar tests de validación clínica"
+        run: npm test
+        # Los tests cubren:
+        #   ✅ InfuCalc    — cálculos de infusión (dosis ↔ ritmo de bomba)
+        #   ✅ NefroCalc   — función renal (CKD-EPI 2021, Cockcroft-Gault)
+        #   ✅ SepsAlert   — scores de sepsis (NEWS2, SIRS, SOFA)
+        #   ✅ GeriFit     — polimedicados geriátricos (CKD-EPI, CHA₂DS₂-VASc)
+        #   ✅ EvidScore   — score de generalización (lectura crítica)
+        #   ✅ AeroLab     — gasometría (clasificación ácido-base, compensaciones)
+        #   ✅ StrokePilot — ictus (NIHSS, mismatch, ventana terapéutica)
+        #   ✅ ToxoGuard   — antídotos (dosis NAC, flumazenil, pares antídoto-tóxico)
+        #   ✅ GuíaEmpírica — antibioterapia (ajuste renal, duración, stewardship)
+
+      - name: "📊 Publicar resultados de tests (en fallo)"
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clinical-test-results
+          path: |
+            test-results/
+            *.log
+          retention-days: 30
+
+  # Job de guardia: confirma explícitamente que los tests pasaron
+  # Este job es el que se puede configurar como "required" en Branch Protection.
+  gate:
+    name: "🛡️ Puerta de Calidad Clínica"
+    needs: clinical-tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: "Verificar resultado de los tests"
+        run: |
+          if [ "${{ needs.clinical-tests.result }}" != "success" ]; then
+            echo "❌ Los tests clínicos han fallado. Despliegue bloqueado."
+            echo "   Revisa los errores en el job 'Validación Clínica'."
+            exit 1
+          fi
+          echo "✅ Todos los tests clínicos han pasado. Despliegue autorizado."
