@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NutriPN v6 — Nutrición Parenteral</title>
+<link rel="icon" type="image/png" href="/appclinicas/img/nutricalc.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/appclinicas/img/nutricalc.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:#fff;color:#111827;line-height:1.5;min-height:100dvh}
+input,select,button,textarea{font-family:inherit}
+input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none}
+input[type=number]{-moz-appearance:textfield}
+
+/* ── PRINT ── */
+@media print{
+  .topbar,.right-panel,.bottom-bar,.cfg-overlay,.restore-banner{display:none!important}
+  .layout{display:block!important}
+  .left-panel{width:100%!important;height:auto!important;overflow:visible!important;max-height:none!important;padding:0 20px!important}
+  .print-only{display:block!important}
+  body{font-size:10.5pt;color:#000}
+  .section-card{border:1px solid #ccc!important;break-inside:avoid;background:#fff!important;margin-bottom:10pt!important}
+  .section-title{color:#374151!important;border-bottom:1px solid #e5e7eb;padding-bottom:4pt;margin-bottom:10pt!important}
+  .lot-row{display:grid!important}
+}
+
+/* ── RESTORE BANNER ── */
+.restore-banner{
+  background:#eff6ff; border:1px solid #bfdbfe;
+  padding:12px 20px; display:none; flex-direction:column; align-items:flex-start; gap:12px;
+  font-size:13px; color:#1e40af; border-radius:8px;
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  box-shadow:0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+}
+@media(min-width:600px) {
+  .restore-banner { flex-direction:row; align-items:center; }
+}
+.restore-banner.show{display:flex}
+.restore-banner strong{font-weight:600}
+.restore-actions{display:flex;gap:8px}
+.restore-btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid}
+.restore-btn.yes{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.restore-btn.no{background:#fff;color:#374151;border-color:#d1d5db}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:#111827}
+.brand-name{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.brand-version{font-size:11px;color:#9ca3af;font-weight:400}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.topbar-badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;border:1px solid #e5e7eb;color:#6b7280}
+.btn-ghost{background:none;border:1px solid #e5e7eb;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:500;color:#374151;cursor:pointer;transition:background .12s}
+.btn-ghost:hover{background:#f9fafb}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 350px;min-height:calc(100dvh - 52px)}
+@media(max-width:900px){
+  .layout{display:flex;flex-direction:column;padding-bottom:96px}
+  .left-panel{max-height:none!important;overflow-y:visible!important;padding:20px 16px 16px!important}
+  .right-panel{display:block!important;position:static!important;height:auto!important;overflow-y:visible!important;overflow:visible!important;padding:20px 16px 24px!important;border-left:none!important;border-top:1px solid #f3f4f6!important}
+}
+@media(max-width:600px){
+  .macro-row{grid-template-columns:1fr!important;gap:10px}
+  .field-row,.field-row-3{grid-template-columns:1fr!important;gap:10px}
+  .elec-grid{grid-template-columns:1fr 1fr}
+  .topbar-badge{display:none}
+  .section-card{padding:14px 14px}
+  .macro-input{font-size:20px}
+}
+
+/* ── PANELS ── */
+.left-panel{padding:24px 28px 48px;overflow-y:auto;max-height:calc(100dvh - 52px);scrollbar-width:thin;scrollbar-color:#e5e7eb transparent}
+.left-panel::-webkit-scrollbar{width:4px}
+.left-panel::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px}
+.right-panel{background:#f9fafb;border-left:1px solid #f3f4f6;position:sticky;top:52px;height:calc(100dvh - 52px);overflow-y:auto;padding:18px 18px 28px;scrollbar-width:thin;scrollbar-color:#e5e7eb transparent}
+.right-panel::-webkit-scrollbar{width:4px}
+.right-panel::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px}
+
+/* ── SECTION ── */
+.section-card{background:#f9fafb;border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.section-title{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px}
+
+/* ── FIELDS ── */
+.field{margin-bottom:11px}
+.field:last-child{margin-bottom:0}
+.field-label{display:block;font-size:12px;font-weight:500;color:#6b7280;margin-bottom:5px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-suf{position:absolute;right:10px;font-size:12px;color:#9ca3af;pointer-events:none}
+input[type=text],input[type=number],select{
+  width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:7px;
+  color:#111827;padding:8px 34px 8px 10px;font-size:14px;height:40px;
+  transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none;
+}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+input.no-suf{padding-right:10px}
+input.field-danger{border-color:#ef4444!important;background:#fef2f2!important;box-shadow:0 0 0 3px rgba(239,68,68,.1)!important}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239ca3af' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+
+/* ── PILLS ── */
+.pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.pill{display:flex;align-items:center;gap:5px;padding:6px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:20px;font-size:12px;font-weight:500;color:#6b7280;cursor:pointer;min-height:32px}
+.pill input{display:none}
+.pill:has(input:checked){background:#f0f1ff;border-color:#a5b4fc;color:#4f46e5}
+
+/* ── VIA SEGMENT ── */
+.segment{display:flex;background:#f3f4f6;border-radius:8px;padding:2px;gap:2px}
+.seg{flex:1;padding:7px 8px;background:transparent;border:none;border-radius:6px;font-size:13px;font-weight:500;color:#6b7280;cursor:pointer;font-family:inherit;text-align:center;transition:all .14s}
+.seg.active{background:#fff;color:#111827;box-shadow:0 1px 2px rgba(0,0,0,.07)}
+
+/* ── MACROS ── */
+.macro-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px}
+.macro-cell{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 11px 10px;transition:border-color .15s}
+.macro-cell:focus-within{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.08)}
+.macro-cell.mc-warn{border-color:#f59e0b;background:#fffbeb}
+.macro-cell.mc-danger{border-color:#ef4444;background:#fef2f2}
+.macro-label{font-size:11px;font-weight:500;color:#9ca3af;margin-bottom:3px}
+/* Stepper row */
+.stepper-row{display:flex;align-items:center;gap:0}
+.step-btn{width:28px;height:36px;border:1px solid #e5e7eb;background:#f9fafb;color:#374151;font-size:16px;cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s;font-family:inherit}
+.step-btn:hover{background:#f3f4f6}
+.step-btn:active{background:#e5e7eb}
+.macro-input{flex:1;min-width:0;border:1px solid #e5e7eb;border-left:none;border-right:none;border-radius:0;background:transparent;font-size:20px;font-weight:500;color:#111827;padding:0;text-align:center;height:36px;outline:none;-moz-appearance:textfield}
+.macro-input:focus{background:#fafafa}
+.macro-unit{font-size:11px;color:#d1d5db;white-space:nowrap;margin-left:4px;flex-shrink:0;align-self:flex-end;padding-bottom:2px}
+.macro-slider{display:block;width:100%;margin-top:8px;height:3px;-webkit-appearance:none;appearance:none;border-radius:2px;background:#f3f4f6;cursor:pointer}
+.macro-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#6366f1;border:2px solid #fff;box-shadow:0 0 0 1px #e5e7eb;cursor:pointer}
+.macro-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#6366f1;border:2px solid #fff;cursor:pointer}
+.macro-slider.sl-warn::-webkit-slider-thumb{background:#f59e0b}
+.macro-slider.sl-danger::-webkit-slider-thumb{background:#ef4444}
+.macro-sub{font-size:10px;color:#9ca3af;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.macro-sub.warn{color:#d97706;font-weight:500}
+.macro-sub.danger{color:#dc2626;font-weight:500}
+
+/* ── ELECTROLYTES ── */
+.elec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.elec-cell{background:#fff;border:1px solid #e5e7eb;border-radius:7px;padding:9px 10px;transition:border-color .15s}
+.elec-cell:focus-within{border-color:#6366f1}
+.elec-cell.ec-danger{border-color:#ef4444;background:#fef2f2}
+.elec-lbl{font-size:11px;font-weight:500;color:#9ca3af;margin-bottom:2px}
+.elec-lbl.caution{color:#b45309}
+.elec-lbl.hard-lim{color:#dc2626;font-weight:600}
+.elec-row{display:flex;align-items:baseline;gap:4px}
+.elec-input{background:transparent;border:none;color:#111827;font-size:18px;font-weight:500;padding:0;outline:none;width:64px;-moz-appearance:textfield}
+.elec-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.elec-unit{font-size:11px;color:#d1d5db}
+.elec-pkg{font-size:10px;color:#d97706;margin-top:2px;display:none}
+body.ped-mode .elec-pkg{display:block}
+.elec-limit{font-size:10px;color:#dc2626;margin-top:2px;display:none;font-weight:500}
+
+/* ── RIGHT PANEL ── */
+.panel-section{margin-bottom:18px}
+.panel-title{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px}
+
+/* ── ALERT SEVERITY SYSTEM ── */
+/* Each stat-row has severity: ok / warn / danger */
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;gap:8px}
+.stat-row:last-child{border-bottom:none}
+.stat-name{font-size:13px;color:#6b7280;display:flex;align-items:center;gap:5px;flex:1}
+.stat-val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.stat-val.ok{color:#059669}
+.stat-val.warn{color:#d97706}
+.stat-val.danger{color:#dc2626}
+.stat-val.muted{color:#9ca3af;font-weight:400}
+/* Severity badge on row */
+.sev-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:#d1d5db}
+.sev-dot.ok{background:#10b981}
+.sev-dot.warn{background:#f59e0b}
+.sev-dot.danger{background:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.2)}
+
+/* ── CALORIC BARS ── */
+.kcal-total{font-size:22px;font-weight:600;color:#111827;margin-bottom:12px;letter-spacing:-.5px}
+.kcal-sub{font-size:12px;color:#9ca3af;font-weight:400;margin-left:4px}
+.kcal-warn{font-size:11px;color:#dc2626;font-weight:500;display:none;margin-top:-6px;margin-bottom:10px}
+.kcal-warn.show{display:block}
+.bar-row{margin-bottom:7px}
+.bar-header{display:flex;justify-content:space-between;margin-bottom:3px}
+.bar-name{font-size:12px;color:#6b7280}
+.bar-pct{font-size:12px;color:#9ca3af;font-variant-numeric:tabular-nums}
+.bar-track{height:4px;background:#f3f4f6;border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.bar-fill.gl{background:#6366f1}
+.bar-fill.li{background:#f59e0b}
+.bar-fill.aa{background:#10b981}
+
+/* ── GER BLOCK ── */
+.ger-block{background:#fff;border:1px solid #f3f4f6;border-radius:8px;padding:10px 12px;margin-bottom:10px}
+.ger-nums{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px}
+.ger-stat{text-align:center}
+.ger-val{font-size:17px;font-weight:600;color:#111827;font-variant-numeric:tabular-nums}
+.ger-lbl{font-size:10px;color:#9ca3af;margin-top:1px}
+
+/* ── WEIGHT BOX ── */
+.weight-box{background:#fff;border:1px solid #f3f4f6;border-radius:8px;padding:11px 12px;margin-bottom:8px}
+.weight-main{font-size:26px;font-weight:600;color:#111827;letter-spacing:-.5px;margin:4px 0 2px}
+.weight-range{font-size:12px;color:#9ca3af}
+.weight-warn{font-size:11px;color:#d97706;margin-top:4px}
+
+/* ── FILTER TAG ── */
+.filter-tag{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:3px 10px;font-size:12px;color:#374151;font-weight:500;margin-bottom:8px}
+
+/* ── VOL CRITICAL ── */
+.vol-crit{background:#fef2f2;border:1px solid #fecaca;border-left:3px solid #dc2626;border-radius:7px;padding:10px 12px;margin-bottom:11px;display:none}
+.vol-crit.show{display:block}
+.vol-crit-title{font-size:12px;font-weight:600;color:#dc2626;margin-bottom:2px}
+.vol-crit-body{font-size:12px;color:#b91c1c;line-height:1.5}
+.vol-crit-nums{font-size:11px;color:#dc2626;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums}
+
+/* ── PANEL ACTIONS ── */
+.panel-actions{display:flex;gap:8px;margin-top:14px}
+.btn-action{flex:1;height:40px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;border:1px solid #e5e7eb;background:#fff;color:#374151;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .12s}
+.btn-action:hover{background:#f9fafb;border-color:#d1d5db}
+.btn-action.primary{background:#111827;color:#fff;border-color:#111827}
+.btn-action.primary:hover{background:#1f2937}
+.btn-action:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;background:#fff;border-top:1px solid #f3f4f6;padding:8px 14px calc(8px + env(safe-area-inset-bottom))}
+.bb-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px}
+.bb-metric{text-align:center}
+.bb-val{font-size:15px;font-weight:600;color:#111827;font-variant-numeric:tabular-nums;line-height:1}
+.bb-val.danger{color:#dc2626}.bb-val.ok{color:#059669}.bb-val.warn{color:#d97706}
+.bb-lbl{font-size:10px;color:#9ca3af;margin-top:1px}
+.bb-btn{width:100%;height:44px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+@media(max-width:900px){.bottom-bar{display:block}}
+
+/* ── CFG MODAL ── */
+.cfg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:flex-end}
+.cfg-overlay.open{display:flex}
+@media(min-width:520px){.cfg-overlay{align-items:center;justify-content:center}}
+.cfg-sheet{background:#fff;width:100%;max-width:420px;border-radius:14px 14px 0 0;padding:18px;max-height:88dvh;overflow-y:auto}
+@media(min-width:520px){.cfg-sheet{border-radius:12px;padding:22px}}
+.cfg-handle{width:32px;height:3px;background:#e5e7eb;border-radius:2px;margin:0 auto 13px}
+.cfg-title{font-size:15px;font-weight:600;margin-bottom:3px}
+.cfg-sub{font-size:13px;color:#6b7280;margin-bottom:14px}
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.cfg-note{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 10px;font-size:12px;color:#92400e;margin-bottom:12px}
+.cfg-btns{display:flex;gap:8px}
+.cfg-btns .btn-action{height:44px}
+
+/* ── PED BANNER ── */
+.ped-banner{display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:12px;color:#92400e;align-items:center;gap:6px;margin-bottom:11px}
+body.ped-mode .ped-banner{display:flex}
+
+/* ── MICRO CHECKS ── */
+.micro-row{display:flex;gap:5px;flex-wrap:wrap}
+.micro-pill{display:flex;align-items:center;gap:5px;padding:5px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:20px;font-size:12px;font-weight:500;color:#6b7280;cursor:pointer;min-height:32px}
+.micro-pill input[type=checkbox]{accent-color:#6366f1;width:13px;height:13px;cursor:pointer}
+.micro-pill:has(input:checked){background:#f0f1ff;border-color:#a5b4fc;color:#4f46e5}
+
+/* ── PREP TABLE ── */
+.prep-table{width:100%;border-collapse:collapse;font-size:13px}
+.prep-table th{text-align:left;padding:4px 7px;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;font-weight:600;border-bottom:1px solid #f3f4f6}
+.prep-table td{padding:7px 7px;border-bottom:1px solid #f9fafb;color:#6b7280;vertical-align:middle}
+.prep-table td.num{font-weight:600;color:#111827;text-align:right;font-variant-numeric:tabular-nums}
+.prep-table tr.deficit td{color:#dc2626}
+.prep-table tr.total td{font-weight:600;color:#111827;border-bottom:none}
+
+/* ── LOT ROWS (print) ── */
+.lot-row{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+@media print{.lot-row{display:grid}}
+.lot-field{border-bottom:1px solid #ccc;min-height:20pt;display:flex;align-items:flex-end;font-size:10pt}
+.lot-lbl{font-size:9pt;color:#6b7280;margin-bottom:3pt}
+
+/* ── PRINT ONLY ── */
+.print-only{display:none}
+
+/* ── NEONATO DAY FIELD ── */
+.neo-day-row{display:none;margin-top:8px}
+body.neonato-mode .neo-day-row{display:block}
+
+/* ── TEMP ALERT row ── */
+.temp-row{display:none}
+.temp-row.show{display:flex}
+
+/* ── ECOSISTEMA YERAYFH (VARIABLES Y ESTILOS) ── */
+:root {
+  --header-bg: #ffffff;
+  --brd: #f3f4f6; /* Usando el gris claro que ya usas en bordes */
+  --txt: #374151; /* Usando tu color de texto secundario */
+}
+
+.app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--header-bg);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:100}
+.hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:2px}
+.hdr-meta{font-size:11px;opacity:0.75;color:var(--txt)}
+.hdr-meta a{color:inherit;text-decoration:none}
+.hdr-meta a:hover{text-decoration:underline}
+.hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--txt)}
+.hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#2E86C1}
+.app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
+
+/* Ocultar elementos del ecosistema en impresión */
+@media print {
+  .app-header-unified, .app-footer-unified { display: none !important; }
+}
+
+/* ── INFO MODAL TABLES ── */
+.info-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px; text-align: left; }
+.info-table th { padding: 8px 6px; background: #f3f4f6; color: #374151; font-weight: 600; border-bottom: 2px solid #e5e7eb; }
+.info-table td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; color: #4b5563; }
+.info-table tr:last-child td { border-bottom: none; }
+.info-table strong { color: #111827; }
+
+</style>
+</head>
+<body>
+
+<!-- CABECERO UNIFICADO YERAYFH -->
+<header class="app-header-unified">
+  <img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo">
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">NutriCalc&#174;</div>
+  </div>
+</header>
+
+<!-- RESTORE BANNER -->
+<div class="restore-banner" id="restore-banner">
+  <span>Se encontró una prescripción anterior no guardada. <strong>¿Desea recuperarla?</strong></span>
+  <div class="restore-actions">
+    <button class="restore-btn yes" onclick="restoreState()">Recuperar</button>
+    <button class="restore-btn no" onclick="discardSaved()">Descartar</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-dot"></div>
+    <span class="brand-name">NutriPN</span>
+    <span class="brand-version">v6</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-ghost" onclick="openInfo()">📖 Guía Rápida</button>
+    <button class="btn-ghost" onclick="openCfg()">Farmacia</button>
+  </div>
+</div>
+
+<!-- PHARMACY MODAL -->
+<div class="cfg-overlay" id="cfg-overlay">
+  <div class="cfg-sheet">
+    <div class="cfg-handle"></div>
+    <div class="cfg-title">Configuración de Farmacia</div>
+    <div class="cfg-sub">Concentraciones de soluciones madre disponibles en su servicio</div>
+    <div class="cfg-grid">
+      <div class="field"><label class="field-label">Dextrosa (%)</label><div class="input-wrap"><input type="number" id="cfg-glc" value="50" min="5" max="70"><span class="input-suf">%</span></div></div>
+      <div class="field"><label class="field-label">Aminoácidos (%)</label><div class="input-wrap"><input type="number" id="cfg-aa" value="15" min="5" max="20"><span class="input-suf">%</span></div></div>
+      <div class="field"><label class="field-label">Emulsión Lipídica (%)</label><div class="input-wrap"><input type="number" id="cfg-lip" value="20" min="10" max="30"><span class="input-suf">%</span></div></div>
+      <div class="field"><label class="field-label">Vol. Electrolitos (est.)</label><div class="input-wrap"><input type="number" id="cfg-elec" value="50" min="10" max="200"><span class="input-suf">mL</span></div></div>
+    </div>
+    <div class="cfg-note">Los cambios afectan el cálculo de volúmenes y la detección de volumen insuficiente. Verificar con stock real.</div>
+    <div class="cfg-btns"><button class="btn-action" onclick="closeCfg()">Cancelar</button><button class="btn-action primary" onclick="saveCfg()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- INFO MODAL (GUÍA RÁPIDA) -->
+<div class="cfg-overlay" id="info-overlay">
+  <div class="cfg-sheet" style="max-width: 550px;">
+    <div class="cfg-handle"></div>
+    <div class="cfg-title">Requerimientos Nutricionales</div>
+    <div class="cfg-sub">Valores de referencia orientativos (ASPEN / ESPEN)</div>
+    
+    <!-- Tabla Adultos -->
+    <div style="font-size:13px; font-weight:600; color:#111827; margin-bottom:6px;">Adultos</div>
+    <table class="info-table">
+      <thead>
+        <tr><th>Parámetro</th><th>Mantenimiento</th><th>Estrés / Crítico</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Calorías (GET)</strong></td><td>20 - 25 kcal/kg/día</td><td>25 - 30 kcal/kg/día</td></tr>
+        <tr><td><strong>Proteínas</strong></td><td>0.8 - 1.2 g/kg/día</td><td>1.2 - 2.0+ g/kg/día</td></tr>
+        <tr><td><strong>Glucosa (VIG)</strong></td><td>&lt; 5 mg/kg/min</td><td>&lt; 4 mg/kg/min</td></tr>
+        <tr><td><strong>Lípidos</strong></td><td>1.0 - 1.5 g/kg/día</td><td>&lt; 1.0 g/kg/día</td></tr>
+        <tr><td><strong>Líquidos</strong></td><td>30 - 40 mL/kg/día</td><td>Según balance / UCI</td></tr>
+      </tbody>
+    </table>
+
+<!-- ════════════ BIBLIOGRAFÍA (Acordeón desplegable) ════════════ -->
+<details style="margin-top: 20px; border: 1px solid #c8d6e5; border-radius: 8px; padding: 10px; background-color: #f1f6f9;">
+  <summary style="font-weight: bold; cursor: pointer; color: #222f3e; outline: none;">
+    📚 Bibliografía y Referencias Clínicas
+  </summary>
+  <div style="margin-top: 12px; font-size: 0.85em; line-height: 1.5; color: #576574;">
+    <ul style="margin: 0; padding-left: 20px; list-style-type: square;">
+      <li style="margin-bottom: 6px;">
+        <b>ASPEN (2021):</b> <i>Appropriate Provision of Parenteral Nutrition</i>. Límites de seguridad de osmolaridad (>900 mOsm/L para vía central), producto Ca×P y filtrado.
+      </li>
+      <li style="margin-bottom: 6px;">
+        <b>ESPEN (2019 / 2021):</b> <i>Guidelines on Clinical Nutrition in ICU & Surgery</i>. Requerimientos calóricos (20-30 kcal/kg), aportes proteicos (hasta >2.0 g/kg) y manejo metabólico del estrés.
+      </li>
+      <li style="margin-bottom: 6px;">
+        <b>ESPGHAN / ESPEN (2018):</b> <i>Guidelines on Paediatric Parenteral Nutrition</i>. Límites del Ritmo de Infusión de Glucosa (VIG) y requerimientos de aminoácidos en neonatología y pediatría.
+      </li>
+      <li style="margin-bottom: 6px;">
+        <b>ESPEN (2022):</b> <i>Consensus for the safe management of refeeding syndrome</i>. Pautas de inicio progresivo y monitorización de PO₄, K y Mg.
+      </li>
+      <li>
+        <b>NICE CG32 / Holliday-Segar:</b> <i>Intravenous fluid therapy in children</i>. Cálculo de líquidos de mantenimiento basal, con ajuste a la baja (50-80%) en fase aguda/postquirúrgica por riesgo de retención por ADH.
+      </li>
+    </ul>
+  </div>
+</details>
+
+    <!-- Tabla Pediatría y Neonatología -->
+    <div style="font-size:13px; font-weight:600; color:#111827; margin-top:16px; margin-bottom:6px;">Pediatría y Neonatología</div>
+    <table class="info-table">
+      <thead>
+        <tr><th>Parámetro</th><th>Neonatos (Pretérmino/Término)</th><th>Pediatría (1-18 años)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Calorías</strong></td><td>90 - 120 kcal/kg/día</td><td>40 - 90 kcal/kg/día (según edad)</td></tr>
+        <tr><td><strong>Proteínas</strong></td><td>2.5 - 4.0 g/kg/día</td><td>1.0 - 2.5 g/kg/día</td></tr>
+        <tr><td><strong>Glucosa (VIG)</strong></td><td>Inicio: 4-6 | Máx: 10-12 mg/kg/min</td><td>Máx: 8-12 mg/kg/min</td></tr>
+        <tr><td><strong>Lípidos</strong></td><td>1.0 - 3.0 g/kg/día</td><td>1.0 - 3.0 g/kg/día</td></tr>
+        <tr><td><strong>Líquidos</strong></td><td>60 - 150 mL/kg/día (según días vida)</td><td>Fórmula Holliday-Segar</td></tr>
+      </tbody>
+    </table>
+    
+    <div class="cfg-note" style="margin-top:12px;">
+      <strong>Nota clínica:</strong> El inicio y escalado de macronutrientes (especialmente en pediatría y neonatología) debe ser progresivo ("step-up") para garantizar la tolerancia metabólica y minimizar el riesgo de Síndrome de Realimentación.
+    </div>
+    
+    <button class="bb-btn" style="height:44px; margin-top:8px;" onclick="closeInfo()">Entendido</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- ══════════ LEFT ══════════ -->
+<div class="left-panel">
+  <p style="font-size:11px;color:#d97706;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;margin-bottom:16px;line-height:1.4"><strong>Herramienta de apoyo clínico.</strong> La decisión final recae en el profesional facultativo. ASPEN 2021 / ESPEN.</p>
+
+  <!-- PACIENTE -->
+  <div class="section-card">
+    <div class="section-title">Paciente</div>
+    <div class="field"><label class="field-label">Nombre / N.º Historia</label><input type="text" id="pt-name" placeholder="J. García — HC-00123" class="no-suf" oninput="scheduleSave()"></div>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Edad</label><div class="input-wrap"><input type="number" id="pt-age" placeholder="45" oninput="recalc()"><span class="input-suf">años</span></div></div>
+      <div class="field"><label class="field-label">Sexo</label><select id="pt-sex" onchange="recalc()"><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
+      <div id="weight-info-box" style="margin-top:12px; padding:10px; background:#fff; border:1px solid #e5e7eb; border-radius:8px; display:none;">
+  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+    <span style="font-size:11px; color:#6b7280;">IMC: <strong id="val-imc" style="color:#111827;">—</strong></span>
+    <span id="imc-status" style="font-size:10px; font-weight:600; text-transform:uppercase;"></span>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px;">
+    <div style="color:#6b7280;">P. Ideal: <span id="val-pideal" style="color:#111827; font-weight:600;">—</span></div>
+    <div style="color:#6b7280;">P. Ajustado: <span id="val-pajus" style="color:#111827; font-weight:600;">—</span></div>
+  </div>
+  <div id="weight-recommendation" style="font-size:10px; color:#6366f1; margin-top:6px; font-weight:500;"></div>
+</div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Peso real</label><div class="input-wrap"><input type="number" id="pt-weight" placeholder="70" oninput="recalc()"><span class="input-suf">kg</span></div></div>
+      <div class="field"><label class="field-label">Talla</label><div class="input-wrap"><input type="number" id="pt-height" placeholder="170" oninput="recalc()"><span class="input-suf">cm</span></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Tipo de paciente</label>
+        <select id="pt-type" onchange="onTypeChange()">
+          <option value="adult">Adulto</option>
+          <option value="ped">Pediátrico (&lt;18 a)</option>
+          <option value="neonato">Neonato (&lt;28 d)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Factor de estrés</label>
+        <select id="pt-stress" onchange="recalc()">
+          <option value="1.0">Sin estrés (×1.0)</option>
+          <option value="1.1">Cirugía menor (×1.1)</option>
+          <option value="1.25" selected>Moderado (×1.25)</option>
+          <option value="1.4">Severo / Sepsis (×1.4)</option>
+          <option value="1.6">Quemado / Trauma (×1.6)</option>
+        </select>
+      </div>
+    </div>
+    <!-- NEONATO: días de vida -->
+    <div class="neo-day-row" id="neo-day-row">
+      <label class="field-label">Días de vida <span style="color:#9ca3af;font-weight:400">(ajusta límite VIG neonatal)</span></label>
+      <div class="input-wrap"><input type="number" id="neo-days" value="1" min="1" max="28" oninput="recalc()"><span class="input-suf">días</span></div>
+    </div>
+    <div class="ped-banner" id="ped-banner">⚖ Modo pediátrico activo — entradas en g/kg/día. Requiere peso.</div>
+    <div class="field">
+      <label class="field-label">Fórmula GER</label>
+      <div class="pills">
+        <label class="pill"><input type="radio" name="ger" value="harris" checked onchange="recalc()"> Harris-Benedict</label>
+        <label class="pill"><input type="radio" name="ger" value="mifflin" onchange="recalc()"> Mifflin-St Jeor</label>
+        <label class="pill"><input type="radio" name="ger" value="simple" onchange="recalc()"> 25–30 kcal/kg</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOLUMEN Y VÍA -->
+  <div class="section-card">
+    <div class="section-title">Volumen y vía</div>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Volumen total</label><div class="input-wrap"><input type="number" id="vol-total" placeholder="1500" oninput="recalc()"><span class="input-suf">mL</span></div></div>
+      <div class="field"><label class="field-label">Duración</label><div class="input-wrap"><input type="number" id="inf-hrs" value="24" oninput="recalc()"><span class="input-suf">h</span></div></div>
+    </div>
+    <div class="field">
+      <label class="field-label">Vía de administración</label>
+      <div class="segment"><button class="seg active" id="via-c" onclick="setVia('central')">Vía central</button><button class="seg" id="via-p" onclick="setVia('periferica')">Periférica</button></div>
+    </div>
+    <div class="field">
+      <label class="field-label" style="display:flex;justify-content:space-between">Overfill <span id="ovf-lbl" style="color:#9ca3af;font-weight:400;font-size:11px">5%</span></label>
+      <input type="range" min="0" max="10" step="5" value="5" id="overfill" style="width:100%;height:3px;-webkit-appearance:none;appearance:none;background:#f3f4f6;border-radius:2px;cursor:pointer;margin-top:5px" oninput="recalc();document.getElementById('ovf-lbl').textContent=this.value+'%'">
+    </div>
+    <!-- TEMPERATURA de conservación -->
+    <div class="field">
+      <label class="field-label">Conservación prevista <span style="color:#9ca3af;font-weight:400">(afecta límite Ca×P)</span></label>
+      <select id="temp-mode" onchange="recalc()">
+        <option value="refrigerada">Refrigerada a 4°C (estándar)</option>
+        <option value="ambiente">Temperatura ambiente &gt;25°C</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MACRONUTRIENTES -->
+  <div class="section-card">
+    <div class="section-title">Macronutrientes</div>
+    <div class="macro-row">
+      <!-- GLUCOSA -->
+      <div class="macro-cell" id="mc-glc">
+        <div class="macro-label">Glucosa (Dextrosa)</div>
+        <div class="stepper-row">
+          <button class="step-btn" onclick="stepMacro('glc',-1)">−</button>
+          <input class="macro-input" type="number" id="glc-num" value="200" min="0" max="600" step="1" oninput="syncNum('glc')">
+          <span class="macro-unit" id="glc-ulbl">g</span>
+          <button class="step-btn" onclick="stepMacro('glc',1)">+</button>
+        </div>
+        <input class="macro-slider" type="range" id="glc-sl" min="0" max="600" value="200" step="1" oninput="syncSl('glc')">
+        <div class="macro-sub" id="glc-sub">— kcal</div>
+      </div>
+      <!-- AMINOÁCIDOS -->
+      <div class="macro-cell" id="mc-aa">
+        <div class="macro-label">Aminoácidos</div>
+        <div class="stepper-row">
+          <button class="step-btn" onclick="stepMacro('aa',-1)">−</button>
+          <input class="macro-input" type="number" id="aa-num" value="80" min="0" max="200" step="1" oninput="syncNum('aa')">
+          <span class="macro-unit" id="aa-ulbl">g</span>
+          <button class="step-btn" onclick="stepMacro('aa',1)">+</button>
+        </div>
+        <input class="macro-slider" type="range" id="aa-sl" min="0" max="200" value="80" step="1" oninput="syncSl('aa')">
+        <div class="macro-sub" id="aa-sub">— kcal</div>
+      </div>
+      <!-- LÍPIDOS -->
+      <div class="macro-cell" id="mc-lip">
+        <div class="macro-label">Lípidos (Emulsión IV)</div>
+        <div class="stepper-row">
+          <button class="step-btn" onclick="stepMacro('lip',-1)">−</button>
+          <input class="macro-input" type="number" id="lip-num" value="50" min="0" max="200" step="1" oninput="syncNum('lip')">
+          <span class="macro-unit" id="lip-ulbl">g</span>
+          <button class="step-btn" onclick="stepMacro('lip',1)">+</button>
+        </div>
+        <input class="macro-slider" type="range" id="lip-sl" min="0" max="200" value="50" step="1" oninput="syncSl('lip')">
+        <div class="macro-sub" id="lip-sub">— kcal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELECTROLITOS -->
+  <div class="section-card">
+    <div class="section-title">Electrolitos <span style="font-weight:400;text-transform:none;font-size:10px;color:#9ca3af">(dosis total/24h)</span></div>
+    <div class="elec-grid">
+      <div class="elec-cell"><div class="elec-lbl">Sodio (Na⁺)</div><div class="elec-row"><input class="elec-input" type="number" id="na" value="70" oninput="recalc()"><span class="elec-unit">mEq</span></div><div class="elec-pkg" id="na-pkg"></div></div>
+      <div class="elec-cell" id="ec-k"><div class="elec-lbl" id="lbl-k">Potasio (K⁺)</div><div class="elec-row"><input class="elec-input" type="number" id="k" value="60" oninput="recalc()"><span class="elec-unit">mEq</span></div><div class="elec-pkg" id="k-pkg"></div><div class="elec-limit" id="klim-warn">⛔ Excede 4 mEq/kg/día</div></div>
+      <div class="elec-cell"><div class="elec-lbl caution">Ca²⁺ ⚠</div><div class="elec-row"><input class="elec-input" type="number" id="ca" value="10" oninput="recalc()"><span class="elec-unit">mEq</span></div><div class="elec-pkg" id="ca-pkg"></div></div>
+      <div class="elec-cell"><div class="elec-lbl caution">PO₄³⁻ ⚠</div><div class="elec-row"><input class="elec-input" type="number" id="phos" value="20" oninput="recalc()"><span class="elec-unit">mmol</span></div><div class="elec-pkg" id="phos-pkg"></div></div>
+      <div class="elec-cell"><div class="elec-lbl">Magnesio (Mg²⁺)</div><div class="elec-row"><input class="elec-input" type="number" id="mg" value="12" oninput="recalc()"><span class="elec-unit">mEq</span></div><div class="elec-pkg" id="mg-pkg"></div></div>
+      <!-- Cl + Acetato en misma celda -->
+      <div class="elec-cell" style="grid-column:span 2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div class="elec-lbl">Cloruro (Cl⁻)</div>
+            <div class="elec-row"><input class="elec-input" type="number" id="cl" value="60" oninput="recalc()"><span class="elec-unit">mEq</span></div>
+            <div class="elec-pkg" id="cl-pkg"></div>
+          </div>
+          <div>
+            <div class="elec-lbl" style="color:#6366f1">Acetato (CH₃COO⁻)</div>
+            <div class="elec-row"><input class="elec-input" type="number" id="acetate" value="0" oninput="recalc()" style="color:#4f46e5"><span class="elec-unit">mEq</span></div>
+            <div id="acetate-ratio" style="font-size:10px;color:#6b7280;margin-top:2px"></div>
+          </div>
+        </div>
+        <div id="acidosis-hint" style="display:none;margin-top:6px;font-size:11px;color:#6366f1;background:#f0f1ff;border-radius:5px;padding:4px 8px">
+          Ratio Cl:Acetato actual: <span id="cl-ac-ratio">—</span>. Ratio 1:1 recomendado en acidosis metabólica / IRC.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MICRONUTRIENTES -->
+  <div class="section-card">
+    <div class="section-title">Micronutrientes y aditivos</div>
+    <div class="micro-row">
+              <label class="micro-pill" for="vit"><input type="checkbox" id="vit" checked onchange="recalc()"> Vitaminas Mix <span id="vit-lbl" style="font-size:10px;color:#9ca3af">(+10 mL)</span></label>
+               <label class="micro-pill" for="olig"><input type="checkbox" id="olig" checked onchange="recalc()"> Oligoelementos <span id="olig-lbl" style="font-size:10px;color:#9ca3af">(+10 mL)</span></label>
+      <label class="micro-pill"><input type="checkbox" id="ins" onchange="recalc()"> Insulina regular</label>
+      <label class="micro-pill"><input type="checkbox" id="hep" onchange="recalc()"> Heparina</label>
+    </div>
+  </div>
+
+  <!-- HOJA DE ELABORACIÓN -->
+  <div class="section-card" id="prep-section">
+    <div class="section-title">Hoja de elaboración</div>
+    <div class="vol-crit" id="vol-crit">
+      <div class="vol-crit-title">⛔ Volumen insuficiente</div>
+      <div class="vol-crit-body">El volumen físico de los componentes supera el total prescrito. Aumente el volumen o reduzca los macronutrientes.</div>
+      <div class="vol-crit-nums" id="vol-crit-nums"></div>
+    </div>
+    <table class="prep-table">
+      <thead><tr><th>Componente</th><th>Conc.</th><th style="text-align:right">Vol.</th><th style="text-align:right">Masa</th></tr></thead>
+      <tbody id="prep-tbody"><tr><td colspan="4" style="color:#9ca3af;padding:10px 7px;font-size:12px">Complete los datos para generar la hoja</td></tr></tbody>
+    </table>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:9px;border-top:1px solid #f3f4f6;margin-top:4px">
+      <span style="font-size:12px;color:#6b7280">Vol. final c/ overfill (<span id="ovf2">5</span>%)</span>
+      <span style="font-size:14px;font-weight:600;color:#111827;font-variant-numeric:tabular-nums" id="vol-ovf">—</span>
+    </div>
+    <!-- LOT FIELDS — PRINT ONLY -->
+    <div class="lot-row print-only" id="lot-block">
+      <div><div class="lot-lbl">N.º Lote dextrosa</div><div class="lot-field"></div></div>
+      <div><div class="lot-lbl">N.º Lote aminoácidos</div><div class="lot-field"></div></div>
+      <div><div class="lot-lbl">N.º Lote lípidos</div><div class="lot-field"></div></div>
+      <div><div class="lot-lbl">N.º Lote aditivos/vitaminas</div><div class="lot-field"></div></div>
+      <div><div class="lot-lbl">Hora inicio preparación</div><div class="lot-field"></div></div>
+      <div><div class="lot-lbl">Hora fin preparación</div><div class="lot-field"></div></div>
+    </div>
+  </div>
+
+  <!-- MEZCLADO -->
+  <div class="section-card">
+    <div class="section-title">Orden de mezclado</div>
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px">1</span><span style="font-size:13px;color:#374151;line-height:1.5"><strong>Cabina de flujo laminar</strong> — Encender 20 min antes. Limpiar con alcohol 70%.</span></div>
+      <div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px">2</span><span style="font-size:13px;color:#374151;line-height:1.5"><strong>Fosfato primero</strong> — Añadir PO₄ a solución base. Diluir bien antes de continuar.</span></div>
+      <div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px">3</span><span style="font-size:13px;color:#374151;line-height:1.5">Añadir <strong>Na, K, Mg</strong>. Luego el <strong>acetato o cloruro</strong> según prescripción — excepto calcio.</span></div>
+      <div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px">4</span><span style="font-size:13px;color:#374151;line-height:1.5">Incorporar <strong>glucosa (dextrosa)</strong>. Verificar ausencia de cristales.</span></div>
+      <div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px">5</span><span style="font-size:13px;color:#374151;line-height:1.5"><strong>Calcio al final</strong> de los electrolitos — lentamente, bolsa en movimiento.</span></div>
+      <div style="display:flex;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px">6</span><span style="font-size:13px;color:#374151;line-height:1.5">Añadir <strong>vitaminas y oligoelementos</strong>.</span></div>
+      <div id="lip-mix-step" style="display:none;flex-direction:row;gap:11px;padding:8px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:11px;font-weight:600;color:#d97706;min-width:17px">7</span><span style="font-size:13px;color:#374151;line-height:1.5"><strong>Lípidos al final</strong> — Inspeccionar fase acuosa antes. Una vez añadida la emulsión, los precipitados quedan ocultos.</span></div>
+      <div style="display:flex;gap:11px;padding:8px 0"><span style="font-size:11px;font-weight:600;color:#6366f1;min-width:17px" id="final-step-n">7</span><span style="font-size:13px;color:#374151;line-height:1.5"><strong>Inspección y etiquetado</strong> — Verificar homogeneidad. Pesar bolsa. Etiquetar con N.º lote, fecha/hora y condiciones de conservación.</span></div>
+    </div>
+  </div>
+
+  <!-- GUÍA -->
+  <div class="section-card">
+    <div class="section-title">Guía de seguridad</div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div><span style="font-size:13px;font-weight:500;color:#111827">Temperatura</span><p style="font-size:12px;color:#6b7280;margin-top:2px">Refrigerar a 4°C inmediatamente. Sacar 30–60 min antes de administrar. A temperatura >25°C el límite de Ca×P baja a 150 (mayor riesgo de precipitación tardía).</p></div>
+      <div><span style="font-size:13px;font-weight:500;color:#111827">Validación gravimétrica</span><p style="font-size:12px;color:#6b7280;margin-top:2px">Pesar la bolsa terminada. Si difiere >5% del peso teórico, descartar y documentar.</p></div>
+      <div><span style="font-size:13px;font-weight:500;color:#111827">Equilibrio Cl⁻ / Acetato</span><p style="font-size:12px;color:#6b7280;margin-top:2px">En acidosis metabólica o insuficiencia renal, sustituir parte del cloruro por acetato. Exceso de cloruros → acidosis hiperclorémica. Ratio objetivo 1:1 ajustable según gasometría.</p></div>
+      <div><span style="font-size:13px;font-weight:500;color:#111827">Síndrome de realimentación</span><p style="font-size:12px;color:#6b7280;margin-top:2px">Ayuno prolongado: iniciar al 25–50% del objetivo. Monitorizar PO₄, K y Mg séricamente antes de escalar.</p></div>
+      <div><span style="font-size:13px;font-weight:500;color:#111827">Monitorización</span><p style="font-size:12px;color:#6b7280;margin-top:2px">Glucemia c/4–6h (primeras 24h). Iones diarios (3 días). TG si lípidos >1 g/kg/día. Función hepática semanal (vigilar PNALD si lípidos >50% CNP).</p></div>
+    </div>
+  </div>
+
+  <!-- PRINT ONLY: firma + lotes -->
+  <div class="print-only" style="margin-top:16px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:10.5pt">
+    <p>Médico prescriptor: _________________________ Firma: ______________ Fecha: ___________</p>
+    <p style="margin-top:10px">Farmacéutico validador: ______________________ Firma: ______________ Fecha: ___________</p>
+    <p style="margin-top:10px">Peso real de bolsa: __________ g &nbsp;&nbsp; ☐ Aprobada &nbsp;&nbsp; ☐ Descartada</p>
+  </div>
+</div><!-- /left -->
+
+<!-- ══════════ RIGHT ══════════ -->
+<div class="right-panel">
+
+  <div class="vol-crit" id="vol-crit-r" style="margin-bottom:10px">
+    <div class="vol-crit-title">⛔ Volumen insuficiente</div>
+    <div class="vol-crit-body">Los componentes superan el volumen prescrito.</div>
+    <div class="vol-crit-nums" id="vol-crit-nums-r"></div>
+  </div>
+
+  <div class="panel-section">
+    <div class="panel-title">Gasto energético</div>
+    <div class="ger-block">
+      <div style="font-size:11px;color:#9ca3af">Fórmula: <span id="ger-formula-lbl">Harris-Benedict</span></div>
+      <div class="ger-nums">
+        <div class="ger-stat"><div class="ger-val" id="ger-b">—</div><div class="ger-lbl">GER basal (kcal)</div></div>
+        <div class="ger-stat"><div class="ger-val" id="ger-t">—</div><div class="ger-lbl">GET c/ estrés</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-section">
+    <div class="panel-title">Distribución calórica</div>
+    <div class="kcal-total"><span id="total-kcal">—</span><span class="kcal-sub">kcal/día</span></div>
+    <div class="kcal-warn" id="kcal-warn-overfeed">⚠ Sobrealimentación: >35 kcal/kg/día</div>
+    <div class="kcal-warn" id="kcal-warn-lipids">⚠ Lípidos >50% CNP — riesgo PNALD</div>
+    <div class="bar-row"><div class="bar-header"><span class="bar-name">Glucosa</span><span class="bar-pct" id="pct-g">—</span></div><div class="bar-track"><div class="bar-fill gl" id="bar-g" style="width:0%"></div></div></div>
+    <div class="bar-row"><div class="bar-header"><span class="bar-name">Lípidos</span><span class="bar-pct" id="pct-l">—</span></div><div class="bar-track"><div class="bar-fill li" id="bar-l" style="width:0%"></div></div></div>
+    <div class="bar-row"><div class="bar-header"><span class="bar-name">Proteínas</span><span class="bar-pct" id="pct-p">—</span></div><div class="bar-track"><div class="bar-fill aa" id="bar-p" style="width:0%"></div></div></div>
+  </div>
+
+  <div style="height:1px;background:#f3f4f6;margin-bottom:14px"></div>
+
+  <!-- SAFETY PANEL con jerarquía semáforo -->
+  <div class="panel-section">
+    <div class="panel-title">Parámetros de seguridad</div>
+    <div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-osm"></span>Osmolaridad</span><span class="stat-val" id="sv-osm">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-via"></span>Vía</span><span class="stat-val" id="sv-via">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-vig"></span>VIG</span><span class="stat-val" id="sv-vig">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-lip"></span>Tasa lípidos</span><span class="stat-val" id="sv-lip">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-cap"></span>Ca × PO₄</span><span class="stat-val" id="sv-cap">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-k"></span>Potasio</span><span class="stat-val" id="sv-k">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-cnpn"></span>CNP / N₂</span><span class="stat-val" id="sv-cnpn">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-prot"></span>Proteínas</span><span class="stat-val" id="sv-prot">—</span></div>
+      <div class="stat-row temp-row" id="tna-row"><span class="stat-name"><span class="sev-dot danger"></span>Estabilidad TNA</span><span class="stat-val danger" id="sv-tna">—</span></div>
+      <div class="stat-row temp-row" id="temp-row"><span class="stat-name"><span class="sev-dot warn"></span>Conservación</span><span class="stat-val warn" id="sv-temp">—</span></div>
+      <div class="stat-row"><span class="stat-name">Velocidad inf.</span><span class="stat-val muted" id="sv-rate">—</span></div>
+    </div>
+  </div>
+
+  <div style="height:1px;background:#f3f4f6;margin-bottom:14px"></div>
+
+  <div class="panel-section">
+    <div class="panel-title">Validación gravimétrica</div>
+    <div class="weight-box">
+      <div style="font-size:11px;color:#9ca3af">Peso teórico calculado</div>
+      <div class="weight-main" id="bag-wt">— g</div>
+      <div class="weight-range" id="wt-range">Rango ±5%: —</div>
+      <div class="weight-warn">Diferencia >5% → descartar y documentar.</div>
+    </div>
+    <div class="filter-tag" id="filter-tag"><span style="font-size:12px">○</span><span id="filter-txt">—</span></div>
+  </div>
+
+  <div class="panel-actions">
+    <button class="btn-action" id="btn-pdf" onclick="exportPDF()">↓ PDF</button>
+    <button class="btn-action" onclick="window.print()">Imprimir</button>
+  </div>
+</div><!-- /right -->
+
+</div><!-- /layout -->
+
+<div class="bottom-bar">
+  <div class="bb-metrics">
+    <div class="bb-metric"><div class="bb-val" id="bb-osm">—</div><div class="bb-lbl">Osmol.</div></div>
+    <div class="bb-metric"><div class="bb-val" id="bb-vig">—</div><div class="bb-lbl">VIG mg/kg/min</div></div>
+    <div class="bb-metric"><div class="bb-val" id="bb-vol">—</div><div class="bb-lbl">Vol. overfill</div></div>
+  </div>
+  <button class="bb-btn" id="bb-btn" onclick="exportPDF()">Exportar hoja de preparación</button>
+</div>
+
+<!-- FOOTER UNIFICADO YERAYFH -->
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
+
+<script>
+
+// INFO MODAL (GUÍA RÁPIDA)
+function openInfo(){document.getElementById('info-overlay').classList.add('open')}
+function closeInfo(){document.getElementById('info-overlay').classList.remove('open')}
+document.getElementById('info-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeInfo()});
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let pharm={glc:50,aa:15,lip:20,elec:50};
+let via='central';
+let blocked=false;
+let saveTimer=null;
+const SAVE_KEY='nutriPN_draft';
+
+// ═══════════════════════════════════════════
+// LOCALSTORAGE PERSISTENCE
+// ═══════════════════════════════════════════
+const FIELDS=['pt-name','pt-age','pt-sex','pt-weight','pt-height','pt-type','pt-stress',
+  'vol-total','inf-hrs','overfill','temp-mode','neo-days',
+  'glc-num','aa-num','lip-num',
+  'na','k','ca','phos','mg','cl','acetate'];
+const CHECKS=['vit','olig','ins','hep'];
+const RADIOS=['ger'];
+
+function collectState(){
+  const out={via,fields:{},checks:{},radios:{},pharm};
+  FIELDS.forEach(id=>{const e=document.getElementById(id);if(e)out.fields[id]=e.value});
+  CHECKS.forEach(id=>{const e=document.getElementById(id);if(e)out.checks[id]=e.checked});
+  RADIOS.forEach(nm=>{const e=document.querySelector('input[name="'+nm+'"]:checked');if(e)out.radios[nm]=e.value});
+  return out;
+}
+function applyState(st){
+  if(!st)return;
+  // Restaurar la configuración de farmacia si existe
+  if(st.pharm) {
+    pharm = st.pharm;
+    document.getElementById('cfg-glc').value = pharm.glc;
+    document.getElementById('cfg-aa').value = pharm.aa;
+    document.getElementById('cfg-lip').value = pharm.lip;
+    document.getElementById('cfg-elec').value = pharm.elec;
+  }
+  FIELDS.forEach(id=>{const e=document.getElementById(id);if(e&&st.fields&&st.fields[id]!=null)e.value=st.fields[id]});
+  CHECKS.forEach(id=>{const e=document.getElementById(id);if(e&&st.checks&&st.checks[id]!=null)e.checked=st.checks[id]});
+  RADIOS.forEach(nm=>{if(st.radios&&st.radios[nm]){const e=document.querySelector('input[name="'+nm+'"][value="'+st.radios[nm]+'"]');if(e)e.checked=true}});
+  if(st.via)via=st.via;
+
+ const ptType = st.fields && st.fields['pt-type'] ? st.fields['pt-type'] : 'adult';
+  const isPed = ptType==='ped'||ptType==='neonato';
+  if(isPed){cfgSlider('glc',0,20,.1,'g/kg');cfgSlider('aa',0,4,.1,'g/kg');cfgSlider('lip',0,4,.1,'g/kg')}
+  else{cfgSlider('glc',0,600,1,'g');cfgSlider('aa',0,200,1,'g');cfgSlider('lip',0,200,1,'g')}
+
+  // sync sliders
+  ['glc','aa','lip'].forEach(id=>{
+    const nm=document.getElementById(id+'-num'),sl=document.getElementById(id+'-sl');
+    if(nm&&sl)sl.value=nm.value;
+  });
+  // apply type classes
+  const pt=document.getElementById('pt-type').value;
+  document.body.classList.toggle('ped-mode',pt==='ped'||pt==='neonato');
+  document.body.classList.toggle('neonato-mode',pt==='neonato');
+  // sync via buttons
+  document.getElementById('via-c').classList.toggle('active',via==='central');
+  document.getElementById('via-p').classList.toggle('active',via==='periferica');
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try{localStorage.setItem(SAVE_KEY,JSON.stringify(collectState()))}catch(e){}
+  },1500);
+}
+function restoreState(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(raw){applyState(JSON.parse(raw));recalc();}
+  }catch(e){}
+  document.getElementById('restore-banner').classList.remove('show');
+}
+function discardSaved(){
+  try{localStorage.removeItem(SAVE_KEY)}catch(e){}
+  document.getElementById('restore-banner').classList.remove('show');
+}
+function checkRestore(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(raw){const st=JSON.parse(raw);if(st.fields&&Object.keys(st.fields).length>0)document.getElementById('restore-banner').classList.add('show');}
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+// PHARMACY
+// ═══════════════════════════════════════════
+function openCfg(){document.getElementById('cfg-overlay').classList.add('open')}
+function closeCfg(){document.getElementById('cfg-overlay').classList.remove('open')}
+function saveCfg(){pharm.glc=+document.getElementById('cfg-glc').value||50;pharm.aa=+document.getElementById('cfg-aa').value||15;pharm.lip=+document.getElementById('cfg-lip').value||20;pharm.elec=+document.getElementById('cfg-elec').value||50;closeCfg();recalc()}
+document.getElementById('cfg-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCfg()});
+
+// ═══════════════════════════════════════════
+// TYPE CHANGE — SAFETY RESET
+// ═══════════════════════════════════════════
+function onTypeChange(){
+  const t=document.getElementById('pt-type').value;
+  const isPed=t==='ped'||t==='neonato';
+  const isNeo=t==='neonato';
+  document.body.classList.toggle('ped-mode',isPed);
+  document.body.classList.toggle('neonato-mode',isNeo);
+  ['glc','aa','lip'].forEach(id=>{document.getElementById(id+'-num').value=0;document.getElementById(id+'-sl').value=0});
+  ['na','k','ca','phos','mg','cl','acetate'].forEach(id=>{document.getElementById(id).value=0});
+  if(isPed){cfgSlider('glc',0,20,.1,'g/kg');cfgSlider('aa',0,4,.1,'g/kg');cfgSlider('lip',0,4,.1,'g/kg')}
+  else{cfgSlider('glc',0,600,1,'g');cfgSlider('aa',0,200,1,'g');cfgSlider('lip',0,200,1,'g')}
+  recalc();
+}
+function cfgSlider(id,mn,mx,st,lbl){
+  const sl=document.getElementById(id+'-sl'),nm=document.getElementById(id+'-num');
+  sl.min=mn;sl.max=mx;sl.step=st;nm.min=mn;nm.max=mx;nm.step=st;
+  document.getElementById(id+'-ulbl').textContent=lbl;
+}
+
+// ═══════════════════════════════════════════
+// SLIDER + STEPPER SYNC
+// ═══════════════════════════════════════════
+function syncSl(id){document.getElementById(id+'-num').value=document.getElementById(id+'-sl').value;recalc()}
+function syncNum(id){
+  const n=document.getElementById(id+'-num'), sl=document.getElementById(id+'-sl');
+  let val = Math.min(Math.max(+n.value||0, +sl.min), +sl.max);
+  n.value = val; // Fuerza al input de texto a respetar el máximo permitido
+  sl.value = val;
+  recalc();
+}
+function stepMacro(id,delta){
+  const nm=document.getElementById(id+'-num');
+  const step=+nm.step||1;
+  const newVal=Math.min(Math.max((+nm.value||0)+delta*step,+nm.min),+nm.max);
+  nm.value=newVal;syncNum(id);
+}
+
+// ═══════════════════════════════════════════
+// VIA
+// ═══════════════════════════════════════════
+function setVia(v){
+  const osmN=parseFloat((document.getElementById('sv-osm').textContent||'').replace(/[^\d.]/g,''))||0;
+  if(v==='periferica'&&osmN>900)return;
+  via=v;
+  document.getElementById('via-c').classList.toggle('active',v==='central');
+  document.getElementById('via-p').classList.toggle('active',v==='periferica');
+  recalc();
+}
+
+// ═══════════════════════════════════════════
+// getState()
+// ═══════════════════════════════════════════
+function getState(){
+  const pt=document.getElementById('pt-type').value;
+  const isPed=pt==='ped'||pt==='neonato';
+  const w=+document.getElementById('pt-weight').value||0;
+  const rg=+document.getElementById('glc-num').value||0;
+  const ra=+document.getElementById('aa-num').value||0;
+  const rl=+document.getElementById('lip-num').value||0;
+  const vitOn=document.getElementById('vit').checked;
+  const oligOn=document.getElementById('olig').checked;
+  // Función auxiliar para forzar números positivos limpios
+  const getPosNum = (id) => Math.max(0, Math.abs(+document.getElementById(id).value || 0));
+
+  return{
+    pt,isPed,w,
+    age: getPosNum('pt-age'),
+    sex: document.getElementById('pt-sex').value,
+    h: getPosNum('pt-height'),
+    stress: getPosNum('pt-stress') || 1,
+    ger: document.querySelector('input[name="ger"]:checked').value,
+    vol: getPosNum('vol-total'),
+    hrs: getPosNum('inf-hrs') || 24,
+    ovf: getPosNum('overfill'),
+    tempMode: document.getElementById('temp-mode').value,
+    neoDays: getPosNum('neo-days') || 1,
+    gG: isPed ? rg*w : rg, gA: isPed ? ra*w : ra, gL: isPed ? rl*w : rl, rG: rg, rA: ra, rL: rl,
+    na: getPosNum('na'),
+    k: getPosNum('k'),
+    ca: getPosNum('ca'),
+    p: getPosNum('phos'),
+    mg: getPosNum('mg'),
+    cl: getPosNum('cl'),
+    acetate: getPosNum('acetate'),
+  vitOn,oligOn,
+    // Volumen de aditivos ajustado por peso en pediatría (máximo 10mL)
+    volVit: vitOn ? (isPed && w > 0 ? Math.min(10, w * 2) : 10) : 0,
+    volOlig: oligOn ? (isPed && w > 0 ? Math.min(10, w * 2) : 10) : 0,
+    get additivesVol() { return this.volVit + this.volOlig; },
+    ph:{...pharm}
+  };
+}
+
+// ═══════════════════════════════════════════
+// calc(s) — PURE
+// ═══════════════════════════════════════════
+function calc(s){
+  const{gG,gA,gL,vol,w,hrs,ph,tempMode,neoDays}=s;
+  const vL=vol/1000;
+
+  // GER
+  let gerB=0;
+  if(w>0&&s.h>0&&s.age>0){
+    if(s.ger==='harris')gerB=s.sex==='M'?88.362+13.397*w+4.799*s.h-5.677*s.age:447.593+9.247*w+3.098*s.h-4.330*s.age;
+    else if(s.ger==='mifflin')gerB=s.sex==='M'?10*w+6.25*s.h-5*s.age+5:10*w+6.25*s.h-5*s.age-161;
+    else gerB=w*27.5;
+  }
+  const gerT=gerB*s.stress;
+
+  const kG=gG*3.4,kL=gL*10,kA=gA*4,kT=kG+kL+kA;
+  const cG=vol?gG/vol*100:0,cA=vol?gA/vol*100:0,cL=vol?gL/vol*100:0;
+  const N=gA/6.25,cnpn=N>0?(kG+kL)/N:0,protKg=w>0?gA/w:0;
+
+  // VIG — neonato: progressive limit based on days of life
+  // Day 1-2: 4-6, Day 3-5: 6-8, Day 6+: up to 12
+  let vigLim;
+  if(s.pt==='neonato'){
+    vigLim=neoDays<=2?5:neoDays<=5?8:12;
+  } else if(s.pt==='ped'){
+    vigLim=12;
+  } else {
+    vigLim=5;
+  }
+  const vig=w>0&&hrs>0?gG*1000/(w*hrs*60):0;
+  const lipR=w>0&&hrs>0?gL/(w*hrs):0;
+
+  // Osmolarity with Cl, Acetate, and Lipids
+  const osm=vL>0?(gG*5+gA*10+gL*1.5+s.na*2+s.k*2+s.ca*1.4+s.mg*1+s.p*1)/vL:0;
+
+  // Ca×P — temperature-adjusted limit
+  // Temp >25°C → limit 150 instead of 200 (higher precipitation risk)
+  const caPTempFactor=tempMode==='ambiente'?0.75:1; // reduce by 25% at room temp
+  const caProd=(vL>0&&s.ca>0&&s.p>0)?(s.ca/vL)*(s.p/vL):0;
+  const caPLimBase=cA>=2.5?200:100;
+  const caPLim=Math.floor(caPLimBase*caPTempFactor); // e.g. 200→150 or 100→75
+
+// Límite de dosis diaria (mEq/kg)
+  const kDoseOk = !(w > 0 && s.k > 4 * w);
+  
+  // Límite de CONCENTRACIÓN (mEq/L) según vía
+  const kConc = vL > 0 ? (s.k / vL) : 0;
+  const kConcLimit = s.via === 'periferica' ? 60 : 150;
+  const kConcOk = kConc <= kConcLimit;
+  
+  // El K es seguro si cumple dosis Y concentración
+  const kLimOk = kDoseOk && kConcOk;
+
+  // Volume check — include additives (vit+olig volume)
+  const vGlc=gG>0?gG/(ph.glc/100):0;
+  const vAA=gA>0?gA/(ph.aa/100):0;
+  const vLip=gL>0?gL/(ph.lip/100):0;
+  const vElec=ph.elec;
+  const vMin=vGlc+vAA+vLip+vElec+s.additivesVol; // FIX: include additive volume
+  const vWFI=vol-vMin;
+  const volInsuf=vol>0&&vMin>vol;
+
+  const dens=gL>0?1.04:1.01;
+  const vOvf=vol*(1+s.ovf/100);
+  const bagW=vOvf*dens;
+  const bagTol=bagW*.05;
+
+  // Protein range
+  const protLow=w>0&&protKg<0.8&&gA>0;
+  // Límite más alto para neonatos (ej. 4.0 g/kg) y pediatría (ej. 3.0 g/kg)
+  const protLimit = s.pt === 'neonato' ? 4.0 : (s.pt === 'ped' ? 3.0 : 2.5);
+  const protHigh=w>0&&protKg>protLimit;
+
+  // TNA stability
+  const tnaUnstable=gL>0&&cA>0&&cA<2.5;
+
+  // CNP/N flags
+  const cnpnLow=cnpn>0&&cnpn<100;
+  const cnpnHigh=cnpn>200;
+
+  // Overfeeding: >35 kcal/kg/day
+  const overfeedWarn=w>0&&kT>0&&(kT/w)>35;
+
+  // Lipids >50% of NPC → PNALD risk
+  const lnpc=kG+kL; // non-protein calories
+  const lipPnaldWarn=lnpc>0&&(kL/lnpc)>0.5;
+
+  // Cl:Acetate ratio info
+  const totalAnions=s.cl+s.acetate;
+  const clRatio=totalAnions>0?(s.cl/totalAnions*100).toFixed(0):'—';
+  const acRatio=totalAnions>0?(s.acetate/totalAnions*100).toFixed(0):'—';
+
+  // BLOCKED conditions (prevent PDF)
+  const hardBlock=volInsuf||(s.ca>0&&s.p>0&&caProd>250)||!kLimOk;
+
+  return{
+    gerB,gerT,kG,kL,kA,kT,cG,cA,cL,N,cnpn,protKg,
+    vig,vigLim,vigOk:vig<=vigLim,
+    lipR,lipOk:lipR<=0.11||gL===0,
+    osm,osmHigh:osm>900,osmMid:osm>600&&osm<=900,
+    caProd,caPLim,caPOk:caProd<=caPLim||s.ca===0||s.p===0,
+    kLimOk,
+    iRate:hrs>0?vol/hrs:0,
+    vGlc,vAA,vLip,vElec,vMin,vWFI,volInsuf,
+    vOvf,bagW,bagTol,isTNA:gL>0,
+    protLow,protHigh,tnaUnstable,cnpnLow,cnpnHigh,
+    overfeedWarn,lipPnaldWarn,
+    clRatio,acRatio,totalAnions,
+    tempMode,hardBlock
+  };
+}
+
+// ═══════════════════════════════════════════
+// renderUI(s, r)
+// ═══════════════════════════════════════════
+
+function renderUI(s,r){
+  const $=id=>document.getElementById(id);
+  const st=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+  // 1. Mostrar/Ocultar info de Pesos e IMC
+  const infoBox = $('weight-info-box');
+  if(s.w > 0 && s.h > 100) {
+    infoBox.style.display = 'block';
+    const imc = s.w / ((s.h/100)**2);
+    st('val-imc', imc.toFixed(1));
+    
+    // Fórmulas de Peso Ideal (Devine) y Ajustado
+    const base = s.sex === 'M' ? 50 : 45.5;
+    const pIdeal = base + 0.9 * (s.h - 152.4);
+    const pAjustado = pIdeal + 0.4 * (s.w - pIdeal);
+    
+    st('val-pideal', pIdeal.toFixed(1) + ' kg');
+    st('val-pajus', pAjustado.toFixed(1) + ' kg');
+    
+    const status = $('imc-status');
+    const rec = $('weight-recommendation');
+    if(imc >= 30) {
+      status.textContent = 'Obesidad'; status.style.color = '#dc2626';
+      rec.textContent = '⚠ Usar Peso Ajustado para cálculos calóricos.';
+    } else {
+      status.textContent = 'Normal/Sobrepeso'; status.style.color = '#059669';
+      rec.textContent = '';
+    }
+  } else { infoBox.style.display = 'none'; }
+
+  // GER
+  const gerLabels={harris:'Harris-Benedict',mifflin:'Mifflin-St Jeor',simple:'25–30 kcal/kg'};
+  st('ger-formula-lbl',gerLabels[s.ger]||'');
+  st('ger-b',r.gerB?Math.round(r.gerB):'—');
+  st('ger-t',r.gerT?Math.round(r.gerT):'—');
+
+  // Ped per-kg badges
+  if(s.isPed&&s.w>0){
+    const ep=(id,v,u)=>st(id,v>0?(v/s.w).toFixed(2)+' '+u+'/kg':'');
+    ep('na-pkg',s.na,'mEq');ep('k-pkg',s.k,'mEq');ep('ca-pkg',s.ca,'mEq');
+    ep('phos-pkg',s.p,'mmol');ep('mg-pkg',s.mg,'mEq');ep('cl-pkg',s.cl,'mEq');
+  }
+
+  // MACRO SUBS + cell state
+  const macroState=(mcId,subId,slId,sub,cls)=>{
+    $(mcId).className='macro-cell'+(cls?' mc-'+cls:'');
+    $(subId).textContent=sub;$(subId).className='macro-sub'+(cls?' '+cls:'');
+    $(slId).className='macro-slider'+(cls?' sl-'+cls:'');
+  };
+  macroState('mc-glc','glc-sub','glc-sl',
+    (r.kG?r.kG.toFixed(0)+' kcal':'—')+' · '+r.cG.toFixed(1)+'%'+(r.vigOk?'':' · VIG ⚠'),
+    r.vigOk?'':'danger');
+  macroState('mc-aa','aa-sub','aa-sl',
+    (r.kA?r.kA.toFixed(0)+' kcal':'—')+' · N₂:'+r.N.toFixed(1)+'g'+(r.protLow?' · Bajo ⚠':r.protHigh?' · Alto ⚠':''),
+    r.protLow||r.protHigh?'warn':'');
+  macroState('mc-lip','lip-sub','lip-sl',
+    (r.kL?r.kL.toFixed(0)+' kcal':'—')+' · '+r.cL.toFixed(1)+'%'+(r.lipOk?'':' · Tasa ⚠')+(r.tnaUnstable?' · TNA ⚠':''),
+    !r.lipOk?'danger':r.tnaUnstable?'warn':'');
+
+  // K hard limit visual
+  const kCell=$('ec-k'),kLblEl=$('lbl-k'),kLimWarn=$('klim-warn');
+  if(!r.kLimOk){
+    kCell.className='elec-cell ec-danger';
+    kLblEl.className='elec-lbl hard-lim';
+    kLimWarn.style.display='block';
+  } else {
+    kCell.className='elec-cell';
+    kLblEl.className='elec-lbl';
+    kLimWarn.style.display='none';
+  }
+
+  // Acetate ratio display
+  if(r.totalAnions>0){
+    $('acetate-ratio').textContent='';
+    $('acidosis-hint').style.display='block';
+    st('cl-ac-ratio',r.clRatio+'% Cl : '+r.acRatio+'% Acetato');
+  } else {
+    $('acidosis-hint').style.display='none';
+  }
+
+  // Caloric bars
+  if(r.kT>0){
+    const pG=(r.kG/r.kT*100).toFixed(1),pL=(r.kL/r.kT*100).toFixed(1),pP=(r.kA/r.kT*100).toFixed(1);
+    st('total-kcal',r.kT.toFixed(0));
+    st('pct-g',pG+'%');st('pct-l',pL+'%');st('pct-p',pP+'%');
+    $('bar-g').style.width=pG+'%';$('bar-l').style.width=pL+'%';$('bar-p').style.width=pP+'%';
+  } else {st('total-kcal','—');['pct-g','pct-l','pct-p'].forEach(id=>st(id,'—'));['bar-g','bar-l','bar-p'].forEach(id=>$(id).style.width='0%')}
+  $('kcal-warn-overfeed').classList.toggle('show',r.overfeedWarn);
+  $('kcal-warn-lipids').classList.toggle('show',r.lipPnaldWarn);
+
+  // SAFETY CHIPS with severity dots
+  const chip=(valId,dotId,val,sev)=>{
+    const e=$(valId),d=$(dotId);
+    e.textContent=val;e.className='stat-val '+(sev||'muted');
+    if(d)d.className='sev-dot '+(sev||'');
+  };
+  chip('sv-osm','dot-osm',r.osm?Math.round(r.osm)+' mOsm/L':'—',r.osmHigh?'danger':r.osmMid?'warn':'ok');
+  const viaOk=!(r.osmHigh&&via==='periferica');
+  chip('sv-via','dot-via',via==='central'?'Central':'Periférica',viaOk?'ok':'danger');
+  if(r.osmHigh&&via==='periferica'){via='central';$('via-c').classList.add('active');$('via-p').classList.remove('active')}
+  chip('sv-vig','dot-vig',r.vig?(r.vig.toFixed(2)+' (lim: '+r.vigLim+')'):'—',r.vigOk?'ok':'danger');
+  chip('sv-lip','dot-lip',r.lipR?r.lipR.toFixed(3)+' g/kg/h':'—',r.lipOk?'ok':'danger');
+  chip('sv-cap','dot-cap',(s.ca>0&&s.p>0)?(r.caProd.toFixed(1)+' / '+r.caPLim):'—',r.caPOk?'ok':'danger');
+  // Chip de Potasio con detalle de error dosis vs concentración
+  let kMsg = s.k ? (s.k + ' mEq') : '—';
+  if(!r.kLimOk) {
+    const kConcValue = (s.k / (s.vol/1000)).toFixed(1);
+    kMsg = s.k > (4 * s.w) ? 'Exceso dosis' : `Conc: ${kConcValue} mEq/L ⚠`;
+  }
+  chip('sv-k', 'dot-k', kMsg, r.kLimOk ? 'ok' : 'danger');
+  const cnpnCls=r.cnpn>0?(r.cnpn>=100&&r.cnpn<=180?'ok':r.cnpn>=80&&r.cnpn<=200?'warn':'danger'):'muted';
+  chip('sv-cnpn','dot-cnpn',r.cnpn?r.cnpn.toFixed(0)+':1':'—',cnpnCls);
+  const protCls=s.w>0&&r.protKg>0?(r.protKg>=0.8&&r.protKg<=2.5?'ok':'warn'):'muted';
+  chip('sv-prot','dot-prot',r.protKg?r.protKg.toFixed(2)+' g/kg':'—',protCls);
+  // TNA row
+  const tnaRow=$('tna-row');
+  tnaRow.className='stat-row temp-row'+(r.tnaUnstable?' show':'');
+  if(r.tnaUnstable)st('sv-tna',r.cA.toFixed(1)+'% AA < 2.5%');
+  // Temperature row
+  const tmpRow=$('temp-row');
+  tmpRow.className='stat-row temp-row'+(r.tempMode==='ambiente'?' show':'');
+  if(r.tempMode==='ambiente'){st('sv-temp','Ca×P lím. reducido a '+r.caPLim)}
+
+  st('sv-rate',r.iRate?r.iRate.toFixed(1)+' mL/h':'—');
+
+  // Bag weight
+  st('bag-wt',r.bagW?r.bagW.toFixed(0)+' g':'— g');
+  st('wt-range',r.bagW?'Rango ±5%: '+(r.bagW-r.bagTol).toFixed(0)+'–'+(r.bagW+r.bagTol).toFixed(0)+' g':'Rango ±5%: —');
+  st('filter-txt',r.isTNA?'TNA → Filtro 1.2 µm':'2-en-1 → Filtro 0.22 µm');
+  $('filter-tag').querySelector('span').textContent=r.isTNA?'●':'○';
+
+  // Lipid mixing step
+  $('lip-mix-step').style.display=s.gL>0?'flex':'none';
+  $('final-step-n').textContent=s.gL>0?'8':'7';
+
+  // Volume critical — block PDF if hard conditions
+  const vc=$('vol-crit'),vcr=$('vol-crit-r'),fabBtn=$('btn-pdf'),bbBtn=$('bb-btn');
+  if(r.volInsuf&&s.vol>0){
+    vc.classList.add('show');vcr.classList.add('show');
+    const msg='Mín requerido: '+r.vMin.toFixed(0)+' mL > Prescrito: '+s.vol+' mL (déficit: '+(r.vMin-s.vol).toFixed(0)+' mL)';
+    st('vol-crit-nums',msg);st('vol-crit-nums-r',msg);
+  } else {vc.classList.remove('show');vcr.classList.remove('show')}
+
+  blocked=r.hardBlock;
+  fabBtn.disabled=blocked;bbBtn.disabled=blocked;
+  if(!r.kLimOk){fabBtn.title='⛔ Potasio excede límite de seguridad';} else if(!r.caPOk&&r.caProd>250){fabBtn.title='⛔ Ca×P >250 — riesgo émbolo pulmonar'} else {fabBtn.title=''}
+
+  st('ovf2',s.ovf);
+  st('vol-ovf',r.vOvf?r.vOvf.toFixed(0)+' mL':'—');
+
+  // Prep table
+  if(s.vol>0){
+    const vit=s.vitOn?`<tr><td>Vitaminas Mix</td><td>—</td><td class="num">${s.volVit.toFixed(1)} mL</td><td class="num">—</td></tr>`:'';
+           const olig=s.oligOn?`<tr><td>Oligoelementos</td><td>—</td><td class="num">${s.volOlig.toFixed(1)} mL</td><td class="num">—</td></tr>`:'';
+    $('prep-tbody').innerHTML=`
+      <tr><td>Dextrosa ${s.ph.glc}%</td><td>${s.ph.glc}%</td><td class="num">${r.vGlc.toFixed(0)} mL</td><td class="num">${s.gG.toFixed(0)} g</td></tr>
+      <tr><td>Aminoácidos ${s.ph.aa}%</td><td>${s.ph.aa}%</td><td class="num">${r.vAA.toFixed(0)} mL</td><td class="num">${s.gA.toFixed(0)} g</td></tr>
+      ${s.gL>0?`<tr><td>Emulsión lipídica ${s.ph.lip}%</td><td>${s.ph.lip}%</td><td class="num">${r.vLip.toFixed(0)} mL</td><td class="num">${s.gL.toFixed(0)} g</td></tr>`:''}
+      <tr><td>Electrolitos / Aditivos</td><td>—</td><td class="num">~${r.vElec.toFixed(0)} mL</td><td class="num">—</td></tr>
+      ${vit}${olig}
+      <tr class="${r.volInsuf?'deficit':''}"><td>${r.volInsuf?'⛔ WFI — DÉFICIT':'Agua para inyección (WFI)'}</td><td>—</td><td class="num">${r.vWFI.toFixed(0)} mL</td><td class="num">csp</td></tr>
+      <tr class="total"><td>Total prescrito</td><td>—</td><td class="num">${s.vol} mL</td><td class="num">—</td></tr>`;
+  }
+
+ st('vit-lbl', s.vitOn ? `(+${s.volVit.toFixed(1)} mL)` : '');
+  st('olig-lbl', s.oligOn ? `(+${s.volOlig.toFixed(1)} mL)` : '');
+  // Bottom bar
+  $('bb-osm').textContent=r.osm?Math.round(r.osm):'—';
+  $('bb-osm').className='bb-val '+(r.osmHigh?'danger':r.osmMid?'warn':'ok');
+  $('bb-vig').textContent=r.vig?r.vig.toFixed(2):'—';
+  $('bb-vig').className='bb-val '+(r.vigOk?'ok':'danger');
+  $('bb-vol').textContent=r.vOvf?r.vOvf.toFixed(0)+' mL':'—';
+
+  scheduleSave();
+}
+
+function recalc(){const s=getState();renderUI(s,calc(s));}
+
+// ═══════════════════════════════════════════
+// PDF EXPORT — Orden de Fabricación
+// ═══════════════════════════════════════════
+function exportPDF(){
+  if(blocked){alert('Hay errores de seguridad críticos. Corrija antes de exportar.');return}
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const sanitizeText = (str) => {
+    if (!str) return '';
+    return String(str).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n").replace(/Ñ/g, "N");
+};
+  const s=getState(),r=calc(s);
+  const W=210,M=14;let y=0;
+  const now=new Date().toLocaleDateString('es-ES')+' '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+
+  // Header
+  doc.setFillColor(17,24,39);doc.rect(0,0,W,18,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text('NutriPN v6 — Orden de Fabricacion de Nutricion Parenteral',M,12);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');
+  doc.text(now,W-M,12,{align:'right'});
+  doc.setFillColor(255,251,235);doc.rect(0,18,W,8,'F');
+  doc.setFontSize(7);doc.setTextColor(100,60,0);
+  doc.text('HERRAMIENTA DE APOYO CLINICO — Decision final: medico prescriptor y farmaceutico hospitalario. ASPEN 2021 / ESPEN.',M,23);
+  y=32;
+
+  const sec=t=>{doc.setFillColor(249,250,251);doc.rect(M-2,y-4,W-M*2+4,8,'F');doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(107,114,128);doc.text(t.toUpperCase(),M,y);y+=8};
+  const row=(l,v,flag)=>{doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(107,114,128);doc.text(l,M+2,y);doc.setTextColor(flag?[220,38,38]:[17,24,39]);doc.setFont('helvetica','bold');doc.text(String(v),88,y);doc.setFont('helvetica','normal');y+=6.5};
+  const blankLine=(l)=>{doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(107,114,128);doc.text(l,M+2,y);doc.setDrawColor(180,180,180);doc.line(88,y+1,W-M,y+1);y+=10};
+
+  sec('Identificacion del paciente');
+  row('Nombre / Historia:', sanitizeText(document.getElementById('pt-name').value) || 'No especificado');
+  row('Edad / Sexo / Peso / Talla:',s.age+' anos - '+s.sex+' - '+s.w+' kg - '+s.h+' cm');
+  row('Tipo paciente / Via:',document.getElementById('pt-type').options[document.getElementById('pt-type').selectedIndex].text+' - '+via.toUpperCase()+(r.osmHigh?' (CENTRAL OBLIGATORIA)':''));
+  row('Volumen prescrito / Duracion:',s.vol+' mL en '+s.hrs+'h - '+r.iRate.toFixed(1)+' mL/h');
+  row('Conservacion prescrita:',s.tempMode==='ambiente'?'Temperatura ambiente (>25 C) — Ca×P lim reducido a '+r.caPLim:'Refrigerada 4°C');
+  y+=2;
+
+  sec('Composicion nutricional');
+  row('GET basal / c/ estres:',(r.gerB?Math.round(r.gerB):'—')+' kcal / '+(r.gerT?Math.round(r.gerT):'—')+' kcal');
+  row('Glucosa:',s.gG.toFixed(0)+' g - '+r.kG.toFixed(0)+' kcal - Conc. '+r.cG.toFixed(1)+'%');
+  row('Aminoacidos:',s.gA.toFixed(0)+' g - '+r.kA.toFixed(0)+' kcal - N: '+r.N.toFixed(1)+' g');
+  row('Lipidos:',s.gL.toFixed(0)+' g - '+r.kL.toFixed(0)+' kcal - Conc. '+r.cL.toFixed(1)+'%');
+  row('Total calorico:',r.kT.toFixed(0)+' kcal'+(r.overfeedWarn?' - SOBREALIMENTACION >35 kcal/kg':''));
+  row('Electrolitos:','Na '+s.na+' K '+s.k+' Ca '+s.ca+' P '+s.p+' Mg '+s.mg+' Cl '+s.cl+' Acetato '+s.acetate+' (mEq/mmol)');
+  if(s.acetate>0||s.cl>0)row('Ratio Cl:Acetato:',r.clRatio+'% : '+r.acRatio+'% (Objetivo 50:50 en acidosis)');
+  y+=2;
+
+  sec('Parametros de seguridad');
+  row('Osmolaridad (c/ Cl + Acetato):',(r.osm?Math.round(r.osm):'—')+' mOsm/L'+(r.osmHigh?' - CENTRAL OBLIGATORIA':''),r.osmHigh);
+  row('VIG:',r.vig.toFixed(2)+' mg/kg/min (lim: '+r.vigLim+')'+(r.vigOk?'':' - EXCEDE LIMITE'),!r.vigOk);
+  row('Tasa lipidos:',r.lipR.toFixed(3)+' g/kg/h'+(r.lipOk?'':' - EXCEDE 0.11 g/kg/h'),!r.lipOk);
+  row('Ca x PO4:',r.caProd.toFixed(1)+' / '+r.caPLim+(r.caPOk?'':' - RIESGO PRECIPITACION'),!r.caPOk);
+  
+  let pdfKMsg = s.k + ' mEq';
+  if (!r.kLimOk) {
+      const kConcValue = (s.k / (s.vol / 1000)).toFixed(1);
+      pdfKMsg += s.k > (4 * s.w) ? ' - EXCEDE DOSIS (4 mEq/kg/dia)' : ` - EXCEDE CONC. (${kConcValue} mEq/L)`;
+  }
+  row('Potasio:', pdfKMsg, !r.kLimOk);
+  
+  row('CNP/N2:',(r.cnpn?r.cnpn.toFixed(0):'-')+':1'+(r.cnpnLow?' - BAJO <100':'')+(r.cnpnHigh?' - ALTO >200':''),r.cnpnLow||r.cnpnHigh);
+  row('Proteinas:',r.protKg?r.protKg.toFixed(2)+' g/kg':'—',r.protLow||r.protHigh);
+  if(r.tnaUnstable)row('Estabilidad TNA:','AA '+r.cA.toFixed(1)+'% < 2.5% - INESTABLE (ESPEN)',true);
+  if(r.lipPnaldWarn)row('Lipidos CNP:','Lipidos >50% CNP - Riesgo PNALD',true);
+  row('Filtro:',r.isTNA?'1.2 micras (TNA 3-en-1)':'0.22 micras (2-en-1)');
+  y+=2;
+
+  sec('Elaboracion — volumenes');
+  row('Dextrosa '+s.ph.glc+'%:',r.vGlc.toFixed(0)+' mL');
+  row('Aminoacidos '+s.ph.aa+'%:',r.vAA.toFixed(0)+' mL');
+  if(s.gL>0)row('Emulsion lipidica '+s.ph.lip+'%:',r.vLip.toFixed(0)+' mL');
+  row('Electrolitos/Aditivos:','~'+r.vElec.toFixed(0)+' mL');
+  if(s.vitOn)row('Vitaminas Mix:', s.volVit.toFixed(1) + ' mL');
+     if(s.oligOn)row('Oligoelementos:', s.volOlig.toFixed(1) + ' mL');
+  row('WFI (csp):',r.vWFI.toFixed(0)+' mL'+(r.volInsuf?' - DEFICIT':''),r.volInsuf);
+  row('Vol. con overfill ('+s.ovf+'%):',r.vOvf.toFixed(0)+' mL');
+  y+=2;
+
+  sec('Trazabilidad de lotes');
+  blankLine('N.° Lote Dextrosa:');
+  blankLine('N.° Lote Aminoacidos:');
+  if(s.gL>0)blankLine('N.° Lote Emulsion Lipidica:');
+  blankLine('N.° Lote Vitaminas / Aditivos:');
+  blankLine('Hora inicio preparacion:');
+  blankLine('Hora fin preparacion:');
+  y+=2;
+
+  sec('Validacion gravimetrica');
+  row('Peso teorico bolsa:',r.bagW.toFixed(0)+' g');
+  row('Rango aceptable (+-5%):',(r.bagW-r.bagTol).toFixed(0)+' - '+(r.bagW+r.bagTol).toFixed(0)+' g');
+  y+=3;
+
+  doc.setFontSize(8.5);doc.setTextColor(50,50,50);
+  doc.text('Peso real medido: _______________ g     [ ] APROBADA     [ ] DESCARTADA',M,y);y+=9;
+  doc.text('Medico Prescriptor: _______________________  Firma: ___________  Fecha: __________',M,y);y+=9;
+  doc.text('Farmaceutico Validador: ____________________  Firma: ___________  Fecha: __________',M,y);y+=10;
+  doc.setFillColor(17,24,39);doc.rect(0,y,W,8,'F');
+  doc.setFontSize(7);doc.setTextColor(156,163,175);
+  doc.text('NutriPN v6  |  ASPEN Safe Practices 2021  |  ESPEN Guidelines  |  Herramienta de apoyo clinico',M,y+5);
+
+  doc.save('NutriPN_'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+recalc();
+checkRestore();
+</script>
+</body>
+</html>
