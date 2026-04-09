@@ -659,6 +659,66 @@
       .card { padding: 1.15rem; }
       .modal-card { padding: 1.75rem 1.35rem 1.5rem; }
     }
+
+  /* ===== VENOUS MODE — AeroLab® ===== */
+  .sample-type-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 6px;
+    flex-wrap: wrap;
+  }
+  .sample-type-selector .st-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+  .st-chip {
+    border: 1.5px solid var(--accent-cyan);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    background: transparent;
+    color: var(--accent-cyan);
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+  }
+  .st-chip.active {
+    background: var(--accent-cyan);
+    color: #0b0f14;
+  }
+  /* Venous overrides */
+  .st-chip.venous-chip { border-color: #4fa3e0; color: #4fa3e0; }
+  .st-chip.venous-chip.active { background: #4fa3e0; color: #0b0f14; }
+
+  .venous-banner {
+    display: none;
+    background: rgba(79,163,224,0.12);
+    border-left: 3px solid #4fa3e0;
+    color: #4fa3e0;
+    padding: 7px 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 10px;
+  }
+  .venous-theme .venous-banner { display: block; }
+
+  /* Cobalt tint on interpret button in venous mode */
+  .venous-theme .btn-primary {
+    background: linear-gradient(135deg, #1a3a6b, #2d5ea8);
+  }
+  .venous-theme .btn-primary:hover { background: linear-gradient(135deg, #2d5ea8, #4fa3e0); }
+  /* Cobalt card-title underline */
+  .venous-theme .card-title {
+    border-bottom-color: rgba(79,163,224,0.35);
+    color: #4fa3e0;
+  }
   </style>
 </head>
 <body>
@@ -712,6 +772,16 @@
 
       <div class="view-title">Gasometría: interpretación y orientación – YerayFH</div>
       <div class="view-sub">Introduzca los valores del análisis. Los campos marcados con * son obligatorios.</div>
+
+      <!-- SELECTOR TIPO DE MUESTRA -->
+      <div class="sample-type-selector">
+        <span class="st-label">Muestra:</span>
+        <button class="st-chip active" id="btn-arterial" onclick="setSampleType('arterial')">&#x1FAC1; Arterial</button>
+        <button class="st-chip venous-chip" id="btn-venous" onclick="setSampleType('venous')">&#x1F9EA; Venosa</button>
+      </div>
+      <div class="venous-banner" id="venous-banner">
+        &#x26A0; Modo venoso — PAFI y gradiente A-a no disponibles &nbsp;·&nbsp; Rangos de referencia ajustados
+      </div>
 
       <!-- PARÁMETROS PRINCIPALES -->
       <div class="card">
@@ -944,7 +1014,7 @@ function goBack() {
 /* ----------------------------------------------------------------
    Range bars config
 ---------------------------------------------------------------- */
-const RANGE_CFG = {
+let RANGE_CFG = {
   ph:      { min: 6.5,  max: 8.0,  nMin: 7.35, nMax: 7.45 },
   pco2:    { min: 5,    max: 120,  nMin: 35,   nMax: 45   },
   hco3:    { min: 2,    max: 60,   nMin: 22,   nMax: 26   },
@@ -957,6 +1027,64 @@ const RANGE_CFG = {
   po2:     { min: 20,   max: 600,  nMin: 80,   nMax: 100  },
   fio2:    { min: 21,   max: 100,  nMin: 21,   nMax: 21   },
 };
+
+/* ----------------------------------------------------------------
+   VENOUS MODE — sample type state + range config
+   Rose & Post 7th ed. cap.19; Marino ICU Book 4th ed.; SEPAR GAB 2022
+---------------------------------------------------------------- */
+let sampleType = 'arterial'; // 'arterial' | 'venous'
+
+const SAMPLE_RANGES = {
+  arterial: { phLo: 7.35, phHi: 7.45, pco2Lo: 35, pco2Hi: 45, hco3Lo: 22, hco3Hi: 26, po2Lo: 80, po2Hi: 100 },
+  venous:   { phLo: 7.32, phHi: 7.42, pco2Lo: 41, pco2Hi: 51, hco3Lo: 23, hco3Hi: 27, po2Lo: 35, po2Hi: 45  },
+};
+
+function setSampleType(type) {
+  sampleType = type;
+  const isVenous = type === 'venous';
+  document.body.classList.toggle('venous-theme', isVenous);
+  document.getElementById('btn-arterial').classList.toggle('active', !isVenous);
+  document.getElementById('btn-venous').classList.toggle('active', isVenous);
+
+  // Adjust range bar normals for ph, pco2, hco3, po2
+  const R = SAMPLE_RANGES[type];
+  RANGE_CFG.ph.nMin   = R.phLo;  RANGE_CFG.ph.nMax   = R.phHi;
+  RANGE_CFG.pco2.nMin = R.pco2Lo; RANGE_CFG.pco2.nMax = R.pco2Hi;
+  RANGE_CFG.hco3.nMin = R.hco3Lo; RANGE_CFG.hco3.nMax = R.hco3Hi;
+  RANGE_CFG.po2.nMin  = R.po2Lo;  RANGE_CFG.po2.nMax  = R.po2Hi;
+
+  // Update placeholder hints for main fields
+  document.getElementById('inp-ph').placeholder   = isVenous ? '7.37' : '7.40';
+  document.getElementById('inp-pco2').placeholder  = isVenous ? '46' : '40';
+  document.getElementById('inp-hco3').placeholder  = isVenous ? '25' : '24';
+  document.getElementById('inp-po2').placeholder   = isVenous ? '40' : '95';
+
+  // Update pO2 label
+  const po2Label = document.querySelector('label[for="inp-po2"]');
+  if (po2Label) po2Label.innerHTML = isVenous
+    ? '<strong>pO₂</strong> <span style="font-size:0.72em;color:var(--muted)">(venosa — 35–45 mmHg)</span>'
+    : '<strong>pO₂</strong>';
+
+  // Show/hide venous banner
+  document.getElementById('venous-banner').style.display = isVenous ? 'block' : 'none';
+
+  // Update reference table dynamically
+  const refRows = document.querySelectorAll('.ref-table tbody tr');
+  if (refRows.length >= 3) {
+    refRows[0].cells[1].textContent = isVenous ? '7.32 – 7.42' : '7.35 – 7.45';
+    refRows[1].cells[1].textContent = isVenous ? '41 – 51 mmHg' : '35 – 45 mmHg';
+    refRows[2].cells[1].textContent = isVenous ? '23 – 27 mEq/L' : '22 – 26 mEq/L';
+  }
+
+  sessionStorage.setItem('aerolab_sampleType', type);
+}
+window.setSampleType = setSampleType;
+
+// Restore previous session choice
+(function () {
+  const saved = sessionStorage.getItem('aerolab_sampleType');
+  if (saved === 'venous') setSampleType('venous');
+})();
 
 function updateBar(key) {
   const rawVal = document.getElementById('inp-' + key)?.value || '';
@@ -1135,9 +1263,11 @@ function interpret() {
   let pType = 'normal'; // acidosis | alcalosis | normal | mixed
   let pMech = '';       // respiratoria | metabolica
 
-  const phLow  = ph < 7.35, phHigh = ph > 7.45, phNorm = !phLow && !phHigh;
-  const co2Lo  = pco2 < 35, co2Hi  = pco2 > 45;
-  const hco3Lo = hco3 < 22, hco3Hi = hco3 > 26;
+  // Use dynamic ranges based on current sample type (venous adjustments per Rose & Post 7th ed.)
+  const SR     = SAMPLE_RANGES[sampleType];
+  const phLow  = ph   < SR.phLo,  phHigh = ph   > SR.phHi,  phNorm = !phLow && !phHigh;
+  const co2Lo  = pco2 < SR.pco2Lo, co2Hi  = pco2 > SR.pco2Hi;
+  const hco3Lo = hco3 < SR.hco3Lo, hco3Hi = hco3 > SR.hco3Hi;
 
   // ── ZONAS DE PELIGRO CRÍTICO (compatibilidad con la vida en riesgo) ─────
   let criticalAlerts = [];
@@ -1145,6 +1275,9 @@ function interpret() {
   if (ph > 7.7)  criticalAlerts.push(`<strong style="color:var(--accent-cyan)">⚠ pH &gt; 7.7: ALCALOSIS CRÍTICA.</strong> Riesgo de arritmias malignas, convulsiones, broncoespasmo severo y tetania. Corrección urgente.`);
   if (pco2 > 80) criticalAlerts.push(`pCO₂ &gt; 80 mmHg: hipercapnia severa. Valorar soporte ventilatorio urgente e intubación.`);
   if (pco2 < 20) criticalAlerts.push(`pCO₂ &lt; 20 mmHg: hiperventilación extrema. Evaluar causa de manera urgente.`);
+  // Venous-specific safety alerts
+  if (sampleType === 'venous' && pco2 > 55) criticalAlerts.push(`<strong style="color:var(--accent-blue)">&#x26A0; pCO₂ venosa &gt; 55 mmHg:</strong> Solicite gasometría arterial para descartar hipercapnia arterial significativa (gradiente v-a CO₂ habitualmente 3–8 mmHg, puede ser &gt;10 en bajo gasto).`);
+  if (sampleType === 'venous') criticalAlerts.push(`<span style="color:var(--accent-blue)">Muestra venosa:</span> válida en estado estacionario. En shock, bajo gasto o PCR el gradiente venoarterial de CO₂ puede ser &gt;10 mmHg y la correlación con pH arterial se pierde <span style="color:var(--muted)">(Marino, ICU Book 4ª ed.; Vallet 2013)</span>.`);
 
   let dxName, dxSub;
 
@@ -1227,22 +1360,29 @@ if (phNorm && !co2Lo && !co2Hi && !hco3Lo && !hco3Hi) {
   if (pType === 'acidosis' && pMech === 'metabolica') {
     const exp = 1.5 * hco3 + 8;
     const lo = (exp - 2).toFixed(1), hi = (exp + 2).toFixed(1);
-    const ok = pco2 >= (exp - 2) && pco2 <= (exp + 2);
+    // Venous correction: pCO₂(v) ≈ pCO₂(a) + 5 mmHg (Kelly AJKD 2021)
+    // Subtract 5 from measured venous pCO₂ before comparing to Winters range
+    const pco2ForWinters = sampleType === 'venous' ? pco2 - 5 : pco2;
+    const ok = pco2ForWinters >= (exp - 2) && pco2ForWinters <= (exp + 2);
+    const venousWintersNote = sampleType === 'venous' ? ` <span style="font-size:0.72em;color:var(--muted)">(pCO₂v corregida: ${pco2}−5=${pco2ForWinters.toFixed(0)} mmHg)</span>` : '';
     let note;
     if (ok) {
-      note = { cls: 'ok', txt: 'Compensación respiratoria adecuada.' };
-    } else if (pco2 < (exp - 2)) {
-      note = { cls: 'warn', txt: 'pCO₂ demasiado baja → Alcalosis respiratoria superpuesta.' };
+      note = { cls: 'ok', txt: 'Compensación respiratoria adecuada.' + venousWintersNote };
+    } else if (pco2ForWinters < (exp - 2)) {
+      note = { cls: 'warn', txt: 'pCO₂ demasiado baja → Alcalosis respiratoria superpuesta.' + venousWintersNote };
       dxName = 'Trastorno Mixto: Acidosis Metabólica + Alcalosis Respiratoria';
       pType = 'mixed';
       dxSub += '<br><span style="color:var(--accent-yellow);font-size:0.82em;">⚠ Fórm. de Winters: Alcalosis respiratoria concomitante (pCO₂ baja).</span>';
     } else {
-      note = { cls: 'warn', txt: 'pCO₂ demasiado alta → Fracaso ventilatorio / Acidosis resp. superpuesta.' };
+      note = { cls: 'warn', txt: 'pCO₂ demasiado alta → Fracaso ventilatorio / Acidosis resp. superpuesta.' + venousWintersNote };
       dxName = 'Trastorno Mixto: Acidosis Metabólica + Acidosis Respiratoria';
       pType = 'mixed';
       dxSub += '<br><span style="color:var(--accent-red);font-size:0.82em;">⚠ Fórm. de Winters: Acidosis respiratoria concomitante (pCO₂ alta).</span>';
     }
-    compBlocks.push({ formula: 'Fórmula de Winters: pCO₂ esperada = 1.5 × HCO₃⁻ + 8 ± 2', result: `Rango esperado: ${lo} – ${hi} mmHg  |  Actual: ${pco2} mmHg`, note });
+    const wintersFormula = sampleType === 'venous'
+      ? 'Fórmula de Winters (venosa): pCO₂ esperada = 1.5 × HCO₃⁻ + 8 ± 2 · pCO₂v corregida = medida − 5'
+      : 'Fórmula de Winters: pCO₂ esperada = 1.5 × HCO₃⁻ + 8 ± 2';
+    compBlocks.push({ formula: wintersFormula, result: `Rango esperado: ${lo} – ${hi} mmHg  |  Actual: ${pco2ForWinters.toFixed(0)} mmHg (equiv. art.)`, note });
   } else if (pType === 'acidosis' && pMech === 'respiratoria') {
     const dCO2 = pco2 - 40;
     const acHCO3 = (24 + 0.1 * dCO2).toFixed(1);
@@ -1406,8 +1546,28 @@ lactatoHTML = `
   }
 
   // ── PAFI BLOCK ────────────────────────────────────────────────
+  // PAFI and A-a gradient are only valid for arterial blood (Berlin 2012; Shapiro 1994)
   let pafiHTML = '';
-  if (!isNaN(po2) && !isNaN(fio2) && fio2 > 0) {
+  if (sampleType === 'venous' && !isNaN(po2)) {
+    const po2VenNorm = po2 >= 35 && po2 <= 45;
+    const po2VenColor = po2VenNorm ? 'var(--accent-green)' : (po2 < 35 ? 'var(--accent-red)' : 'var(--accent-orange)');
+    const po2VenStatus = po2 < 30 ? 'Desaturación venosa grave (&lt;30 mmHg)' : po2 < 35 ? 'Desaturación venosa' : po2 <= 45 ? 'Normal (35–45 mmHg)' : 'Elevado — posible O₂ terapia o bajo consumo';
+    pafiHTML = `
+      <details class="resultado-acordeon">
+        <summary class="resultado-conclusion ${po2VenNorm ? 'conclusion-ok' : 'conclusion-warn'}">
+          <span>pO₂ VENOSA: ${po2VenStatus.split('—')[0].trim().toUpperCase()} (${po2} mmHg)</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div class="metric-alert ${po2VenNorm ? 'ok' : (po2 < 35 ? 'danger' : 'info')}">
+            ${svgIcon(po2VenNorm ? 'check-circle' : 'alert-triangle', 13)}
+            pO₂ venosa: <strong style="color:${po2VenColor}">${po2} mmHg</strong> · ${po2VenStatus}
+          </div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:0.5rem;">
+            ${svgIcon('info',11)} PAFI y gradiente A-a <strong>no aplican</strong> en muestra venosa. Solo válidos con pO₂ arterial (criterios Berlín SDRA 2012).
+          </div>
+        </div>
+      </details>`;
+  } else if (!isNaN(po2) && !isNaN(fio2) && fio2 > 0) {
     const pafi = po2 / (fio2 / 100);
     let pafiColor, pafiLabel, pafiAlert;
 if (pafi > 300) {
@@ -1538,7 +1698,8 @@ beHTML = `
   }
 
   // ── MANAGEMENT ORIENTATION ────────────────────────────────────
-  const pafiVal = (!isNaN(po2) && !isNaN(fio2) && fio2 > 0) ? po2 / (fio2 / 100) : NaN;
+  // PAFI only valid for arterial samples
+  const pafiVal = (sampleType === 'arterial' && !isNaN(po2) && !isNaN(fio2) && fio2 > 0) ? po2 / (fio2 / 100) : NaN;
   const mgmtData = getManagement(pType, pMech, agEff, lactato, k, ph, pafiVal);
   const priorityColors = { urgent: 'danger', high: 'warn', normal: 'info' };
   const priorityIcons  = { urgent: 'zap', high: 'alert-triangle', normal: 'info' };
@@ -1577,9 +1738,9 @@ beHTML = `
     </div>`;
   }
   let chipsHTML = `<div class="chips-row">
-    ${chip('pH',   ph,   '–',    7.35, 7.45, 7.10, 7.60)}
-    ${chip('pCO₂', pco2, 'mmHg', 35, 45, 20, 80)}
-    ${chip('HCO₃⁻', hco3, 'mEq/L', 22, 26, 10, 45)}
+    ${chip('pH',   ph,   '–',    SR.phLo, SR.phHi, 7.10, 7.60)}
+    ${chip('pCO₂', pco2, 'mmHg', SR.pco2Lo, SR.pco2Hi, 20, 80)}
+    ${chip('HCO₃⁻', hco3, 'mEq/L', SR.hco3Lo, SR.hco3Hi, 10, 45)}
     ${!isNaN(na)  ? chip('Na⁺',   na,   'mEq/L', 136, 145, 125, 155) : ''}
     ${!isNaN(cl)  ? chip('Cl⁻',   cl,   'mEq/L', 98, 106, 85, 120) : ''}
     ${!isNaN(be)  ? (() => {
@@ -1641,7 +1802,9 @@ beHTML = `
     </div>` : '';
 
 // ── GENERACIÓN DE RESUMEN PARA HISTORIA CLÍNICA (Punto 1) MEJORADO ──
-  const tipoGaso = (!isNaN(fio2) && fio2 === 21) ? 'GSA (Aire amb.)' : `GSA (FiO₂ ${fio2}%)`;
+  const tipoGaso = sampleType === 'venous'
+    ? 'GSV [VENOSA]'
+    : ((!isNaN(fio2) && fio2 === 21) ? 'GSA (Aire amb.)' : `GSA (FiO₂ ${fio2}%)`);
   let hcSummary = `${tipoGaso}: pH ${ph.toFixed(2)} | pCO₂ ${pco2} | pO₂ ${po2} | HCO₃ ${hco3}`;
   if (!isNaN(be)) hcSummary += ` | BE ${be > 0 ? '+' : ''}${be.toFixed(1)}`;
   if (!isNaN(agEff)) hcSummary += ` | AG ${agEff.toFixed(1)}`;
