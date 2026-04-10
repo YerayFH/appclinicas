@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AeroLab®</title>
+  <link rel="icon" href="/appclinicas/img/gasometria.png" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/appclinicas/img/gasometria.png">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J830XBBQKF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-J830XBBQKF', { page_path: location.pathname });
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,600;0,800;1,300;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --bg:            #0b0f14;
+      --surface:       #111720;
+      --surface2:      #161d28;
+      --border:        #1e2d3d;
+      --border-hover:  #2a3f56;
+      --text:          #cdd9e5;
+      --muted:         #5c7190;
+      --accent-blue:   #4fa3e0;
+      --accent-cyan:   #38bdf8;
+      --accent-red:    #f87171;
+      --accent-orange: #fb923c;
+      --accent-green:  #34d399;
+      --accent-yellow: #fbbf24;
+      --accent-purple: #a78bfa;
+      --accent-rose:   #fb7185;
+      --radius:        10px;
+      --radius-sm:     6px;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; 
+}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.4); }
+      50%       { box-shadow: 0 0 0 4px rgba(248,113,113,0.0); }
+    }
+
+    .anim-fadein  { animation: fadeIn  0.35s ease both; }
+    .anim-fadeup  { animation: fadeUp  0.45s ease both; }
+
+    /* ============================================================
+       LEGAL MODAL
+    ============================================================ */
+    #legal-modal {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(11,15,20,0.98);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2rem 1rem;
+      backdrop-filter: blur(10px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      max-width: 540px; width: 100%;
+      padding: 2.5rem 2.5rem 2rem;
+      box-shadow: 0 0 80px rgba(79,163,224,0.1);
+      animation: fadeUp 0.5s ease both;
+      margin: auto;
+    }
+    .modal-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(251,146,60,0.1);
+      color: var(--accent-orange);
+      border: 1px solid rgba(251,146,60,0.22);
+      font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.22rem 0.65rem; border-radius: 999px; margin-bottom: 1.25rem;
+    }
+    .modal-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.55rem; font-weight: 800; color: #fff;
+      margin-bottom: 1rem; line-height: 1.28;
+    }
+    .modal-body {
+      font-size: 0.8rem; line-height: 1.8;
+      color: var(--muted); margin-bottom: 1.75rem;
+    }
+    .modal-body strong { color: var(--text); }
+    .modal-refs {
+      font-size: 0.68rem; color: var(--muted);
+      padding: 0.75rem; background: var(--bg);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem; line-height: 1.7;
+    }
+    .btn-accept {
+      width: 100%; padding: 0.9rem 1rem;
+      background: var(--accent-blue);
+      color: #000; font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600; font-size: 0.82rem; letter-spacing: 0.06em;
+      border: none; border-radius: var(--radius-sm); cursor: pointer;
+      transition: background 0.18s, transform 0.12s;
+      text-transform: uppercase;
+    }
+    .btn-accept:hover  { background: var(--accent-cyan); transform: translateY(-1px); }
+    .btn-accept:active { transform: translateY(0); }
+
+    /* ============================================================
+       APP SHELL
+    ============================================================ */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+    #app.visible { display: flex; }
+
+    /* HEADER */
+    .app-header-unified{display:flex;align-items:center;gap:16px;padding:14px 20px;background:#111720;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+    .hdr-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
+    .hdr-text{display:flex;flex-direction:column;gap:2px}
+    .hdr-meta{font-size:11px;opacity:0.75;color:var(--fg)}
+    .hdr-meta a{color:inherit;text-decoration:none}
+    .hdr-meta a:hover{text-decoration:underline}
+    .hdr-dept{font-size:13px;font-weight:500;opacity:0.85;color:var(--fg)}
+    .hdr-app-name{font-size:24px;font-weight:800;letter-spacing:-0.3px;color:#38bdf8}
+    .app-footer-unified{text-align:center;padding:12px 20px;font-size:12px;opacity:0.7}
+
+    /* ============================================================
+       MAIN & VIEWS
+    ============================================================ */
+    main { flex: 1; width: 100%; }
+
+    /* Both views share a container */
+    .view {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+      display: none;
+    }
+    .view.active { display: block; }
+
+    .view-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.55rem; font-weight: 800; color: #fff;
+      line-height: 1.22; margin-bottom: 0.45rem;
+    }
+    .view-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 1.75rem; line-height: 1.5; }
+
+    /* ============================================================
+       PANEL / CARD
+    ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .card + .card { margin-top: 1rem; }
+
+    .card-title {
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.45rem;
+    }
+    .card-title::before {
+      content: ''; display: inline-block;
+      width: 3px; height: 13px; border-radius: 2px;
+      background: var(--accent-blue); flex-shrink: 0;
+    }
+
+    /* ============================================================
+       FORM FIELDS
+    ============================================================ */
+    .field { margin-bottom: 1rem; }
+    .field:last-of-type { margin-bottom: 0; }
+
+    .field-label {
+      display: block; font-size: 0.68rem; color: var(--muted);
+      margin-bottom: 0.38rem; letter-spacing: 0.04em;
+    }
+    .field-label strong { color: var(--text); font-weight: 600; }
+    /* Resaltado del campo activo (Punto 3) */
+    .field {
+      padding: 0.6rem; 
+      margin: -0.6rem -0.6rem 0.4rem -0.6rem; 
+      border-radius: var(--radius-sm);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .field:focus-within {
+      background: rgba(79, 163, 224, 0.04);
+      transform: translateX(4px); /* Pequeño desplazamiento elegante a la derecha */
+    }
+    .field:focus-within .field-label strong { color: var(--accent-cyan); }
+    .field:focus-within .field-input { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+    .field-row { display: flex; gap: 0.5rem; align-items: stretch; }
+
+    .field-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1rem; font-weight: 500;
+      padding: 0.6rem 0.85rem;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      -moz-appearance: textfield;
+      width: 100%;
+    }
+    .field-input::-webkit-inner-spin-button,
+    .field-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .field-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(79,163,224,0.12);
+    }
+    .field-input.error {
+      border-color: var(--accent-red);
+      animation: pulse-border 0.6s ease;
+    }
+
+    /* Placeholder legible en todos los navegadores */
+    .field-input::placeholder         { color: #475b7a; opacity: 1; }
+    .field-input::-webkit-input-placeholder { color: #475b7a; opacity: 1; }
+    .field-input::-moz-placeholder         { color: #475b7a; opacity: 1; }
+    .field-input:-ms-input-placeholder      { color: #475b7a; opacity: 1; }
+    .field-unit {
+      display: flex; align-items: center;
+      font-size: 0.62rem; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 0.65rem; white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* Range bar */
+    .range-bar { margin-top: 0.35rem; }
+    .range-track {
+      width: 100%; height: 3px; background: var(--border);
+      border-radius: 2px; position: relative; overflow: visible;
+    }
+    .range-fill {
+      height: 100%; border-radius: 2px;
+      background: var(--accent-green);
+      transition: width 0.28s, background 0.28s;
+      max-width: 100%;
+    }
+    .range-dot {
+      position: absolute; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--accent-green);
+      border: 2px solid var(--bg);
+      transition: left 0.28s, background 0.28s;
+    }
+
+    /* Optional section divider (legacy, kept for fallback) */
+    .optional-divider {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin: 1.25rem 0 1rem;
+    }
+    .optional-divider span {
+      font-size: 0.58rem; letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap;
+    }
+    .optional-divider::before,
+    .optional-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+      border-style: dashed; border-width: 0 0 1px 0;
+    }
+
+    /* ---- <details> Opciones Avanzadas ---- */
+    .advanced-details {
+      margin-top: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: border-color 0.18s;
+    }
+    .advanced-details[open] { border-color: var(--border-hover); }
+
+.advanced-summary {
+      list-style: none;
+      display: flex; align-items: center; gap: 0.55rem;
+      padding: 0.85rem 1rem;
+      background: rgba(79, 163, 224, 0.12);
+      border: 1px solid var(--accent-blue);
+      border-radius: var(--radius-sm);
+      color: var(--accent-blue);
+      font-size: 0.68rem; font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.18s, background 0.18s;
+    }
+    .advanced-summary::-webkit-details-marker { display: none; }
+    .advanced-summary::marker               { display: none; }
+    .advanced-summary:hover { color: var(--text); background: var(--border); }
+
+    .advanced-details[open] .advanced-summary { color: var(--accent-blue); }
+
+    .advanced-summary .adv-arrow {
+      display: inline-block; transition: transform 0.22s ease;
+      font-style: normal; line-height: 1; flex-shrink: 0;
+    }
+    .advanced-details[open] .adv-arrow { transform: rotate(90deg); }
+
+    .advanced-summary .adv-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border); flex-shrink: 0;
+      transition: background 0.18s;
+    }
+    .advanced-details[open] .adv-dot { background: var(--accent-blue); }
+
+    .advanced-body {
+      padding: 1.1rem 1rem 0.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Two-column optional grid */
+    .opt-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+/* ============================================================
+       ACORDEONES DE RESULTADOS (NUEVO)
+    ============================================================ */
+    .resultado-acordeon {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .resultado-conclusion {
+      padding: 1rem;
+      font-size: 0.75rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      list-style: none;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      background: var(--bg);
+      transition: background 0.2s;
+    }
+    .resultado-conclusion:hover { background: var(--surface2); }
+    .resultado-conclusion::-webkit-details-marker { display: none; }
+    .resultado-conclusion::marker { display: none; }
+
+    /* Colores de gravedad */
+    .conclusion-ok { border-left: 4px solid var(--accent-green); color: var(--text); }
+    .conclusion-warn { border-left: 4px solid var(--accent-orange); color: var(--accent-orange); }
+    .conclusion-crit { border-left: 4px solid var(--accent-red); color: var(--accent-red); }
+    .conclusion-info { border-left: 4px solid var(--accent-blue); color: var(--accent-cyan); }
+    
+    .resultado-detalles {
+      padding: 1.25rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    @media (max-width: 520px) { .opt-grid { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       FORM ACTIONS
+    ============================================================ */
+    .form-actions { margin-top: 1.5rem; }
+    .btn-primary {
+      width: 100%; padding: 0.88rem 1rem;
+      background: linear-gradient(135deg, #4fa3e0, #2563eb);
+      color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600; font-size: 0.82rem; letter-spacing: 0.07em;
+      border: none; border-radius: var(--radius-sm); cursor: pointer;
+      transition: opacity 0.18s, transform 0.12s;
+      text-transform: uppercase;
+    }
+    .btn-primary:hover  { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); opacity: 1; }
+
+    .btn-ghost {
+      width: 100%; padding: 0.6rem;
+      background: transparent; color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.06em;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      cursor: pointer; margin-top: 0.5rem;
+      transition: color 0.18s, border-color 0.18s;
+      text-transform: uppercase;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+    /* Botón Copiar a Historia Clínica (Punto 1) */
+    .btn-copy-history {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; padding: 0.85rem; margin-top: 1.5rem;
+      background: rgba(52, 211, 153, 0.1); 
+      color: var(--accent-green);
+      font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 0.8rem;
+      border: 1px dashed var(--accent-green); border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-copy-history:hover { background: rgba(52, 211, 153, 0.2); }
+    /* Inline validation error */
+    .form-error {
+      display: none; margin-top: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: var(--radius-sm);
+      font-size: 0.73rem; color: var(--accent-red); line-height: 1.5;
+    }
+    .form-error.visible { display: block; }
+
+    /* ============================================================
+       REFERENCE TABLE
+    ============================================================ */
+    .ref-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+    .ref-table th {
+      text-align: left; padding: 0.28rem 0;
+      color: var(--muted); font-weight: 500;
+    }
+    .ref-table th:last-child { text-align: right; }
+    .ref-table td { padding: 0.32rem 0; }
+    .ref-table td:last-child { text-align: right; color: var(--accent-green); }
+    .ref-table tr + tr td { border-top: 1px solid var(--border); }
+
+    /* ============================================================
+       RESULTS VIEW — BACK BUTTON
+    ============================================================ */
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.55rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text); font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.73rem; letter-spacing: 0.05em;
+      border-radius: var(--radius-sm); cursor: pointer;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.18s, background 0.18s;
+      text-transform: uppercase;
+    }
+    .btn-back:hover { border-color: var(--accent-blue); background: var(--surface2); }
+    .btn-back svg { flex-shrink: 0; }
+    /* ============================================================
+       VALUE CHIPS ROW (Punto 4 - Sticky)
+    ============================================================ */
+    .chips-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin: -0.5rem -1.5rem 1rem -1.5rem; /* Expande a los bordes */
+      padding: 0.8rem 1.5rem; /* Espaciado interno */
+      position: -webkit-sticky;
+      position: sticky;
+      top: 101px; /* Justo debajo del header del logo */
+      z-index: 50;
+      background: rgba(11, 15, 20, 0.92); /* Fondo oscuro semitransparente */
+      backdrop-filter: blur(8px); /* Efecto cristal elegante */
+      border-bottom: 1px solid var(--border);
+    }
+    .chip {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.7rem; text-align: center; min-width: 70px;
+    }
+    .chip-name { font-size: 0.55rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.18rem; }
+    .chip-val  { font-size: 0.92rem; font-weight: 600; }
+    .chip-unit { font-size: 0.52rem; color: var(--muted); margin-top: 0.1rem; }
+    .chip.c-normal   .chip-val { color: var(--accent-green); }
+    .chip.c-high     .chip-val { color: var(--accent-orange); }
+    .chip.c-low      .chip-val { color: var(--accent-blue); }
+    .chip.c-critical .chip-val { color: var(--accent-red); }
+    .chip.c-neutral  .chip-val { color: var(--muted); }
+
+    /* ============================================================
+       DIAGNOSIS BANNER
+    ============================================================ */
+    .dx-banner {
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem; border: 1px solid;
+    }
+    .dx-banner.acidosis  { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.22); }
+    .dx-banner.alcalosis { background: rgba(56,189,248,0.06);  border-color: rgba(56,189,248,0.22); }
+    .dx-banner.normal    { background: rgba(52,211,153,0.06);  border-color: rgba(52,211,153,0.22); }
+    .dx-banner.mixed     { background: rgba(251,191,36,0.06);  border-color: rgba(251,191,36,0.22); }
+
+    .dx-pill {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.58rem; letter-spacing: 0.13em; text-transform: uppercase;
+      padding: 0.18rem 0.6rem; border-radius: 999px; margin-bottom: 0.55rem;
+    }
+    .dx-pill.acidosis  { background: rgba(248,113,113,0.14); color: var(--accent-red); }
+    .dx-pill.alcalosis { background: rgba(56,189,248,0.14);  color: var(--accent-cyan); }
+    .dx-pill.normal    { background: rgba(52,211,153,0.14);  color: var(--accent-green); }
+    .dx-pill.mixed     { background: rgba(251,191,36,0.14);  color: var(--accent-yellow); }
+
+    .dx-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.18rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;
+    }
+    .dx-sub { font-size: 0.74rem; color: var(--muted); line-height: 1.55; }
+
+    /* ============================================================
+       SECTION LABEL
+    ============================================================ */
+    .sec-label {
+      font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin: 1.2rem 0 0.7rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ============================================================
+       COMPENSATION BOX
+    ============================================================ */
+    .comp-box {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 1rem;
+      font-size: 0.75rem; line-height: 1.75;
+    }
+    .comp-formula { color: var(--accent-cyan); font-size: 0.68rem; }
+    .comp-result  { color: var(--text); }
+    .comp-verdict { margin-top: 0.2rem; font-size: 0.72rem; }
+    .comp-verdict.ok  { color: var(--accent-green); }
+    .comp-verdict.warn { color: var(--accent-orange); }
+    .comp-verdict.info { color: var(--muted); }
+    .comp-sep { margin: 0.6rem 0; height: 1px; background: var(--border); }
+
+    /* ============================================================
+       AG / PAFI / ELECTROLYTES BLOCK
+    ============================================================ */
+    .metric-block {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0.9rem 1rem;
+      margin-bottom: 0.55rem;
+    }
+    .metric-block:last-child { margin-bottom: 0; }
+
+    .metric-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 0.2rem;
+    }
+    .metric-label { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .metric-val   { font-size: 1.05rem; font-weight: 600; }
+    .metric-unit  { font-size: 0.62rem; color: var(--muted); margin-left: 0.25rem; }
+    .metric-bar   { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin: 0.35rem 0; }
+    .metric-fill  { height: 100%; border-radius: 2px; transition: width 0.5s; }
+    .metric-sub   { font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
+    .metric-alert {
+      margin-top: 0.5rem; padding: 0.45rem 0.65rem;
+      border-radius: var(--radius-sm); font-size: 0.72rem; line-height: 1.55;
+    }
+    .metric-alert.warn    { background: rgba(251,191,36,0.08);  border: 1px solid rgba(251,191,36,0.2);  color: var(--accent-yellow); }
+    .metric-alert.danger  { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--accent-red); }
+    .metric-alert.ok      { background: rgba(52,211,153,0.08);  border: 1px solid rgba(52,211,153,0.2);  color: var(--accent-green); }
+    .metric-alert.info    { background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); color: var(--accent-purple); }
+
+    /* PAFI severity */
+    .pafi-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem;
+      margin-top: 0.55rem;
+    }
+    @media (max-width: 480px) { .pafi-row { grid-template-columns: repeat(2, 1fr); } }
+    .pafi-cell {
+      padding: 0.4rem 0.3rem; text-align: center;
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      font-size: 0.62rem; line-height: 1.4;
+    }
+    .pafi-cell.active { border-color: currentColor; }
+    .pafi-cell .pc-val  { font-size: 0.78rem; font-weight: 600; display: block; }
+    .pafi-cell .pc-lbl  { color: var(--muted); font-size: 0.58rem; }
+
+    /* ============================================================
+       CAUSES LIST
+    ============================================================ */
+    .causes-list { list-style: none; display: flex; flex-direction: column; gap: 0.38rem; }
+    .cause-item {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0.55rem 0.8rem;
+      font-size: 0.75rem; line-height: 1.55; color: var(--text);
+    }
+    .cause-item.highlight {
+      background: rgba(248,113,113,0.06);
+      border-color: rgba(248,113,113,0.25);
+    }
+    .cause-icon {
+      flex-shrink: 0; margin-top: 1px;
+      color: var(--muted);
+    }
+    .cause-icon.c-red    { color: var(--accent-red); }
+    .cause-icon.c-orange { color: var(--accent-orange); }
+    .cause-icon.c-blue   { color: var(--accent-blue); }
+    .cause-icon.c-green  { color: var(--accent-green); }
+    .cause-icon.c-yellow { color: var(--accent-yellow); }
+    .cause-icon.c-purple { color: var(--accent-purple); }
+
+    /* ============================================================
+       DISCLAIMER BANNER
+    ============================================================ */
+    .disclaimer {
+      margin-top: 1.25rem; padding: 0.75rem 1rem;
+      background: rgba(251,191,36,0.06);
+      border: 1px solid rgba(251,191,36,0.18);
+      border-radius: var(--radius-sm);
+      font-size: 0.68rem; color: var(--accent-yellow); line-height: 1.65;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 0.9rem 1.75rem;
+      font-size: 0.62rem; color: var(--muted);
+      text-align: center; line-height: 1.65;
+    }
+    footer strong { color: var(--text); }
+
+    /* ============================================================
+       RESPONSIVE TWEAKS
+    ============================================================ */
+    @media (max-width: 520px) {
+      .view { padding: 1.25rem 1rem 2.5rem; }
+      .card { padding: 1.15rem; }
+      .modal-card { padding: 1.75rem 1.35rem 1.5rem; }
+    }
+
+  /* ===== VENOUS MODE — AeroLab® ===== */
+  .sample-type-selector {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(22, 29, 40, 0.6); /* Fondo oscuro semitransparente */
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0.5rem 0 1.25rem;
+    width: 100%;
+  }
+  .sample-type-selector .st-label { 
+    display: none; /* Ocultamos el texto "Muestra:" para un look más limpio */
+  }
+  .st-chip {
+    flex: 1; /* Para que ocupen 50/50 del ancho */
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    font-size: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .st-chip:hover {
+    color: var(--text);
+  }
+  .st-chip.active {
+    background: var(--surface);
+    color: var(--accent-cyan);
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Efecto relieve */
+  }
+  /* Venous overrides */
+  .st-chip.venous-chip.active {
+    color: #4fa3e0;
+  }
+
+  .venous-banner {
+    display: none;
+    background: rgba(79,163,224,0.12);
+    border-left: 3px solid #4fa3e0;
+    color: #4fa3e0;
+    padding: 7px 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 15px;
+  }
+  .venous-theme .venous-banner { display: block; }
+
+  /* Cobalt tint on interpret button in venous mode */
+  .venous-theme .btn-primary {
+    background: linear-gradient(135deg, #1a3a6b, #2d5ea8);
+  }
+  .venous-theme .btn-primary:hover { background: linear-gradient(135deg, #2d5ea8, #4fa3e0); }
+  /* Cobalt card-title underline */
+  .venous-theme .card-title {
+    border-bottom-color: rgba(79,163,224,0.35);
+    color: #4fa3e0;
+  }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     LEGAL MODAL
+================================================================ -->
+<div id="legal-modal">
+  <div class="modal-card">
+    <div class="modal-eyebrow">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Aviso Legal Obligatorio
+    </div>
+    <div class="modal-title">Herramienta de Apoyo a la Decisión Clínica</div>
+    <div class="modal-body">
+      <strong>Lea atentamente antes de continuar.</strong><br><br>
+      Esta herramienta es <strong>exclusivamente para apoyo a la decisión clínica</strong> y
+      <strong>no sustituye el juicio del profesional sanitario</strong>. Los cálculos deben ser
+      verificados de forma independiente con fuentes primarias.<br><br>
+      El autor <strong>no se hace responsable</strong> de las decisiones tomadas en base a esta
+      aplicación. El uso implica la aceptación plena de estas condiciones.<br><br>
+      Aplicación diseñada para <strong>profesionales sanitarios cualificados</strong>.
+    </div>
+    <div class="modal-refs">
+      📚 Base bibliográfica: Rose &amp; Post, <em>Clinical Physiology of Acid-Base and Electrolyte Disorders</em> · Marino, <em>The ICU Book</em> · Guías SEPAR
+    </div>
+    <button class="btn-accept" onclick="acceptLegal()">Aceptar y Continuar</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     APP SHELL
+================================================================ -->
+<div id="app">
+
+  <header class="app-header-unified">
+    <img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo">
+    <div class="hdr-text">
+      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+      <div class="hdr-dept">Farmacia Hospitalaria</div>
+      <div class="hdr-app-name">AeroLab&#174;</div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         VISTA 1 — ENTRADA DE DATOS
+    ============================================================ -->
+    <div id="view-input" class="view active anim-fadein">
+
+      <div class="view-title">Gasometría: interpretación y orientación – YerayFH</div>
+      <div class="view-sub">Introduzca los valores del análisis. Los campos marcados con * son obligatorios.</div>
+
+      <!-- SELECTOR TIPO DE MUESTRA -->
+      <div class="sample-type-selector">
+        <span class="st-label">Muestra:</span>
+        <button class="st-chip active" id="btn-arterial" onclick="setSampleType('arterial')">&#x1FAC1; Arterial</button>
+        <button class="st-chip venous-chip" id="btn-venous" onclick="setSampleType('venous')">&#x1F9EA; Venosa</button>
+      </div>
+      <div class="venous-banner" id="venous-banner">
+        &#x26A0; Modo venoso — PAFI y gradiente A-a no disponibles &nbsp;·&nbsp; Rangos de referencia ajustados
+      </div>
+
+      <!-- PARÁMETROS PRINCIPALES -->
+      <div class="card">
+        <div class="card-title">Parámetros Principales</div>
+
+        <!-- pH -->
+        <div class="field">
+          <label class="field-label" for="inp-ph"><strong>pH</strong> * — Potencial de Hidrógeno</label>
+          <div class="field-row">
+            <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-ph" step="0.01" min="6.5" max="8.0" placeholder="7.40" oninput="updateBar('ph'); clearError('inp-ph')">
+            <span class="field-unit">6.5–8.0</span>
+          </div>
+          <div class="range-bar"><div class="range-track" id="track-ph"><div class="range-fill" id="fill-ph" style="width:0%"></div><div class="range-dot" id="dot-ph" style="left:0%"></div></div></div>
+        </div>
+
+        <!-- pCO2 -->
+        <div class="field">
+          <label class="field-label" for="inp-pco2"><strong>pCO₂</strong> * — Presión parcial CO₂</label>
+          <div class="field-row">
+            <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-pco2" step="0.1" min="5" max="120" placeholder="40" oninput="updateBar('pco2'); clearError('inp-pco2')">
+            <span class="field-unit">mmHg</span>
+          </div>
+          <div class="range-bar"><div class="range-track" id="track-pco2"><div class="range-fill" id="fill-pco2" style="width:0%"></div><div class="range-dot" id="dot-pco2" style="left:0%"></div></div></div>
+        </div>
+
+        <!-- HCO3 -->
+        <div class="field">
+          <label class="field-label" for="inp-hco3"><strong>HCO₃⁻</strong> * — Bicarbonato</label>
+          <div class="field-row">
+            <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-hco3" step="0.1" min="2" max="60" placeholder="24" oninput="updateBar('hco3'); clearError('inp-hco3')">
+            <span class="field-unit">mEq/L</span>
+          </div>
+          <div class="range-bar"><div class="range-track" id="track-hco3"><div class="range-fill" id="fill-hco3" style="width:0%"></div><div class="range-dot" id="dot-hco3" style="left:0%"></div></div></div>
+        </div>
+
+        <!-- ▶ OPCIONES AVANZADAS (details nativo) -->
+        <details class="advanced-details" id="advanced-details">
+          <summary class="advanced-summary">
+            <span class="adv-arrow">▶</span>
+            <span class="adv-dot"></span>
+            Opciones Avanzadas (Electrolitos, Lactato, Oxigenación)
+          </summary>
+
+          <div class="advanced-body">
+
+            <!-- Electrolitos para AG automático -->
+            <div class="optional-divider"><span>Electrolitos — Anion Gap automático</span></div>
+            <div class="opt-grid">
+              <div class="field">
+                <label class="field-label" for="inp-na"><strong>Na⁺</strong> — Sodio</label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-na" step="0.1" min="100" max="180" placeholder="140" oninput="updateBar('na'); clearError('inp-na')">
+                  <span class="field-unit">mEq/L</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-na"><div class="range-fill" id="fill-na" style="width:0%"></div><div class="range-dot" id="dot-na" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="inp-cl"><strong>Cl⁻</strong> — Cloro</label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-cl" step="0.1" min="60" max="140" placeholder="102" oninput="updateBar('cl'); clearError('inp-cl')">
+                  <span class="field-unit">mEq/L</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-cl"><div class="range-fill" id="fill-cl" style="width:0%"></div><div class="range-dot" id="dot-cl" style="left:0%"></div></div></div>
+              </div>
+            </div>
+
+            <!-- Parámetros avanzados -->
+            <div class="optional-divider"><span>Bioquímica avanzada y oxigenación</span></div>
+            <div class="opt-grid">
+              <div class="field">
+                <label class="field-label" for="inp-alb"><strong>Albúmina</strong></label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-alb" step="0.1" min="1" max="6" placeholder="4.0" oninput="updateBar('alb'); clearError('inp-alb')">
+                  <span class="field-unit">g/dL</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-alb"><div class="range-fill" id="fill-alb" style="width:0%"></div><div class="range-dot" id="dot-alb" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="inp-k"><strong>K⁺</strong> — Potasio sérico</label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-k" step="0.1" min="1" max="9" placeholder="4.0" oninput="updateBar('k'); clearError('inp-k')">
+                  <span class="field-unit">mEq/L</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-k"><div class="range-fill" id="fill-k" style="width:0%"></div><div class="range-dot" id="dot-k" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="inp-lactato"><strong>Lactato</strong></label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-lactato" step="0.1" min="0" max="20" placeholder="1.0" oninput="updateBar('lactato'); clearError('inp-lactato')">
+                  <span class="field-unit">mmol/L</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-lactato"><div class="range-fill" id="fill-lactato" style="width:0%"></div><div class="range-dot" id="dot-lactato" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="inp-be"><strong>BE</strong> — Exceso de Base</label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="-?[0-9]*\.?[0-9]*" id="inp-be" step="0.1" min="-30" max="30" placeholder="0.0" oninput="updateBar('be'); clearError('inp-be')">
+                  <span class="field-unit">mEq/L</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-be"><div class="range-fill" id="fill-be" style="width:0%"></div><div class="range-dot" id="dot-be" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="inp-po2"><strong>pO₂</strong></label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-po2" step="1" min="20" max="600" placeholder="95" oninput="updateBar('po2'); clearError('inp-po2')">
+                  <span class="field-unit">mmHg</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-po2"><div class="range-fill" id="fill-po2" style="width:0%"></div><div class="range-dot" id="dot-po2" style="left:0%"></div></div></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="inp-fio2"><strong>FiO₂</strong> — Fracción O₂ inspirado</label>
+                <div class="field-row">
+                  <input class="field-input" type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" id="inp-fio2" step="1" min="21" max="100" placeholder="21" oninput="updateBar('fio2'); clearError('inp-fio2')">
+                  <span class="field-unit">% (ej: 21)</span>
+                </div>
+                <div class="range-bar"><div class="range-track" id="track-fio2"><div class="range-fill" id="fill-fio2" style="width:0%"></div><div class="range-dot" id="dot-fio2" style="left:0%"></div></div></div>
+              </div>
+            </div>
+
+          </div><!-- /advanced-body -->
+        </details><!-- /advanced-details -->
+
+        <div class="form-actions">
+          <button class="btn-primary" onclick="interpret()">
+            Interpretar Gasometría &nbsp;→
+          </button>
+          <div id="form-error" class="form-error"></div>
+          <button class="btn-ghost" onclick="resetAll()">↺ Limpiar todos los valores</button>
+        </div>
+      </div>
+
+      <!-- REFERENCE TABLE -->
+      <div class="card">
+        <div class="card-title">Valores de Referencia</div>
+        <table class="ref-table">
+          <thead><tr><th>Parámetro</th><th>Normal</th></tr></thead>
+          <tbody>
+            <tr><td>pH</td><td>7.35 – 7.45</td></tr>
+            <tr><td>pCO₂</td><td>35 – 45 mmHg</td></tr>
+            <tr><td>HCO₃⁻</td><td>22 – 26 mEq/L</td></tr>
+            <tr><td>Na⁺</td><td>136 – 145 mEq/L</td></tr>
+            <tr><td>Cl⁻</td><td>98 – 106 mEq/L</td></tr>
+            <tr><td>Anion Gap</td><td>8 – 12 mEq/L</td></tr>
+            <tr><td>Albúmina</td><td>3.5 – 5.0 g/dL</td></tr>
+            <tr><td>K⁺</td><td>3.5 – 5.0 mEq/L</td></tr>
+            <tr><td>Lactato</td><td>&lt; 2.0 mmol/L</td></tr>
+            <tr><td>BE (Exc. Base)</td><td>−2 a +2 mEq/L</td></tr>
+            <tr><td>pO₂</td><td>80 – 100 mmHg</td></tr>
+            <tr><td>PAFI (pO₂/FiO₂)</td><td>&gt; 300 mmHg</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /view-input -->
+
+
+    <!-- ============================================================
+         VISTA 2 — RESULTADOS
+    ============================================================ -->
+    <div id="view-results" class="view">
+
+      <button class="btn-back" onclick="goBack()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver a editar datos
+      </button>
+
+      <div id="results-content">
+        <!-- Populated by JS -->
+      </div>
+
+    </div><!-- /view-results -->
+
+  </main>
+
+  <div style="padding:8px 20px;font-size:10px;color:var(--muted);line-height:1.5">Ref: Rose &amp; Post · Marino's ICU Book · Guías SEPAR</div>
+  <footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
+
+</div><!-- /app -->
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+'use strict';
+
+/* ----------------------------------------------------------------
+   localStorage — Aviso legal
+---------------------------------------------------------------- */
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('gaso_legal_accepted') === 'true') {
+    document.getElementById('legal-modal').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+  }
+});
+
+function acceptLegal() {
+  localStorage.setItem('gaso_legal_accepted', 'true');
+  document.getElementById('legal-modal').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+}
+
+/* ----------------------------------------------------------------
+   View transitions
+---------------------------------------------------------------- */
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active', 'anim-fadein', 'anim-fadeup');
+  });
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  // Force reflow for animation re-trigger
+  void el.offsetWidth;
+  el.classList.add('anim-fadeup');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goBack() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showView('view-input');
+  // Si ya había valores en campos avanzados, abrir el panel para que sean visibles
+  const advancedIds = ['inp-na','inp-cl','inp-alb','inp-k','inp-lactato','inp-be','inp-po2','inp-fio2'];
+  const hasAdvanced = advancedIds.some(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim() !== '';
+  });
+  const adv = document.getElementById('advanced-details');
+  if (adv && hasAdvanced) adv.open = true;
+}
+
+/* ----------------------------------------------------------------
+   Range bars config
+---------------------------------------------------------------- */
+let RANGE_CFG = {
+  ph:      { min: 6.5,  max: 8.0,  nMin: 7.35, nMax: 7.45 },
+  pco2:    { min: 5,    max: 120,  nMin: 35,   nMax: 45   },
+  hco3:    { min: 2,    max: 60,   nMin: 22,   nMax: 26   },
+  na:      { min: 100,  max: 180,  nMin: 136,  nMax: 145  },
+  cl:      { min: 60,   max: 140,  nMin: 98,   nMax: 106  },
+  alb:     { min: 1,    max: 6,    nMin: 3.5,  nMax: 5.0  },
+  k:       { min: 1,    max: 9,    nMin: 3.5,  nMax: 5.0  },
+  lactato: { min: 0,    max: 15,   nMin: 0,    nMax: 2.0  },
+  be:      { min: -30,  max: 30,   nMin: -2,   nMax: 2    },
+  po2:     { min: 20,   max: 600,  nMin: 80,   nMax: 100  },
+  fio2:    { min: 21,   max: 100,  nMin: 21,   nMax: 21   },
+};
+
+/* ----------------------------------------------------------------
+   VENOUS MODE — sample type state + range config
+   Rose & Post 7th ed. cap.19; Marino ICU Book 4th ed.; SEPAR GAB 2022
+---------------------------------------------------------------- */
+let sampleType = 'arterial'; // 'arterial' | 'venous'
+
+const SAMPLE_RANGES = {
+  arterial: { phLo: 7.35, phHi: 7.45, pco2Lo: 35, pco2Hi: 45, hco3Lo: 22, hco3Hi: 26, po2Lo: 80, po2Hi: 100 },
+  venous:   { phLo: 7.32, phHi: 7.42, pco2Lo: 41, pco2Hi: 51, hco3Lo: 23, hco3Hi: 27, po2Lo: 35, po2Hi: 45  },
+};
+
+function setSampleType(type) {
+  sampleType = type;
+  const isVenous = type === 'venous';
+  document.body.classList.toggle('venous-theme', isVenous);
+  document.getElementById('btn-arterial').classList.toggle('active', !isVenous);
+  document.getElementById('btn-venous').classList.toggle('active', isVenous);
+
+  // Adjust range bar normals for ph, pco2, hco3, po2
+  const R = SAMPLE_RANGES[type];
+  RANGE_CFG.ph.nMin   = R.phLo;  RANGE_CFG.ph.nMax   = R.phHi;
+  RANGE_CFG.pco2.nMin = R.pco2Lo; RANGE_CFG.pco2.nMax = R.pco2Hi;
+  RANGE_CFG.hco3.nMin = R.hco3Lo; RANGE_CFG.hco3.nMax = R.hco3Hi;
+  RANGE_CFG.po2.nMin  = R.po2Lo;  RANGE_CFG.po2.nMax  = R.po2Hi;
+
+  // Update placeholder hints for main fields
+  document.getElementById('inp-ph').placeholder   = isVenous ? '7.37' : '7.40';
+  document.getElementById('inp-pco2').placeholder  = isVenous ? '46' : '40';
+  document.getElementById('inp-hco3').placeholder  = isVenous ? '25' : '24';
+  document.getElementById('inp-po2').placeholder   = isVenous ? '40' : '95';
+
+  // Update pO2 label
+  const po2Label = document.querySelector('label[for="inp-po2"]');
+  if (po2Label) po2Label.innerHTML = isVenous
+    ? '<strong>pO₂</strong> <span style="font-size:0.72em;color:var(--muted)">(venosa — 35–45 mmHg)</span>'
+    : '<strong>pO₂</strong>';
+
+  // Show/hide venous banner
+  document.getElementById('venous-banner').style.display = isVenous ? 'block' : 'none';
+
+  const refRows = document.querySelectorAll('.ref-table tbody tr');
+  if (refRows.length >= 12) {
+    refRows[0].cells[1].textContent = isVenous ? '7.32 – 7.42' : '7.35 – 7.45';
+    refRows[1].cells[1].textContent = isVenous ? '41 – 51 mmHg' : '35 – 45 mmHg';
+    refRows[2].cells[1].textContent = isVenous ? '23 – 27 mEq/L' : '22 – 26 mEq/L';
+    // NUEVO: Actualizar la pO2 y la PAFI en la tabla
+    refRows[10].cells[1].textContent = isVenous ? '35 – 45 mmHg' : '80 – 100 mmHg';
+    refRows[11].cells[1].textContent = isVenous ? 'No valorable' : '> 300 mmHg';
+  }
+
+  // NUEVO: Ajustar la escala visual máxima de la pO2 para que la barra gráfica sea proporcional
+  RANGE_CFG.po2.max = isVenous ? 100 : 600;
+  updateBar('po2'); // Refrescar la barra gráficamente
+
+  sessionStorage.setItem('aerolab_sampleType', type);
+}
+window.setSampleType = setSampleType;
+
+// Restore previous session choice
+(function () {
+  const saved = sessionStorage.getItem('aerolab_sampleType');
+  if (saved === 'venous') setSampleType('venous');
+})();
+
+function updateBar(key) {
+  const rawVal = document.getElementById('inp-' + key)?.value || '';
+  const val = parseFloat(rawVal.replace(',', '.'));
+  if (isNaN(val)) return;
+  const r = RANGE_CFG[key];
+  if (!r) return;
+  const pct = Math.min(100, Math.max(0, (val - r.min) / (r.max - r.min) * 100));
+  const fill = document.getElementById('fill-' + key);
+  const dot  = document.getElementById('dot-' + key);
+  if (!fill || !dot) return;
+  const isNorm = val >= r.nMin && val <= r.nMax;
+  const color  = isNorm ? 'var(--accent-green)'
+    : (val < r.nMin ? 'var(--accent-blue)' : 'var(--accent-red)');
+  fill.style.width      = pct + '%';
+  fill.style.background = color;
+  dot.style.left        = pct + '%';
+  dot.style.background  = color;
+}
+
+/* ----------------------------------------------------------------
+   Validation helpers
+---------------------------------------------------------------- */
+function clearError(id) {
+  document.getElementById(id)?.classList.remove('error');
+  const fe = document.getElementById('form-error');
+  if (fe) { fe.textContent = ''; fe.classList.remove('visible'); }
+}
+
+function showFieldErrors(msgs, ids) {
+  ids.forEach(id => document.getElementById(id)?.classList.add('error'));
+  // Si algún campo en error está dentro del panel avanzado, abrirlo automáticamente
+  const adv = document.getElementById('advanced-details');
+  if (adv) {
+    const advancedIds = ['inp-na','inp-cl','inp-alb','inp-k','inp-lactato','inp-be','inp-po2','inp-fio2'];
+    if (ids.some(id => advancedIds.includes(id))) adv.open = true;
+  }
+  const fe = document.getElementById('form-error');
+  if (fe) {
+    fe.innerHTML = svgIcon('alert-triangle', 14, 'inline-block') + ' ' + msgs.join(' · ');
+    fe.classList.add('visible');
+  }
+}
+
+/* ----------------------------------------------------------------
+   Chip severity helper
+---------------------------------------------------------------- */
+function chipSeverity(val, low, high, critLow, critHigh) {
+  if (val <= critLow || val >= critHigh) return 'c-critical';
+  if (val < low)  return 'c-low';
+  if (val > high) return 'c-high';
+  return 'c-normal';
+}
+
+/* ----------------------------------------------------------------
+   SVG ICON LIBRARY (Lucide-style, inline)
+---------------------------------------------------------------- */
+function svgIcon(name, size = 16, cls = '') {
+  const s = size, c = cls ? ` class="${cls}"` : '';
+  const icons = {
+    'alert-triangle': `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+    'check-circle':   `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+    'activity':       `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+    'droplet':        `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
+    'wind':           `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>`,
+    'pill':           `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v2"/><circle cx="17" cy="17" r="5"/><path d="m14.5 19.5 5-5"/></svg>`,
+    'zap':            `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+    'thermometer':    `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>`,
+    'brain':          `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.14"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.14"/></svg>`,
+    'heart-pulse':    `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l1.5-3 2 6 1.5-3h6.28"/></svg>`,
+    'microscope':     `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>`,
+    'flask':          `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 9H8Z"/><path d="M6.1 15a7 7 0 1 0 11.8 0L14 9H10Z"/></svg>`,
+    'stethoscope':    `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>`,
+    'shield':         `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    'wave':           `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c.5-3 2.5-5 5-5s4.5 2 5 5 2.5 5 5 5 4.5-2 5-5"/></svg>`,
+    'kidney':         `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10c0-2.2-1.8-4-4-4-3.3 0-6 2.7-6 6 0 4.4 3.6 8 8 8 1.5 0 2.9-.4 4-1.2"/><path d="M12 10c0-2.2 1.8-4 4-4 3.3 0 6 2.7 6 6 0 4.4-3.6 8-8 8-1.5 0-2.9-.4-4-1.2"/></svg>`,
+    'lungs':          `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v8"/><path d="M7 19c-2.2 0-4-1.8-4-4V9a2 2 0 0 1 4 0v4a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4V9a2 2 0 0 1 4 0v6c0 2.2-1.8 4-4 4H7Z"/></svg>`,
+    'trending-up':    `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
+    'trending-down':  `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>`,
+    'minus-circle':   `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
+    'info':           `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+    'users':          `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    'alert-circle':   `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    'slash':          `<svg${c} width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`,
+  };
+  return icons[name] || icons['info'];
+}
+
+/* ----------------------------------------------------------------
+   Reset
+---------------------------------------------------------------- */
+function resetAll() {
+  ['ph','pco2','hco3','na','cl','alb','k','lactato','be','po2','fio2'].forEach(k => {
+    const el = document.getElementById('inp-' + k);
+    if (el) { el.value = ''; el.classList.remove('error'); }
+    const f = document.getElementById('fill-' + k);
+    const d = document.getElementById('dot-' + k);
+    if (f) f.style.width = '0%';
+    if (d) d.style.left  = '0%';
+  });
+  const fe = document.getElementById('form-error');
+  if (fe) { fe.textContent = ''; fe.classList.remove('visible'); }
+  // Cerrar panel avanzado al limpiar
+  const adv = document.getElementById('advanced-details');
+  if (adv) adv.open = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ----------------------------------------------------------------
+   MAIN INTERPRET FUNCTION
+---------------------------------------------------------------- */
+function interpret() {
+  document.activeElement?.blur();
+  
+  // Helper para leer el campo, cambiar coma por punto y convertir a número
+  const getVal = (id) => parseFloat(document.getElementById(id).value.replace(',', '.'));
+
+  // Collect
+  const ph      = getVal('inp-ph');
+  const pco2    = getVal('inp-pco2');
+  const hco3    = getVal('inp-hco3');
+  const na      = getVal('inp-na');
+  const cl      = getVal('inp-cl');
+  const alb     = getVal('inp-alb');
+  const k       = getVal('inp-k');
+  const lactato = getVal('inp-lactato');
+  const be      = getVal('inp-be');
+  const po2     = getVal('inp-po2');
+  const fio2    = getVal('inp-fio2');
+
+  // Validation
+  const errors = [], errorIds = [];
+  if (isNaN(ph)   || ph < 6.5 || ph > 8.0)   { errors.push('pH inválido (rango 6.5–8.0)');    errorIds.push('inp-ph'); }
+  if (isNaN(pco2) || pco2 < 5  || pco2 > 120) { errors.push('pCO₂ inválida (rango 5–120)');   errorIds.push('inp-pco2'); }
+  if (isNaN(hco3) || hco3 < 1  || hco3 > 60)  { errors.push('HCO₃⁻ inválido (rango 1–60)');   errorIds.push('inp-hco3'); }
+
+  // Validación de campos opcionales: sólo si el usuario los ha rellenado
+  if (!isNaN(na)      && (na < 100  || na > 180))  { errors.push('Sodio fuera de rango biológico (100–180 mEq/L)');       errorIds.push('inp-na'); }
+  if (!isNaN(cl)      && (cl < 60   || cl > 140))  { errors.push('Cloro fuera de rango biológico (60–140 mEq/L)');        errorIds.push('inp-cl'); }
+  if (!isNaN(k)       && (k  < 1    || k  > 9))    { errors.push('Potasio fuera de rango biológico (1–9 mEq/L)');         errorIds.push('inp-k'); }
+  if (!isNaN(alb)     && (alb < 1   || alb > 6))   { errors.push('Albúmina fuera de rango biológico (1–6 g/dL)');         errorIds.push('inp-alb'); }
+  if (!isNaN(lactato) && (lactato < 0 || lactato > 20)) { errors.push('Lactato fuera de rango biológico (0–20 mmol/L)'); errorIds.push('inp-lactato'); }
+  if (!isNaN(be)      && (be < -30   || be > 30))  { errors.push('BE fuera de rango biológico (−30 a +30 mEq/L)');        errorIds.push('inp-be'); }
+  if (!isNaN(po2)     && (po2 < 20  || po2 > 600)) { errors.push('pO₂ fuera de rango biológico (20–600 mmHg)');           errorIds.push('inp-po2'); }
+
+  // FiO₂: si el campo tiene valor pero es < 21, el usuario ha introducido decimal (ej: 0.21)
+  if (!isNaN(fio2) && fio2 < 21) {
+    errors.push('La FiO₂ debe introducirse en porcentaje (ej: 21 para aire ambiente, 100 para O₂ puro). No use decimales.');
+    errorIds.push('inp-fio2');
+  }
+
+  // Si hay errores en campos opcionales, abrir el panel avanzado antes de mostrarlos
+  if (errors.length) {
+    const advancedOptIds = ['inp-na','inp-cl','inp-k','inp-alb','inp-lactato','inp-be','inp-fio2'];
+    if (errorIds.some(id => advancedOptIds.includes(id))) {
+      const adv = document.getElementById('advanced-details');
+      if (adv) adv.open = true;
+    }
+    showFieldErrors(errors, errorIds);
+    return;
+  }
+
+  // ── ANION GAP AUTO-CALCULATION ──────────────────────────────
+  let ag = NaN, agCorr = NaN;
+  const hasElec = !isNaN(na) && !isNaN(cl);
+  if (hasElec) {
+    ag = na - cl - hco3; // AG = Na⁺ − Cl⁻ − HCO₃⁻
+    if (!isNaN(alb)) {
+      agCorr = ag + 2.5 * (4.0 - alb); // Hypoalbuminemia correction
+    }
+  }
+  const agEff = !isNaN(agCorr) ? agCorr : ag; // Use corrected if available
+  const agHigh = !isNaN(agEff) && agEff > 14;
+
+// ── PRIMARY DISORDER ─────────────────────────────────────────
+  let pType = 'normal'; // acidosis | alcalosis | normal | mixed
+  let pMech = '';       // respiratoria | metabolica
+
+  // Use dynamic ranges based on current sample type (venous adjustments per Rose & Post 7th ed.)
+  const SR     = SAMPLE_RANGES[sampleType];
+  const phLow  = ph   < SR.phLo,  phHigh = ph   > SR.phHi,  phNorm = !phLow && !phHigh;
+  const co2Lo  = pco2 < SR.pco2Lo, co2Hi  = pco2 > SR.pco2Hi;
+  const hco3Lo = hco3 < SR.hco3Lo, hco3Hi = hco3 > SR.hco3Hi;
+
+  // ── ZONAS DE PELIGRO CRÍTICO (compatibilidad con la vida en riesgo) ─────
+  let criticalAlerts = [];
+  if (ph < 6.9)  criticalAlerts.push(`<strong style="color:var(--accent-red)">⚠ pH &lt; 6.9: EMERGENCIA VITAL.</strong> Riesgo de colapso cardiovascular, fibrilación ventricular y coma. Intervención urgente e inmediata.`);
+  if (ph > 7.7)  criticalAlerts.push(`<strong style="color:var(--accent-cyan)">⚠ pH &gt; 7.7: ALCALOSIS CRÍTICA.</strong> Riesgo de arritmias malignas, convulsiones, broncoespasmo severo y tetania. Corrección urgente.`);
+  if (pco2 > 80) criticalAlerts.push(`pCO₂ &gt; 80 mmHg: hipercapnia severa. Valorar soporte ventilatorio urgente e intubación.`);
+  if (pco2 < 20) criticalAlerts.push(`pCO₂ &lt; 20 mmHg: hiperventilación extrema. Evaluar causa de manera urgente.`);
+  // Venous-specific safety alerts
+  if (sampleType === 'venous' && pco2 > 55) criticalAlerts.push(`<strong style="color:var(--accent-blue)">&#x26A0; pCO₂ venosa &gt; 55 mmHg:</strong> Solicite gasometría arterial para descartar hipercapnia arterial significativa (gradiente v-a CO₂ habitualmente 3–8 mmHg, puede ser &gt;10 en bajo gasto).`);
+
+  let dxName, dxSub;
+
+  // NUEVO: Definir el pivote exacto según el tipo de muestra
+  const pivot = sampleType === 'venous' ? 7.37 : 7.40;
+
+  if (phNorm && !co2Lo && !co2Hi && !hco3Lo && !hco3Hi) {
+    pType = 'normal'; dxName = 'Gasometría Normal';
+    // Ajustes dinámicos de bordes para detectar cronicidad silente
+    const phBorderLow   = ph   >= SR.phLo && ph < pivot;
+    const phBorderHigh  = ph   > pivot    && ph <= SR.phHi;
+    const co2BorderHigh = pco2 > (SR.pco2Hi - 2) && pco2 <= SR.pco2Hi;
+    const co2BorderLow  = pco2 >= SR.pco2Lo && pco2 < (SR.pco2Lo + 2);
+    const hco3Hi2       = hco3 > (SR.hco3Hi - 2) && hco3 <= SR.hco3Hi;
+    const hco3Lo2       = hco3 >= SR.hco3Lo && hco3 < (SR.hco3Lo + 2);
+    
+    if (phBorderLow && co2BorderHigh && hco3Hi2) dxSub = '⚠ <strong>Posible acidosis respiratoria crónica compensada</strong> — evaluar contexto.';
+    else if (phBorderHigh && co2BorderLow && hco3Lo2) dxSub = '⚠ <strong>Posible alcalosis respiratoria compensada</strong> — evaluar contexto.';
+    else dxSub = 'Todos los parámetros dentro de los rangos de referencia.';
+    
+  } else if (phNorm && co2Lo && hco3Lo) {
+    // REGLA DEL PIVOTE: pH normal pero pCO2 y HCO3 bajos
+    if (ph < pivot) {
+      pType = 'acidosis'; pMech = 'metabolica';
+      dxName = 'Acidosis Metabólica (Compensada)';
+      dxSub  = 'pH normal-bajo con HCO₃⁻ y pCO₂ bajos → Acidosis metabólica primaria con compensación respiratoria.';
+    } else {
+      pType = 'alcalosis'; pMech = 'respiratoria';
+      // NUEVO: Discriminación Aguda/Crónica para Alcalosis Respiratoria Compensada
+      const dCO2 = 40 - pco2;
+      const crHCO3 = 24 - 0.4 * dCO2;
+      const isChronic = Math.abs(hco3 - crHCO3) < 3;
+      dxName = isChronic ? 'Alcalosis Respiratoria Crónica Compensada' : 'Alcalosis Respiratoria Aguda Compensada';
+      dxSub  = 'pH normal-alto con pCO₂ y HCO₃⁻ bajos → Alcalosis respiratoria primaria con compensación metabólica.';
+    }
+  } else if (phNorm && co2Hi && hco3Hi) {
+    // REGLA DEL PIVOTE: pH normal pero pCO2 y HCO3 altos
+    if (ph < pivot) {
+      pType = 'acidosis'; pMech = 'respiratoria';
+      const dCO2 = pco2 - 40;
+      const crHCO3 = 24 + 0.35 * dCO2;
+      const isChronic = Math.abs(hco3 - crHCO3) < 3;
+      dxName = isChronic ? 'Acidosis Respiratoria Crónica Compensada' : 'Acidosis Respiratoria Aguda Compensada';
+      dxSub  = 'pH normal-bajo con pCO₂ y HCO₃⁻ altos → Acidosis respiratoria primaria con compensación metabólica.';
+    } else {
+      pType = 'alcalosis'; pMech = 'metabolica';
+      dxName = 'Alcalosis Metabólica (Compensada)';
+      dxSub  = 'pH normal-alto con HCO₃⁻ y pCO₂ altos → Alcalosis metabólica primaria con compensación respiratoria.';
+    }
+  // (El resto de los else if de pHLow y phHigh se mantienen iguales)
+  } else if (phLow && co2Hi && !hco3Lo) {
+    pType = 'acidosis'; pMech = 'respiratoria';
+    dxName = 'Acidosis Respiratoria';
+    dxSub  = 'pH↓ · pCO₂↑ → hipoventilación alveolar como trastorno primario.';
+    const maxExpHCO3_resp = 24 + 0.35 * (pco2 - 40);
+    if (hco3Hi && hco3 > maxExpHCO3_resp + 3) {
+      dxName = 'Trastorno Mixto: Acidosis Respiratoria + Alcalosis Metabólica';
+      pType  = 'mixed';
+      dxSub += ` <br><span style="color:var(--accent-cyan);font-size:0.82em;">⚠ <strong>Alcalosis metabólica concomitante</strong>: HCO₃⁻ excede compensación máxima.</span>`;
+    }
+  } else if (phLow && hco3Lo && !co2Hi) {
+    pType = 'acidosis'; pMech = 'metabolica';
+    dxName = 'Acidosis Metabólica';
+    dxSub  = 'pH↓ · HCO₃⁻↓ → pérdida o consumo de bases, o acumulación de ácidos.';
+  } else if (phHigh && co2Lo && !hco3Hi) {
+    pType = 'alcalosis'; pMech = 'respiratoria';
+    dxName = 'Alcalosis Respiratoria';
+    dxSub  = 'pH↑ · pCO₂↓ → hiperventilación alveolar como trastorno primario.';
+    const minExpHCO3_alk = 24 - 0.4 * (40 - pco2);
+    if (hco3Lo && hco3 < minExpHCO3_alk - 3) {
+      dxName = 'Trastorno Mixto: Alcalosis Respiratoria + Acidosis Metabólica';
+      pType  = 'mixed';
+      dxSub += ` <br><span style="color:var(--accent-red);font-size:0.82em;">⚠ <strong>Acidosis metabólica concomitante</strong>: HCO₃⁻ por debajo de compensación mínima.</span>`;
+    }
+  } else if (phHigh && hco3Hi && !co2Lo) {
+    pType = 'alcalosis'; pMech = 'metabolica';
+    dxName = 'Alcalosis Metabólica';
+    dxSub  = 'pH↑ · HCO₃⁻↑ → ganancia de bases o pérdida de ácidos.';
+  } else if (phLow && co2Hi && hco3Lo) {
+    pType = 'mixed'; dxName = 'Trastorno Mixto: Acidosis Resp. + Metabólica';
+    dxSub  = 'pCO₂↑ y HCO₃⁻↓ simultáneos → trastorno mixto acidótico. Situación de máximo riesgo vital.';
+  } else if (phHigh && co2Hi && hco3Hi) {
+    pType = 'mixed'; dxName = 'Trastorno Mixto: Alcalosis Metabólica + Acidosis Respiratoria';
+    dxSub  = 'HCO₃⁻↑ con CO₂↑. Alcalosis metabólica con fallo compensatorio o acidosis respiratoria concomitante.';
+  } else {
+    pType = 'mixed'; dxName = 'Trastorno Complejo / Mixto';
+    dxSub  = 'Combinación atípica. Evalúe el contexto clínico y considere trastorno mixto por componentes.';
+  }
+
+  // ── COMPENSATION ─────────────────────────────────────────────
+  let compBlocks = [];
+  let customCompTitle = '';
+
+  if (pType === 'acidosis' && pMech === 'metabolica') {
+    const exp = 1.5 * hco3 + 8;
+    const lo = (exp - 2).toFixed(1), hi = (exp + 2).toFixed(1);
+    // Venous correction: pCO₂(v) ≈ pCO₂(a) + 5 mmHg (Kelly AJKD 2021)
+    // Subtract 5 from measured venous pCO₂ before comparing to Winters range
+    const pco2ForWinters = sampleType === 'venous' ? pco2 - 5 : pco2;
+    const ok = pco2ForWinters >= (exp - 2) && pco2ForWinters <= (exp + 2);
+    const venousWintersNote = sampleType === 'venous' ? ` <span style="font-size:0.72em;color:var(--muted)">(pCO₂v corregida: ${pco2}−5=${pco2ForWinters.toFixed(0)} mmHg)</span>` : '';
+    let note;
+    if (ok) {
+      note = { cls: 'ok', txt: 'Compensación respiratoria adecuada.' + venousWintersNote };
+    } else if (pco2ForWinters < (exp - 2)) {
+      note = { cls: 'warn', txt: 'pCO₂ demasiado baja → Alcalosis respiratoria superpuesta.' + venousWintersNote };
+      dxName = 'Trastorno Mixto: Acidosis Metabólica + Alcalosis Respiratoria';
+      pType = 'mixed';
+      dxSub += '<br><span style="color:var(--accent-yellow);font-size:0.82em;">⚠ Fórm. de Winters: Alcalosis respiratoria concomitante (pCO₂ baja).</span>';
+    } else {
+      note = { cls: 'warn', txt: 'pCO₂ demasiado alta → Fracaso ventilatorio / Acidosis resp. superpuesta.' + venousWintersNote };
+      dxName = 'Trastorno Mixto: Acidosis Metabólica + Acidosis Respiratoria';
+      pType = 'mixed';
+      dxSub += '<br><span style="color:var(--accent-red);font-size:0.82em;">⚠ Fórm. de Winters: Acidosis respiratoria concomitante (pCO₂ alta).</span>';
+    }
+    const wintersFormula = sampleType === 'venous'
+      ? 'Fórmula de Winters (venosa): pCO₂ esperada = 1.5 × HCO₃⁻ + 8 ± 2 · pCO₂v corregida = medida − 5'
+      : 'Fórmula de Winters: pCO₂ esperada = 1.5 × HCO₃⁻ + 8 ± 2';
+    compBlocks.push({ formula: wintersFormula, result: `Rango esperado: ${lo} – ${hi} mmHg  |  Actual: ${pco2ForWinters.toFixed(0)} mmHg (equiv. art.)`, note });
+  } else if (pType === 'acidosis' && pMech === 'respiratoria') {
+    const dCO2 = pco2 - 40;
+    const acHCO3 = (24 + 0.1 * dCO2).toFixed(1);
+    const crHCO3 = (24 + 0.35 * dCO2).toFixed(1);
+    const acOk = Math.abs(hco3 - parseFloat(acHCO3)) <= 3;
+    const crOk = Math.abs(hco3 - parseFloat(crHCO3)) <= 3;
+    compBlocks.push({ formula: 'Aguda: HCO₃⁻ esperado = 24 + 0.1 × ΔpCO₂', result: `Esperado: ${acHCO3} mEq/L  |  Actual: ${hco3} mEq/L`, note: { cls: acOk ? 'ok' : 'info', txt: acOk ? 'Compatible con trastorno agudo.' : '' } });
+    compBlocks.push({ formula: 'Crónica: HCO₃⁻ esperado = 24 + 0.35 × ΔpCO₂', result: `Esperado: ${crHCO3} mEq/L  |  Actual: ${hco3} mEq/L`, note: { cls: crOk ? 'ok' : 'info', txt: crOk ? 'Compatible con trastorno crónico (p.ej. EPOC).' : 'Compare ambos rangos para estimar cronicidad.' } });
+const diffAc = Math.abs(hco3 - parseFloat(acHCO3));
+    const diffCr = Math.abs(hco3 - parseFloat(crHCO3));
+
+    if (diffAc <= 2 && diffAc < diffCr) {
+        customCompTitle = 'COMPATIBLE CON TRASTORNO AGUDO';
+        dxName += ' Aguda';
+    } else if (diffCr <= 2) {
+        customCompTitle = 'COMPATIBLE CON TRASTORNO CRÓNICO';
+        dxName += ' Crónica';
+    } else {
+        customCompTitle = '⚠ COMPENSACIÓN FUERA DE RANGOS ESPERADOS';
+    }
+
+  } else if (pType === 'alcalosis' && pMech === 'metabolica') {
+    // NUEVA FÓRMULA (Gold Standard): Basada en el Delta (Marino's ICU / Rose)
+    const dHCO3 = hco3 - 24;
+    const exp = 40 + (0.7 * dHCO3);
+    const lo = (exp - 2).toFixed(1), hi = (exp + 2).toFixed(1);
+    const ok = pco2 >= (exp - 2) && pco2 <= (exp + 2);
+    let note;
+    if (ok) {
+      note = { cls: 'ok', txt: 'Compensación respiratoria adecuada.' };
+    } else if (pco2 < (exp - 2)) {
+      note = { cls: 'warn', txt: 'pCO₂ demasiado baja → Alcalosis respiratoria superpuesta.' };
+      dxName = 'Trastorno Mixto: Alcalosis Metabólica + Alcalosis Respiratoria';
+      pType = 'mixed';
+      dxSub += '<br><span style="color:var(--accent-cyan);font-size:0.82em;">⚠ Compensación inadecuada: Alcalosis respiratoria superpuesta.</span>';
+    } else {
+      note = { cls: 'warn', txt: 'pCO₂ demasiado alta → Acidosis respiratoria superpuesta.' };
+      dxName = 'Trastorno Mixto: Alcalosis Metabólica + Acidosis Respiratoria';
+      pType = 'mixed';
+      dxSub += '<br><span style="color:var(--accent-red);font-size:0.82em;">⚠ Compensación inadecuada: Acidosis respiratoria superpuesta.</span>';
+    }
+    compBlocks.push({ formula: 'pCO₂ esperada = 40 + 0.7 × ΔHCO₃⁻ ± 2', result: `Rango esperado: ${lo} – ${hi} mmHg  |  Actual: ${pco2} mmHg`, note });
+
+  } else if (pType === 'alcalosis' && pMech === 'respiratoria') {
+    const dCO2 = 40 - pco2;
+    const acHCO3 = (24 - 0.2 * dCO2).toFixed(1);
+    const crHCO3 = (24 - 0.4 * dCO2).toFixed(1); 
+    const acOk = Math.abs(hco3 - parseFloat(acHCO3)) <= 3;
+    const crOk = Math.abs(hco3 - parseFloat(crHCO3)) <= 3;
+    compBlocks.push({ formula: 'Aguda: HCO₃⁻ = 24 − 0.2 × ΔpCO₂', result: `Esperado: ${acHCO3} mEq/L  |  Actual: ${hco3} mEq/L`, note: { cls: acOk ? 'ok' : 'info', txt: acOk ? 'Compatible con trastorno agudo.' : '' } });
+    compBlocks.push({ formula: 'Crónica: HCO₃⁻ = 24 − 0.4 × ΔpCO₂', result: `Esperado: ${crHCO3} mEq/L  |  Actual: ${hco3} mEq/L`, note: { cls: crOk ? 'ok' : 'info', txt: crOk ? 'Compatible con trastorno crónico.' : 'Compare para estimar cronicidad.' } });
+    // NUEVO: Lógica de proximidad para Alcalosis Respiratoria
+    const diffAc = Math.abs(hco3 - parseFloat(acHCO3));
+    const diffCr = Math.abs(hco3 - parseFloat(crHCO3));
+
+    if (diffAc <= 2 && diffAc <= diffCr) {
+        customCompTitle = 'COMPATIBLE CON TRASTORNO AGUDO';
+        dxName += ' Aguda';
+    } else if (diffCr <= 2) {
+        customCompTitle = 'COMPATIBLE CON TRASTORNO CRÓNICO';
+        dxName += ' Crónica';
+    } else {
+        customCompTitle = '⚠ COMPENSACIÓN FUERA DE RANGOS ESPERADOS';
+    }
+  } else if (pType === 'mixed') {
+    compBlocks.push({ formula: 'Compensación estándar no aplicable (trastorno mixto)', result: '', note: { cls: 'info', txt: 'El diagnóstico mixto se estableció por la desviación simultánea de pCO₂ y HCO₃⁻.' } });
+  } else {
+    compBlocks.push({ formula: 'Paciente sin alteraciones ácido-base primarias.', result: '', note: { cls: 'ok', txt: 'No se requieren cálculos de compensación.' } });
+  }
+
+// ── ALERTA OCULTA AG (Evaluado al final para alterar el dxName final si es necesario)
+  const isMetabolicAcidosisMentioned = dxName.includes('Acidosis Metabólica');
+  
+  // NUEVA LÓGICA INTEGRADORA: Validar el AG en la zona gris (12-15) usando Bicarbonato y Lactato
+  let agDiagnostic = false;
+  if (agHigh) {
+    if (agEff >= 16) {
+      // 1. Elevación franca e inequívoca del AG. Hay un anión circulando.
+      agDiagnostic = true; 
+    } else if (!isNaN(lactato) && lactato > 2.0) {
+      // 2. Zona gris (AG 12-15) pero con el ácido medido (lactato) patológico.
+      agDiagnostic = true;
+    } else if (hco3 < 22) {
+      // 3. Zona gris pero con consumo real de bicarbonato (acidemia metabólica evidente).
+      agDiagnostic = true;
+    }
+  }
+
+  // Si se confirma clínicamente el AG+, forzamos el cambio de nombre
+  if (agDiagnostic && !isMetabolicAcidosisMentioned) {
+    if (dxName === 'Gasometría Normal') {
+      dxName = 'Acidosis Metabólica Oculta (AG Elevado)';
+      pType = 'acidosis';
+    } else if (dxName.includes('Trastorno Complejo')) {
+      dxName = 'Trastorno Mixto: Acidosis Metabólica (AG+) + Alteración concomitante';
+      pType = 'mixed';
+    } else {
+      // Limpiamos el texto previo para no duplicar la palabra "Trastorno Mixto"
+      let cleanName = dxName.replace('Trastorno Mixto: ', '').replace(' (Compensada)', '');
+      dxName = `Trastorno Mixto: ${cleanName.trim()} + Acidosis Metabólica (AG+)`;
+      pType = 'mixed';
+    }
+  }
+  
+// ── INTEGRACIÓN DEL RATIO DELTA EN EL DIAGNÓSTICO PRINCIPAL ──
+  // Si el diagnóstico base ya es una Acidosis Metabólica, usamos el Ratio Delta
+  // para detectar y subir a la cabecera los trastornos mixtos intra-metabólicos.
+  if (pType === 'acidosis' && pMech === 'metabolica' && agHigh) {
+    const dAG = agEff - 12;
+    const dHCO3 = 24 - hco3;
+    const dd = Math.abs(dHCO3) > 0.1 ? (dAG / dHCO3) : 999;
+
+    if (dHCO3 > 0.1 && dd < 1.0) {
+      // Delta Ratio < 1.0 -> Acidosis Metabólica Mixta (AG Alto + Hiperclorémica)
+      const isComp = dxName.includes('(Compensada)');
+      dxName = isComp ? 'Acidosis Metabólica Mixta (AG↑ e Hiperclorémica) Compensada'
+                      : 'Acidosis Metabólica Mixta (AG↑ e Hiperclorémica)';
+      dxSub += `<br><span style="color:var(--accent-orange);font-size:0.82em;">⚠ <strong>Ratio Δ-Δ (${dd.toFixed(2)}):</strong> Descenso de HCO₃⁻ desproporcionado al AG. Confirma acidosis hiperclorémica añadida.</span>`;
+    
+    } else if (dHCO3 > 0.1 && dd > 2.0) {
+      // Delta Ratio > 2.0 -> Acidosis Metabólica + Alcalosis Metabólica Oculta
+      const isComp = dxName.includes('(Compensada)');
+      dxName = isComp ? 'Trastorno Mixto: Acidosis Metab. (AG↑) + Alcalosis Metab. (Compensadas)'
+                      : 'Trastorno Mixto: Acidosis Metabólica (AG↑) + Alcalosis Metabólica';
+      pType = 'mixed';
+      dxSub += `<br><span style="color:var(--accent-red);font-size:0.82em;">⚠ <strong>Ratio Δ-Δ (${dd.toFixed(2)}):</strong> HCO₃⁻ demasiado alto para el nivel de AG. Confirma alcalosis metabólica oculta.</span>`;
+    }
+  }
+
+  // Imprimir el subtítulo adecuado
+  if (agHigh && !isMetabolicAcidosisMentioned) {
+    if (agDiagnostic) {
+      // AG diagnosticado clínicamente
+      dxSub += `<br><span style="color:var(--accent-red);font-size:0.8em;">⚠ Anion Gap elevado → Acidosis Metabólica AG(+) oculta concomitante.</span>`;
+    } else {
+      // AG en zona gris (13-15) sin confirmación por lactato ni HCO3. Advertencia sutil.
+      dxSub += `<br><span style="color:var(--accent-orange);font-size:0.8em;">⚠ Anion Gap límite (${agEff.toFixed(1)}): Sin impacto en HCO₃⁻ ni lactato. Variabilidad o alcalosis leve.</span>`;
+    }
+  }
+
+  // ── ANION GAP BLOCK HTML ─────────────────────────────────────
+  let agHTML = '';
+  if (hasElec) {
+    const agColor = agHigh ? 'var(--accent-red)' : (ag < 6 ? 'var(--accent-blue)' : 'var(--accent-green)');
+    const agPct   = Math.min(100, Math.max(0, (ag / 35) * 100));
+    // Reemplaza esa línea por esta:
+const agStatus = agEff > 16 ? 'Elevado — Acidosis con AG (+)' 
+               : (agEff > 14 ? 'Límite — Valor en zona gris' 
+               : (agEff < 8 ? 'Bajo — Descartar hipoalbuminemia' : 'Normal (8–14 mEq/L)'));
+
+    let agCorrHTML = '';
+    if (!isNaN(agCorr)) {
+      const agCHigh = agCorr > 12;
+      const agCColor = agCHigh ? 'var(--accent-red)' : (agCorr < 6 ? 'var(--accent-blue)' : 'var(--accent-green)');
+      agCorrHTML = `
+        <div class="metric-alert info" style="margin-top:0.6rem;">
+          ${svgIcon('flask', 13, 'cause-icon c-purple')} 
+          <strong>AG corregido</strong> = AG + 2.5 × (4.0 − Alb) = ${ag.toFixed(1)} + 2.5 × (4.0 − ${alb.toFixed(1)}) = <strong style="color:${agCColor}">${agCorr.toFixed(1)} mEq/L</strong>
+          ${agCHigh && ag <= 10 ? ' · La hipoalbuminemia enmascaraba la acidosis AG(+).' : ''}
+        </div>`;
+    }
+
+  // Delta-Delta: se calcula SIEMPRE que el AG esté elevado, independientemente
+    // del trastorno primario. Un AG alto implica acidosis metabólica presente.
+    let ddHTML = '';
+    if (agHigh) {
+      const dAG    = agEff - 12;
+      const dHCO3  = 24 - hco3;
+      const dd     = Math.abs(dHCO3) > 0.1 ? (dAG / dHCO3) : 999;
+      let ddColor = 'var(--muted)', ddTxt = '';
+      let ddDisplay = '';
+
+      if (pMech === 'respiratoria' && hco3 > 24) {
+        // CORRECCIÓN BIBLIOGRÁFICA: Evitar falso positivo de Alcalosis Metabólica
+        ddColor = 'var(--accent-orange)';
+        ddTxt   = 'Interpretación clínica limitada: El HCO₃⁻ > 24 corresponde a la compensación del trastorno respiratorio. La fórmula clásica del Ratio asume un basal de 24 mEq/L y arroja falsos positivos en este contexto.';
+        ddDisplay = 'N/A';
+      } else if (dHCO3 < -0.1) {
+        ddColor = 'var(--accent-red)';
+        ddTxt   = 'HCO₃⁻ > 24 pese a AG elevado → Alcalosis metabólica concomitante severa.';
+        ddDisplay = 'N/A';
+      } else if (dd === 999) {
+        ddColor = 'var(--accent-red)';
+        ddTxt   = 'HCO₃⁻ = 24: valor normal pese a AG elevado → Alcalosis metabólica oculta confirmada (HCO₃⁻ debería haber bajado).';
+        ddDisplay = '∞';
+      } else {
+        ddDisplay = dd.toFixed(2);
+        if      (dd < 0.4)  { ddColor = 'var(--accent-orange)'; ddTxt = 'Acidosis hiperclorémica (AG normal) coexistente.'; }
+        else if (dd < 1.0)  { ddColor = 'var(--accent-orange)'; ddTxt = 'Acidosis mixta AG(+) + componente hiperclorémico.'; }
+        else if (dd <= 2.0) { ddColor = 'var(--accent-green)';  ddTxt = 'Acidosis metabólica pura con AG elevado.'; }
+        else                { ddColor = 'var(--accent-red)';    ddTxt = 'Alcalosis metabólica oculta superpuesta (vómitos / diuréticos).'; }
+      }
+
+      ddHTML = `
+        <div class="metric-alert warn" style="margin-top:0.6rem;">
+          ${svgIcon('activity', 13)} <strong>Ratio Δ-Δ</strong> = ΔAG / ΔHCO₃⁻ = ${dAG.toFixed(1)} / ${dHCO3.toFixed(1)}
+          = <strong style="color:${ddColor}">${ddDisplay}</strong>
+          ${ddTxt ? ` <br><span style="margin-top:4px;display:inline-block;">· ${ddTxt}</span>` : ''}
+          <div style="font-size:0.65rem;margin-top:0.4rem;color:var(--muted);">Rangos estándar: &lt;1 mixta · 1–2 AG puro · &gt;2 alcalosis oculta</div>
+        </div>`;
+    }
+
+  const agClass = agEff > 16 ? 'conclusion-crit' : (agEff > 14 ? 'conclusion-warn' : 'conclusion-ok');
+   
+    agHTML = `
+      <details class="resultado-acordeon">
+        <summary class="resultado-conclusion ${agClass}">
+          <span>ANION GAP: ${agStatus.toUpperCase()} (${agEff.toFixed(1)} mEq/L)</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div style="margin-bottom:0.5rem; color:var(--text); font-size:0.75rem;">
+            AG Normal calculado: <strong>${ag.toFixed(1)} mEq/L</strong>
+          </div>
+          ${agCorrHTML}
+          ${ddHTML}
+        </div>
+      </details>`;
+  }
+  // ── LACTATO BLOCK ─────────────────────────────────────────────
+  let lactatoHTML = '';
+  if (!isNaN(lactato)) {
+    const lacHigh   = lactato > 2.0;
+    const lacSevere = lactato > 4.0;
+    const lacColor  = lacSevere ? 'var(--accent-red)' : (lacHigh ? 'var(--accent-orange)' : 'var(--accent-green)');
+    const lacPct    = Math.min(100, (lactato / 15) * 100);
+    let lacAlert = '';
+if (lacSevere && agHigh) {
+      lacAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Acidosis Láctica confirmada</strong> (Lactato &gt; 4 mmol/L + AG elevado).</div>`;
+    } else if (lacSevere) {
+      lacAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Lactato crítico</strong> (&gt; 4 mmol/L).</div>`;
+    } else if (lacHigh) {
+      lacAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hiperlactatemia</strong> (2–4 mmol/L). Vigilar tendencia.</div>`;
+    } else {
+      lacAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} Lactato normal (&lt; 2.0 mmol/L).</div>`;
+    }
+    
+lactatoHTML = `
+      <details class="resultado-acordeon" ${lacSevere ? 'open' : ''}>
+        <summary class="resultado-conclusion ${lacSevere ? 'conclusion-crit' : (lacHigh ? 'conclusion-warn' : 'conclusion-ok')}">
+          <span>LACTATO: ${lacSevere ? 'ACIDOSIS LÁCTICA' : (lacHigh ? 'ELEVADO' : 'NORMAL')} (${lactato.toFixed(1)} mmol/L)</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div style="font-size:0.7rem; color:var(--muted); margin-bottom:0.8rem;">
+            <strong>Referencia:</strong> Normal &lt; 2.0 · Hiperlactatemia &gt; 2.0 · Acidosis láctica &gt; 4.0 mmol/L
+          </div>
+          ${lacAlert}
+        </div>
+      </details>`;
+  }
+
+  // ── PAFI BLOCK ────────────────────────────────────────────────
+  // PAFI and A-a gradient are only valid for arterial blood (Berlin 2012; Shapiro 1994)
+  let pafiHTML = '';
+  if (sampleType === 'venous' && !isNaN(po2)) {
+    const po2VenNorm = po2 >= 35 && po2 <= 45;
+    const po2VenColor = po2VenNorm ? 'var(--accent-green)' : (po2 < 35 ? 'var(--accent-red)' : 'var(--accent-orange)');
+    const po2VenStatus = po2 < 30 ? 'Desaturación venosa grave (&lt;30 mmHg)' : po2 < 35 ? 'Desaturación venosa' : po2 <= 45 ? 'Normal (35–45 mmHg)' : 'Elevado — posible O₂ terapia o bajo consumo';
+    pafiHTML = `
+      <details class="resultado-acordeon">
+        <summary class="resultado-conclusion ${po2VenNorm ? 'conclusion-ok' : 'conclusion-warn'}">
+          <span>pO₂ VENOSA: ${po2VenStatus.split('—')[0].trim().toUpperCase()} (${po2} mmHg)</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div class="metric-alert ${po2VenNorm ? 'ok' : (po2 < 35 ? 'danger' : 'info')}">
+            ${svgIcon(po2VenNorm ? 'check-circle' : 'alert-triangle', 13)}
+            pO₂ venosa: <strong style="color:${po2VenColor}">${po2} mmHg</strong> · ${po2VenStatus}
+          </div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:0.5rem;">
+            ${svgIcon('info',11)} PAFI y gradiente A-a <strong>no aplican</strong> en muestra venosa. Solo válidos con pO₂ arterial (criterios Berlín SDRA 2012).
+          </div>
+        </div>
+      </details>`;
+  } else if (!isNaN(po2) && !isNaN(fio2) && fio2 > 0) {
+    const pafi = po2 / (fio2 / 100);
+    let pafiColor, pafiLabel, pafiAlert;
+if (pafi > 300) {
+      pafiColor = 'var(--accent-green)'; pafiLabel = 'Normal';
+      pafiAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} Oxigenación normal (PAFI &gt; 300).</div>`;
+    } else if (pafi > 200) {
+      pafiColor = 'var(--accent-yellow)'; pafiLabel = 'Criterio SDRA Leve';
+      pafiAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipoxemia moderada.</strong> Criterio SDRA Leve (Berlín 2012).</div>`;
+    } else if (pafi > 100) {
+      pafiColor = 'var(--accent-orange)'; pafiLabel = 'Criterio SDRA Moderado';
+      pafiAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipoxemia grave.</strong> Criterio SDRA Moderado (Berlín 2012).</div>`;
+    } else {
+      pafiColor = 'var(--accent-red)'; pafiLabel = 'Criterio SDRA Grave';
+      pafiAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Hipoxemia muy grave.</strong> Criterio SDRA Grave (Berlín 2012).</div>`;
+    }
+
+    const cells = [
+      { label: 'Normal', range: '> 300', active: pafi > 300, color: 'var(--accent-green)' },
+      { label: 'SDRA Leve', range: '200–300', active: pafi > 200 && pafi <= 300, color: 'var(--accent-yellow)' },
+      { label: 'SDRA Mod.', range: '100–200', active: pafi > 100 && pafi <= 200, color: 'var(--accent-orange)' },
+      { label: 'SDRA Grave', range: '≤ 100', active: pafi <= 100, color: 'var(--accent-red)' },
+    ];
+
+    // Gradiente A-a O₂
+    const pao2  = (fio2 / 100) * 713 - pco2 / 0.8;
+    const gaa   = pao2 - po2;
+    const gaaColor = gaa > 35 ? 'var(--accent-red)' : (gaa > 15 ? 'var(--accent-orange)' : 'var(--accent-green)');
+    const gaaStatus = gaa <= 15 ? 'Normal (&lt;15 mmHg)' : (gaa <= 35 ? 'Elevado leve-moderado (15–35 mmHg)' : 'Elevado — fallo de intercambio gaseoso');
+    const gaaHTML = `
+      <div class="metric-alert ${gaa > 35 ? 'danger' : (gaa > 15 ? 'warn' : 'ok')}" style="margin-top:0.6rem;">
+        ${svgIcon(gaa > 15 ? 'alert-triangle' : 'check-circle', 13)}
+        <strong>Gradiente A-a O₂</strong> = PAO₂ − pO₂ = ${pao2.toFixed(1)} − ${po2} = <strong style="color:${gaaColor}">${gaa.toFixed(1)} mmHg</strong>
+        <span style="font-size:0.68rem;color:var(--muted)"> · ${gaaStatus}</span>
+        ${gaa > 15 ? `<div style="font-size:0.68rem;margin-top:0.25rem;color:var(--muted)">GA-a elevado → patología intrapulmonar (neumonía, edema, TEP, SDRA). Normal: &lt;15 mmHg en jóvenes, hasta 35 mmHg en &gt;65 años.</div>` : ''}
+      </div>`;
+
+pafiHTML = `
+      <details class="resultado-acordeon" ${pafi <= 200 ? 'open' : ''}>
+        <summary class="resultado-conclusion ${pafi <= 100 ? 'conclusion-crit' : (pafi <= 300 ? 'conclusion-warn' : 'conclusion-ok')}">
+          <span>OXIGENACIÓN: ${pafiLabel.toUpperCase()} (PAFI ${pafi.toFixed(0)})</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div class="pafi-row" style="margin-bottom: 0.8rem;">
+            ${cells.map(c => `<div class="pafi-cell${c.active ? ' active' : ''}" style="${c.active ? `color:${c.color}` : ''}">
+              <span class="pc-val">${c.range}</span><span class="pc-lbl">${c.label}</span></div>`).join('')}
+          </div>
+          ${pafiAlert}
+          ${gaaHTML}
+        </div>
+      </details>`;
+}
+// ── POTASIO / pH CORRELATION ──────────────────────────────────
+  let kHTML = '';
+  if (!isNaN(k)) {
+    const kNorm  = k >= 3.5 && k <= 5.0;
+    const kHigh  = k > 5.0, kLow = k < 3.5;
+    const kColor = kNorm ? 'var(--accent-green)' : (kHigh ? 'var(--accent-red)' : 'var(--accent-blue)');
+    
+    // NUEVO: K esperado basado en el pivote del tipo de muestra
+    const pivotK = sampleType === 'venous' ? 7.37 : 7.40;
+    const kExpected = (4.0 + (pivotK - ph) * 6).toFixed(1);
+    let kAlert = '';
+    
+    // NUEVO: Las alertas usan los límites fisiológicos de la muestra (SR.phLo y SR.phHi), no valores fijos
+    if (ph < SR.phLo && k < 3.5) {
+      kAlert = `<div class="metric-alert danger">${svgIcon('alert-circle', 13)} <strong>Hipopotasemia con acidosis (pH &lt; ${SR.phLo}):</strong> al corregir el pH, el K⁺ descenderá adicionalmente (~0.6 mEq/L por cada 0.1 de pH que suba). Reponer K⁺ antes de corregir la acidosis para evitar hipopotasemia grave.</div>`;
+    } else if (ph < SR.phLo && k > 5.0) {
+      kAlert = `<div class="metric-alert warn">${svgIcon('info', 13)} K⁺ elevado por redistribución en acidosis (pH &lt; ${SR.phLo}). Al corregir el trastorno el K⁺ descenderá. Monitorizar para evitar hipopotasemia iatrogénica.</div>`;
+    } else if (ph > SR.phHi && k < 3.5) {
+      kAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipopotasemia con alcalosis (pH &gt; ${SR.phHi}):</strong> patrón típico de vómitos / diuréticos. La hipopotasemia perpetúa la alcalosis. Corrección de K⁺ esencial para resolver el trastorno.</div>`;
+    } else if (ph > SR.phHi && k > 5.0) {
+      kAlert = `<div class="metric-alert info">${svgIcon('info', 13)} K⁺ elevado con alcalosis (pH &gt; ${SR.phHi}). Evalúe causas independientes de hiperpotasemia.</div>`;
+    }
+    
+kHTML = `
+      <details class="resultado-acordeon">
+        <summary class="resultado-conclusion ${kNorm ? 'conclusion-info' : 'conclusion-crit'}">
+          <span>POTASIO vs pH: ${kNorm ? 'CORRELACIÓN ESPERADA' : 'ALTERACIÓN DETECTADA'} (${k.toFixed(1)} mEq/L)</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div style="margin-bottom:0.5rem; color:var(--text);">
+            K⁺ esperado para pH ${ph.toFixed(2)}: ~<strong>${kExpected} mEq/L</strong>
+          </div>
+          <div style="font-size:0.7rem; color:var(--muted); margin-bottom:0.8rem;">
+            Regla fisiológica: ±0.6 mEq/L por cada 0.1 de variación en el pH.
+          </div>
+          ${kAlert}
+          <div class="metric-alert info" style="margin-top:0.75rem; font-size:0.68rem; border:1px solid rgba(167,139,250,0.2);">
+            ${svgIcon('info', 12)} <strong>Limitación en ERC/Anuria:</strong> En insuficiencia renal crónica o anuria el K⁺ puede variar independientemente del pH por retención extrarrenal. Esta fórmula puede <strong>subestimar la hiperpotasemia real</strong>.
+          </div>
+        </div>
+      </details>`;
+  }
+
+  // ── EXCESO DE BASE (BE) BLOCK ─────────────────────────────────
+  let beHTML = '';
+  if (!isNaN(be)) {
+    const beNorm   = be >= -2 && be <= 2;
+    const beNeg    = be < -2;
+    const bePos    = be > 2;
+    const beSevNeg = be < -10;
+    const beSevPos = be > 10;
+    const beColor  = beNorm ? 'var(--accent-green)' : (beNeg ? 'var(--accent-red)' : 'var(--accent-cyan)');
+    const beLabel  = beNorm ? 'Normal' : (beNeg ? `Déficit de bases (acidosis metabólica)` : `Exceso de bases (alcalosis metabólica)`);
+    let beAlert = '';
+    if (beNorm) {
+      beAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} BE normal (−2 a +2 mEq/L). Sin componente metabólico significativo.</div>`;
+    } else if (beSevNeg) {
+      beAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Déficit de bases severo</strong> (BE &lt; −10). Acidosis metabólica importante. Correlaciona con AG, lactato y clínica para identificar causa (cetoacidosis, acidosis láctica, intoxicación).</div>`;
+    } else if (beNeg) {
+      beAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Déficit de bases</strong> (BE ${be.toFixed(1)}). Componente de acidosis metabólica. Evaluar con HCO₃⁻ y AG para identificar mecanismo.</div>`;
+    } else if (beSevPos) {
+      beAlert = `<div class="metric-alert danger">${svgIcon('alert-circle', 13)} <strong>Exceso de bases severo</strong> (BE &gt; +10). Alcalosis metabólica marcada. Evaluar causa (vómitos, diuréticos, hiperaldosteronismo). Riesgo de hipoventilación compensatoria.</div>`;
+    } else {
+      beAlert = `<div class="metric-alert info">${svgIcon('info', 13)} <strong>Exceso de bases</strong> (BE ${be.toFixed(1)}). Componente de alcalosis metabólica. Correlacionar con HCO₃⁻ y contexto clínico.</div>`;
+    }
+beHTML = `
+      <details class="resultado-acordeon">
+        <summary class="resultado-conclusion ${beNorm ? 'conclusion-ok' : (beSevNeg || beSevPos ? 'conclusion-crit' : 'conclusion-warn')}">
+          <span>EXCESO DE BASE: ${beLabel.toUpperCase()} (${be > 0 ? '+' : ''}${be.toFixed(1)} mEq/L)</span><span>▼</span>
+        </summary>
+        <div class="resultado-detalles">
+          <div style="font-size:0.7rem; color:var(--muted); margin-bottom:0.8rem;">
+            <strong>Rango de referencia:</strong> −2 a +2 mEq/L <br>
+            <span style="display:inline-block; margin-top:4px;">
+              Valores &lt; −2 indican acidosis metabólica.<br>
+              Valores &gt; +2 indican alcalosis metabólica.
+            </span>
+          </div>
+          ${beAlert}
+        </div>
+      </details>`;
+  }
+
+// ── INYECTOR DE OXIGENACIÓN EN EL NOMBRE DEL DX (PASO 3) ──
+  // Evaluamos la PAFI calculada para añadir gravedad al diagnóstico principal
+  const pafiValForDx = (sampleType === 'arterial' && !isNaN(po2) && !isNaN(fio2) && fio2 > 0) ? po2 / (fio2 / 100) : NaN;
+  
+  if (!isNaN(pafiValForDx)) {
+      if (pafiValForDx <= 100) {
+          dxName += ' + Insuficiencia Respiratoria Grave (SDRA)';
+      } else if (pafiValForDx <= 200) {
+          dxName += ' + Insuficiencia Respiratoria Moderada';
+      } else if (pafiValForDx <= 300) {
+          dxName += ' + Hipoxemia Leve';
+      }
+  }
+
+  // ── MANAGEMENT ORIENTATION ────────────────────────────────────
+  // PAFI only valid for arterial samples
+  const pafiVal = (sampleType === 'arterial' && !isNaN(po2) && !isNaN(fio2) && fio2 > 0) ? po2 / (fio2 / 100) : NaN;
+  const mgmtData = getManagement(pType, pMech, agEff, lactato, k, ph, pafiVal);
+  const priorityColors = { urgent: 'danger', high: 'warn', normal: 'info' };
+  const priorityIcons  = { urgent: 'zap', high: 'alert-triangle', normal: 'info' };
+  const mgmtHTML = mgmtData.length > 0 ? `
+    <details class="resultado-acordeon" open>
+      <summary class="resultado-conclusion conclusion-crit" style="border-color:var(--accent-purple)">
+        <span>🚨 ORIENTACIÓN DE MANEJO</span><span>▼</span>
+      </summary>
+      <div class="resultado-detalles">
+        <ul class="causes-list">
+          ${mgmtData.map(m => `<li class="cause-item"><span>${svgIcon(m.icon || priorityIcons[m.priority], 14)}</span> <span>${m.text}</span></li>`).join('')}
+        </ul>
+      </div>
+    </details>` : '';
+
+  const causesData = getCauses(pType, pMech, agEff, lactato);
+  const causesHTML = `
+    <details class="resultado-acordeon">
+      <summary class="resultado-conclusion conclusion-info">
+        <span>🔍 DIAGNÓSTICO DIFERENCIAL (CAUSAS)</span><span>▼</span>
+      </summary>
+      <div class="resultado-detalles">
+        <ul class="causes-list">
+          ${causesData.map(c => `<li class="cause-item"><span>${svgIcon(c.icon, 14)}</span> <span>${c.text}</span></li>`).join('')}
+        </ul>
+      </div>
+    </details>`;
+
+  // ── VALUE CHIPS ───────────────────────────────────────────────
+  function chip(name, val, unit, low, high, critLow, critHigh) {
+    const cls = chipSeverity(val, low, high, critLow, critHigh);
+    return `<div class="chip ${cls}">
+      <div class="chip-name">${name}</div>
+      <div class="chip-val">${val}</div>
+      <div class="chip-unit">${unit}</div>
+    </div>`;
+  }
+  let chipsHTML = `<div class="chips-row">
+    ${chip('pH',   ph,   '–',    SR.phLo, SR.phHi, 7.10, 7.60)}
+    ${chip('pCO₂', pco2, 'mmHg', SR.pco2Lo, SR.pco2Hi, 20, 80)}
+    ${chip('HCO₃⁻', hco3, 'mEq/L', SR.hco3Lo, SR.hco3Hi, 10, 45)}
+    ${!isNaN(na)  ? chip('Na⁺',   na,   'mEq/L', 136, 145, 125, 155) : ''}
+    ${!isNaN(cl)  ? chip('Cl⁻',   cl,   'mEq/L', 98, 106, 85, 120) : ''}
+    ${!isNaN(be)  ? (() => {
+      const beChipColor = (be >= -2 && be <= 2) ? 'var(--accent-green)'
+                        : (be < -2) ? 'var(--accent-red)'
+                        : 'var(--accent-cyan)';
+      return `<div class="chip" style="border-color:${beChipColor}22">
+        <div class="chip-name">BE</div>
+        <div class="chip-val" style="color:${beChipColor}">${be > 0 ? '+' : ''}${be.toFixed(1)}</div>
+        <div class="chip-unit">mEq/L</div></div>`;
+    })() : ''}
+    ${!isNaN(agEff) ? `<div class="chip ${agHigh ? 'c-critical' : (agEff < 6 ? 'c-low' : 'c-normal')}">
+      <div class="chip-name">AG${!isNaN(agCorr) ? ' (CORR)' : ''}</div>
+      <div class="chip-val">${agEff.toFixed(1)}</div>
+      <div class="chip-unit">mEq/L</div></div>` : ''}
+    ${(typeof dd !== 'undefined' && agHigh) ? `<div class="chip" style="border-color:var(--accent-orange)">
+      <div class="chip-name">Δ-Δ</div>
+      <div class="chip-val" style="color:var(--accent-orange)">${(24 - hco3) < -0.1 ? 'N/A' : (Math.abs(24 - hco3) > 0.1 ? ((agEff - 12)/(24 - hco3)).toFixed(2) : '∞')}</div>
+      <div class="chip-unit">ratio</div></div>` : ''}
+  </div>`;
+
+// ── COMPENSATION HTML ─────────────────────────────────────────
+  const hasCompWarn = compBlocks.some(b => b.note.cls === 'warn');
+  const isMixed = pType === 'mixed';
+
+  // Lógica de título más robusta para cubrir el trastorno mixto
+  const compTitle = pType === 'normal' ? 'SIN NECESIDAD DE COMPENSACIÓN' 
+                  : isMixed ? '⚠ TRASTORNO MIXTO (EVALUAR POR SEPARADO)'
+                  : customCompTitle !== '' ? customCompTitle // Usa el título agudo/crónico si existe
+                  : hasCompWarn ? '⚠ COMPENSACIÓN INADECUADA / TRASTORNO MIXTO' 
+                  : 'COMPENSACIÓN ESPERADA ADECUADA';
+
+  // Asignamos la clase de color (naranja si hay warning o es mixto, verde en el resto)
+  const compClass = (hasCompWarn || isMixed) ? 'conclusion-warn' : 'conclusion-ok';
+
+  const compHTML = `
+    <details class="resultado-acordeon">
+      <summary class="resultado-conclusion ${compClass}">
+        <span>${compTitle}</span><span>▼</span>
+      </summary>
+      <div class="resultado-detalles">
+        ${compBlocks.map(b => `<div style="margin-bottom:0.5rem"><strong>${b.formula}</strong><br>${b.result}<br><span class="${b.note.cls}">${b.note.txt}</span></div>`).join('<hr style="border-color:var(--border);margin:0.5rem 0">')}
+      </div>
+    </details>`;
+
+  // ── FINAL RENDER ──────────────────────────────────────────────
+  const pilltag = pType === 'normal' ? `${svgIcon('check-circle',11)} Normal`
+    : pType === 'mixed'    ? `${svgIcon('zap',11)} Mixto`
+    : pType === 'acidosis' ? `${svgIcon('trending-down',11)} Acidosis`
+    :                        `${svgIcon('trending-up',11)} Alcalosis`;
+
+  // ── Render alertas críticas de pH/pCO₂ ──────────────────────
+  // ── Render alertas críticas de pH/pCO₂ ──────────────────────
+  const criticalBannerHTML = criticalAlerts.length > 0 ? `
+    <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.45);border-radius:var(--radius);padding:0.85rem 1.1rem;margin-bottom:1rem;animation:pulse-border 1.2s ease infinite;">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
+        ${svgIcon('zap', 15)}
+        <span style="font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent-red);font-weight:700">ALERTA CRÍTICA</span>
+      </div>
+      ${criticalAlerts.map(a => `<div style="font-size:0.78rem;line-height:1.65;color:var(--text);margin-top:0.2rem;">${a}</div>`).join('')}
+    </div>` : '';
+
+  // ── NUEVO: Render alerta informativa de limitación venosa ────────
+  const venousInfoHTML = sampleType === 'venous' ? `
+    <div style="background:rgba(79,163,224,0.08);border:1px solid rgba(79,163,224,0.25);border-radius:var(--radius-sm);padding:0.85rem 1.1rem;margin-bottom:1rem;display:flex;gap:0.6rem;align-items:flex-start;">
+      <div style="color:var(--accent-blue);margin-top:2px;">${svgIcon('info', 16)}</div>
+      <div style="font-size:0.72rem;line-height:1.55;color:var(--text);">
+        <strong style="color:var(--accent-blue);">Limitación de muestra venosa:</strong> Válida en estado estacionario. En escenarios de shock, bajo gasto cardíaco o parada cardiorrespiratoria, el gradiente venoarterial de CO₂ se incrementa, perdiéndose la correlación con el pH arterial <span style="color:var(--muted)">(Marino, ICU Book 4ª ed.; Vallet 2013)</span>.
+      </div>
+    </div>` : '';
+
+// ── GENERACIÓN DE RESUMEN PARA HISTORIA CLÍNICA ──
+  const tipoGaso = sampleType === 'venous'
+    ? 'GSV (venosa)'
+    : ((!isNaN(fio2) && fio2 === 21) ? 'GSA (aire amb.)' : `GSA (FiO₂ ${fio2}%)`);
+  
+  let hcSummary = `${tipoGaso}: pH ${ph.toFixed(2)} | pCO₂ ${pco2} | pO₂ ${po2} | HCO₃ ${hco3}`;
+  if (!isNaN(be)) hcSummary += ` | BE ${be > 0 ? '+' : ''}${be.toFixed(1)}`;
+  if (!isNaN(agEff)) hcSummary += ` | AG ${agEff.toFixed(1)}`;
+  if (!isNaN(lactato)) hcSummary += ` | Lac ${lactato.toFixed(1)}`;
+  if (!isNaN(pafiVal)) hcSummary += ` | PAFI ${pafiVal.toFixed(0)}`;
+  hcSummary += ` ➔ Dx: ${dxName}`;
+  hcSummary = hcSummary.replace(/<[^>]*>?/gm, '');
+
+  document.getElementById('results-content').innerHTML = `
+    <div class="view-title">${dxName}</div>
+    <div class="view-sub" style="margin-bottom:1rem;">${dxSub}</div>
+
+    ${criticalBannerHTML}
+    ${venousInfoHTML}
+    ${chipsHTML}
+
+    <div class="dx-banner ${pType}" style="margin-bottom:1.5rem;">
+      <div class="dx-pill ${pType}">${pilltag}</div>
+      <div class="dx-name">${dxName}</div>
+    </div>
+
+    ${compHTML}
+    ${agHTML}
+    ${lactatoHTML}
+    ${beHTML}
+    ${pafiHTML}
+    ${kHTML}
+    <div style="margin-top:1.5rem;"></div>
+    ${mgmtHTML}
+    ${causesHTML}
+
+    <button class="btn-copy-history" data-resumen="${hcSummary}" onclick="copyHC(this)">
+      ${svgIcon('check-circle', 16)} copiar resumen para historia clínica
+    </button>
+
+    <div class="disclaimer">
+      ${svgIcon('alert-triangle', 13)} resultado orientativo. correlacione con la clínica, analítica completa y contexto asistencial.
+      verifique siempre con fuentes bibliográficas primarias.
+    </div>
+  `;
+
+  showView('view-results');
+}
+
+/* ----------------------------------------------------------------
+   CAUSES DATABASE — acumulativa y universal
+   Lógica:
+   1. Se obtienen las causas del trastorno PRIMARIO (type/mech).
+   2. Si agEff > 12, se añaden SIEMPRE las causas de acidosis metabólica
+      con AG elevado, evitando duplicados (ya sea que el trastorno primario
+      fuera alcalosis, mixto o incluso acidosis hiperclorémica sin AG).
+---------------------------------------------------------------- */
+function getCauses(type, mech, agEff, lactato) {
+  const lacHigh = !isNaN(lactato) && lactato > 2.0;
+  const lacSevere = !isNaN(lactato) && lactato > 4.0;
+  const agHigh  = !isNaN(agEff) && agEff > 10;
+
+  // ── Causas de acidosis metabólica con AG elevado (bloque reutilizable)
+  // Se construyen dinámicamente para poder colocar lactato como primera causa.
+  const agPlusCauses = () => {
+    const list = [];
+    if (lacSevere || lacHigh) {
+      list.push({ icon: 'activity', cls: 'c-red', text: 'Acidosis láctica — Lactato elevado: sepsis, shock, isquemia mesentérica, metformina, déficit tiamina, convulsiones prolongadas.', highlight: true, _id: 'lactica' });
+    }
+    list.push(
+      { icon: 'flask',        cls: 'c-orange', text: 'Cetoacidosis diabética (CAD) — acumulación de β-hidroxibutirato y acetoacetato.', highlight: false, _id: 'cad' },
+      { icon: 'kidney',       cls: 'c-blue',   text: 'Insuficiencia renal aguda/crónica (uremia) — acumulación de ácidos orgánicos y sulfatos.', highlight: false, _id: 'uremia' },
+      { icon: 'alert-circle', cls: 'c-red',    text: 'Intoxicaciones: metanol, etilenglicol, salicilatos (fase tardía), isoniazida, cianuro.', highlight: false, _id: 'tox' },
+      { icon: 'droplet',      cls: 'c-orange', text: 'Cetoacidosis alcohólica — ayuno prolongado + ingesta de alcohol.', highlight: false, _id: 'keto-alc' },
+    );
+    return list;
+  };
+
+  // ── Obtener causas del trastorno primario
+  let primary = [];
+
+  if (type === 'normal') {
+    primary = [
+      { icon: 'check-circle', cls: 'c-green', text: 'Gasometría dentro de la normalidad. No se identifican trastornos ácido-base.', highlight: false, _id: 'normal-ok' },
+      { icon: 'info',         cls: '',        text: 'Una gasometría normal no excluye patología subyacente compensada. Evalúe el contexto clínico.', highlight: false, _id: 'normal-info' },
+    ];
+  } else if (type === 'acidosis' && mech === 'metabolica' && agHigh) {
+    // Si ya es acidosis metabólica AG+, el bloque AG+ es el principal
+    primary = agPlusCauses();
+  } else if (type === 'acidosis' && mech === 'metabolica') {
+    primary = [
+      { icon: 'wave',         cls: 'c-blue',   text: 'Diarrea severa — pérdida directa de HCO₃⁻ por el tracto gastrointestinal.', highlight: false, _id: 'diarrea' },
+      { icon: 'kidney',       cls: 'c-purple', text: 'Acidosis tubular renal (ATR) tipos 1, 2 y 4 — defectos en la reabsorción/secreción renal.', highlight: false, _id: 'atr' },
+      { icon: 'pill',         cls: 'c-yellow', text: 'Fármacos: cloruro amónico, acetazolamida, espironolactona, anfotericina B.', highlight: false, _id: 'farmacos-acid' },
+      { icon: 'minus-circle', cls: '',         text: 'Fístulas pancreáticas, biliares o intestinales con pérdida de base.', highlight: false, _id: 'fistulas' },
+      { icon: 'flask',        cls: 'c-blue',   text: 'Ureterosigmoidostomía — absorción de Cl⁻ y pérdida de HCO₃⁻.', highlight: false, _id: 'ureterosig' },
+    ];
+  } else if (type === 'acidosis' && mech === 'respiratoria') {
+    primary = [
+      { icon: 'lungs',        cls: 'c-blue',   text: 'EPOC descompensado / reagudización — hipercapnia por obstrucción crónica.', highlight: false, _id: 'epoc' },
+      { icon: 'thermometer',  cls: 'c-purple', text: 'Síndrome de apnea-hipopnea del sueño (SAHS) grave con hipercapnia diurna.', highlight: false, _id: 'sahs' },
+      { icon: 'pill',         cls: 'c-orange', text: 'Depresión del centro respiratorio: opioides, benzodiacepinas, barbitúricos.', highlight: false, _id: 'depresion-sr' },
+      { icon: 'brain',        cls: 'c-red',    text: 'Patología SNC: TCE, ACV, tumores, encefalopatía con afectación del control respiratorio.', highlight: false, _id: 'snc-acid' },
+      { icon: 'activity',     cls: 'c-yellow', text: 'Enfermedades neuromusculares: ELA, miastenia gravis, Guillain-Barré.', highlight: false, _id: 'neuromusc' },
+      { icon: 'shield',       cls: 'c-blue',   text: 'Neumotórax, hemotórax masivo, tórax inestable post-traumático.', highlight: false, _id: 'neumo' },
+      { icon: 'users',        cls: '',         text: 'Síndrome de obesidad-hipoventilación (síndrome de Pickwick).', highlight: false, _id: 'pickwick' },
+    ];
+  } else if (type === 'alcalosis' && mech === 'metabolica') {
+    primary = [
+      { icon: 'info', cls: 'c-blue', text: '<strong>Sensible al Cloruro</strong> (Cl⁻ urinario &lt;20 mEq/L) — responde a suero salino + KCl:', isSeparator: true, _id: 'alc-cl-sens' },
+      { icon: 'wave',         cls: 'c-orange', text: 'Vómitos severos / aspiración nasogástrica — pérdida de HCl gástrico. Patrón: hipocloremia, hipopotasemia, orina ácida paradójica.', highlight: false, _id: 'vomitos' },
+      { icon: 'pill',         cls: 'c-yellow', text: 'Diuréticos de asa o tiazídicos — contracción de volumen, pérdida de K⁺ y Cl⁻. Frecuente en IC y cirrosis.', highlight: false, _id: 'diureticos' },
+      { icon: 'activity',     cls: 'c-purple', text: 'Post-hipercapnia — corrección brusca de acidosis respiratoria crónica sin corregir el HCO₃⁻ retenido.', highlight: false, _id: 'posthipercap' },
+      { icon: 'flask',        cls: 'c-blue',   text: 'Administración exógena de bicarbonato o antiácidos (síndrome lácteo-alcalino).', highlight: false, _id: 'bicarbonato' },
+      { icon: 'alert-triangle', cls: 'c-red', text: '<strong>Resistente al Cloruro</strong> (Cl⁻ urinario &gt;20 mEq/L) — NO responde a salino, requiere tratar la causa:', isSeparator: true, _id: 'alc-cl-res' },
+      { icon: 'heart-pulse',  cls: 'c-red',    text: 'Hiperaldosteronismo primario (Conn) — HTA, hipopotasemia, renina baja. Estudio con aldosterona plasmática.', highlight: false, _id: 'conn' },
+      { icon: 'shield',       cls: 'c-orange', text: 'Síndrome de Cushing — exceso cortisol (actividad mineralcorticoide). Asocia obesidad central, estrías, DM.', highlight: false, _id: 'cushing' },
+      { icon: 'trending-down',cls: 'c-blue',   text: 'Hipopotasemia severa (&lt;2.5 mEq/L) — intercambio K⁺/H⁺ intracelular. La corrección del K⁺ es imprescindible.', highlight: false, _id: 'hipok-alc' },
+      { icon: 'kidney',       cls: 'c-purple', text: 'Síndrome de Bartter / Gitelman — tubulopatías con pérdida renal crónica de K⁺/Cl⁻ sin respuesta al salino.', highlight: false, _id: 'bartter' },
+    ];
+  } else if (type === 'alcalosis' && mech === 'respiratoria') {
+    primary = [
+      { icon: 'wind',         cls: 'c-blue',   text: 'Ansiedad, ataques de pánico — hiperventilación psicógena aguda.', highlight: false, _id: 'ansiedad' },
+      { icon: 'thermometer',  cls: 'c-orange', text: 'Hipoxemia (altitud, neumonía, TEP) — hiperventilación compensatoria.', highlight: false, _id: 'hipoxemia' },
+      { icon: 'shield',       cls: 'c-red',    text: 'Sepsis precoz, fiebre alta — estimulación directa del centro respiratorio.', highlight: false, _id: 'sepsis-resp' },
+      { icon: 'heart-pulse',  cls: 'c-purple', text: 'Embarazo — progesterona estimula la ventilación; alcalosis respiratoria fisiológica.', highlight: false, _id: 'embarazo' },
+      { icon: 'brain',        cls: 'c-yellow', text: 'Lesiones SNC: meningitis, encefalopatía hepática, TCE con estimulación central.', highlight: false, _id: 'snc-alc' },
+      { icon: 'activity',     cls: 'c-blue',   text: 'Ventilación mecánica inadecuada — hiperventilación iatrogénica.', highlight: false, _id: 'vm-iatr' },
+      { icon: 'pill',         cls: 'c-orange', text: 'Intoxicación por salicilatos (fase temprana) — estimulación directa del centro respiratorio.', highlight: false, _id: 'salicilatos' },
+    ];
+  } else {
+    // mixed / complejo
+    primary = [
+      { icon: 'zap',          cls: 'c-yellow', text: 'Trastorno mixto — evalúe cada componente por separado con el contexto clínico.', highlight: false, _id: 'mixto' },
+      { icon: 'microscope',   cls: '',         text: 'Considere causas superpuestas de acidosis y alcalosis simultáneas.', highlight: false, _id: 'mixto-super' },
+      { icon: 'stethoscope',  cls: 'c-blue',   text: 'Consulte al especialista y realice estudio analítico completo.', highlight: false, _id: 'especialista' },
+    ];
+  }
+
+  // ── ACUMULACIÓN UNIVERSAL: si AG elevado y el trastorno primario no era
+  //    ya acidosis metabólica AG+, añadir las causas AG+ al final, sin duplicar.
+  if (agHigh && !(type === 'acidosis' && mech === 'metabolica' && agHigh)) {
+    const existingIds = new Set(primary.map(c => c._id));
+    const extra = agPlusCauses().filter(c => !existingIds.has(c._id));
+    if (extra.length > 0) {
+      primary.push({
+        icon: 'alert-triangle',
+        cls: 'c-red',
+        text: '<strong>Causas de Acidosis Metabólica con AG(+) oculta concomitante:</strong>',
+        highlight: true,
+        _id: 'ag-sep',
+        isSeparator: true,
+      });
+      primary.push(...extra);
+    }
+  }
+
+  return primary;
+}
+
+/* ----------------------------------------------------------------
+   MANAGEMENT ORIENTATION - Checklist Médico Directo
+---------------------------------------------------------------- */
+function getManagement(type, mech, agEff, lactato, k, ph, pafi) {
+  const agHigh   = !isNaN(agEff) && agEff > 10;
+  const lacSevere= !isNaN(lactato) && lactato > 4.0;
+  const kLow     = !isNaN(k) && k < 3.5;
+  const kHigh    = !isNaN(k) && k > 5.0;
+  const sdraRisk = !isNaN(pafi) && pafi <= 300;
+  const sdraGrave= !isNaN(pafi) && pafi <= 100;
+
+  const items = []; // { priority: 'urgent'|'high'|'normal', icon, text }
+
+  if (type === 'normal') {
+    items.push({ priority: 'normal', icon: 'check-circle', text: 'Gasometría normal. Continuar monitorización según evolución.' });
+    return items;
+  }
+
+  // 1. VÍA AÉREA Y RESPIRATORIO (La A y la B)
+  if (sdraGrave) items.push({ priority: 'urgent', icon: 'lungs', text: '<strong>Iniciar VMI protectora urgente:</strong> Vt 6 ml/kg IBW, PEEP ≥ 10. Considerar decúbito prono y valorar ECMO.' });
+  else if (sdraRisk) items.push({ priority: 'high', icon: 'lungs', text: '<strong>Optimizar oxigenación:</strong> Ajustar PEEP ≥ 5 cmH₂O. Considerar VMI protectora.' });
+  
+  if (type === 'acidosis' && mech === 'respiratoria') {
+    if (ph < 7.25) items.push({ priority: 'urgent', icon: 'zap', text: '<strong>Fallo ventilatorio agudo:</strong> Valorar intubación e inicio de VMI urgente.' });
+    else items.push({ priority: 'high', icon: 'lungs', text: '<strong>Soporte ventilatorio:</strong> Iniciar VMNI (BiPAP) como primera línea (ej. EPOC reagudizado o EAP).' });
+  }
+
+  // 2. HEMODINÁMICA Y METABÓLICO (La C)
+  if (type === 'acidosis' && mech === 'metabolica') {
+    if (ph < 7.1) items.push({ priority: 'urgent', icon: 'zap', text: '<strong>Acidosis crítica (pH < 7.1):</strong> Valorar NaHCO₃ 1M IV lento (Objetivo pH > 7.20). Calcular déficit: 0.3 × peso × (24 − HCO₃⁻).' });
+    if (agHigh) items.push({ priority: 'high', icon: 'microscope', text: '<strong>Solicitar panel MUDPILES:</strong> Tóxicos (salicilatos, metanol), cetonas, función renal.' });
+    if (lacSevere) items.push({ priority: 'urgent', icon: 'heart-pulse', text: '<strong>Tratar acidosis láctica:</strong> Tipo A → Fluidoterapia intensiva y vasopresores si shock. Tipo B → Suspender metformina, Tiamina 100 mg IV empírica.' });
+  }
+
+  if (type === 'alcalosis' && mech === 'metabolica') {
+    items.push({ priority: 'high', icon: 'droplet', text: '<strong>Test terapéutico con SSF:</strong> Administrar NaCl 0.9% IV + reponer KCl. Si no responde (Cl-resistente), descartar Hiperaldosteronismo/Cushing.' });
+  }
+
+  // 3. ELECTROLITOS
+  if (kLow && ph < 7.4) items.push({ priority: 'urgent', icon: 'alert-circle', text: '<strong>Reponer Potasio prioritario:</strong> Reponer K⁺ ANTES de corregir el pH (el K⁺ bajará aún más al revertir la acidosis).' });
+  if (kLow && ph > 7.4) items.push({ priority: 'high', icon: 'trending-down', text: '<strong>Reponer Potasio para frenar alcalosis:</strong> La hipopotasemia perpetúa el cuadro. Objetivo K⁺ > 3.5.' });
+  if (kHigh && ph >= 7.35) items.push({ priority: 'urgent', icon: 'zap', text: '<strong>Tratar Hiperpotasemia activa:</strong> Solicitar ECG. Si > 6.5 o cambios ECG → Gluconato cálcico IV, insulina+glucosa, salbutamol.' });
+
+  // 4. MIXTOS
+  if (type === 'mixed') {
+    items.push({ priority: 'urgent', icon: 'shield', text: '<strong>Trastorno mixto severo:</strong> Intervenir sobre el componente que genera mayor inestabilidad hemodinámica o ventilatoria.' });
+  }
+
+  return items;
+}
+
+/* ----------------------------------------------------------------
+   COPIAR A HISTORIA CLÍNICA (Punto 1)
+---------------------------------------------------------------- */
+function copyHC(btn) {
+  const text = btn.getAttribute('data-resumen');
+  navigator.clipboard.writeText(text).then(() => {
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = svgIcon('check-circle', 16) + ' ¡COPIADO AL PORTAPAPELES!';
+    btn.style.background = 'var(--accent-green)';
+    btn.style.color = '#000';
+    setTimeout(() => {
+      btn.innerHTML = originalHTML;
+      btn.style.background = ''; /* Limpia el estilo en línea para que vuelva al CSS */
+      btn.style.color = '';
+    }, 2500);
+  });
+}
+
+</script>
+</body>
+</html>
