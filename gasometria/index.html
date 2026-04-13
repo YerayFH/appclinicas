@@ -2081,7 +2081,7 @@ beHTML = `
     const cls = chipSeverity(val, low, high, critLow, critHigh);
     return `<div class="chip ${cls}">
       <div class="chip-name">${name}</div>
-      <div class="chip-val">${Number.isInteger(val) ? val : val.toFixed(1)}</div>
+      <div class="chip-val">${Number.isInteger(val) ? val : val.toFixed(2)}</div>
       <div class="chip-unit">${unit}</div>
     </div>`;
   }
