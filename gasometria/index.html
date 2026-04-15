@@ -1511,6 +1511,7 @@ let dxName = '', dxSub = '';
     if (ok) {
       if (!dxName.includes('Compensada')) dxName += ' Compensada';  
       note = { cls: 'ok', txt: 'Compensación respiratoria adecuada.' + venousWintersNote };
+    }
     } else if (pco2ForWinters < (exp - 2)) {
       note = { cls: 'warn', txt: 'pCO₂ demasiado baja → Alcalosis respiratoria superpuesta.' + venousWintersNote };
       dxName = 'Trastorno Mixto: Acidosis Metabólica + Alcalosis Respiratoria';
