@@ -1819,8 +1819,6 @@ if (isMetabAcidPresent && !agHigh && !dxName.includes('AG+')) {
           }
           dxSub += `<br><span style="color:var(--accent-orange);font-size:0.82em;">⚠ <strong>Componente hiperclorémico:</strong> El HCO₃⁻ ha bajado más de lo que explica el AG.</span>`;
         }
-    } // <-- Cierre del if (dd >= 0 || dd === 999)
-
     // Si la fórmula original indicaba compensación, devolvemos el título con honor
     if (isCompensada && !dxName.includes('Compensada')) dxName += ' Compensada';
   }
