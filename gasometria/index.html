@@ -1670,15 +1670,22 @@ let dxName = '', dxSub = '';
     });
 
     // 2. REGLA DE ORO: PRIORIDAD CLÍNICA POR HIPOXEMIA (Caso 23-Art)
+    const isBasalHco3Alk = hco3 >= SR.hco3Lo && hco3 <= SR.hco3Hi; // <-- Declarada ANTES del if para no romper la cadena
+
     if (!isNaN(pafi) && pafi < 150) {
         dxName += ' Aguda'; // Dejamos que el inyector global añada la hipoxemia luego
         customCompTitle = 'COMPENSACIÓN AGUDA (CONTEXTO CRÍTICO)';
         dxSub = '<strong>ALERTA:</strong> Hipoxemia crítica (PAFI < 150). La hiperventilación es un esfuerzo agudo por sobrevivir; no se considera un estado crónico.';
     } 
     // 3. Lógica de proximidad estándar
-    const isBasalHco3Alk = hco3 >= SR.hco3Lo && hco3 <= SR.hco3Hi;
-    
     else if ((diffAc <= 2 || isBasalHco3Alk) && diffAc <= diffCr) {
+        customCompTitle = 'COMPATIBLE CON TRASTORNO AGUDO';
+        if (!dxName.includes('Aguda')) dxName += ' Aguda';
+        
+        if (isBasalHco3Alk && diffAc > 2) {
+            dxSub += ' <br><span style="color:var(--muted);font-size:0.82em;">ℹ El bicarbonato se mantiene en rango basal (compensación metabólica aún no iniciada).</span>';
+        }
+    } else if (diffCr <= 2) {
         customCompTitle = 'COMPATIBLE CON TRASTORNO AGUDO';
         if (!dxName.includes('Aguda')) dxName += ' Aguda';
         
