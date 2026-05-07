@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WardPass® — YerayFH</title>
-  <link rel="icon" type="image/png" href="../img/pase.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="../img/pase.png">
+  <!-- Favicon solicitado por el usuario -->
+  <link rel="icon" type="image/png" href="appclinicas/img/pase.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="appclinicas/img/pase.png">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -159,53 +161,71 @@
       { title: 'Otros', content: document.getElementById('otros').value }
     ];
 
-    // Create container
+    // --- SOLUCIÓN PDF: Crear elemento y añadirlo al DOM ---
     const printArea = document.createElement('div');
-    printArea.style.padding = '40px';
+    // Lo hacemos invisible para el usuario pero presente para html2canvas
+    printArea.style.position = 'fixed';
+    printArea.style.left = '0';
+    printArea.style.top = '0';
+    printArea.style.width = '800px';
+    printArea.style.zIndex = '-1';
+    printArea.style.visibility = 'hidden';
     printArea.style.background = 'white';
-    printArea.style.fontFamily = 'Arial, sans-serif';
+    printArea.style.padding = '40px';
 
     let sectionsHtml = '';
     sections.forEach(s => {
       if (s.content && s.content.trim()) {
         sectionsHtml += `
           <div style="margin-bottom: 25px; page-break-inside: avoid;">
-            <div style="font-size: 14px; font-weight: 800; color: #2E86C1; border-bottom: 1px solid #eef2f7; padding-bottom: 5px; margin-bottom: 8px; text-transform: uppercase;">${s.title}</div>
-            <div style="font-size: 13px; line-height: 1.5; color: #333; white-space: pre-wrap;">${s.content}</div>
+            <div style="font-size: 14px; font-weight: 800; color: #2E86C1; border-bottom: 1px solid #eef2f7; padding-bottom: 5px; margin-bottom: 8px; text-transform: uppercase; font-family: sans-serif;">${s.title}</div>
+            <div style="font-size: 13px; line-height: 1.5; color: #333; white-space: pre-wrap; font-family: sans-serif;">${s.content}</div>
           </div>
         `;
       }
     });
 
     printArea.innerHTML = `
-      <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
+      <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px; font-family: sans-serif;">
         <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
         <h1 style="font-size: 26px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
       </div>
-      <div style="display: flex; gap: 40px; margin-bottom: 35px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+      <div style="display: flex; gap: 40px; margin-bottom: 35px; background: #f8f9fa; padding: 20px; border-radius: 8px; font-family: sans-serif;">
         <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Fecha</strong> <span style="font-size: 14px;">${fecha}</span></div>
         <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Farmacéuticos</strong> <span style="font-size: 14px;">${farmaceuticos}</span></div>
         <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Técnicos</strong> <span style="font-size: 14px;">${tecnicos}</span></div>
       </div>
       ${sectionsHtml}
-      <div style="margin-top: 50px; border-top: 1px solid #dee2e6; padding-top: 20px; font-size: 10px; color: #999; text-align: center;">
+      <div style="margin-top: 50px; border-top: 1px solid #dee2e6; padding-top: 20px; font-size: 10px; color: #999; text-align: center; font-family: sans-serif;">
         Documento generado automáticamente por WardPass® — YerayFH
       </div>
     `;
+
+    document.body.appendChild(printArea);
 
     const opt = {
       margin: 15,
       filename: `WardPass_Guardia_${fecha}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        scrollY: 0,
+        scrollX: 0
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
+      // Esperamos un instante para asegurar que el DOM ha procesado el nuevo elemento
+      await new Promise(resolve => setTimeout(resolve, 200));
       await html2pdf().set(opt).from(printArea).save();
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("Error al generar PDF");
+      alert("Error al generar el PDF. Asegúrese de que todos los campos están correctamente rellenos.");
+    } finally {
+      document.body.removeChild(printArea);
     }
   }
 
