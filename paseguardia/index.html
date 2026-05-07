@@ -148,7 +148,7 @@
     } catch (e) { console.error("Error cargando datos", e); }
   }
 
-  async function exportToPDF() {
+  function exportToPDF() {
     const fecha = document.getElementById('fecha').value || '---';
     const farmaceuticos = document.getElementById('farmaceuticos').value || '---';
     const tecnicos = document.getElementById('tecnicos').value || '---';
@@ -165,63 +165,55 @@
     sections.forEach(s => {
       if (s.content && s.content.trim()) {
         sectionsHtml += `
-          <div style="margin-bottom: 20px; border-left: 3px solid #2E86C1; padding-left: 10px; font-family: sans-serif;">
-            <div style="font-size: 14px; font-weight: bold; color: #2E86C1; margin-bottom: 5px; text-transform: uppercase;">${s.title}</div>
-            <div style="font-size: 12px; line-height: 1.4; color: #333; white-space: pre-wrap;">${s.content}</div>
+          <div style="margin-bottom: 25px; border-left: 4px solid #2E86C1; padding-left: 15px;">
+            <div style="font-size: 16px; font-weight: bold; color: #2E86C1; margin-bottom: 8px; text-transform: uppercase; font-family: Arial, sans-serif;">${s.title}</div>
+            <div style="font-size: 14px; line-height: 1.6; color: #000; white-space: pre-wrap; font-family: Arial, sans-serif;">${s.content}</div>
           </div>
         `;
       }
     });
 
-    const htmlContent = `
-      <div style="padding: 30px; background: #ffffff; width: 750px; font-family: sans-serif;">
-        <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 15px; margin-bottom: 25px;">
-          <div style="font-size: 10px; color: #666;">YerayFH - Farmacia Hospitalaria</div>
-          <h1 style="font-size: 24px; color: #2E86C1; margin: 5px 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
-        </div>
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 30px; font-size: 12px;">
-          <p style="margin: 5px 0;"><strong>Fecha:</strong> ${fecha}</p>
-          <p style="margin: 5px 0;"><strong>Farmacéuticos:</strong> ${farmaceuticos}</p>
-          <p style="margin: 5px 0;"><strong>Técnicos:</strong> ${tecnicos}</p>
-        </div>
-        ${sectionsHtml}
-        <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 15px; font-size: 9px; color: #999; text-align: center;">
-          Documento generado automáticamente por WardPass® — YerayFH
-        </div>
-      </div>
-    `;
-
-    const opt = {
-      margin: 10,
-      filename: `WardPass_Guardia_${fecha}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
-        allowTaint: true,
-        logging: false,
-        letterRendering: true
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    try {
-      const element = document.createElement('div');
-      element.innerHTML = htmlContent;
-      element.style.position = 'absolute';
-      element.style.left = '0';
-      element.style.top = '0';
-      element.style.zIndex = '-1';
-      element.style.opacity = '0';
-      document.body.appendChild(element);
-      
-      await html2pdf().set(opt).from(element).save();
-      
-      document.body.removeChild(element);
-    } catch (err) {
-      console.error("PDF Error:", err);
-      alert("Error al generar el PDF localmente.");
-    }
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>WardPass_Guardia_${fecha}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
+            .header { border-bottom: 3px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px; }
+            .info-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 40px; display: flex; gap: 30px; }
+            .info-item { flex: 1; }
+            .info-label { font-size: 11px; text-transform: uppercase; color: #666; font-weight: bold; display: block; }
+            @media print {
+              .no-print { display: none; }
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div style="font-size: 12px; color: #666;">YerayFH - Farmacia Hospitalaria</div>
+            <h1 style="font-size: 28px; color: #2E86C1; margin: 5px 0;">INFORME DE PASE DE GUARDIA</h1>
+          </div>
+          <div class="info-box">
+            <div class="info-item"><span class="info-label">Fecha</span> <strong>${fecha}</strong></div>
+            <div class="info-item"><span class="info-label">Farmacéuticos</span> <strong>${farmaceuticos}</strong></div>
+            <div class="info-item"><span class="info-label">Técnicos</span> <strong>${tecnicos}</strong></div>
+          </div>
+          ${sectionsHtml}
+          <div style="margin-top: 60px; border-top: 1px solid #ddd; padding-top: 20px; font-size: 11px; color: #888; text-align: center;">
+            Documento oficial generado por WardPass® — YerayFH
+          </div>
+          <script>
+            setTimeout(() => {
+              window.print();
+              window.close();
+            }, 500);
+          <\/script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   document.addEventListener('DOMContentLoaded', () => {
