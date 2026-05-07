@@ -165,50 +165,62 @@
     sections.forEach(s => {
       if (s.content && s.content.trim()) {
         sectionsHtml += `
-          <div style="margin-bottom: 25px; page-break-inside: avoid;">
-            <div style="font-size: 14px; font-weight: 800; color: #2E86C1; border-bottom: 1px solid #eef2f7; padding-bottom: 5px; margin-bottom: 8px; text-transform: uppercase; font-family: sans-serif;">${s.title}</div>
-            <div style="font-size: 13px; line-height: 1.5; color: #333; white-space: pre-wrap; font-family: sans-serif;">${s.content}</div>
+          <div style="margin-bottom: 20px; border-left: 3px solid #2E86C1; padding-left: 10px; font-family: sans-serif;">
+            <div style="font-size: 14px; font-weight: bold; color: #2E86C1; margin-bottom: 5px; text-transform: uppercase;">${s.title}</div>
+            <div style="font-size: 12px; line-height: 1.4; color: #333; white-space: pre-wrap;">${s.content}</div>
           </div>
         `;
       }
     });
 
-    // Generamos el markup en un String
     const htmlContent = `
-      <div style="padding: 20px; font-family: sans-serif; background: #ffffff; color: #333333;">
-        <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
-          <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
-          <h1 style="font-size: 26px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
+      <div style="padding: 30px; background: #ffffff; width: 750px; font-family: sans-serif;">
+        <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 15px; margin-bottom: 25px;">
+          <div style="font-size: 10px; color: #666;">YerayFH - Farmacia Hospitalaria</div>
+          <h1 style="font-size: 24px; color: #2E86C1; margin: 5px 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
         </div>
-        <div style="display: flex; gap: 40px; margin-bottom: 35px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
-          <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Fecha</strong> <span style="font-size: 14px;">${fecha}</span></div>
-          <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Farmacéuticos</strong> <span style="font-size: 14px;">${farmaceuticos}</span></div>
-          <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Técnicos</strong> <span style="font-size: 14px;">${tecnicos}</span></div>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 30px; font-size: 12px;">
+          <p style="margin: 5px 0;"><strong>Fecha:</strong> ${fecha}</p>
+          <p style="margin: 5px 0;"><strong>Farmacéuticos:</strong> ${farmaceuticos}</p>
+          <p style="margin: 5px 0;"><strong>Técnicos:</strong> ${tecnicos}</p>
         </div>
         ${sectionsHtml}
-        <div style="margin-top: 50px; border-top: 1px solid #dee2e6; padding-top: 20px; font-size: 10px; color: #999; text-align: center;">
+        <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 15px; font-size: 9px; color: #999; text-align: center;">
           Documento generado automáticamente por WardPass® — YerayFH
         </div>
       </div>
     `;
 
     const opt = {
-      margin: 15,
+      margin: 10,
       filename: `WardPass_Guardia_${fecha}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        allowTaint: true,
+        logging: false,
+        letterRendering: true
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
       const element = document.createElement('div');
       element.innerHTML = htmlContent;
-      document.body.appendChild(element); // Clave: Montar en el DOM
+      element.style.position = 'absolute';
+      element.style.left = '0';
+      element.style.top = '0';
+      element.style.zIndex = '-1';
+      element.style.opacity = '0';
+      document.body.appendChild(element);
+      
       await html2pdf().set(opt).from(element).save();
-      document.body.removeChild(element); // Clave: Desmontar después
+      
+      document.body.removeChild(element);
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("Error al generar el PDF.");
+      alert("Error al generar el PDF localmente.");
     }
   }
 
