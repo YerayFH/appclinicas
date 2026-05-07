@@ -149,9 +149,27 @@
   }
 
   function exportToPDF() {
-    const fecha = document.getElementById('fecha').value || '---';
+    const rawFecha = document.getElementById('fecha').value;
+    let formattedFecha = '---';
+    if (rawFecha) {
+      const [y, m, d] = rawFecha.split('-');
+      formattedFecha = `${d}.${m}.${y}`;
+    }
+
     const farmaceuticos = document.getElementById('farmaceuticos').value || '---';
     const tecnicos = document.getElementById('tecnicos').value || '---';
+
+    // Capturar logo en base64 para asegurar que cargue en la ventana de impresión
+    const logoImg = document.querySelector('.hdr-logo');
+    let logoBase64 = '';
+    if (logoImg) {
+      const canvas = document.createElement('canvas');
+      canvas.width = logoImg.naturalWidth;
+      canvas.height = logoImg.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(logoImg, 0, 0);
+      logoBase64 = canvas.toDataURL('image/png');
+    }
 
     const sections = [
       { title: 'Unidosis', content: document.getElementById('unidosis').value },
@@ -177,10 +195,11 @@
     printWindow.document.write(`
       <html>
         <head>
-          <title>WardPass_Guardia_${fecha}</title>
+          <title>Guardia ${formattedFecha}</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
-            .header { border-bottom: 3px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px; }
+            .header-flex { display: flex; align-items: center; gap: 20px; border-bottom: 3px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo-pdf { height: 70px; width: auto; }
             .info-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 40px; display: flex; gap: 30px; }
             .info-item { flex: 1; }
             .info-label { font-size: 11px; text-transform: uppercase; color: #666; font-weight: bold; display: block; }
@@ -191,12 +210,15 @@
           </style>
         </head>
         <body>
-          <div class="header">
-            <div style="font-size: 12px; color: #666;">YerayFH - Farmacia Hospitalaria</div>
-            <h1 style="font-size: 28px; color: #2E86C1; margin: 5px 0;">INFORME DE PASE DE GUARDIA</h1>
+          <div class="header-flex">
+            ${logoBase64 ? `<img src="${logoBase64}" class="logo-pdf">` : ''}
+            <div>
+              <div style="font-size: 12px; color: #666;">YerayFH - Farmacia Hospitalaria</div>
+              <h1 style="font-size: 24px; color: #2E86C1; margin: 0;">INFORME DE PASE DE GUARDIA</h1>
+            </div>
           </div>
           <div class="info-box">
-            <div class="info-item"><span class="info-label">Fecha</span> <strong>${fecha}</strong></div>
+            <div class="info-item"><span class="info-label">Fecha</span> <strong>${formattedFecha}</strong></div>
             <div class="info-item"><span class="info-label">Farmacéuticos</span> <strong>${farmaceuticos}</strong></div>
             <div class="info-item"><span class="info-label">Técnicos</span> <strong>${tecnicos}</strong></div>
           </div>
