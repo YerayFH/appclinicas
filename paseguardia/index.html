@@ -165,11 +165,10 @@
     const printArea = document.createElement('div');
     // Lo hacemos invisible para el usuario pero presente para html2canvas
     printArea.style.position = 'fixed';
-    printArea.style.left = '0';
+    printArea.style.left = '-9999px'; // Movemos fuera de la pantalla en lugar de ocultar
     printArea.style.top = '0';
     printArea.style.width = '800px';
     printArea.style.zIndex = '-1';
-    printArea.style.visibility = 'hidden';
     printArea.style.background = 'white';
     printArea.style.padding = '40px';
 
