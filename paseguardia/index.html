@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WardPass® — YerayFH</title>
-  <!-- Favicon solicitado por el usuario -->
-  <link rel="icon" type="image/png" href="appclinicas/img/pase.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="appclinicas/img/pase.png">
+  <!-- Favicon corregido con ruta relativa y rompecachés v3 -->
+  <link rel="icon" type="image/png" href="../img/pase.png?v=3">
+  <link rel="apple-touch-icon" sizes="180x180" href="../img/pase.png?v=3">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,375 +18,203 @@
       --accent: #2E86C1;
       --bg: #ffffff;
       --card-bg: #ffffff;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f0f2f5;
-      color: var(--txt);
-      line-height: 1.6;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: var(--txt); line-height: 1.6; }
 
     .app-header-unified {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 20px;
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--brd);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      display: flex; align-items: center; gap: 16px; padding: 14px 20px;
+      background: var(--header-bg); border-bottom: 1px solid var(--brd);
+      position: sticky; top: 0; z-index: 100;
     }
+    .hdr-logo { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; }
+    .hdr-text { display: flex; flex-direction: column; gap: 2px; }
+    .hdr-meta { font-size: 11px; opacity: 0.75; color: var(--txt); }
+    .hdr-meta a { color: inherit; text-decoration: none; }
+    .hdr-meta a:hover { text-decoration: underline; }
+    .hdr-dept { font-size: 13px; font-weight: 500; opacity: 0.85; color: var(--txt); }
+    .hdr-app-name { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; color: var(--accent); }
 
-    .hdr-logo {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
+    .main-content { max-width: 900px; margin: 30px auto; padding: 0 20px; }
 
-    .hdr-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .section { background: var(--card-bg); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow); border: 1px solid var(--brd); }
+    .section-title { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #eef2f7; padding-bottom: 10px; }
 
-    .hdr-meta {
-      font-size: 11px;
-      opacity: 0.75;
-      color: var(--txt);
-    }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .field-group { display: flex; flex-direction: column; gap: 8px; }
+    .field-label { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; }
+    .input-field { padding: 12px; border: 1.5px solid var(--brd); border-radius: 8px; font-size: 14px; transition: border-color 0.2s; outline: none; }
+    .input-field:focus { border-color: var(--accent); }
 
-    .hdr-meta a {
-      color: inherit;
-      text-decoration: none;
-    }
+    .textarea-field { width: 100%; min-height: 150px; padding: 15px; border: 1.5px solid var(--brd); border-radius: 8px; font-size: 15px; resize: vertical; outline: none; transition: border-color 0.2s; font-family: inherit; }
+    .textarea-field:focus { border-color: var(--accent); }
 
-    .hdr-meta a:hover {
-      text-decoration: underline;
-    }
+    .btn-container { display: flex; justify-content: center; margin: 40px 0; }
+    .btn-export { background: var(--accent); color: white; border: none; padding: 15px 40px; border-radius: 99px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(46, 134, 193, 0.3); }
+    .btn-export:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 134, 193, 0.4); opacity: 0.95; }
 
-    .hdr-dept {
-      font-size: 13px;
-      font-weight: 500;
-      opacity: 0.85;
-      color: var(--txt);
-    }
-
-    .hdr-app-name {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      color: var(--accent);
-    }
-
-    .main-content {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .section {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--brd);
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--accent);
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #eef2f7;
-      padding-bottom: 10px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #555;
-      text-transform: uppercase;
-    }
-
-    .input-field {
-      padding: 12px;
-      border: 1.5px solid var(--brd);
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color 0.2s;
-      outline: none;
-    }
-
-    .input-field:focus {
-      border-color: var(--accent);
-    }
-
-    .textarea-field {
-      width: 100%;
-      min-height: 150px;
-      padding: 15px;
-      border: 1.5px solid var(--brd);
-      border-radius: 8px;
-      font-size: 15px;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
-
-    .textarea-field:focus {
-      border-color: var(--accent);
-    }
-
-    .btn-container {
-      display: flex;
-      justify-content: center;
-      margin: 40px 0;
-    }
-
-    .btn-export {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 15px 40px;
-      border-radius: 99px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 15px rgba(46, 134, 193, 0.3);
-    }
-
-    .btn-export:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(46, 134, 193, 0.4);
-      opacity: 0.95;
-    }
-
-    .app-footer-unified {
-      text-align: center;
-      padding: 25px 20px;
-      font-size: 12px;
-      opacity: 0.7;
-      border-top: 1px solid var(--brd);
-      background: #fff;
-      margin-top: 50px;
-    }
+    .app-footer-unified { text-align: center; padding: 25px 20px; font-size: 12px; opacity: 0.7; border-top: 1px solid var(--brd); background: #fff; margin-top: 50px; }
 
     @media (max-width: 600px) {
-      .hdr-logo {
-        width: 50px;
-        height: 50px;
-      }
-
-      .hdr-app-name {
-        font-size: 18px;
-      }
-
-      .section {
-        padding: 15px;
-      }
+      .hdr-logo { width: 50px; height: 50px; }
+      .hdr-app-name { font-size: 18px; }
+      .section { padding: 15px; }
     }
   </style>
 </head>
-
 <body>
 
-  <header class="app-header-unified">
-    <img src="../img/icon.png" alt="Logo YerayFH" class="hdr-logo">
-    <div class="hdr-text">
-      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a
-          href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
-      <div class="hdr-dept">Farmacia Hospitalaria</div>
-      <div class="hdr-app-name">WardPass&#174;</div>
-    </div>
-  </header>
+<header class="app-header-unified">
+  <img src="../img/icon.png" alt="Logo YerayFH" class="hdr-logo">
+  <div class="hdr-text">
+    <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+    <div class="hdr-dept">Farmacia Hospitalaria</div>
+    <div class="hdr-app-name">WardPass&#174;</div>
+  </div>
+</header>
 
-  <main class="main-content">
-    <div class="section">
-      <div class="section-title">Información de la Guardia</div>
-      <div class="form-grid">
-        <div class="field-group">
-          <label class="field-label">Fecha</label>
-          <input type="date" id="fecha" class="input-field" oninput="saveData()">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Farmacéuticos</label>
-          <input type="text" id="farmaceuticos" class="input-field" placeholder="Nombre(s)..." oninput="saveData()">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Técnicos de Farmacia</label>
-          <input type="text" id="tecnicos" class="input-field" placeholder="Nombre(s)..." oninput="saveData()">
-        </div>
+<main class="main-content">
+  <div class="section">
+    <div class="section-title">Información de la Guardia</div>
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label">Fecha</label>
+        <input type="date" id="fecha" class="input-field" oninput="saveData()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Farmacéuticos</label>
+        <input type="text" id="farmaceuticos" class="input-field" placeholder="Nombre(s)..." oninput="saveData()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Técnicos de Farmacia</label>
+        <input type="text" id="tecnicos" class="input-field" placeholder="Nombre(s)..." oninput="saveData()">
       </div>
     </div>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Unidosis</div>
-      <textarea id="unidosis" class="textarea-field" placeholder="Incidencias..." oninput="saveData()"></textarea>
-    </div>
+  <div class="section">
+    <div class="section-title">Unidosis</div>
+    <textarea id="unidosis" class="textarea-field" placeholder="Incidencias..." oninput="saveData()"></textarea>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Onco-hematología</div>
-      <textarea id="onco" class="textarea-field" placeholder="Protocolos..." oninput="saveData()"></textarea>
-    </div>
+  <div class="section">
+    <div class="section-title">Onco-hematología</div>
+    <textarea id="onco" class="textarea-field" placeholder="Protocolos..." oninput="saveData()"></textarea>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Pacientes Externos</div>
-      <textarea id="externos" class="textarea-field" placeholder="Dispensaciones..." oninput="saveData()"></textarea>
-    </div>
+  <div class="section">
+    <div class="section-title">Pacientes Externos</div>
+    <textarea id="externos" class="textarea-field" placeholder="Dispensaciones..." oninput="saveData()"></textarea>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Gestión</div>
-      <textarea id="gestion" class="textarea-field" placeholder="Pedidos..." oninput="saveData()"></textarea>
-    </div>
+  <div class="section">
+    <div class="section-title">Gestión</div>
+    <textarea id="gestion" class="textarea-field" placeholder="Pedidos..." oninput="saveData()"></textarea>
+  </div>
 
-    <div class="section">
-      <div class="section-title">Otros</div>
-      <textarea id="otros" class="textarea-field" placeholder="Asuntos pendientes..." oninput="saveData()"></textarea>
-    </div>
+  <div class="section">
+    <div class="section-title">Otros</div>
+    <textarea id="otros" class="textarea-field" placeholder="Asuntos pendientes..." oninput="saveData()"></textarea>
+  </div>
 
-    <div class="btn-container">
-      <button class="btn-export" onclick="exportToPDF()">Exportar informe a PDF</button>
-    </div>
-  </main>
+  <div class="btn-container">
+    <button class="btn-export" onclick="exportToPDF()">Exportar informe a PDF</button>
+  </div>
+</main>
 
-  <footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
+<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 
-  <script>
-    const FIELDS = ['fecha', 'farmaceuticos', 'tecnicos', 'unidosis', 'onco', 'externos', 'gestion', 'otros'];
+<script>
+  const FIELDS = ['fecha', 'farmaceuticos', 'tecnicos', 'unidosis', 'onco', 'externos', 'gestion', 'otros'];
 
-    function saveData() {
-      const data = {};
+  function saveData() {
+    const data = {};
+    FIELDS.forEach(f => {
+      data[f] = document.getElementById(f).value;
+    });
+    localStorage.setItem('wardpass_data', JSON.stringify(data));
+  }
+
+  function loadData() {
+    const raw = localStorage.getItem('wardpass_data');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
       FIELDS.forEach(f => {
-        data[f] = document.getElementById(f).value;
+        if (data[f]) document.getElementById(f).value = data[f];
       });
-      localStorage.setItem('wardpass_data', JSON.stringify(data));
-    }
+    } catch (e) { console.error("Error cargando datos", e); }
+  }
 
-    function loadData() {
-      const raw = localStorage.getItem('wardpass_data');
-      if (!raw) return;
-      try {
-        const data = JSON.parse(raw);
-        FIELDS.forEach(f => {
-          if (data[f]) document.getElementById(f).value = data[f];
-        });
-      } catch (e) { console.error("Error cargando datos", e); }
-    }
+  async function exportToPDF() {
+    const fecha = document.getElementById('fecha').value || '---';
+    const farmaceuticos = document.getElementById('farmaceuticos').value || '---';
+    const tecnicos = document.getElementById('tecnicos').value || '---';
 
-    async function exportToPDF() {
-      const fecha = document.getElementById('fecha').value || '---';
-      const farmaceuticos = document.getElementById('farmaceuticos').value || '---';
-      const tecnicos = document.getElementById('tecnicos').value || '---';
+    const sections = [
+      { title: 'Unidosis', content: document.getElementById('unidosis').value },
+      { title: 'Onco-hematología', content: document.getElementById('onco').value },
+      { title: 'Pacientes Externos', content: document.getElementById('externos').value },
+      { title: 'Gestión', content: document.getElementById('gestion').value },
+      { title: 'Otros', content: document.getElementById('otros').value }
+    ];
 
-      const sections = [
-        { title: 'Unidosis', content: document.getElementById('unidosis').value },
-        { title: 'Onco-hematología', content: document.getElementById('onco').value },
-        { title: 'Pacientes Externos', content: document.getElementById('externos').value },
-        { title: 'Gestión', content: document.getElementById('gestion').value },
-        { title: 'Otros', content: document.getElementById('otros').value }
-      ];
-
-      // --- SOLUCIÓN PDF: Crear elemento y añadirlo al DOM ---
-      const printArea = document.createElement('div');
-      // Lo hacemos invisible para el usuario pero presente para html2canvas
-      printArea.style.position = 'fixed';
-      printArea.style.left = '-9999px'; // Movemos fuera de la pantalla en lugar de ocultar
-      printArea.style.top = '0';
-      printArea.style.width = '800px';
-      printArea.style.zIndex = '-1';
-      printArea.style.background = 'white';
-      printArea.style.padding = '40px';
-
-      let sectionsHtml = '';
-      sections.forEach(s => {
-        if (s.content && s.content.trim()) {
-          sectionsHtml += `
+    let sectionsHtml = '';
+    sections.forEach(s => {
+      if (s.content && s.content.trim()) {
+        sectionsHtml += `
           <div style="margin-bottom: 25px; page-break-inside: avoid;">
             <div style="font-size: 14px; font-weight: 800; color: #2E86C1; border-bottom: 1px solid #eef2f7; padding-bottom: 5px; margin-bottom: 8px; text-transform: uppercase; font-family: sans-serif;">${s.title}</div>
             <div style="font-size: 13px; line-height: 1.5; color: #333; white-space: pre-wrap; font-family: sans-serif;">${s.content}</div>
           </div>
         `;
-        }
-      });
+      }
+    });
 
-      printArea.innerHTML = `
-      <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px; font-family: sans-serif;">
-        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
-        <h1 style="font-size: 26px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
-      </div>
-      <div style="display: flex; gap: 40px; margin-bottom: 35px; background: #f8f9fa; padding: 20px; border-radius: 8px; font-family: sans-serif;">
-        <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Fecha</strong> <span style="font-size: 14px;">${fecha}</span></div>
-        <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Farmacéuticos</strong> <span style="font-size: 14px;">${farmaceuticos}</span></div>
-        <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Técnicos</strong> <span style="font-size: 14px;">${tecnicos}</span></div>
-      </div>
-      ${sectionsHtml}
-      <div style="margin-top: 50px; border-top: 1px solid #dee2e6; padding-top: 20px; font-size: 10px; color: #999; text-align: center; font-family: sans-serif;">
-        Documento generado automáticamente por WardPass® — YerayFH
+    // SOLUCIÓN DEFINITIVA: Generación basada en String (Entorno virtual de html2pdf)
+    const htmlContent = `
+      <div style="padding: 20px; font-family: sans-serif; background: white; color: #333;">
+        <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
+          <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
+          <h1 style="font-size: 26px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
+        </div>
+        <div style="display: flex; gap: 40px; margin-bottom: 35px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+          <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Fecha</strong> <span style="font-size: 14px;">${fecha}</span></div>
+          <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Farmacéuticos</strong> <span style="font-size: 14px;">${farmaceuticos}</span></div>
+          <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Técnicos</strong> <span style="font-size: 14px;">${tecnicos}</span></div>
+        </div>
+        ${sectionsHtml}
+        <div style="margin-top: 50px; border-top: 1px solid #dee2e6; padding-top: 20px; font-size: 10px; color: #999; text-align: center;">
+          Documento generado automáticamente por WardPass® — YerayFH
+        </div>
       </div>
     `;
 
-      document.body.appendChild(printArea);
+    const opt = {
+      margin: 15,
+      filename: `WardPass_Guardia_${fecha}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
-      const opt = {
-        margin: 15,
-        filename: `WardPass_Guardia_${fecha}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          scrollY: 0,
-          scrollX: 0
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      try {
-        // Esperamos un instante para asegurar que el DOM ha procesado el nuevo elemento
-        await new Promise(resolve => setTimeout(resolve, 200));
-        await html2pdf().set(opt).from(printArea).save();
-      } catch (err) {
-        console.error("PDF Error:", err);
-        alert("Error al generar el PDF. Asegúrese de que todos los campos están correctamente rellenos.");
-      } finally {
-        document.body.removeChild(printArea);
-      }
+    try {
+      // Le pasamos el string 'htmlContent' directamente a la librería
+      await html2pdf().set(opt).from(htmlContent).save();
+    } catch (err) {
+      console.error("PDF Error:", err);
+      alert("Error al generar el PDF. Revisa la consola.");
     }
+  }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      if (!document.getElementById('fecha').value) {
-        document.getElementById('fecha').valueAsDate = new Date();
-      }
-    });
-  </script>
+  document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    if (!document.getElementById('fecha').value) {
+      document.getElementById('fecha').valueAsDate = new Date();
+    }
+  });
+</script>
 </body>
-
 </html>
