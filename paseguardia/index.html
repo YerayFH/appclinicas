@@ -173,10 +173,8 @@
       }
     });
 
-    // SOLUCIÓN: Crear un elemento DOM real en memoria (sin inyectar en el cuerpo)
-    // Esto es lo más robusto para que html2canvas procese los estilos correctamente.
-    const element = document.createElement('div');
-    element.innerHTML = `
+    // Generamos el markup en un String
+    const htmlContent = `
       <div style="padding: 20px; font-family: sans-serif; background: #ffffff; color: #333333;">
         <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
           <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
@@ -198,20 +196,19 @@
       margin: 15,
       filename: `WardPass_Guardia_${fecha}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
-        logging: false 
-      },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-      // Pasamos el elemento DOM real a la librería
+      const element = document.createElement('div');
+      element.innerHTML = htmlContent;
+      document.body.appendChild(element); // Clave: Montar en el DOM
       await html2pdf().set(opt).from(element).save();
+      document.body.removeChild(element); // Clave: Desmontar después
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("Error al generar el PDF. Asegúrese de que todos los campos están correctamente rellenos.");
+      alert("Error al generar el PDF.");
     }
   }
 
