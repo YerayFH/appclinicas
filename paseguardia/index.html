@@ -173,9 +173,9 @@
       }
     });
 
-    // SOLUCIÓN DEFINITIVA: Generación basada en String (Entorno virtual de html2pdf)
+    // SOLUCIÓN: Crear el HTML como un String de texto en lugar de un elemento DOM
     const htmlContent = `
-      <div style="padding: 20px; font-family: sans-serif; background: white; color: #333;">
+      <div style="padding: 20px; font-family: sans-serif; background: #ffffff; color: #333333;">
         <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
           <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
           <h1 style="font-size: 26px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
@@ -196,16 +196,20 @@
       margin: 15,
       filename: `WardPass_Guardia_${fecha}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false 
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-      // Le pasamos el string 'htmlContent' directamente a la librería
+      // Pasamos directamente el String 'htmlContent' a la librería
       await html2pdf().set(opt).from(htmlContent).save();
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("Error al generar el PDF. Revisa la consola.");
+      alert("Error al generar el PDF. Asegúrese de que todos los campos están correctamente rellenos.");
     }
   }
 
