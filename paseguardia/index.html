@@ -56,8 +56,14 @@
     .app-footer-unified { text-align: center; padding: 25px 20px; font-size: 12px; opacity: 0.7; border-top: 1px solid var(--brd); background: #fff; margin-top: 50px; }
 
     /* PDF Specific Styles */
-    #report-content { padding: 0; }
-    .pdf-header { display: none; padding-bottom: 20px; border-bottom: 2px solid var(--accent); margin-bottom: 30px; }
+    #pdf-template { 
+      position: fixed; 
+      top: -10000px; 
+      left: -10000px; 
+      width: 700px; /* A4-ish width */
+      background: white;
+    }
+    .pdf-header { padding-bottom: 20px; border-bottom: 2px solid var(--accent); margin-bottom: 30px; }
     .pdf-header h1 { font-size: 28px; color: var(--accent); font-weight: 800; }
     .pdf-meta { margin-bottom: 25px; display: flex; gap: 40px; font-size: 14px; }
     .pdf-section { margin-bottom: 25px; page-break-inside: avoid; }
@@ -89,15 +95,15 @@
     <div class="form-grid">
       <div class="field-group">
         <label class="field-label">Fecha</label>
-        <input type="date" id="fecha" class="input-field">
+        <input type="date" id="fecha" class="input-field" oninput="saveData()">
       </div>
       <div class="field-group">
         <label class="field-label">Farmacéuticos</label>
-        <input type="text" id="farmaceuticos" class="input-field" placeholder="Nombre(s)...">
+        <input type="text" id="farmaceuticos" class="input-field" placeholder="Nombre(s)..." oninput="saveData()">
       </div>
       <div class="field-group">
         <label class="field-label">Técnicos de Farmacia</label>
-        <input type="text" id="tecnicos" class="input-field" placeholder="Nombre(s)...">
+        <input type="text" id="tecnicos" class="input-field" placeholder="Nombre(s)..." oninput="saveData()">
       </div>
     </div>
   </div>
@@ -105,27 +111,27 @@
   <!-- Áreas de Trabajo -->
   <div class="section">
     <div class="section-title">Unidosis</div>
-    <textarea id="unidosis" class="textarea-field" placeholder="Incidencias en validación, dispensación, errores de medicación..."></textarea>
+    <textarea id="unidosis" class="textarea-field" placeholder="Incidencias en validación, dispensación, errores de medicación..." oninput="saveData()"></textarea>
   </div>
 
   <div class="section">
     <div class="section-title">Onco-hematología</div>
-    <textarea id="onco" class="textarea-field" placeholder="Protocolos pendientes, cambios de dosis, toxicidades..."></textarea>
+    <textarea id="onco" class="textarea-field" placeholder="Protocolos pendientes, cambios de dosis, toxicidades..." oninput="saveData()"></textarea>
   </div>
 
   <div class="section">
     <div class="section-title">Pacientes Externos</div>
-    <textarea id="externos" class="textarea-field" placeholder="Dispensaciones especiales, inicios de tratamiento, falta de stock..."></textarea>
+    <textarea id="externos" class="textarea-field" placeholder="Dispensaciones especiales, inicios de tratamiento, falta de stock..." oninput="saveData()"></textarea>
   </div>
 
   <div class="section">
     <div class="section-title">Gestión</div>
-    <textarea id="gestion" class="textarea-field" placeholder="Pedidos urgentes, roturas de stock, alertas de seguridad..."></textarea>
+    <textarea id="gestion" class="textarea-field" placeholder="Pedidos urgentes, roturas de stock, alertas de seguridad..." oninput="saveData()"></textarea>
   </div>
 
   <div class="section">
     <div class="section-title">Otros</div>
-    <textarea id="otros" class="textarea-field" placeholder="Asuntos pendientes para el turno de mañana..."></textarea>
+    <textarea id="otros" class="textarea-field" placeholder="Asuntos pendientes para el turno de mañana..." oninput="saveData()"></textarea>
   </div>
 
   <div class="btn-container">
@@ -133,8 +139,8 @@
   </div>
 </main>
 
-<!-- Hidden structure for PDF generation -->
-<div id="pdf-template" style="display: none; padding: 40px; font-family: 'Inter', sans-serif;">
+<!-- Hidden structure for PDF generation (always rendered but off-screen) -->
+<div id="pdf-template">
   <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
     <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
     <h1 style="font-size: 28px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
@@ -156,6 +162,27 @@
 <footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
 
 <script>
+  const FIELDS = ['fecha', 'farmaceuticos', 'tecnicos', 'unidosis', 'onco', 'externos', 'gestion', 'otros'];
+
+  function saveData() {
+    const data = {};
+    FIELDS.forEach(f => {
+      data[f] = document.getElementById(f).value;
+    });
+    localStorage.setItem('wardpass_data', JSON.stringify(data));
+  }
+
+  function loadData() {
+    const raw = localStorage.getItem('wardpass_data');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      FIELDS.forEach(f => {
+        if (data[f]) document.getElementById(f).value = data[f];
+      });
+    } catch (e) { console.error("Error cargando datos", e); }
+  }
+
   function exportToPDF() {
     const fecha = document.getElementById('fecha').value || '---';
     const farmaceuticos = document.getElementById('farmaceuticos').value || '---';
@@ -178,7 +205,7 @@
     sectionsContainer.innerHTML = '';
 
     sections.forEach(s => {
-      if (s.content.trim()) {
+      if (s.content && s.content.trim()) {
         const div = document.createElement('div');
         div.style.marginBottom = '30px';
         div.style.pageBreakInside = 'avoid';
@@ -191,24 +218,30 @@
     });
 
     const element = document.getElementById('pdf-template');
-    element.style.display = 'block';
-
+    
     const opt = {
-      margin:       10,
+      margin:       15,
       filename:     `Guardia_${fecha}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(element).save().then(() => {
-      element.style.display = 'none';
-    });
+    // Use html2pdf with the off-screen element
+    html2pdf().set(opt).from(element).save();
   }
 
-  // Set default date to today
-  document.getElementById('fecha').valueAsDate = new Date();
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    if (!document.getElementById('fecha').value) {
+      document.getElementById('fecha').valueAsDate = new Date();
+    }
+  });
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
