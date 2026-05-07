@@ -183,15 +183,10 @@
     } catch (e) { console.error("Error cargando datos", e); }
   }
 
-    async function exportToPDF() {
+  async function exportToPDF() {
     const fecha = document.getElementById('fecha').value || '---';
     const farmaceuticos = document.getElementById('farmaceuticos').value || '---';
     const tecnicos = document.getElementById('tecnicos').value || '---';
-
-    // Populate template data
-    document.getElementById('p-fecha').innerText = fecha;
-    document.getElementById('p-farmaceuticos').innerText = farmaceuticos;
-    document.getElementById('p-tecnicos').innerText = tecnicos;
 
     const sections = [
       { title: 'Unidosis', content: document.getElementById('unidosis').value },
@@ -201,25 +196,50 @@
       { title: 'Otros', content: document.getElementById('otros').value }
     ];
 
-    const sectionsContainer = document.getElementById('p-sections');
-    sectionsContainer.innerHTML = '';
+    // Create a temporary container that is actually visible to the browser but hidden from user
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.top = '0';
+    tempContainer.style.width = '800px';
+    tempContainer.style.background = 'white';
+    tempContainer.style.padding = '40px';
+    tempContainer.style.fontFamily = 'Arial, sans-serif'; // Use safe font
 
+    let sectionsHtml = '';
     sections.forEach(s => {
       if (s.content && s.content.trim()) {
-        const div = document.createElement('div');
-        div.style.marginBottom = '25px';
-        div.style.pageBreakInside = 'avoid';
-        div.innerHTML = `
-          <div style="font-size: 14px; font-weight: 800; color: #2E86C1; border-bottom: 1px solid #eef2f7; padding-bottom: 5px; margin-bottom: 8px; text-transform: uppercase;">${s.title}</div>
-          <div style="font-size: 13px; line-height: 1.5; color: #333; white-space: pre-wrap; font-family: 'Inter', sans-serif;">${s.content}</div>
+        sectionsHtml += `
+          <div style="margin-bottom: 25px; page-break-inside: avoid;">
+            <div style="font-size: 14px; font-weight: 800; color: #2E86C1; border-bottom: 1px solid #eef2f7; padding-bottom: 5px; margin-bottom: 8px; text-transform: uppercase;">${s.title}</div>
+            <div style="font-size: 13px; line-height: 1.5; color: #333; white-space: pre-wrap;">${s.content}</div>
+          </div>
         `;
-        sectionsContainer.appendChild(div);
       }
     });
 
-    // Create a visible but off-screen clone for html2pdf
-    const original = document.getElementById('pdf-template');
-    const worker = html2pdf().set({
+    tempContainer.innerHTML = `
+      <div style="border-bottom: 2px solid #2E86C1; padding-bottom: 20px; margin-bottom: 30px;">
+        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">YerayFH - Farmacia Hospitalaria</div>
+        <h1 style="font-size: 26px; color: #2E86C1; margin: 0; font-weight: 800;">INFORME DE PASE DE GUARDIA</h1>
+      </div>
+
+      <div style="display: flex; gap: 40px; margin-bottom: 35px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Fecha</strong> <span style="font-size: 14px;">${fecha}</span></div>
+        <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Farmacéuticos</strong> <span style="font-size: 14px;">${farmaceuticos}</span></div>
+        <div style="flex:1"><strong style="font-size: 11px; text-transform: uppercase; color: #666; display: block;">Técnicos</strong> <span style="font-size: 14px;">${tecnicos}</span></div>
+      </div>
+
+      ${sectionsHtml}
+
+      <div style="margin-top: 50px; border-top: 1px solid #dee2e6; padding-top: 20px; font-size: 10px; color: #999; text-align: center;">
+        Documento generado automáticamente por WardPass® — YerayFH
+      </div>
+    `;
+
+    document.body.appendChild(tempContainer);
+
+    const opt = {
       margin: 15,
       filename: `WardPass_Guardia_${fecha}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
@@ -227,19 +247,21 @@
         scale: 2, 
         useCORS: true, 
         logging: false,
-        letterRendering: true
+        scrollY: 0,
+        scrollX: 0
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    });
+    };
 
-    // Execute generation with a small delay to ensure DOM paint
     try {
-      setTimeout(async () => {
-        await worker.from(original).save();
-      }, 150);
+      // Small timeout to ensure the dynamic HTML is processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await html2pdf().set(opt).from(tempContainer).save();
     } catch (err) {
-      console.error("Error generating PDF:", err);
-      alert("Error al generar el PDF. Por favor, inténtelo de nuevo.");
+      console.error("PDF Error:", err);
+      alert("Hubo un error al generar el PDF. Por favor intenta de nuevo.");
+    } finally {
+      document.body.removeChild(tempContainer);
     }
   }
 
