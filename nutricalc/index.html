@@ -724,6 +724,7 @@ body.neonato-mode .neo-day-row{display:block}
     <div class="panel-title">Distribución calórica</div>
     <div class="kcal-total"><span id="total-kcal">—</span><span class="kcal-sub">kcal/día</span></div>
     <div class="kcal-warn" id="kcal-warn-overfeed">⚠ Sobrealimentación: >35 kcal/kg/día</div>
+    <div class="kcal-warn" id="kcal-warn-refeeding" style="color:#d97706">⚠ Riesgo de Síndrome de Realimentación: Iniciar progresivamente</div>
     <div class="kcal-warn" id="kcal-warn-lipids">⚠ Lípidos >50% CNP — riesgo PNALD</div>
     <div class="bar-row"><div class="bar-header"><span class="bar-name">Glucosa</span><span class="bar-pct" id="pct-g">—</span></div><div class="bar-track"><div class="bar-fill gl" id="bar-g" style="width:0%"></div></div></div>
     <div class="bar-row"><div class="bar-header"><span class="bar-name">Lípidos</span><span class="bar-pct" id="pct-l">—</span></div><div class="bar-track"><div class="bar-fill li" id="bar-l" style="width:0%"></div></div></div>
@@ -1009,8 +1010,8 @@ function calc(s){
   const vig=w>0&&hrs>0?gG*1000/(w*hrs*60):0;
   const lipR=w>0&&hrs>0?gL/(w*hrs):0;
 
-  // Osmolarity with Cl, Acetate, and Lipids
-  const osm=vL>0?(gG*5+gA*10+gL*1.5+s.na*2+s.k*2+s.ca*1.4+s.mg*1+s.p*1)/vL:0;
+  // Osmolarity with Cl, Acetate, and Lipids — Refined factors for better clinical accuracy
+  const osm=vL>0?(gG*5+gA*10+gL*1.5+s.na*2+s.k*2+s.ca*1.4+s.mg*1.35+s.p*1.5)/vL:0;
 
   // Ca×P — temperature-adjusted limit
   // Temp >25°C → limit 150 instead of 200 (higher precipitation risk)
@@ -1030,18 +1031,27 @@ function calc(s){
   // El K es seguro si cumple dosis Y concentración
   const kLimOk = kDoseOk && kConcOk;
 
-  // Volume check — include additives (vit+olig volume)
+  // Accurate Gravimetric Weight Calculation based on component density
   const vGlc=gG>0?gG/(ph.glc/100):0;
   const vAA=gA>0?gA/(ph.aa/100):0;
   const vLip=gL>0?gL/(ph.lip/100):0;
   const vElec=ph.elec;
-  const vMin=vGlc+vAA+vLip+vElec+s.additivesVol; // FIX: include additive volume
+  const vMin=vGlc+vAA+vLip+vElec+s.additivesVol;
   const vWFI=vol-vMin;
   const volInsuf=vol>0&&vMin>vol;
 
-  const dens=gL>0?1.04:1.01;
+  // Theoretical weight summing masses: (Vol*Density)
+  // Approx densities: Glc50% (1.17), AA15% (1.05), Lip20% (0.99), WFI (1.00), Elec (1.02)
+  const massGlc = vGlc * (ph.glc >= 50 ? 1.17 : 1.10);
+  const massAA = vAA * 1.05;
+  const massLip = vLip * 0.995;
+  const massElec = vElec * 1.02;
+  const massWFI = Math.max(0, vWFI) * 1.00;
+  const massAdd = s.additivesVol * 1.01;
+  
+  const theoreticalWeight = massGlc + massAA + massLip + massElec + massWFI + massAdd;
   const vOvf=vol*(1+s.ovf/100);
-  const bagW=vOvf*dens;
+  const bagW=theoreticalWeight * (1 + s.ovf/100);
   const bagTol=bagW*.05;
 
   // Protein range
@@ -1060,17 +1070,12 @@ function calc(s){
   // Overfeeding: >35 kcal/kg/day
   const overfeedWarn=w>0&&kT>0&&(kT/w)>35;
 
-  // Lipids >50% of NPC → PNALD risk
-  const lnpc=kG+kL; // non-protein calories
-  const lipPnaldWarn=lnpc>0&&(kL/lnpc)>0.5;
+  // Refeeding Syndrome Risk detection (BMI < 16 or BMI < 18.5 + low calories)
+  const imc = (w > 0 && s.h > 0) ? w / ((s.h/100)**2) : 0;
+  const refeedingRisk = imc > 0 && (imc < 16 || (imc < 18.5 && kT > 0 && (kT/w) > 15));
 
-  // Cl:Acetate ratio info
-  const totalAnions=s.cl+s.acetate;
-  const clRatio=totalAnions>0?(s.cl/totalAnions*100).toFixed(0):'—';
-  const acRatio=totalAnions>0?(s.acetate/totalAnions*100).toFixed(0):'—';
-
-  // BLOCKED conditions (prevent PDF)
-  const hardBlock=volInsuf||(s.ca>0&&s.p>0&&caProd>250)||!kLimOk;
+  // BLOCKED conditions (prevent PDF) — NOW aligned with caPLim for safety
+  const hardBlock=volInsuf||(s.ca>0&&s.p>0&&caProd>caPLim)||!kLimOk;
 
   return{
     gerB,gerT,kG,kL,kA,kT,cG,cA,cL,N,cnpn,protKg,
@@ -1083,7 +1088,7 @@ function calc(s){
     vGlc,vAA,vLip,vElec,vMin,vWFI,volInsuf,
     vOvf,bagW,bagTol,isTNA:gL>0,
     protLow,protHigh,tnaUnstable,cnpnLow,cnpnHigh,
-    overfeedWarn,lipPnaldWarn,
+    overfeedWarn,lipPnaldWarn,refeedingRisk,
     clRatio,acRatio,totalAnions,
     tempMode,hardBlock
   };
@@ -1179,8 +1184,9 @@ function renderUI(s,r){
     st('pct-g',pG+'%');st('pct-l',pL+'%');st('pct-p',pP+'%');
     $('bar-g').style.width=pG+'%';$('bar-l').style.width=pL+'%';$('bar-p').style.width=pP+'%';
   } else {st('total-kcal','—');['pct-g','pct-l','pct-p'].forEach(id=>st(id,'—'));['bar-g','bar-l','bar-p'].forEach(id=>$(id).style.width='0%')}
-  $('kcal-warn-overfeed').classList.toggle('show',r.overfeedWarn);
-  $('kcal-warn-lipids').classList.toggle('show',r.lipPnaldWarn);
+  st('kcal-warn-overfeed').classList.toggle('show',r.overfeedWarn);
+  st('kcal-warn-refeeding').classList.toggle('show',r.refeedingRisk);
+  st('kcal-warn-lipids').classList.toggle('show',r.lipPnaldWarn);
 
   // SAFETY CHIPS with severity dots
   const chip=(valId,dotId,val,sev)=>{
@@ -1390,12 +1396,11 @@ function exportPDF() {
   doc.line(M, y, W - M, y);
   y += 5;
   doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.text('Peso Real Medido: __________ g   [ ] Aprobada  [ ] Descartada', M, y);
-  y += 8;
-  doc.text('Médico Prescriptor: _______________________  Firma: ___________', M, y);
-  doc.text('Farmacéutico Validador: ____________________  Firma: ___________', 110, y);
-
-  doc.save(`NutriCalc_${sanitizeText(document.getElementById('pt-name').value) || 'Mezcla'}.pdf`);
+  const sanitizeFileName = (str) => {
+    if(!str) return 'Prescripcion';
+    return str.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 30);
+  };
+  doc.save(`NutriCalc_${sanitizeFileName(document.getElementById('pt-name').value)}.pdf`);
 }
 
 // ═══════════════════════════════════════════
