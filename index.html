@@ -342,6 +342,22 @@ header .author {
   border: 1px solid #ffaa6b;
   z-index: 5;
 }
+.badge-neon-blue {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #007bff;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 12px rgba(0, 123, 255, 0.7);
+  border: 1px solid #4da3ff;
+  z-index: 5;
+}
 
 /* ================= FOOTER ================= */
 footer {
@@ -407,6 +423,7 @@ footer {
       </div>
 
       <div class="card">
+        <span class="badge-neon-orange">Validando...</span>
         <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre AeroLab">ℹ</button>
         <div class="icon-box bg-rose">
           <img src="/appclinicas/img/gasometria.png" alt="Gasometría" class="card-img" loading="lazy">
@@ -415,6 +432,18 @@ footer {
         <div class="info-desc">Interpretación de gasometría según valores y orientación diagnóstica. Basado en: Rose &amp; Post · Marino's ICU Book · Guías SEPAR.</div>
         <div class="spacer"></div>
         <a href="gasometria/" class="btn">Interpretar</a>
+      </div>
+
+      <div class="card">
+        <span class="badge-neon-blue">En proceso...</span>
+        <button class="info-btn" onclick="toggleInfo(this)" title="Ver descripción" aria-label="Información sobre Anemimetric">ℹ</button>
+        <div class="icon-box bg-blue">
+          <img src="/appclinicas/img/anemia.png" alt="Anemimetric" class="card-img" loading="lazy">
+        </div>
+        <h2>Anemimetric®</h2>
+        <div class="info-desc">Algoritmo inteligente para el diagnóstico diferencial y manejo de anemias. Basado en guías SEHH y protocolos de Hematología Clínica.</div>
+        <div class="spacer"></div>
+        <a href="anemimetric/" class="btn">Acceder</a>
       </div>
 
       <div class="card">
