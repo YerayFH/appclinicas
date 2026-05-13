@@ -356,6 +356,13 @@ body.neonato-mode .neo-day-row{display:block}
       <div class="field"><label class="field-label">Aminoácidos (%)</label><div class="input-wrap"><input type="number" id="cfg-aa" value="15" min="5" max="20"><span class="input-suf">%</span></div></div>
       <div class="field"><label class="field-label">Emulsión Lipídica (%)</label><div class="input-wrap"><input type="number" id="cfg-lip" value="20" min="10" max="30"><span class="input-suf">%</span></div></div>
       <div class="field"><label class="field-label">Vol. Electrolitos (est.)</label><div class="input-wrap"><input type="number" id="cfg-elec" value="50" min="10" max="200"><span class="input-suf">mL</span></div></div>
+      <div class="field" style="grid-column: span 2;">
+        <label class="field-label">Tipo de sales (Ca/P)</label>
+        <select id="cfg-salt" style="height:40px;">
+          <option value="organic" selected>Orgánicas (Glicerofosfato / Gluconato)</option>
+          <option value="inorganic">Inorgánicas (Fosfatos / Cloruro Ca)</option>
+        </select>
+      </div>
     </div>
     <div class="cfg-note">Los cambios afectan el cálculo de volúmenes y la detección de volumen insuficiente. Verificar con stock real.</div>
     <div class="cfg-btns"><button class="btn-action" onclick="closeCfg()">Cancelar</button><button class="btn-action primary" onclick="saveCfg()">Guardar</button></div>
@@ -742,10 +749,13 @@ body.neonato-mode .neo-day-row{display:block}
       <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-vig"></span>VIG</span><span class="stat-val" id="sv-vig">—</span></div>
       <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-lip"></span>Tasa lípidos</span><span class="stat-val" id="sv-lip">—</span></div>
       <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-cap"></span>Ca × PO₄</span><span class="stat-val" id="sv-cap">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-can"></span>Estabilidad CAN</span><span class="stat-val" id="sv-can">—</span></div>
+      <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-na"></span>Sodio (Conc.)</span><span class="stat-val" id="sv-na">—</span></div>
       <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-k"></span>Potasio</span><span class="stat-val" id="sv-k">—</span></div>
       <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-cnpn"></span>CNP / N₂</span><span class="stat-val" id="sv-cnpn">—</span></div>
       <div class="stat-row"><span class="stat-name"><span class="sev-dot" id="dot-prot"></span>Proteínas</span><span class="stat-val" id="sv-prot">—</span></div>
       <div class="stat-row temp-row" id="tna-row"><span class="stat-name"><span class="sev-dot danger"></span>Estabilidad TNA</span><span class="stat-val danger" id="sv-tna">—</span></div>
+      <div class="stat-row temp-row" id="can-row"><span class="stat-name"><span class="sev-dot danger"></span>Riesgo Lipídico (CAN)</span><span class="stat-val danger" id="sv-can-msg">—</span></div>
       <div class="stat-row temp-row" id="temp-row"><span class="stat-name"><span class="sev-dot warn"></span>Conservación</span><span class="stat-val warn" id="sv-temp">—</span></div>
       <div class="stat-row"><span class="stat-name">Velocidad inf.</span><span class="stat-val muted" id="sv-rate">—</span></div>
     </div>
@@ -794,7 +804,7 @@ document.getElementById('info-overlay').addEventListener('click',e=>{if(e.target
 // ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
-let pharm={glc:50,aa:15,lip:20,elec:50};
+let pharm={glc:50,aa:15,lip:20,elec:50,salt:'organic'};
 let via='central';
 let blocked=false;
 let saveTimer=null;
@@ -826,6 +836,7 @@ function applyState(st){
     document.getElementById('cfg-aa').value = pharm.aa;
     document.getElementById('cfg-lip').value = pharm.lip;
     document.getElementById('cfg-elec').value = pharm.elec;
+    document.getElementById('cfg-salt').value = pharm.salt || 'organic';
   }
   FIELDS.forEach(id=>{const e=document.getElementById(id);if(e&&st.fields&&st.fields[id]!=null)e.value=st.fields[id]});
   CHECKS.forEach(id=>{const e=document.getElementById(id);if(e&&st.checks&&st.checks[id]!=null)e.checked=st.checks[id]});
@@ -879,7 +890,14 @@ function checkRestore(){
 // ═══════════════════════════════════════════
 function openCfg(){document.getElementById('cfg-overlay').classList.add('open')}
 function closeCfg(){document.getElementById('cfg-overlay').classList.remove('open')}
-function saveCfg(){pharm.glc=+document.getElementById('cfg-glc').value||50;pharm.aa=+document.getElementById('cfg-aa').value||15;pharm.lip=+document.getElementById('cfg-lip').value||20;pharm.elec=+document.getElementById('cfg-elec').value||50;closeCfg();recalc()}
+function saveCfg(){
+  pharm.glc=+document.getElementById('cfg-glc').value||50;
+  pharm.aa=+document.getElementById('cfg-aa').value||15;
+  pharm.lip=+document.getElementById('cfg-lip').value||20;
+  pharm.elec=+document.getElementById('cfg-elec').value||50;
+  pharm.salt=document.getElementById('cfg-salt').value;
+  closeCfg();recalc()
+}
 document.getElementById('cfg-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCfg()});
 
 // ═══════════════════════════════════════════
@@ -968,6 +986,7 @@ function getState(){
     mg: getPosNum('mg'),
     cl: getPosNum('cl'),
     acetate: getPosNum('acetate'),
+    saltType: pharm.salt || 'organic',
   vitOn,oligOn,
     // Volumen de aditivos ajustado por peso en pediatría (máximo 10mL)
     volVit: vitOn ? (isPed && w > 0 ? Math.min(10, w * 2) : 10) : 0,
@@ -1013,12 +1032,24 @@ function calc(s){
   // Osmolarity with Cl, Acetate, and Lipids — Refined factors for better clinical accuracy
   const osm=vL>0?(gG*5+gA*10+gL*1.5+s.na*2+s.k*2+s.ca*1.4+s.mg*1.35+s.p*1.5)/vL:0;
 
-  // Ca×P — temperature-adjusted limit
-  // Temp >25°C → limit 150 instead of 200 (higher precipitation risk)
-  const caPTempFactor=tempMode==='ambiente'?0.75:1; // reduce by 25% at room temp
+  // Ca×P — temperature-adjusted limit + Organic vs Inorganic distinction
+  const caPTempFactor=tempMode==='ambiente'?0.75:1;
   const caProd=(vL>0&&s.ca>0&&s.p>0)?(s.ca/vL)*(s.p/vL):0;
-  const caPLimBase=cA>=2.5?200:100;
-  const caPLim=Math.floor(caPLimBase*caPTempFactor); // e.g. 200→150 or 100→75
+  
+  // Límites según tipo de sal y concentración de AA (agente protector)
+  let caPLimBase;
+  if (s.saltType === 'organic') {
+    caPLimBase = cA >= 2.5 ? 400 : 300; // Sales orgánicas son mucho más estables
+  } else {
+    caPLimBase = cA >= 2.5 ? 200 : 100; // Sales inorgánicas tienen riesgo alto
+  }
+  const caPLim=Math.floor(caPLimBase*caPTempFactor);
+
+  // CAN (Critical Aggregation Number) - Estabilidad de la emulsión lipídica
+  // CAN = [Monovalentes] + 4*[Divalentes] + 9*[Trivalentes]
+  // Límite de seguridad clínico: < 600 mEq/L
+  const canVal = vL > 0 ? (s.na + s.k + 4 * (s.ca + s.mg)) / vL : 0;
+  const canOk = canVal < 600;
 
 // Límite de dosis diaria (mEq/kg)
   const kDoseOk = !(w > 0 && s.k > 4 * w);
@@ -1030,6 +1061,10 @@ function calc(s){
   
   // El K es seguro si cumple dosis Y concentración
   const kLimOk = kDoseOk && kConcOk;
+
+  // Sodio: Límite de concentración para evitar hipertonía excesiva (ej. 154 mEq/L)
+  const naConc = vL > 0 ? (s.na / vL) : 0;
+  const naConcOk = naConc <= 154;
 
   // Accurate Gravimetric Weight Calculation based on component density
   const vGlc=gG>0?gG/(ph.glc/100):0;
@@ -1070,12 +1105,20 @@ function calc(s){
   // Overfeeding: >35 kcal/kg/day
   const overfeedWarn=w>0&&kT>0&&(kT/w)>35;
 
+  // Riesgo de PNALD (Lípidos > 50% de las calorías totales)
+  const lipPnaldWarn = kT > 0 && (kL / kT) > 0.5;
+
   // Refeeding Syndrome Risk detection (BMI < 16 or BMI < 18.5 + low calories)
   const imc = (w > 0 && s.h > 0) ? w / ((s.h/100)**2) : 0;
   const refeedingRisk = imc > 0 && (imc < 16 || (imc < 18.5 && kT > 0 && (kT/w) > 15));
 
-  // BLOCKED conditions (prevent PDF) — NOW aligned with caPLim for safety
-  const hardBlock=volInsuf||(s.ca>0&&s.p>0&&caProd>caPLim)||!kLimOk;
+  // Equilibrio Cloro / Acetato
+  const totalAnions = s.cl + s.acetate;
+  const clRatio = totalAnions > 0 ? Math.round(s.cl / totalAnions * 100) : 0;
+  const acRatio = totalAnions > 0 ? Math.round(s.acetate / totalAnions * 100) : 0;
+
+  // BLOCKED conditions (prevent PDF) — NOW aligned with caPLim and CAN for safety
+  const hardBlock=volInsuf||(s.ca>0&&s.p>0&&caProd>caPLim)||!kLimOk||(s.gL>0 && !canOk);
 
   return{
     gerB,gerT,kG,kL,kA,kT,cG,cA,cL,N,cnpn,protKg,
@@ -1090,7 +1133,9 @@ function calc(s){
     protLow,protHigh,tnaUnstable,cnpnLow,cnpnHigh,
     overfeedWarn,lipPnaldWarn,refeedingRisk,
     clRatio,acRatio,totalAnions,
-    tempMode,hardBlock
+    tempMode,hardBlock,
+    canVal,canOk,
+    naConc,naConcOk
   };
 }
 
@@ -1228,10 +1273,28 @@ function renderUI(s,r){
   chip('sv-cnpn','dot-cnpn',r.cnpn?r.cnpn.toFixed(0)+':1':'—',cnpnCls);
   const protCls=s.w>0&&r.protKg>0?(r.protKg>=0.8&&r.protKg<=2.5?'ok':'warn'):'muted';
   chip('sv-prot','dot-prot',r.protKg?r.protKg.toFixed(2)+' g/kg':'—',protCls);
+  
+  // CAN Stability Chip
+  const canCls = r.canVal > 0 ? (r.canOk ? (r.canVal < 300 ? 'ok' : 'warn') : 'danger') : 'muted';
+  chip('sv-can', 'dot-can', r.canVal ? Math.round(r.canVal) + ' mEq/L' : '—', canCls);
+  if (r.canVal > 0) {
+    $('sv-can').title = "CAN = [Na+K] + 4*[Ca+Mg]. Límite seguridad < 600 mEq/L";
+    $('sv-can').style.cursor = 'help';
+  }
+
+  // Sodio Conc. Chip
+  chip('sv-na', 'dot-na', r.naConc ? Math.round(r.naConc) + ' mEq/L' : '—', r.naConcOk ? 'ok' : 'warn');
+  
   // TNA row
   const tnaRow=$('tna-row');
   tnaRow.className='stat-row temp-row'+(r.tnaUnstable?' show':'');
   if(r.tnaUnstable)st('sv-tna',r.cA.toFixed(1)+'% AA < 2.5%');
+
+  // CAN row (danger)
+  const canRow=$('can-row');
+  canRow.className='stat-row temp-row'+(!r.canOk && s.gL > 0 ? ' show' : '');
+  if(!r.canOk) st('sv-can-msg', 'CAN ' + Math.round(r.canVal) + ' > 600 (Inestable)');
+
   // Temperature row
   const tmpRow=$('temp-row');
   tmpRow.className='stat-row temp-row'+(r.tempMode==='ambiente'?' show':'');
