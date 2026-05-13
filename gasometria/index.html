@@ -1963,23 +1963,23 @@ if (pafiLocal > 300) {
   pafiLocalAlert = `<div class="metric-alert ok">${svgIcon('check-circle', 13)} Oxigenación normal (PAFI &gt; 300).</div>`;
 } else if (pafiLocal > 200) {
   pafiLocalColor = 'var(--accent-yellow)';
-  pafiLocalLabel = 'Criterio SDRA Leve';
-  pafiLocalAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipoxemia moderada.</strong> Criterio SDRA Leve (Berlín 2012).</div>`;
+  pafiLocalLabel = 'Valorar posible SDRA';
+  pafiLocalAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipoxemia moderada.</strong> Valorar posible SDRA según criterios de Berlín.</div>`;
 } else if (pafiLocal > 100) {
   pafiLocalColor = 'var(--accent-orange)';
-  pafiLocalLabel = 'Criterio SDRA Moderado';
-  pafiLocalAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipoxemia grave.</strong> Criterio SDRA Moderado (Berlín 2012).</div>`;
+  pafiLocalLabel = 'Valorar posible SDRA';
+  pafiLocalAlert = `<div class="metric-alert warn">${svgIcon('alert-triangle', 13)} <strong>Hipoxemia grave.</strong> Valorar posible SDRA según criterios de Berlín.</div>`;
 } else {
   pafiLocalColor = 'var(--accent-red)';
-  pafiLocalLabel = 'Criterio SDRA Grave';
-  pafiLocalAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Hipoxemia muy grave.</strong> Criterio SDRA Grave (Berlín 2012).</div>`;
+  pafiLocalLabel = 'Valorar posible SDRA';
+  pafiLocalAlert = `<div class="metric-alert danger">${svgIcon('zap', 13)} <strong>Hipoxemia muy grave.</strong> Valorar posible SDRA según criterios de Berlín.</div>`;
 }
 
     const cells = [
   { label: 'Normal',     range: '> 300',   active: pafiLocal > 300, color: 'var(--accent-green)' },
-  { label: 'SDRA Leve',  range: '200–300', active: pafiLocal > 200 && pafiLocal <= 300, color: 'var(--accent-yellow)' },
-  { label: 'SDRA Mod.',  range: '100–200', active: pafiLocal > 100 && pafiLocal <= 200, color: 'var(--accent-orange)' },
-  { label: 'SDRA Grave', range: '≤ 100',   active: pafiLocal <= 100, color: 'var(--accent-red)' },
+  { label: 'P/F 200–300',  range: '200–300', active: pafiLocal > 200 && pafiLocal <= 300, color: 'var(--accent-yellow)' },
+  { label: 'P/F 100–200',  range: '100–200', active: pafiLocal > 100 && pafiLocal <= 200, color: 'var(--accent-orange)' },
+  { label: 'P/F ≤ 100',    range: '≤ 100',   active: pafiLocal <= 100, color: 'var(--accent-red)' },
 ];
 
     // Gradiente A-a O₂
@@ -2106,11 +2106,11 @@ beHTML = `
   // NUEVO: El ".includes" actúa de escudo por si en el futuro creamos otro diagnóstico que ya lleve estas palabras
   if (!isNaN(pafiValForDx) && !dxName.includes('Insuficiencia') && !dxName.includes('Hipoxemia')) {
       if (pafiValForDx <= 100) {
-          dxName += ' + Insuficiencia Respiratoria Grave (SDRA)';
+          dxName += ' + Insuficiencia Respiratoria Grave (Valorar posible SDRA)';
       } else if (pafiValForDx <= 200) {
-          dxName += ' + Insuficiencia Respiratoria Moderada';
+          dxName += ' + Insuficiencia Respiratoria Moderada (Valorar posible SDRA)';
       } else if (pafiValForDx <= 300) {
-          dxName += ' + Hipoxemia Leve';
+          dxName += ' + Hipoxemia Leve (Valorar posible SDRA)';
       }
   }
   // ── MANAGEMENT ORIENTATION ────────────────────────────────────
@@ -2471,12 +2471,12 @@ function getManagement(type, mech, agEff, lactato, k, ph, pafi, na) {
 
   // --- Alerta Transversal: Oxigenación (PAFI y PROSEVA) ---
   if (sdraGrave) {
-    items.push({ priority: 'urgent', icon: 'lungs', text: '<strong>SDRA Grave (PAFI < 100):</strong> Iniciar VMI protectora urgente (Vt 6 ml/kg, PEEP ≥ 10), prono, ECMO.' });
+    items.push({ priority: 'urgent', icon: 'lungs', text: '<strong>Hipoxemia muy grave (PAFI < 100):</strong> Valorar posible SDRA según criterios de Berlín. Iniciar VMI protectora urgente (Vt 6 ml/kg, PEEP ≥ 10), prono, ECMO.' });
   } else if (sdraRisk) {
-    items.push({ priority: 'high', icon: 'lungs', text: '<strong>Riesgo moderado/leve (PAFI 101-300):</strong> Optimizar oxigenación, ajustar PEEP ≥ 5.' });
+    items.push({ priority: 'high', icon: 'lungs', text: '<strong>Hipoxemia moderada/leve (PAFI 101-300):</strong> Valorar posible SDRA según criterios de Berlín. Optimizar oxigenación, ajustar PEEP ≥ 5.' });
   }
   if (!isNaN(pafi) && pafi <= 150) {
-    items.push({ priority: 'urgent', icon: 'activity', text: '<strong>🚨 Protocolo PROSEVA:</strong> En pacientes con SDRA e intubados, si la PAFI es ≤ 150 (con PEEP ≥ 5 y FiO₂ ≥ 0.6), instaurar precozmente maniobras de decúbito prono (mínimo 16 h/día) para reducir mortalidad.' });
+    items.push({ priority: 'urgent', icon: 'activity', text: '<strong>🚨 Protocolo PROSEVA:</strong> En pacientes con sospecha de SDRA e intubados, si la PAFI es ≤ 150 (con PEEP ≥ 5 y FiO₂ ≥ 0.6), instaurar precozmente maniobras de decúbito prono (mínimo 16 h/día) para reducir mortalidad.' });
   }
   
   if (type === 'acidosis' && mech === 'respiratoria') {
