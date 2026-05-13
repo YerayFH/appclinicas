@@ -2328,8 +2328,8 @@ function getCauses(type, mech, agEff, lactato, cl, k) {
       list.push({ icon: 'activity', cls: 'c-red', text: '<strong>L-Lactato:</strong> Shock, isquemia, metformina.', highlight: true, _id: 'lactato' });
     }
     list.push(
-      { icon: 'flask', cls: 'c-orange', text: '<strong>Glicoles:</strong> Etilenglicol, propilenglicol.', highlight: false, _id: 'glicoles' },
-      { icon: 'pill', cls: 'c-yellow', text: '<strong>Oxoprolina:</strong> Uso crónico de paracetamol.', highlight: false, _id: 'oxoprolina' },
+      { icon: 'flask', cls: 'c-orange', text: '<strong>Glicoles:</strong> Etilenglicol, propilenglicol (incluyendo iatrogenia por excipientes en infusiones de Lorazepam o Fenitoína).', highlight: false, _id: 'glicoles' },
+      { icon: 'pill', cls: 'c-yellow', text: '<strong>Oxoprolina:</strong> Uso crónico de paracetamol (especialmente en desnutrición, sepsis o fallo renal/hepático).', highlight: false, _id: 'oxoprolina' },
       { icon: 'activity', cls: 'c-blue', text: '<strong>D-Lactato:</strong> Síndrome de intestino corto.', highlight: false, _id: 'd-lactato' },
       { icon: 'alert-circle', cls: 'c-red', text: '<strong>Metanol.</strong>', highlight: false, _id: 'metanol' },
       { icon: 'pill', cls: 'c-red', text: '<strong>Aspirina:</strong> Intoxicación por salicilatos.', highlight: false, _id: 'aspirina' },
@@ -2369,10 +2369,10 @@ function getCauses(type, mech, agEff, lactato, cl, k) {
       }
       // Conservamos tu lista detallada DENTRO de este bloque "else"
       primary.push(
-        { icon: 'wave',         cls: (k < 3.5 ? 'c-red' : 'c-blue'), text: 'Diarrea severa o fístulas — pérdida directa de HCO₃⁻ y K⁺ por el tracto digestivo.', highlight: (k < 3.5), _id: 'diarrea' },
+        { icon: 'wave',         cls: (k < 3.5 ? 'c-red' : 'c-blue'), text: 'Diarrea severa — pérdida directa de HCO₃⁻ y K⁺ por el tracto digestivo.', highlight: (k < 3.5), _id: 'diarrea' },
         { icon: 'kidney',       cls: 'c-purple', text: 'Acidosis tubular renal (ATR) tipos 1, 2 y 4 — defectos en la reabsorción/secreción renal.', highlight: false, _id: 'atr' },
-        { icon: 'pill',         cls: 'c-yellow', text: 'Fármacos: cloruro amónico, acetazolamida (o uso terapéutico intencionado en alcalosis post-hipercapnia), espironolactona/amilorida/IECA/ARA-II (ATR tipo 4 con hiperpotasemia asociada), anfotericina B.', highlight: false, _id: 'farmacos-acid' },
-        { icon: 'minus-circle', cls: '',          text: 'Fístulas pancreáticas, biliares o intestinales con pérdida de base.', highlight: false, _id: 'fistulas' },
+        { icon: 'pill',         cls: 'c-yellow', text: 'Fármacos: cloruro amónico, acetazolamida, espironolactona/amilorida/IECA/ARA-II (ATR tipo 4), anfotericina B.', highlight: false, _id: 'farmacos-acid' },
+        { icon: 'minus-circle', cls: 'c-red', text: '<strong>Fístulas pancreáticas o biliares:</strong> Pérdida directa masiva de base. Considerar también fístulas intestinales.', highlight: true, _id: 'fistulas' },
         { icon: 'flask',        cls: 'c-blue',   text: 'Ureterosigmoidostomía — absorción de Cl⁻ y pérdida de HCO₃⁻.', highlight: false, _id: 'ureterosig' }
       );
     } // <--- AHORA SÍ, AQUÍ SE CIERRA EL ELSE
@@ -2461,7 +2461,7 @@ function getManagement(type, mech, agEff, lactato, k, ph, pafi, na) {
   }
   // --- Alerta Transversal: Muestra Venosa ---
   if (sampleType === 'venous') {
-    items.push({ priority: 'high', icon: 'alert-triangle', text: '<strong>🚨 Alerta de Shock:</strong> En hipoperfusión tisular, sepsis severa o PCR, el gradiente veno-arterial de CO₂ se dispara. La gasometría venosa no sirve para tomar decisiones ventilatorias precisas; extraer GSA.' });
+    items.push({ priority: 'high', icon: 'alert-triangle', text: '<strong>🚨 Alerta de Shock:</strong> En hipoperfusión tisular o PCR, el gradiente ΔpCO₂ (v-a) > 6 mmHg es marcador de bajo gasto. La gasometría venosa pierde correlación con el pH arterial; extraer GSA para decisiones ventilatorias.' });
   }
   
   // --- Alerta Transversal: Sodio ---
@@ -2499,7 +2499,7 @@ function getManagement(type, mech, agEff, lactato, k, ph, pafi, na) {
   if (type === 'acidosis' && mech === 'metabolica') {
     if (agHigh) {
       items.push({ priority: 'high', icon: 'microscope', text: '<strong>Evaluación:</strong> Panel GOLDMARK (osmolaridad, cetonas, lactato, función renal).' });
-      items.push({ priority: 'urgent', icon: 'shield', text: '<strong>Bicarbonato (BICAR-ICU):</strong> Evitar NaHCO₃ rutinario. Indicar IV solo si pH < 7.20 Y asocia fracaso renal agudo severo (AKIN 2-3). <br><span style="color:var(--muted);font-size:0.85em;">Excepciones: Intoxicación por salicilatos (alcalinización urinaria requerida) o CAD con inestabilidad hemodinámica extrema/pH < 6.90.</span>' });
+      items.push({ priority: 'urgent', icon: 'shield', text: '<strong>Bicarbonato (BICAR-ICU / BICARICU-2):</strong> Evitar NaHCO₃ rutinario. En acidemia severa (pH ≤ 7.20) con fracaso renal agudo (AKI 2-3), el bicarbonato es una estrategia segura para <strong>ahorrar técnicas de reemplazo renal (RRT)</strong>, aunque sin beneficio demostrado en mortalidad a 90 días.' });
     }
     if (lacSevere) {
       items.push({ priority: 'urgent', icon: 'heart-pulse', text: '<strong>Metabólico:</strong> Si lactato > 4, tratar causa (fluidos/vasopresores, Tiamina si es refractaria).' });
