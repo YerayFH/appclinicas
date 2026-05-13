@@ -2106,9 +2106,9 @@ beHTML = `
   // NUEVO: El ".includes" actúa de escudo por si en el futuro creamos otro diagnóstico que ya lleve estas palabras
   if (!isNaN(pafiValForDx) && !dxName.includes('Insuficiencia') && !dxName.includes('Hipoxemia')) {
       if (pafiValForDx <= 100) {
-          dxName += ' + Insuficiencia Respiratoria Grave (Valorar posible SDRA)';
+          dxName += ' + Hipoxemia Muy Grave (Valorar posible SDRA)';
       } else if (pafiValForDx <= 200) {
-          dxName += ' + Insuficiencia Respiratoria Moderada (Valorar posible SDRA)';
+          dxName += ' + Hipoxemia Grave (Valorar posible SDRA)';
       } else if (pafiValForDx <= 300) {
           dxName += ' + Hipoxemia Leve (Valorar posible SDRA)';
       }
