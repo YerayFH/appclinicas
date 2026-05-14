@@ -548,11 +548,24 @@
 
         function exportPNG() {
             const container = document.getElementById('plot-container');
-            Plotly.downloadImage(container, {
+            
+            // Usamos toImage para un control más fino y alta resolución
+            Plotly.toImage(container, {
                 format: 'png',
-                width: 1600,
-                height: 1100,
-                filename: 'PlottyFor_Scientific_Graph'
+                width: container.offsetWidth,
+                height: container.offsetHeight,
+                scale: 3 // Factor de escala para alta densidad (Retina/4K)
+            }).then(function(dataUrl) {
+                const title = document.getElementById('plot-title').value || 'Forest_Plot';
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `PlottyFor_${title.replace(/\s+/g, '_')}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).catch(function(err) {
+                console.error('Error al exportar:', err);
+                alert('Hubo un error al generar la imagen. Inténtalo de nuevo.');
             });
         }
 
