@@ -423,9 +423,7 @@
             };
 
             const shapes = [{ type: 'line', x0: nullV, x1: nullV, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#000', width: 2.5 } }];
-            const annotations = [
-                { xref: 'paper', yref: 'paper', x: 1, y: -0.22, text: 'PlottyFor® - YerayFH', showarrow: false, font: { size: 11, color: '#9ca3af' }, xanchor: 'right' }
-            ];
+            const annotations = [];
 
             if (!isNaN(delta)) {
                 shapes.push({ type: 'line', x0: delta, x1: delta, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#555', width: 2, dash: 'dash' } });
@@ -439,7 +437,11 @@
             }
 
             const layout = {
-                title: { text: title, font: { family: 'Inter', size: 21, weight: 600, color: '#111' }, pad: { b: 20 } },
+                title: { 
+                    text: `${title}<br><span style="font-size: 11px; color: #9ca3af; font-weight: normal;">PlottyFor® - YerayFH</span>`, 
+                    font: { family: 'Inter', size: 21, weight: 600, color: '#111' },
+                    pad: { b: 30, t: 20 }
+                },
                 xaxis: (function() {
                     let config = {
                         type: currentScale === 'log' ? 'log' : 'linear',
@@ -449,19 +451,43 @@
                         zeroline: false,
                         autorange: true
                     };
-                    if (currentScale === 'linear') {
+                    
+                    if (currentScale === 'log') {
+                        let values = dataArr.flatMap(d => [d.v, d.l, d.u]);
+                        if (!isNaN(delta) && delta > 0) {
+                            values.push(delta);
+                            values.push(1 / delta);
+                        }
+                        values.push(nullV);
+                        
+                        let maxLogDiff = 0;
+                        values.forEach(v => {
+                            if (v > 0) {
+                                let diff = Math.abs(Math.log10(v / nullV));
+                                if (diff > maxLogDiff) maxLogDiff = diff;
+                            }
+                        });
+                        
+                        // Apply padding and set symmetric range around nullV in log space
+                        maxLogDiff = maxLogDiff * 1.25 || 0.2; 
+                        config.range = [Math.log10(nullV) - maxLogDiff, Math.log10(nullV) + maxLogDiff];
+                        config.autorange = false;
+                    } else if (currentScale === 'linear') {
                         let maxAbs = 0;
                         dataArr.forEach(d => {
-                            maxAbs = Math.max(maxAbs, Math.abs(d.l), Math.abs(d.u), Math.abs(d.v));
+                            maxAbs = Math.max(maxAbs, Math.abs(d.l - nullV), Math.abs(d.u - nullV), Math.abs(d.v - nullV));
                         });
+                        if (!isNaN(delta)) {
+                            maxAbs = Math.max(maxAbs, Math.abs(delta - nullV));
+                        }
                         maxAbs = maxAbs * 1.3 || 0.1;
-                        config.range = [-maxAbs, maxAbs];
+                        config.range = [nullV - maxAbs, nullV + maxAbs];
                         config.autorange = false;
                     }
                     return config;
                 })(),
                 yaxis: { automargin: true, gridcolor: 'transparent', tickfont: { size: 15, weight: 600, color: '#111' } },
-                margin: { l: 230, r: 50, t: 90, b: 180 },
+                margin: { l: 230, r: 50, t: 110, b: 160 },
                 shapes: shapes,
                 annotations: [
                     ...annotations,
