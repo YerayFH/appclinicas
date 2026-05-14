@@ -123,7 +123,7 @@
     <header class="app-header-unified">
         <img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo">
         <div class="hdr-text">
-            <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+            <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a> &nbsp;&middot;&nbsp; Agradecimientos: Emilio Alegre del Rey; Silvia Fénix Caballero</div>
             <div class="hdr-dept">Farmacia Hospitalaria / Investigación</div>
             <div class="hdr-app-name">PlottyFor®</div>
         </div>
@@ -167,9 +167,15 @@
                     </div>
                 </div>
 
-                <div class="field">
-                    <label class="field-label">Título del Gráfico</label>
-                    <input type="text" id="plot-title" placeholder="Ej: Análisis de Riesgo Indirecto" value="Comparación de Medicamentos" oninput="scheduleSave()">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="field">
+                        <label class="field-label">Título del Gráfico</label>
+                        <input type="text" id="plot-title" placeholder="Ej: Análisis de Riesgo" value="Comparación de Medicamentos" oninput="scheduleSave()">
+                    </div>
+                    <div class="field">
+                        <label class="field-label">Etiqueta Eje X</label>
+                        <input type="text" id="xaxis-label" placeholder="Ej: Hazard Ratio" value="Hazard / Risk / Odds Ratio" oninput="scheduleSave()">
+                    </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px;">
@@ -178,7 +184,7 @@
                         <input type="number" id="delta-val" placeholder="Opcional" step="0.01" oninput="updateReciprocal(); scheduleSave()">
                     </div>
                     <div class="field">
-                        <label class="field-label">Inverso (1/Δ)</label>
+                        <label class="field-label" id="label-inv-delta">Inverso (1/Δ)</label>
                         <input type="number" id="inv-delta-val" placeholder="-" readonly style="background: #f3f4f6; color: #6b7280;">
                     </div>
                     <div class="field">
@@ -254,15 +260,20 @@
             document.getElementById('scale-linear').classList.toggle('active', scale === 'linear');
             
             const nullInput = document.getElementById('null-val');
-            const tbody = document.getElementById('med-tbody');
+            const xLabelInput = document.getElementById('xaxis-label');
+            const invLabel = document.getElementById('label-inv-delta');
             
             if (scale === 'log') {
                 if (nullInput.value === '0') nullInput.value = '1';
-                // If the table is empty or just has linear defaults, we could switch, but let's let the user decide.
+                xLabelInput.value = 'Hazard / Risk / Odds Ratio';
+                invLabel.innerText = 'Inverso (1/Δ)';
             } else {
                 if (nullInput.value === '1') nullInput.value = '0';
+                xLabelInput.value = 'Diferencia Absoluta';
+                invLabel.innerText = 'Simétrico (-Δ)';
             }
             
+            updateReciprocal();
             scheduleSave();
             generatePlot();
         }
@@ -294,8 +305,15 @@
         function updateReciprocal() {
             const deltaStr = document.getElementById('delta-val').value;
             const delta = parseFloat(deltaStr);
-            if (!isNaN(delta) && delta !== 0 && currentScale === 'log') {
-                document.getElementById('inv-delta-val').value = (1 / delta).toFixed(3);
+            const nullV = parseFloat(document.getElementById('null-val').value) || 0;
+            
+            if (!isNaN(delta) && delta !== 0) {
+                if (currentScale === 'log') {
+                    document.getElementById('inv-delta-val').value = (nullV * nullV / delta).toFixed(2);
+                } else {
+                    const diff = delta - nullV;
+                    document.getElementById('inv-delta-val').value = (nullV - diff).toFixed(2);
+                }
             } else {
                 document.getElementById('inv-delta-val').value = '';
             }
@@ -320,6 +338,7 @@
             const state = {
                 scale: currentScale,
                 title: document.getElementById('plot-title').value,
+                xaxisLabel: document.getElementById('xaxis-label').value,
                 delta: document.getElementById('delta-val').value,
                 nullVal: document.getElementById('null-val').value,
                 labelLeft: document.getElementById('label-left').value,
@@ -341,6 +360,7 @@
                     currentScale = state.scale || 'log';
                     setScale(currentScale);
                     document.getElementById('plot-title').value = state.title || 'Comparación de Medicamentos';
+                    document.getElementById('xaxis-label').value = state.xaxisLabel || (currentScale === 'log' ? 'Hazard / Risk / Odds Ratio' : 'Diferencia Absoluta');
                     document.getElementById('delta-val').value = state.delta || '';
                     document.getElementById('null-val').value = state.nullVal !== undefined ? state.nullVal : (currentScale === 'log' ? '1' : '0');
                     document.getElementById('label-left').value = state.labelLeft || 'Favorece Tratamiento';
@@ -391,6 +411,7 @@
             if (dataArr.length === 0) { return; }
 
             const title = document.getElementById('plot-title').value;
+            const xLabel = document.getElementById('xaxis-label').value;
             const delta = parseFloat(document.getElementById('delta-val').value);
             const nullV = parseFloat(document.getElementById('null-val').value);
             const lblL = document.getElementById('label-left').value;
@@ -427,12 +448,19 @@
 
             if (!isNaN(delta)) {
                 shapes.push({ type: 'line', x0: delta, x1: delta, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#555', width: 2, dash: 'dash' } });
-                annotations.push({ x: delta, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: `Δ = ${delta}`, showarrow: false, font: { size: 11, color: '#000', weight: 'bold' }, yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.85)' });
+                
+                const dFixed = delta.toFixed(2);
+                const deltaLabel = currentScale === 'log' ? `${dFixed} = Δ` : `${delta > nullV ? '+' : ''}${dFixed} = Δ`;
+                annotations.push({ x: delta, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: deltaLabel, showarrow: false, font: { size: 11, color: '#000', weight: 'bold' }, yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.85)' });
                 
                 if (currentScale === 'log') {
-                    const invD = 1 / delta;
+                    const invD = (nullV * nullV) / delta;
                     shapes.push({ type: 'line', x0: invD, x1: invD, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#888', width: 1.5, dash: 'dash' } });
-                    annotations.push({ x: invD, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: `${invD.toFixed(2)}`, showarrow: false, font: { size: 10, color: '#666' }, yanchor: 'bottom' });
+                    annotations.push({ x: invD, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: `${invD.toFixed(2)} = 1/Δ`, showarrow: false, font: { size: 10, color: '#666' }, yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.85)' });
+                } else {
+                    const invD = nullV - (delta - nullV);
+                    shapes.push({ type: 'line', x0: invD, x1: invD, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#888', width: 1.5, dash: 'dash' } });
+                    annotations.push({ x: invD, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: `${invD.toFixed(2)} = -Δ`, showarrow: false, font: { size: 10, color: '#666' }, yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.85)' });
                 }
             }
 
@@ -445,7 +473,7 @@
                 xaxis: (function() {
                     let config = {
                         type: currentScale === 'log' ? 'log' : 'linear',
-                        title: { text: currentScale === 'log' ? 'Hazard / Risk / Odds Ratio' : 'Diferencia Absoluta', font: { size: 13, weight: 500, color: '#444' }, standoff: 30 },
+                        title: { text: xLabel, font: { size: 13, weight: 500, color: '#444' }, standoff: 30 },
                         tickformat: currentScale === 'log' ? '.2f' : '.3f',
                         gridcolor: '#f0f2f5',
                         zeroline: false,
