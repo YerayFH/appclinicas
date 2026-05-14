@@ -153,7 +153,7 @@
                             </div>
                         </div>
                         <div class="scale-option" id="scale-linear" onclick="setScale('linear')">
-                            Lineal / Normal
+                            Lineal
                             <span class="info-i">i</span>
                             <div class="tooltip">
                                 <strong>Variables de Diferencia:</strong><br>
@@ -440,14 +440,26 @@
 
             const layout = {
                 title: { text: title, font: { family: 'Inter', size: 21, weight: 600, color: '#111' }, pad: { b: 20 } },
-                xaxis: {
-                    type: currentScale === 'log' ? 'log' : 'linear',
-                    title: { text: currentScale === 'log' ? 'Hazard / Risk / Odds Ratio' : 'Diferencia Absoluta', font: { size: 13, weight: 500, color: '#444' } },
-                    tickformat: currentScale === 'log' ? '.2f' : '.3f',
-                    gridcolor: '#f0f2f5',
-                    zeroline: false,
-                    autorange: true
-                },
+                xaxis: (function() {
+                    let config = {
+                        type: currentScale === 'log' ? 'log' : 'linear',
+                        title: { text: currentScale === 'log' ? 'Hazard / Risk / Odds Ratio' : 'Diferencia Absoluta', font: { size: 13, weight: 500, color: '#444' } },
+                        tickformat: currentScale === 'log' ? '.2f' : '.3f',
+                        gridcolor: '#f0f2f5',
+                        zeroline: false,
+                        autorange: true
+                    };
+                    if (currentScale === 'linear') {
+                        let maxAbs = 0;
+                        dataArr.forEach(d => {
+                            maxAbs = Math.max(maxAbs, Math.abs(d.l), Math.abs(d.u), Math.abs(d.v));
+                        });
+                        maxAbs = maxAbs * 1.3 || 0.1;
+                        config.range = [-maxAbs, maxAbs];
+                        config.autorange = false;
+                    }
+                    return config;
+                })(),
                 yaxis: { automargin: true, gridcolor: 'transparent', tickfont: { size: 15, weight: 600, color: '#111' } },
                 margin: { l: 230, r: 50, t: 90, b: 110 },
                 shapes: shapes,
