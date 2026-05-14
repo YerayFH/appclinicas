@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#1A2B4A">
+  <link rel="icon" type="image/png" href="/appclinicas/img/anemia.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/appclinicas/img/anemia.png">
+  <title>ANEMIMETRIC® — Motor Clínico Hematológico | YerayFH</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ════════════════════════════════════════
+   ANEMIMETRIC® — YerayFH
+   ════════════════════════════════════════ */
+    :root {
+      --crimson: #C0392B;
+      --crimson-d: #922B21;
+      --crimson-l: #F9EBEA;
+      --navy: #1A2B4A;
+      --navy-m: #2C3E6B;
+      --slate: #4A5568;
+      --slate-l: #718096;
+      --fog: #F7F8FA;
+      --fog-d: #EDF0F4;
+      --white: #FFFFFF;
+      --border: #E2E8F0;
+      --border-d: #CBD5E0;
+      --gold: #D4A017;
+      --gold-l: #FEF9EC;
+      --teal: #0B6B6B;
+      --teal-l: #E6F4F4;
+      --teal-m: #0D8080;
+      --success: #276749;
+      --success-l: #E6F4ED;
+      --warn: #92400E;
+      --warn-l: #FEF3C7;
+      --danger: #9B1C1C;
+      --danger-l: #FEF2F2;
+      --violet: #5B21B6;
+      --violet-l: #EDE9FE;
+      --header-bg: #1A2B4A;
+      --brd: rgba(255, 255, 255, .12);
+      --txt: #FFFFFF;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, .08), 0 2px 6px rgba(0, 0, 0, .05);
+      --r: 14px;
+      --r-sm: 8px;
+      --r-lg: 20px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--fog);
+      color: var(--navy);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 800px 600px at 15% 20%, rgba(192, 57, 43, .045) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 800px at 85% 70%, rgba(11, 107, 107, .04) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 50% 50%, rgba(26, 43, 74, .025) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0
+    }
+
+    #disclaimer-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(15, 23, 42, .82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: modalIn .4s ease both
+    }
+
+    #disclaimer-modal.hidden {
+      display: none
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .modal-card {
+      background: var(--white);
+      border-radius: 24px;
+      max-width: 520px;
+      width: 100%;
+      padding: 36px 32px 28px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .28), 0 8px 24px rgba(0, 0, 0, .14);
+      border: 1px solid var(--border);
+    }
+
+    .modal-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .modal-badge {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-d));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(192, 57, 43, .35);
+      flex-shrink: 0
+    }
+
+    .modal-badge svg {
+      width: 26px;
+      height: 26px
+    }
+
+    .modal-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 1px
+    }
+
+    .modal-brand-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2E86C1;
+      letter-spacing: -.3px;
+      line-height: 1
+    }
+
+    .modal-brand-sub {
+      font-size: 11px;
+      color: var(--slate-l);
+      font-weight: 300
+    }
+
+    .modal-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 19px;
+      color: var(--navy);
+      margin-bottom: 12px;
+      line-height: 1.3
+    }
+
+    .modal-body {
+      font-size: 13.5px;
+      color: var(--slate);
+      line-height: 1.75;
+      margin-bottom: 20px
+    }
+
+    .modal-body strong {
+      color: var(--navy);
+      font-weight: 600
+    }
+
+    .modal-body ul {
+      padding-left: 18px;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .modal-body li {
+      list-style: disc
+    }
+
+    .modal-checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--fog);
+      border-radius: var(--r-sm);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border: 1.5px solid var(--border)
+    }
+
+    .modal-checkbox-row input[type=checkbox] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--crimson);
+      flex-shrink: 0;
+      cursor: pointer
+    }
+
+    .modal-checkbox-row label {
+      font-size: 12.5px;
+      color: var(--slate);
+      line-height: 1.5;
+      cursor: pointer
+    }
+
+    .modal-btn {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-d));
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 4px 14px rgba(192, 57, 43, .30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      opacity: .5;
+      pointer-events: none
+    }
+
+    .modal-btn.enabled {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .modal-btn.enabled:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(192, 57, 43, .40)
+    }
+
+    .modal-footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: var(--slate-l);
+      margin-top: 10px
+    }
+
+    .app-header-unified {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 24px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--brd);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, .25)
+    }
+
+    .hdr-logo-wrap {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-d));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(192, 57, 43, .5);
+      flex-shrink: 0;
+      animation: pulse-icon 3s ease-in-out infinite
+    }
+
+    .hdr-logo-wrap svg {
+      width: 24px;
+      height: 24px
+    }
+
+    @keyframes pulse-icon {
+
+      0%,
+      100% {
+        box-shadow: 0 2px 10px rgba(192, 57, 43, .5)
+      }
+
+      50% {
+        box-shadow: 0 2px 18px rgba(192, 57, 43, .75)
+      }
+    }
+
+    .hdr-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1
+    }
+
+    .hdr-meta {
+      font-size: 10.5px;
+      opacity: .7;
+      color: var(--txt)
+    }
+
+    .hdr-meta a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    .hdr-meta a:hover {
+      text-decoration: underline
+    }
+
+    .hdr-dept {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: .85;
+      color: var(--txt)
+    }
+
+    .hdr-app-name {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      color: #2E86C1;
+      line-height: 1
+    }
+
+    .hdr-guide-pills {
+      display: flex;
+      gap: 5px;
+      margin-top: 3px;
+      flex-wrap: wrap
+    }
+
+    .hdr-pill {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 10px
+    }
+
+    .hp-bsh {
+      background: rgba(192, 57, 43, .25);
+      color: #FECACA
+    }
+
+    .hp-oms {
+      background: rgba(11, 107, 107, .3);
+      color: #99F6E4
+    }
+
+    .hp-kdigo {
+      background: rgba(212, 160, 23, .25);
+      color: #FDE68A
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 20px 60px
+    }
+
+    .page-intro {
+      padding: 20px 0 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px
+    }
+
+    .page-intro-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--crimson-l);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .page-intro-text h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--navy);
+      letter-spacing: -.2px
+    }
+
+    .page-intro-text p {
+      font-size: 13px;
+      color: var(--slate-l);
+      margin-top: 2px;
+      font-weight: 300
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      padding: 24px 28px;
+      margin-bottom: 14px;
+      animation: fadeUp .4s ease both
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .ci-red {
+      background: var(--crimson-l)
+    }
+
+    .ci-teal {
+      background: var(--teal-l)
+    }
+
+    .ci-gold {
+      background: var(--gold-l)
+    }
+
+    .ci-navy {
+      background: rgba(26, 43, 74, .08)
+    }
+
+    .ci-violet {
+      background: var(--violet-l)
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--navy);
+      letter-spacing: -.1px
+    }
+
+    .card-subtitle {
+      font-size: 11.5px;
+      color: var(--slate-l);
+      margin-top: 1px;
+      font-weight: 300
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 14px
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px
+    }
+
+    .form-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--slate);
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      flex-wrap: wrap
+    }
+
+    .field-unit {
+      font-size: 10.5px;
+      color: var(--slate-l);
+      font-weight: 300;
+      font-style: italic
+    }
+
+    .optional-tag {
+      font-size: 9.5px;
+      font-weight: 500;
+      background: var(--fog-d);
+      color: var(--slate-l);
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: .04em
+    }
+
+    .field-input {
+      height: 44px;
+      padding: 0 13px;
+      border-radius: var(--r-sm);
+      border: 1.5px solid var(--border);
+      background: var(--fog);
+      color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%
+    }
+
+    .field-input:focus {
+      border-color: var(--crimson);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, .10)
+    }
+
+    .field-input::placeholder {
+      color: #B0B9C8;
+      font-size: 13px
+    }
+
+    .field-input.has-value {
+      border-color: var(--border-d);
+      background: var(--white)
+    }
+
+    .sex-toggle,
+    .bool-toggle {
+      display: flex;
+      gap: 8px
+    }
+
+    .sex-btn,
+    .bool-btn {
+      flex: 1;
+      min-height: 44px;
+      border-radius: var(--r-sm);
+      border: 1.5px solid var(--border);
+      background: var(--fog);
+      color: var(--slate-l);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 400;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    .sex-btn:hover,
+    .bool-btn:hover {
+      border-color: var(--border-d);
+      color: var(--slate)
+    }
+
+    .sex-btn.active,
+    .bool-btn.active {
+      background: var(--crimson-l);
+      border-color: var(--crimson);
+      color: var(--crimson-d);
+      font-weight: 500
+    }
+
+    .bool-btn.active-yes {
+      background: var(--crimson-l);
+      border-color: var(--crimson);
+      color: var(--crimson-d);
+      font-weight: 500
+    }
+
+    .bool-btn.active-no {
+      background: var(--success-l);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 500
+    }
+
+    .trim-select-wrap {
+      display: none;
+      margin-top: 10px;
+      animation: fadeUp .3s ease both
+    }
+
+    .trim-select-wrap.visible {
+      display: block
+    }
+
+    .trim-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .trim-tab {
+      flex: 1;
+      min-width: 80px;
+      min-height: 38px;
+      padding: 4px 8px;
+      border-radius: var(--r-sm);
+      border: 1.5px solid var(--border);
+      background: var(--fog);
+      color: var(--slate-l);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      font-weight: 400;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    .trim-tab.active {
+      background: var(--crimson-l);
+      border-color: var(--crimson);
+      color: var(--crimson-d);
+      font-weight: 600
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0
+    }
+
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--slate-l);
+      margin-bottom: 12px
+    }
+
+    .computed-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--fog);
+      border-radius: var(--r-sm);
+      border: 1px dashed var(--border-d)
+    }
+
+    .computed-chip {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 110px;
+      flex: 1
+    }
+
+    .computed-chip-label {
+      font-size: 10.5px;
+      color: var(--slate-l);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-weight: 500
+    }
+
+    .computed-chip-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      font-variant-numeric: tabular-nums
+    }
+
+    .computed-chip-sub {
+      font-size: 11px;
+      color: var(--slate-l)
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px
+    }
+
+    .btn-primary {
+      flex: 1;
+      min-height: 50px;
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-d));
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(192, 57, 43, .30);
+      -webkit-tap-highlight-color: transparent
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(192, 57, 43, .40)
+    }
+
+    .btn-secondary {
+      min-height: 50px;
+      padding: 0 22px;
+      background: var(--white);
+      color: var(--slate);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-d);
+      color: var(--navy);
+      background: var(--fog)
+    }
+
+    #results {
+      display: none
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-top: 6px;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .results-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--navy);
+      font-weight: 400
+    }
+
+    .results-meta {
+      font-size: 11.5px;
+      color: var(--slate-l)
+    }
+
+    .alert-card {
+      border-radius: var(--r);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      animation: fadeUp .35s ease both
+    }
+
+    .alert-danger {
+      background: var(--danger-l);
+      border: 1.5px solid #FCA5A5
+    }
+
+    .alert-warn {
+      background: var(--warn-l);
+      border: 1.5px solid #FCD34D
+    }
+
+    .alert-info {
+      background: var(--violet-l);
+      border: 1.5px solid #C4B5FD
+    }
+
+    .alert-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .ai-danger {
+      background: rgba(155, 28, 28, .12)
+    }
+
+    .ai-warn {
+      background: rgba(146, 64, 14, .10)
+    }
+
+    .ai-info {
+      background: rgba(91, 33, 182, .10)
+    }
+
+    .alert-content h4 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 3px
+    }
+
+    .alert-danger h4 {
+      color: var(--danger)
+    }
+
+    .alert-warn h4 {
+      color: var(--warn)
+    }
+
+    .alert-info h4 {
+      color: var(--violet)
+    }
+
+    .alert-content p {
+      font-size: 13.5px;
+      line-height: 1.6
+    }
+
+    .alert-danger p {
+      color: #7F1D1D
+    }
+
+    .alert-warn p {
+      color: #78350F
+    }
+
+    .alert-info p {
+      color: #3B0764
+    }
+
+    .result-card {
+      background: var(--white);
+      border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+      overflow: hidden;
+      animation: fadeUp .4s ease both
+    }
+
+    .rc-header {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--fog)
+    }
+
+    .rc-stripe {
+      width: 4px;
+      height: 28px;
+      border-radius: 4px;
+      flex-shrink: 0
+    }
+
+    .rcs-red {
+      background: linear-gradient(180deg, var(--crimson), var(--crimson-d))
+    }
+
+    .rcs-teal {
+      background: linear-gradient(180deg, var(--teal-m), var(--teal))
+    }
+
+    .rcs-gold {
+      background: linear-gradient(180deg, #E8B020, var(--gold))
+    }
+
+    .rcs-navy {
+      background: linear-gradient(180deg, var(--navy-m), var(--navy))
+    }
+
+    .rcs-green {
+      background: linear-gradient(180deg, #2E8B57, var(--success))
+    }
+
+    .rcs-slate {
+      background: linear-gradient(180deg, var(--slate), #2D3748)
+    }
+
+    .rcs-violet {
+      background: linear-gradient(180deg, #7C3AED, var(--violet))
+    }
+
+    .rc-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--slate)
+    }
+
+    .rc-desc {
+      font-size: 11px;
+      color: var(--slate-l);
+      margin-top: 1px
+    }
+
+    .rc-body {
+      padding: 18px 22px
+    }
+
+    .metric-table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .metric-table tr {
+      border-bottom: 1px solid var(--fog-d)
+    }
+
+    .metric-table tr:last-child {
+      border-bottom: none
+    }
+
+    .metric-table td {
+      padding: 8px 0;
+      font-size: 13.5px;
+      vertical-align: middle
+    }
+
+    .mt-label {
+      color: var(--slate-l);
+      font-weight: 400;
+      width: 44%
+    }
+
+    .mt-value {
+      color: var(--navy);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums
+    }
+
+    .mt-badge {
+      text-align: right
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 20px
+    }
+
+    .b-low {
+      background: var(--danger-l);
+      color: var(--danger)
+    }
+
+    .b-high {
+      background: var(--warn-l);
+      color: var(--warn)
+    }
+
+    .b-ok {
+      background: var(--success-l);
+      color: var(--success)
+    }
+
+    .b-info {
+      background: var(--violet-l);
+      color: var(--violet)
+    }
+
+    .conclusion-box {
+      margin-top: 14px;
+      padding: 13px 15px;
+      background: var(--fog);
+      border-radius: var(--r-sm);
+      border-left: 3px solid var(--border-d);
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--slate)
+    }
+
+    .conclusion-box.cc-red {
+      border-left-color: var(--crimson);
+      background: var(--crimson-l);
+      color: var(--crimson-d)
+    }
+
+    .conclusion-box.cc-teal {
+      border-left-color: var(--teal);
+      background: var(--teal-l);
+      color: var(--teal)
+    }
+
+    .conclusion-box.cc-gold {
+      border-left-color: var(--gold);
+      background: var(--gold-l);
+      color: var(--warn)
+    }
+
+    .conclusion-box.cc-green {
+      border-left-color: var(--success);
+      background: var(--success-l);
+      color: var(--success)
+    }
+
+    .conclusion-box.cc-violet {
+      border-left-color: var(--violet);
+      background: var(--violet-l);
+      color: var(--violet)
+    }
+
+    .conclusion-box strong {
+      font-weight: 600
+    }
+
+    .ddx-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .ddx-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--fog-d)
+    }
+
+    .ddx-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0
+    }
+
+    .ddx-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .dr-1 {
+      background: linear-gradient(135deg, var(--crimson), var(--crimson-d));
+      color: #fff
+    }
+
+    .dr-2,
+    .dr-3,
+    .dr-4 {
+      background: var(--fog-d);
+      color: var(--slate)
+    }
+
+    .ddx-diag {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--navy);
+      line-height: 1.4
+    }
+
+    .ddx-reason {
+      font-size: 12.5px;
+      color: var(--slate-l);
+      margin-top: 3px;
+      line-height: 1.5
+    }
+
+    .manejo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .manejo-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--fog-d);
+      align-items: flex-start
+    }
+
+    .manejo-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0
+    }
+
+    .manejo-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--teal-l);
+      border: 1.5px solid rgba(11, 107, 107, .2);
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .manejo-text {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--slate)
+    }
+
+    .manejo-text strong {
+      color: var(--navy);
+      font-weight: 600
+    }
+
+    .guide-footer {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--slate-l);
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .ganzoni-box {
+      background: linear-gradient(135deg, rgba(26, 43, 74, .04), rgba(11, 107, 107, .04));
+      border: 1.5px solid var(--teal-l);
+      border-radius: var(--r);
+      padding: 16px 18px;
+      margin-top: 14px
+    }
+
+    .ganzoni-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .ganzoni-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--navy);
+      font-variant-numeric: tabular-nums;
+      line-height: 1
+    }
+
+    .ganzoni-unit {
+      font-size: 13px;
+      color: var(--slate-l);
+      margin-top: 2px
+    }
+
+    .ganzoni-note {
+      font-size: 12px;
+      color: var(--slate);
+      margin-top: 8px;
+      line-height: 1.5
+    }
+
+    .mentzer-box {
+      background: linear-gradient(135deg, rgba(212, 160, 23, .05), rgba(192, 57, 43, .04));
+      border: 1.5px solid var(--gold-l);
+      border-radius: var(--r);
+      padding: 14px 16px;
+      margin-top: 14px;
+      display: flex;
+      gap: 14px;
+      align-items: center
+    }
+
+    .mentzer-score {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--navy);
+      font-variant-numeric: tabular-nums;
+      min-width: 56px;
+      text-align: center
+    }
+
+    .mentzer-text-wrap {}
+
+    .mentzer-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px
+    }
+
+    .mentzer-result {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy)
+    }
+
+    .mentzer-sub {
+      font-size: 12px;
+      color: var(--slate-l);
+      margin-top: 2px
+    }
+
+    .pcr-warn-box {
+      background: var(--warn-l);
+      border: 1.5px solid #FCD34D;
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 12.5px;
+      color: var(--warn);
+      line-height: 1.5
+    }
+
+    .pcr-warn-box strong {
+      font-weight: 600
+    }
+
+    .app-footer-unified {
+      text-align: center;
+      padding: 14px 20px;
+      font-size: 12px;
+      opacity: .65;
+      color: var(--slate);
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+      background: var(--white)
+    }
+
+    .disclaimer-strip {
+      margin-top: 32px;
+      padding: 16px 20px;
+      background: var(--white);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start
+    }
+
+    .disclaimer-strip svg {
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .disclaimer-strip p {
+      font-size: 11.5px;
+      color: var(--slate-l);
+      line-height: 1.6
+    }
+
+    .disclaimer-strip strong {
+      color: var(--slate);
+      font-weight: 500
+    }
+
+    @media (max-width:640px) {
+      .page-wrap {
+        padding: 16px 14px 50px
+      }
+
+      .card {
+        padding: 18px 16px
+      }
+
+      .form-grid-3,
+      .form-grid-4 {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .form-grid-2 {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .hdr-app-name {
+        font-size: 18px
+      }
+
+      .hdr-logo-wrap {
+        width: 40px;
+        height: 40px
+      }
+
+      .hdr-logo-wrap svg {
+        width: 20px;
+        height: 20px
+      }
+
+      .app-header-unified {
+        padding: 10px 16px;
+        gap: 12px
+      }
+
+      .card-title {
+        font-size: 15px
+      }
+
+      .results-title {
+        font-size: 18px
+      }
+
+      .modal-card {
+        padding: 24px 20px 20px
+      }
+
+      .modal-title {
+        font-size: 16px
+      }
+
+      .ganzoni-value {
+        font-size: 22px
+      }
+
+      .mentzer-score {
+        font-size: 26px;
+        min-width: 46px
+      }
+
+      .btn-row {
+        flex-direction: column
+      }
+
+      .btn-secondary {
+        min-height: 44px
+      }
+
+      .rc-body {
+        padding: 14px 16px
+      }
+
+      .rc-header {
+        padding: 12px 16px
+      }
+
+      .metric-table td {
+        font-size: 12.5px
+      }
+    }
+
+    @media (max-width:400px) {
+
+      .form-grid-3,
+      .form-grid-4 {
+        grid-template-columns: 1fr
+      }
+
+      .hdr-guide-pills {
+        display: none
+      }
+
+      .trim-tabs {
+        flex-direction: column
+      }
+    }
+
+    @media (min-width:641px) {
+      .form-grid-4 {
+        grid-template-columns: repeat(4, 1fr)
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="disclaimer-modal">
+    <div class="modal-card">
+      <div class="modal-logo-row">
+        <div class="modal-badge">
+          <svg viewBox="0 0 26 26" fill="none">
+            <circle cx="13" cy="13" r="9" stroke="rgba(255,255,255,.4)" stroke-width="1.5" />
+            <path d="M13 6 C9 8.5 8 12 10.5 15.5 C13 19 15 19 17 17 C19 15 18.5 11.5 13 6Z" fill="white" opacity=".9" />
+          </svg>
+        </div>
+        <div class="modal-brand">
+          <div class="modal-brand-name">ANEMIMETRIC®</div>
+          <div class="modal-brand-sub">Motor Clínico Hematológico · YerayFH</div>
+        </div>
+      </div>
+      <div class="modal-title">Aviso legal y condiciones de uso</div>
+      <div class="modal-body">
+        <p>Esta herramienta es un <strong>sistema de soporte a la decisión clínica</strong> basado en guías BSH 2021/22,
+          OMS 2024, ESC 2023 y KDIGO 2012/24. <strong>No sustituye en ningún caso el juicio clínico
+            individualizado.</strong></p>
+        <ul>
+          <li>Los resultados son orientativos y deben ser interpretados por un profesional sanitario cualificado.</li>
+          <li>El diagnóstico final y las decisiones terapéuticas son responsabilidad exclusiva del clínico.</li>
+          <li>Uso exclusivo en entorno sanitario profesional o educativo.</li>
+        </ul>
+      </div>
+      <div class="modal-checkbox-row">
+        <input type="checkbox" id="modal-check" onchange="toggleModalBtn()" />
+        <label for="modal-check">He leído y acepto las condiciones de uso. Soy un profesional sanitario o estudiante del
+          ámbito de la salud y utilizaré esta herramienta como apoyo clínico, no como sustituto del juicio
+          médico.</label>
+      </div>
+      <button class="modal-btn" id="modal-accept-btn" onclick="acceptDisclaimer()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <polyline points="2,8 6,12 14,4" stroke="white" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Acepto las condiciones — Acceder a ANEMIMETRIC®
+      </button>
+      <div class="modal-footer-note">© 2026 YerayFH - de la Mata · <a href="mailto:ydelamata01@gmail.com" style="color:inherit;text-decoration:underline">ydelamata01@gmail.com</a></div>
+    </div>
+  </div>
+
+  <header class="app-header-unified">
+    <div class="hdr-logo-wrap">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="8.5" stroke="rgba(255,255,255,.4)" stroke-width="1.2" />
+        <path d="M12 5 C8.5 7 7.5 10.5 10 14 C12.5 17.5 14 17.5 16 15.5 C18 13.5 17 10 12 5Z" fill="white"
+          opacity=".9" />
+        <circle cx="12" cy="12" r="1.8" fill="rgba(255,255,255,.6)" />
+      </svg>
+    </div>
+    <div class="hdr-text">
+      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+      <div class="hdr-dept">Farmacia Hospitalaria</div>
+      <div class="hdr-app-name">ANEMIMETRIC&#174;</div>
+      <div class="hdr-guide-pills">
+        <span class="hdr-pill hp-bsh">BSH 2021/22</span>
+        <span class="hdr-pill hp-oms">OMS 2024</span>
+        <span class="hdr-pill hp-kdigo">KDIGO 2012/24</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+    <div class="page-intro" style="animation:fadeUp .4s ease both">
+      <div class="page-intro-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M11 3 C6.5 6 5.5 11 8.5 15 C11.5 19 13.5 19 16 17 C18.5 15 17.5 11 11 3Z" stroke="#C0392B"
+            stroke-width="1.5" stroke-linejoin="round" />
+          <circle cx="11" cy="11" r="2" stroke="#C0392B" stroke-width="1.2" />
+        </svg>
+      </div>
+      <div class="page-intro-text">
+        <h2>ANEMIMETRIC®</h2>
+        <p>Diagnóstico diferencial · Cinética del hierro · Índice de Mentzer · Fórmula de Ganzoni · Ajuste por PCR y
+          Embarazo</p>
+      </div>
+    </div>
+
+    <div id="form-area">
+      <!-- PACIENTE -->
+      <div class="card" style="animation-delay:.04s">
+        <div class="card-header">
+          <div class="card-icon ci-red">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="6" r="3.5" stroke="#C0392B" stroke-width="1.5" />
+              <path d="M3 16c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="#C0392B" stroke-width="1.5"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Datos del paciente</div>
+            <div class="card-subtitle">Sexo, edad, peso y condiciones clínicas (OMS 2024)</div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label">Sexo biológico</label>
+            <div class="sex-toggle">
+              <button class="sex-btn active" id="btn-fem" onclick="setSex('F')">Mujer</button>
+              <button class="sex-btn" id="btn-mas" onclick="setSex('M')">Hombre</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Edad <span class="field-unit">años</span></label>
+            <input type="number" class="field-input" id="edad" placeholder="ej. 45" oninput="markValue(this)" />
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label">¿Embarazada?</label>
+            <div class="bool-toggle">
+              <button class="bool-btn" id="btn-emb-si" onclick="setEmbarazo(true)">Sí</button>
+              <button class="bool-btn active-no" id="btn-emb-no" onclick="setEmbarazo(false)">No</button>
+            </div>
+            <div class="trim-select-wrap" id="trim-wrap">
+              <div class="section-label" style="margin:10px 0 6px">Trimestre</div>
+              <div class="trim-tabs">
+                <button class="trim-tab active" id="trim1" onclick="setTrimestre(1)">1º T</button>
+                <button class="trim-tab" id="trim2" onclick="setTrimestre(2)">2º T</button>
+                <button class="trim-tab" id="trim3" onclick="setTrimestre(3)">3º T</button>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Peso <span class="field-unit">kg</span></label>
+            <input type="number" class="field-input" id="peso" placeholder="ej. 70"
+              oninput="markValue(this);calcGanzoniLive()" />
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label">Comorbilidad relevante</label>
+            <div class="bool-toggle">
+              <button class="bool-btn" id="btn-ic-si" onclick="setIC(true)">Insuf. Cardíaca</button>
+              <button class="bool-btn active-no" id="btn-ic-no" onclick="setIC(false)">Ninguna</button>
+            </div>
+            <p style="font-size:10px;color:var(--slate-l);margin-top:4px">Aplica criterios ESC 2023 para déficit de
+              hierro.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HEMOGRAMA -->
+      <div class="card" style="animation-delay:.08s">
+        <div class="card-header">
+          <div class="card-icon ci-red">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 2 C5 5 3 9 5.5 12.5 C8 16 10 16 12 14 C14 12 13.5 8 9 2Z" stroke="#C0392B"
+                stroke-width="1.5" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Hemograma</div>
+            <div class="card-subtitle">Hb, VCM, Hematíes y RDW</div>
+          </div>
+        </div>
+        <div class="form-grid-4">
+          <div class="field">
+            <label class="field-label">Hb <span class="field-unit">g/dL</span></label>
+            <input type="number" class="field-input" id="hb" placeholder="ej. 10" step="0.1"
+              oninput="markValue(this);calcGanzoniLive()" />
+          </div>
+          <div class="field">
+            <label class="field-label">VCM <span class="field-unit">fL</span></label>
+            <input type="number" class="field-input" id="vcm" placeholder="ej. 80" step="0.1"
+              oninput="markValue(this);calcMentzerLive()" />
+          </div>
+          <div class="field">
+            <label class="field-label">Hematíes <span class="field-unit">M/µL</span></label>
+            <input type="number" class="field-input" id="hematies" placeholder="ej. 4.5" step="0.1"
+              oninput="markValue(this);calcMentzerLive()" />
+          </div>
+          <div class="field">
+            <label class="field-label">RDW <span class="field-unit">%</span></label>
+            <input type="number" class="field-input" id="rdw" placeholder="ej. 14" step="0.1"
+              oninput="markValue(this)" />
+          </div>
+        </div>
+        <div id="mentzer-live-wrap" style="display:none"></div>
+      </div>
+
+      <!-- CINÉTICA HIERRO -->
+      <div class="card" style="animation-delay:.12s">
+        <div class="card-header">
+          <div class="card-icon ci-gold">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="3" y="8" width="12" height="7" rx="2" stroke="#D4A017" stroke-width="1.5" />
+              <path d="M6 8V6a3 3 0 016 0v2" stroke="#D4A017" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Cinética Marcial</div>
+            <div class="card-subtitle">Ferritina, Hierro, TIBC, IST y PCR</div>
+          </div>
+        </div>
+        <div class="form-grid-3">
+          <div class="field">
+            <label class="field-label">Ferritina <span class="field-unit">ng/mL</span></label>
+            <input type="number" class="field-input" id="ferritina" placeholder="ej. 20" oninput="markValue(this)" />
+          </div>
+          <div class="field">
+            <label class="field-label">Hierro <span class="field-unit">µg/dL</span></label>
+            <input type="number" class="field-input" id="hierro" oninput="markValue(this);calcISTLive()" />
+          </div>
+          <div class="field">
+            <label class="field-label">TIBC <span class="field-unit">µg/dL</span></label>
+            <input type="number" class="field-input" id="tibc" oninput="markValue(this);calcISTLive()" />
+          </div>
+        </div>
+        <div class="form-grid-2" style="margin-top:12px">
+          <div class="field">
+            <label class="field-label">IST <span class="field-unit">%</span></label>
+            <input type="number" class="field-input" id="ist" placeholder="o calculado" oninput="markValue(this)" />
+          </div>
+          <div class="field">
+            <label class="field-label">PCR <span class="field-unit">mg/L</span></label>
+            <input type="number" class="field-input" id="pcr" oninput="markValue(this)" />
+          </div>
+        </div>
+        <div id="ist-live-wrap" style="display:none"></div>
+      </div>
+
+      <!-- OTROS -->
+      <div class="card" style="animation-delay:.16s">
+        <div class="card-header">
+          <div class="card-icon ci-navy">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="3" y="3" width="12" height="12" rx="2" stroke="#1A2B4A" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">Otros parámetros</div>
+            <div class="card-subtitle">Función renal y Reticulocitos</div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label">Creatinina <span class="field-unit">mg/dL</span></label>
+            <input type="number" class="field-input" id="creatinina" oninput="markValue(this)" />
+          </div>
+          <div class="field">
+            <label class="field-label">Reticulocitos <span class="field-unit">%</span></label>
+            <input type="number" class="field-input" id="retic" oninput="markValue(this)" />
+          </div>
+        </div>
+      </div>
+
+      <div id="ganzoni-live-card" class="card"
+        style="display:none; border: 1.5px dashed var(--teal); background: var(--teal-l);">
+        <div id="ganzoni-live-content"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="analizar()">Generar análisis ANEMIMETRIC®</button>
+        <button class="btn-secondary" onclick="resetForm()">Limpiar</button>
+      </div>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="disclaimer-strip">
+      <p><strong>ANEMIMETRIC®:</strong> Herramienta de soporte clínico. BSH 2021 · OMS 2024 · ESC 2023 · KDIGO 2024. No
+        sustituye el juicio médico.</p>
+    </div>
+  </div>
+
+  <footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata &nbsp;&middot;&nbsp; ANEMIMETRIC® &nbsp;&middot;&nbsp; Farmacia Hospitalaria</footer>
+
+  <script>
+    /* ─── ESTADO GLOBAL ─── */
+    let sexo = 'F', embarazada = false, trimestre = 1, insuf_cardiaca = false;
+
+    function initDisclaimer() {
+      if (localStorage.getItem('anemimetric_accepted') === '1') {
+        document.getElementById('disclaimer-modal').classList.add('hidden');
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function toggleModalBtn() {
+      const checked = document.getElementById('modal-check').checked;
+      const btn = document.getElementById('modal-accept-btn');
+      btn.classList.toggle('enabled', checked);
+    }
+    function acceptDisclaimer() {
+      localStorage.setItem('anemimetric_accepted', '1');
+      document.getElementById('disclaimer-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    initDisclaimer();
+
+    /* ─── SETTERS ─── */
+    function setSex(s) {
+      sexo = s;
+      document.getElementById('btn-fem').classList.toggle('active', s === 'F');
+      document.getElementById('btn-mas').classList.toggle('active', s === 'M');
+      if (s === 'M') setEmbarazo(false);
+      calcGanzoniLive();
+    }
+    function setEmbarazo(v) {
+      embarazada = v;
+      document.getElementById('btn-emb-si').className = 'bool-btn' + (v ? ' active-yes' : '');
+      document.getElementById('btn-emb-no').className = 'bool-btn' + (!v ? ' active-no' : '');
+      document.getElementById('trim-wrap').classList.toggle('visible', v);
+    }
+    function setIC(v) {
+      insuf_cardiaca = v;
+      document.getElementById('btn-ic-si').className = 'bool-btn' + (v ? ' active-yes' : '');
+      document.getElementById('btn-ic-no').className = 'bool-btn' + (!v ? ' active-no' : '');
+    }
+    function setTrimestre(t) {
+      trimestre = t;
+      [1, 2, 3].forEach(i => document.getElementById('trim' + i).classList.toggle('active', i === t));
+    }
+    function markValue(el) { el.classList.toggle('has-value', el.value !== '') }
+    function val(id) { const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? null : v }
+
+    /* ─── CÁLCULOS ─── */
+    function calcMentzerLive() {
+      const vcm = val('vcm'), hem = val('hematies');
+      const wrap = document.getElementById('mentzer-live-wrap');
+      if (!vcm || !hem || hem <= 0) { wrap.style.display = 'none'; return; }
+      const m = (vcm / hem).toFixed(2);
+      wrap.style.display = 'block';
+      wrap.innerHTML = `<div class="mentzer-box"><div class="mentzer-score">${m}</div><div class="mentzer-text-wrap">
+    <div class="mentzer-title">Mentzer (VCM/Hem)</div><div class="mentzer-result">${m > 13 ? '⟶ Ferropenia' : '⟶ Talasemia'}</div>
+  </div></div>`;
+    }
+
+    function calcISTLive() {
+      const h = val('hierro'), t = val('tibc');
+      const wrap = document.getElementById('ist-live-wrap');
+      if (!h || !t || t === 0) { wrap.style.display = 'none'; return; }
+      const ist = ((h / t) * 100).toFixed(1);
+      wrap.style.display = 'block';
+      wrap.innerHTML = `<div class="computed-row"><div class="computed-chip"><div class="computed-chip-label">IST Calculado</div><div class="computed-chip-value">${ist}%</div></div></div>`;
+    }
+
+    function calcGanzoniLive() {
+      const hb = val('hb'), peso = val('peso');
+      const card = document.getElementById('ganzoni-live-card');
+      if (!hb || !peso || hb >= 15) { card.style.display = 'none'; return; }
+      const g = calcGanzoni(peso, hb);
+      card.style.display = 'block';
+      document.getElementById('ganzoni-live-content').innerHTML = `<div class="ganzoni-box"><div class="ganzoni-value">${g} mg</div><div class="ganzoni-unit">Déficit de hierro elemental</div></div>`;
+    }
+
+    function calcGanzoni(peso, hb) {
+      const target = (peso >= 35) ? 15 : 13;
+      const dep = (peso >= 35) ? 500 : 15 * peso;
+      const p = Math.min(peso, 100);
+      return Math.round(p * (target - hb) * 2.4 + dep);
+    }
+
+    /* ─── UMBRALES ─── */
+    function getHbThreshold() {
+      const edad = val('edad');
+      if (embarazada) return (trimestre === 2) ? 10.5 : 11.0;
+      if (edad !== null && edad < 15) {
+        if (edad < 2) return 10.5;
+        if (edad < 5) return 11.0;
+        if (edad < 12) return 11.5;
+        return 12.0;
+      }
+      return (sexo === 'F') ? 12.0 : 13.0;
+    }
+
+    function badge(v, low, high) {
+      if (v === null) return '';
+      if (v < low) return '<span class="badge b-low">Bajo</span>';
+      if (v > high) return '<span class="badge b-high">Alto</span>';
+      return '<span class="badge b-ok">Normal</span>';
+    }
+
+    function sectionCard(stripe, title, desc, body, delay) {
+      return `<div class="result-card" style="animation-delay:${delay}s"><div class="rc-header"><div class="rc-stripe ${stripe}"></div><div><div class="rc-title">${title}</div><div class="rc-desc">${desc || ''}</div></div></div><div class="rc-body">${body}</div></div>`;
+    }
+
+    /* ─── ANALIZAR ─── */
+    function analizar() {
+      const hb = val('hb'); if (!hb) { alert('Hb requerida.'); return; }
+      const vcm = val('vcm'), rdw = val('rdw'), fer = val('ferritina'), peso = val('peso'), pcr = val('pcr');
+      let ist = val('ist') || ((val('hierro') && val('tibc')) ? (val('hierro') / val('tibc') * 100) : null);
+
+      const hbT = getHbThreshold();
+      const ganzoni = (hb < hbT && peso) ? calcGanzoni(peso, hb) : null;
+      const inflamacion = (pcr > 5);
+
+      let html = `<div class="results-header"><div class="results-title">Resultados ANEMIMETRIC®</div></div>`;
+
+      if (hb < 7) html += `<div class="alert-card alert-danger"><h4>Hb Crítica (${hb})</h4><p>Riesgo vital. Valorar transfusión.</p></div>`;
+      if (insuf_cardiaca) html += `<div class="alert-card alert-info"><h4>Insuficiencia Cardíaca Activa</h4><p>Criterios ESC 2023 aplicados.</p></div>`;
+
+      // METRICAS
+      let metrics = `<table class="metric-table">
+    <tr><td>Hb</td><td>${hb} g/dL</td><td>${badge(hb, hbT, 16)}</td></tr>
+    ${vcm ? `<tr><td>VCM</td><td>${vcm} fL</td><td>${badge(vcm, 80, 100)}</td></tr>` : ''}
+    ${fer ? `<tr><td>Ferritina</td><td>${fer} ng/mL</td><td></td></tr>` : ''}
+  </table>`;
+      html += sectionCard('rcs-red', 'Hemograma y Cinética', `Umbral Hb: ${hbT}`, metrics, 0.1);
+
+      // INTERPRETACION
+      let diag = 'Anemia a estudio.';
+      const ferLimit = insuf_cardiaca ? 100 : 30;
+      if (fer !== null && fer < ferLimit && (ist === null || ist < 20)) diag = 'Anemia Ferropénica Absoluta.';
+      else if (insuf_cardiaca && fer < 300 && ist < 20) diag = 'Déficit de Hierro Funcional (IC).';
+      else if (vcm > 100) diag = 'Anemia Macrocítica (valorar B12/Folato).';
+
+      html += sectionCard('rcs-gold', 'Interpretación Clínica', null, `<div class="conclusion-box">${diag}</div>`, 0.2);
+
+      if (ganzoni) html += sectionCard('rcs-teal', 'Plan Terapéutico', `Déficit: ${ganzoni} mg`, `<div class="ganzoni-box"><div class="ganzoni-value">${ganzoni} mg Fe</div><p>Reponer vía IV preferentemente.</p></div>`, 0.3);
+
+      const res = document.getElementById('results');
+      res.innerHTML = html; res.style.display = 'block';
+      res.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetForm() { location.reload(); }
+  </script>
+</body>
+
+</html>
