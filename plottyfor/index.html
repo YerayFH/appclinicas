@@ -449,8 +449,10 @@
                 
                 const dFixed = delta.toFixed(2);
                 const deltaLabel = currentScale === 'log' ? `${dFixed} = Δ` : `${delta > nullV ? '+' : ''}${dFixed} = Δ`;
+                const xPos = currentScale === 'log' ? Math.log10(delta) : delta;
+
                 annotations.push({ 
-                    x: delta, y: 1.01, xref: 'x', yref: 'paper', 
+                    x: xPos, y: 1, xref: 'x', yref: 'paper', 
                     text: deltaLabel, showarrow: false, 
                     font: { size: 11, color: '#000', weight: 'bold' }, 
                     yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.9)' 
@@ -460,7 +462,7 @@
                     const invD = (nullV * nullV) / delta;
                     shapes.push({ type: 'line', x0: invD, x1: invD, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#666', width: 1.5, dash: 'dash' } });
                     annotations.push({ 
-                        x: invD, y: 1.01, xref: 'x', yref: 'paper', 
+                        x: Math.log10(invD), y: 1, xref: 'x', yref: 'paper', 
                         text: `${invD.toFixed(2)} = 1/Δ`, showarrow: false, 
                         font: { size: 10, color: '#666' }, 
                         yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.9)' 
@@ -469,7 +471,7 @@
                     const invD = nullV - (delta - nullV);
                     shapes.push({ type: 'line', x0: invD, x1: invD, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#666', width: 1.5, dash: 'dash' } });
                     annotations.push({ 
-                        x: invD, y: 1.01, xref: 'x', yref: 'paper', 
+                        x: invD, y: 1, xref: 'x', yref: 'paper', 
                         text: `${invD.toFixed(2)} = -Δ`, showarrow: false, 
                         font: { size: 10, color: '#666' }, 
                         yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.9)' 
