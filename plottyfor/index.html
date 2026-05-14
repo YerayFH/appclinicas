@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlottyFor® — Forest Plot Generator</title>
+    <link rel="icon" type="image/png" href="/appclinicas/img/plottyfor.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <style>
+        :root {
+            --header-bg: #ffffff;
+            --brd: #f3f4f6;
+            --txt: #374151;
+            --primary: #2E86C1;
+            --primary-dark: #1F618D;
+            --bg-light: #f9fafb;
+            --nejm-blue: #003366;
+            --nejm-red: #8B0000;
+            --nejm-grey: #666666;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #fff; color: #111827; line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ── HEADER ── */
+        .app-header-unified {
+            display: flex; align-items: center; gap: 16px; padding: 14px 24px;
+            background: var(--header-bg); border-bottom: 1px solid var(--brd);
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .hdr-logo { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
+        .hdr-text { display: flex; flex-direction: column; gap: 2px; }
+        .hdr-meta { font-size: 11px; opacity: 0.75; color: var(--txt); }
+        .hdr-meta a { color: inherit; text-decoration: none; }
+        .hdr-meta a:hover { text-decoration: underline; }
+        .hdr-dept { font-size: 13px; font-weight: 500; opacity: 0.85; color: var(--txt); }
+        .hdr-app-name { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; color: var(--primary); }
+
+        /* ── LAYOUT ── */
+        main { flex: 1; display: grid; grid-template-columns: 600px 1fr; gap: 0; height: calc(100vh - 93px); overflow: hidden; }
+        @media (max-width: 1400px) {
+            main { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
+        }
+
+        .sidebar {
+            background: var(--bg-light); border-right: 1px solid var(--brd);
+            padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+        }
+        .content { padding: 24px; background: #fff; overflow-y: auto; position: relative; display: flex; flex-direction: column; align-items: center; }
+
+        /* ── COMPONENTS ── */
+        .card { background: #fff; border: 1px solid var(--brd); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; }
+        .card-title { font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .field { margin-bottom: 14px; }
+        .field-label { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 500; color: #4b5563; margin-bottom: 6px; }
+        
+        input[type="text"], input[type="number"], select {
+            width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px;
+            font-size: 15px; color: #111827; transition: border-color 0.2s, box-shadow 0.2s;
+            height: 48px; background-color: #fff;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.1); }
+
+        /* Custom Segment Control for Scale */
+        .scale-selector { display: flex; background: #f3f4f6; border-radius: 10px; padding: 4px; gap: 4px; margin-bottom: 8px; position: relative; }
+        .scale-option { 
+            flex: 1; text-align: center; padding: 10px; border-radius: 7px; font-size: 13px; font-weight: 600; 
+            cursor: pointer; transition: all 0.2s; color: #6b7280; display: flex; align-items: center; justify-content: center; gap: 8px;
+            position: relative;
+        }
+        .scale-option.active { background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* Info Icon and Tooltip */
+        .info-i { width: 16px; height: 16px; border-radius: 50%; background: #d1d5db; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: help; }
+        .scale-option.active .info-i { background: var(--primary); }
+        
+        .tooltip { 
+            visibility: hidden; width: 260px; background-color: #1f2937; color: #fff; text-align: left; border-radius: 8px; padding: 14px; 
+            position: absolute; z-index: 1001; top: 110%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s, visibility 0.3s; 
+            font-size: 12px; line-height: 1.5; font-weight: 400; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+        }
+        .tooltip::before { content: ""; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); border-width: 6px; border-style: solid; border-color: transparent transparent #1f2937 transparent; }
+        .info-i:hover + .tooltip, .scale-option:hover .tooltip { visibility: visible; opacity: 1; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: #fff; border-color: #d1d5db; color: #374151; }
+        .btn-outline:hover { background: #f9fafb; border-color: #9ca3af; }
+        .btn-danger { background: #fff; color: #dc2626; border-color: #fca5a5; padding: 6px 10px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; flex-shrink: 0; }
+        .btn-danger:hover { background: #fef2f2; }
+
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+        .data-table th { text-align: left; font-size: 11px; color: #9ca3af; padding: 0 12px; font-weight: 600; text-transform: uppercase; }
+        .data-table td { padding: 0 4px; vertical-align: middle; }
+
+        /* ── PLOT CONTAINER ── */
+        #plot-container { width: 100%; max-width: 1000px; height: 600px; border: 1px solid #f3f4f6; border-radius: 8px; background: #fff; }
+        .plot-actions { width: 100%; max-width: 1000px; display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end; }
+
+        /* ── FOOTER ── */
+        .app-footer-unified { text-align: center; padding: 16px; font-size: 12px; color: #9ca3af; background: #fff; border-top: 1px solid var(--brd); }
+
+        /* ── HELPER TEXT ── */
+        .help-text { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+        .scientific-note { font-size: 12px; color: #4b5563; font-style: italic; border-left: 3px solid #e5e7eb; padding-left: 12px; margin: 12px 0; line-height: 1.4; }
+
+        /* Auto-save indicator */
+        .save-indicator { font-size: 10px; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 4px; opacity: 0; transition: opacity 0.3s; }
+        .save-indicator.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <header class="app-header-unified">
+        <img src="/appclinicas/img/plottyfor.png" alt="Logo YerayFH" class="hdr-logo">
+        <div class="hdr-text">
+            <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
+            <div class="hdr-dept">Farmacia Hospitalaria / Investigación</div>
+            <div class="hdr-app-name">PlottyFor®</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="sidebar">
+            <div class="card" style="z-index: 10;">
+                <div class="card-title">
+                    Configuración del Análisis
+                    <span id="save-status" class="save-indicator">✓ Autoguardado</span>
+                </div>
+                
+                <div class="field">
+                    <label class="field-label">Escala del Eje X</label>
+                    <div class="scale-selector">
+                        <div class="scale-option active" id="scale-log" onclick="setScale('log')">
+                            Logarítmica
+                            <span class="info-i">i</span>
+                            <div class="tooltip">
+                                <strong>Variables de Asociación:</strong><br>
+                                • Hazard Ratio (HR)<br>
+                                • Relative Risk (RR)<br>
+                                • Odds Ratio (OR)<br>
+                                • Incidence Rate Ratio (IRR)<br>
+                                • Ratio de Prevalencia (PR)
+                            </div>
+                        </div>
+                        <div class="scale-option" id="scale-linear" onclick="setScale('linear')">
+                            Lineal / Normal
+                            <span class="info-i">i</span>
+                            <div class="tooltip">
+                                <strong>Variables de Diferencia:</strong><br>
+                                • Reducción Riesgo (RAR / RD)<br>
+                                • NNT (Number Needed to Treat)<br>
+                                • Mean Difference (MD)<br>
+                                • Diferencia Medias Est. (SMD)<br>
+                                • Cambios Absolutos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Título del Gráfico</label>
+                    <input type="text" id="plot-title" placeholder="Ej: Análisis de Riesgo Indirecto" value="Comparación de Medicamentos" oninput="scheduleSave()">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px;">
+                    <div class="field">
+                        <label class="field-label">Margen Delta (Δ)</label>
+                        <input type="number" id="delta-val" placeholder="Opcional" step="0.01" oninput="updateReciprocal(); scheduleSave()">
+                    </div>
+                    <div class="field">
+                        <label class="field-label">Inverso (1/Δ)</label>
+                        <input type="number" id="inv-delta-val" placeholder="-" readonly style="background: #f3f4f6; color: #6b7280;">
+                    </div>
+                    <div class="field">
+                        <label class="field-label">Valor Nulo</label>
+                        <input type="number" id="null-val" value="1" step="0.1" oninput="scheduleSave()">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="field">
+                        <label class="field-label">Lado Izquierdo (←)</label>
+                        <input type="text" id="label-left" value="Favorece Tratamiento" oninput="scheduleSave()">
+                    </div>
+                    <div class="field">
+                        <label class="field-label">Lado Derecho (→)</label>
+                        <input type="text" id="label-right" value="Favorece Control" oninput="scheduleSave()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    Datos de Comparación
+                    <button class="btn btn-outline" style="padding: 4px 12px; font-size: 11px;" onclick="addRow(); scheduleSave()">+ Añadir Fila</button>
+                </div>
+                <div style="max-height: 420px; overflow-y: auto; padding-right: 4px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 42%;">Medicamento / Estudio</th>
+                                <th style="width: 16%;">Medida</th>
+                                <th style="width: 34%;">IC 95% (Linf - Lsup)</th>
+                                <th style="width: 8%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="med-tbody">
+                            <!-- Dynamically added -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                    <button class="btn btn-primary" style="flex: 1; height: 52px; font-size: 16px;" onclick="generatePlot()">Actualizar Gráfico</button>
+                    <button class="btn btn-outline" style="width: 52px; height: 52px;" onclick="resetData()" title="Limpiar todo">🗑</button>
+                </div>
+            </div>
+            <div class="scientific-note">Los campos se ajustan automáticamente. El autoguardado preserva tu progreso localmente.</div>
+        </div>
+
+        <div class="content">
+            <div id="plot-container"></div>
+            <div class="plot-actions" id="plot-actions" style="display: none;">
+                <button class="btn btn-outline" onclick="exportPNG()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Descargar PNG de Alta Calidad
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer-unified">
+        &copy; 2026 YerayFH - de la Mata &middot; PlottyFor®
+    </footer>
+
+    <script>
+        let medCount = 0;
+        let saveTimeout = null;
+        let currentScale = 'log';
+
+        function setScale(scale) {
+            currentScale = scale;
+            document.getElementById('scale-log').classList.toggle('active', scale === 'log');
+            document.getElementById('scale-linear').classList.toggle('active', scale === 'linear');
+            
+            const nullInput = document.getElementById('null-val');
+            const tbody = document.getElementById('med-tbody');
+            
+            if (scale === 'log') {
+                if (nullInput.value === '0') nullInput.value = '1';
+                // If the table is empty or just has linear defaults, we could switch, but let's let the user decide.
+            } else {
+                if (nullInput.value === '1') nullInput.value = '0';
+            }
+            
+            scheduleSave();
+            generatePlot();
+        }
+
+        function addRow(name = '', val = '', lci = '', uci = '') {
+            medCount++;
+            const tbody = document.getElementById('med-tbody');
+            const tr = document.createElement('tr');
+            tr.id = `row-${medCount}`;
+            tr.innerHTML = `
+                <td><input type="text" placeholder="Fármaco..." value="${name}" class="med-name" oninput="scheduleSave()" style="width: 100%;"></td>
+                <td><input type="number" placeholder="0.0" step="0.0001" value="${val}" class="med-val" oninput="scheduleSave()" style="width: 100%; text-align: center; padding: 10px 4px;"></td>
+                <td>
+                    <div style="display: flex; gap: 4px; width: 100%;">
+                        <input type="number" placeholder="Linf" step="0.0001" value="${lci}" class="med-lci" oninput="scheduleSave()" style="width: 50%; text-align: center; padding: 10px 4px;">
+                        <input type="number" placeholder="Lsup" step="0.0001" value="${uci}" class="med-uci" oninput="scheduleSave()" style="width: 50%; text-align: center; padding: 10px 4px;">
+                    </div>
+                </td>
+                <td style="text-align: right;"><button class="btn btn-danger" onclick="removeRow(${medCount}); scheduleSave()">×</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function removeRow(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) row.remove();
+        }
+
+        function updateReciprocal() {
+            const deltaStr = document.getElementById('delta-val').value;
+            const delta = parseFloat(deltaStr);
+            if (!isNaN(delta) && delta !== 0 && currentScale === 'log') {
+                document.getElementById('inv-delta-val').value = (1 / delta).toFixed(3);
+            } else {
+                document.getElementById('inv-delta-val').value = '';
+            }
+        }
+
+        function scheduleSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveState, 800);
+        }
+
+        function saveState() {
+            const rows = document.querySelectorAll('#med-tbody tr');
+            const data = [];
+            rows.forEach(row => {
+                data.push({
+                    name: row.querySelector('.med-name').value,
+                    val: row.querySelector('.med-val').value,
+                    lci: row.querySelector('.med-lci').value,
+                    uci: row.querySelector('.med-uci').value
+                });
+            });
+            const state = {
+                scale: currentScale,
+                title: document.getElementById('plot-title').value,
+                delta: document.getElementById('delta-val').value,
+                nullVal: document.getElementById('null-val').value,
+                labelLeft: document.getElementById('label-left').value,
+                labelRight: document.getElementById('label-right').value,
+                data: data
+            };
+            localStorage.setItem('plottyfor_state_v4', JSON.stringify(state));
+            
+            const indicator = document.getElementById('save-status');
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 1500);
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('plottyfor_state_v4');
+            if (saved) {
+                try {
+                    const state = JSON.parse(saved);
+                    currentScale = state.scale || 'log';
+                    setScale(currentScale);
+                    document.getElementById('plot-title').value = state.title || 'Comparación de Medicamentos';
+                    document.getElementById('delta-val').value = state.delta || '';
+                    document.getElementById('null-val').value = state.nullVal !== undefined ? state.nullVal : (currentScale === 'log' ? '1' : '0');
+                    document.getElementById('label-left').value = state.labelLeft || 'Favorece Tratamiento';
+                    document.getElementById('label-right').value = state.labelRight || 'Favorece Control';
+                    
+                    document.getElementById('med-tbody').innerHTML = '';
+                    if (state.data && state.data.length > 0) {
+                        state.data.forEach(d => addRow(d.name, d.val, d.lci, d.uci));
+                    } else {
+                        addDefaultRows();
+                    }
+                } catch (e) { addDefaultRows(); }
+            } else {
+                addDefaultRows();
+            }
+            updateReciprocal();
+            generatePlot();
+        }
+
+        function addDefaultRows() {
+            if (currentScale === 'log') {
+                addRow('Tratamiento A vs Placebo', 0.82, 0.71, 0.95);
+                addRow('Tratamiento B vs Placebo', 1.12, 0.98, 1.28);
+            } else {
+                addRow('Diferencia Fármaco A', 0.05, -0.02, 0.12);
+                addRow('Diferencia Fármaco B', -0.08, -0.15, -0.01);
+            }
+        }
+
+        function resetData() {
+            if (confirm('¿Deseas resetear todos los datos y la configuración?')) {
+                localStorage.removeItem('plottyfor_state_v4');
+                location.reload();
+            }
+        }
+
+        function generatePlot() {
+            const rows = document.querySelectorAll('#med-tbody tr');
+            const dataArr = [];
+            rows.forEach(row => {
+                const n = row.querySelector('.med-name').value;
+                const v = parseFloat(row.querySelector('.med-val').value);
+                const l = parseFloat(row.querySelector('.med-lci').value);
+                const u = parseFloat(row.querySelector('.med-uci').value);
+                if (n && !isNaN(v) && !isNaN(l) && !isNaN(u)) dataArr.push({ n, v, l, u });
+            });
+
+            if (dataArr.length === 0) { return; }
+
+            const title = document.getElementById('plot-title').value;
+            const delta = parseFloat(document.getElementById('delta-val').value);
+            const nullV = parseFloat(document.getElementById('null-val').value);
+            const lblL = document.getElementById('label-left').value;
+            const lblR = document.getElementById('label-right').value;
+
+            const plotData = [...dataArr].reverse();
+            
+            const trace = {
+                x: plotData.map(d => d.v),
+                y: plotData.map(d => d.n),
+                error_x: {
+                    type: 'data',
+                    symmetric: false,
+                    array: plotData.map(d => d.u - d.v),
+                    arrayminus: plotData.map(d => d.v - d.l),
+                    color: '#2c3e50',
+                    thickness: 2,
+                    width: 6
+                },
+                mode: 'markers',
+                marker: {
+                    symbol: 'square',
+                    size: 12,
+                    color: plotData.map(d => d.v < nullV ? '#2471A3' : '#A93226'),
+                    line: { color: 'white', width: 1.2 }
+                },
+                type: 'scatter',
+                hovertemplate: '<b>%{y}</b><br>Valor: %{x:.4f}<br>IC: [%{customdata[0]:.4f}, %{customdata[1]:.4f}]<extra></extra>',
+                customdata: plotData.map(d => [d.l, d.u])
+            };
+
+            const shapes = [{ type: 'line', x0: nullV, x1: nullV, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#000', width: 2.5 } }];
+            const annotations = [
+                { xref: 'paper', yref: 'paper', x: 1, y: -0.2, text: 'PlottyFor® - YerayFH', showarrow: false, font: { size: 10, color: '#9ca3af' }, xanchor: 'right' }
+            ];
+
+            if (!isNaN(delta)) {
+                shapes.push({ type: 'line', x0: delta, x1: delta, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#555', width: 2, dash: 'dash' } });
+                annotations.push({ x: delta, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: `Δ = ${delta}`, showarrow: false, font: { size: 11, color: '#000', weight: 'bold' }, yanchor: 'bottom', bgcolor: 'rgba(255,255,255,0.85)' });
+                
+                if (currentScale === 'log') {
+                    const invD = 1 / delta;
+                    shapes.push({ type: 'line', x0: invD, x1: invD, y0: -0.5, y1: plotData.length - 0.5, line: { color: '#888', width: 1.5, dash: 'dash' } });
+                    annotations.push({ x: invD, y: plotData.length - 0.25, xref: 'x', yref: 'y', text: `${invD.toFixed(2)}`, showarrow: false, font: { size: 10, color: '#666' }, yanchor: 'bottom' });
+                }
+            }
+
+            const layout = {
+                title: { text: title, font: { family: 'Inter', size: 21, weight: 600, color: '#111' }, pad: { b: 20 } },
+                xaxis: {
+                    type: currentScale === 'log' ? 'log' : 'linear',
+                    title: { text: currentScale === 'log' ? 'Hazard / Risk / Odds Ratio' : 'Diferencia Absoluta', font: { size: 13, weight: 500, color: '#444' } },
+                    tickformat: currentScale === 'log' ? '.2f' : '.3f',
+                    gridcolor: '#f0f2f5',
+                    zeroline: false,
+                    autorange: true
+                },
+                yaxis: { automargin: true, gridcolor: 'transparent', tickfont: { size: 15, weight: 600, color: '#111' } },
+                margin: { l: 230, r: 50, t: 90, b: 110 },
+                shapes: shapes,
+                annotations: [
+                    ...annotations,
+                    { x: 0.1, y: -0.16, xref: 'paper', yref: 'paper', text: `← ${lblL}`, showarrow: false, font: { size: 12, color: '#2471A3', weight: 600 }, xanchor: 'left' },
+                    { x: 0.9, y: -0.16, xref: 'paper', yref: 'paper', text: `${lblR} →`, showarrow: false, font: { size: 12, color: '#A93226', weight: 600 }, xanchor: 'right' }
+                ],
+                hovermode: 'closest',
+                template: 'plotly_white',
+                font: { family: 'Inter' }
+            };
+
+            Plotly.newPlot('plot-container', [trace], layout, { responsive: true, displayModeBar: false });
+            document.getElementById('plot-actions').style.display = 'flex';
+        }
+
+        function exportPNG() {
+            const container = document.getElementById('plot-container');
+            Plotly.downloadImage(container, {
+                format: 'png',
+                width: 1600,
+                height: 950,
+                filename: 'PlottyFor_Scientific_Graph'
+            });
+        }
+
+        window.onload = loadState;
+    </script>
+</body>
+</html>
