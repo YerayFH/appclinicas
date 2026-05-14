@@ -405,8 +405,7 @@ select.finp{cursor:pointer}
   Basado en Fichas Técnicas AEMPS y UpToDate®<br>
   <a href="https://www.aemps.gob.es" target="_blank" rel="noopener">aemps.gob.es</a> · 
   <a href="https://www.uptodate.com" target="_blank" rel="noopener">UpToDate</a><br>
-  Autor: Yeray Reyes de la Mata &nbsp;&middot;&nbsp; Agradecimientos: María Prieto Gil; Silvia Fénix Caballero<br>
-  Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a>
+  Autor: Yeray Reyes de la Mata · <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a>
 </div>
     <button class="mbtn mbtn-sky" id="disc-accept" onclick="acceptDisclaimer()">✓ HE LEÍDO Y ACEPTO — CONTINUAR</button>
   </div>
@@ -444,7 +443,7 @@ select.finp{cursor:pointer}
     <button class="back-btn" id="back-btn" onclick="goBack()">← VOLVER</button>
     <img src="/appclinicas/img/icon.png" alt="Logo YerayFH" class="hdr-logo">
     <div class="hdr-text">
-      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a> &nbsp;&middot;&nbsp; Agradecimientos: María Prieto Gil; Silvia Fénix Caballero</div>
+      <div class="hdr-meta">YerayFH - de la Mata &nbsp;&middot;&nbsp; Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
       <div class="hdr-dept">Farmacia Hospitalaria</div>
       <div class="hdr-app-name">InfuCalc&#174;</div>
     </div>
@@ -476,10 +475,7 @@ select.finp{cursor:pointer}
         </div>
       </div>
     </div>
-    <div class="footer">
-      <div class="footer-name">Autor: Yeray Reyes de la Mata &nbsp;&middot;&nbsp; Agradecimientos: María Prieto Gil; Silvia Fénix Caballero</div>
-      <div class="footer-contact">Contacto: <a href="mailto:ydelamata01@gmail.com">ydelamata01@gmail.com</a></div>
-    </div>
+    <!-- Removed local footer to use global one -->
   </div>
 
   <!-- DRUG LIST -->
@@ -1920,6 +1916,9 @@ function dilIcon(p) {
   return '◻️';
 }
 </script>
-<footer class="app-footer-unified">&copy; 2026 YerayFH - de la Mata</footer>
+<footer class="app-footer-unified">
+  <div style="margin-bottom: 4px;">Agradecimientos: María Prieto Gil; Silvia Fénix Caballero</div>
+  &copy; 2026 YerayFH - de la Mata
+</footer>
 </body>
 </html>
