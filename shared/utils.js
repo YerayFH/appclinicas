@@ -10,7 +10,22 @@
  * @returns {string}
  */
 function escHtml(s) {
-  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Limpia una cadena de texto eliminando caracteres de control.
+ * @param {string} str 
+ * @returns {string}
+ */
+function sanitizeInput(str) {
+  return typeof str === 'string' ? str.replace(/[\x00-\x1F\x7F]/g, '') : str;
 }
 
 /**

@@ -1,26 +1,31 @@
 #!/usr/bin/env bash
-# build.sh — Minifica todos los archivos HTML al directorio /dist/
-# Requiere: html-minifier-terser (npm install)
+# build.sh — Versión optimizada y automatizada
 #
 # Uso: npm run build
-#   ó: bash scripts/build.sh
 
 set -euo pipefail
 
 ROOT="$(dirname "$0")/.."
 DIST="$ROOT/dist"
+VERSION=$(date +%Y%m%d%H%M)
 
-# Verificar que html-minifier-terser esté disponible
+# 1. Verificar herramientas
 if ! npx html-minifier-terser --version &>/dev/null; then
   echo "ERROR: html-minifier-terser no encontrado. Ejecuta: npm install"
   exit 1
 fi
 
-echo "🔨 Construyendo versión de producción en: $DIST"
+# 2. Auditoría de Seguridad
+echo "🛡️ Ejecutando auditoría de seguridad..."
+node "$ROOT/scripts/security-audit.js"
+echo ""
+
+echo "🔨 Preparando entorno en: $DIST"
 rm -rf "$DIST"
 mkdir -p "$DIST"
 
-# Copiar activos estáticos
+# 3. Copiar activos estáticos
+echo "📦 Copiando activos..."
 cp -r "$ROOT/img" "$DIST/img"
 cp -r "$ROOT/shared" "$DIST/shared"
 
@@ -34,31 +39,49 @@ MINIFY_OPTS=(
   --use-short-doctype
 )
 
-minify_html() {
+# Función para minificar y aplicar cache-busting
+process_html() {
   local src="$1"
   local dst="$2"
+  local tmp_file=$(mktemp)
+  
   mkdir -p "$(dirname "$dst")"
-  npx html-minifier-terser "${MINIFY_OPTS[@]}" "$src" -o "$dst"
+  
+  # Aplicar cache-busting a .js y .css en el archivo temporal
+  # Busca href="...css" o src="...js" y añade ?v=VERSION
+  sed -E "s/(\.js|\.css)(\"|')/\1?v=${VERSION}\2/g" "$src" > "$tmp_file"
+  
+  # Minificar desde el temporal al destino
+  npx html-minifier-terser "${MINIFY_OPTS[@]}" "$tmp_file" -o "$dst"
+  
   orig=$(wc -c < "$src")
   minified=$(wc -c < "$dst")
-  pct=$(( (orig - minified) * 100 / orig ))
-  echo "  $(basename "$src"): ${orig}B → ${minified}B  (−${pct}%)"
+  pct=$(( (orig - minified) * 100 / (orig + 1) )) # +1 evita división por cero
+  echo "  $(basename "$(dirname "$src")")/$(basename "$src"): ${orig}B → ${minified}B  (−${pct}%)"
+  
+  rm "$tmp_file"
 }
 
-echo ""
-echo "Minificando HTML..."
+echo "📄 Procesando HTML con descubrimiento dinámico..."
 
 # Dashboard principal
-minify_html "$ROOT/index.html" "$DIST/index.html"
+process_html "$ROOT/index.html" "$DIST/index.html"
 
-# Módulos
-for module in funcionrenal guiaempirica polimedicados antidoto infucalc ictus gasometria sepsis lecturacritica; do
-  if [ -f "$ROOT/$module/index.html" ]; then
-    mkdir -p "$DIST/$module"
-    minify_html "$ROOT/$module/index.html" "$DIST/$module/index.html"
+# Descubrimiento dinámico de módulos (carpetas con index.html)
+# Excluimos dist, node_modules, shared, scripts, img, .git, tests
+for dir in "$ROOT"/*/; do
+  dir_name=$(basename "$dir")
+  case "$dir_name" in
+    dist|node_modules|shared|scripts|img|.git|tests|artifacts)
+      continue
+      ;;
+  esac
+  
+  if [ -f "${dir}index.html" ]; then
+    process_html "${dir}index.html" "$DIST/$dir_name/index.html"
   fi
 done
 
 echo ""
-echo "✅ Build completado en: $DIST"
-echo "Para servir localmente: npx serve $DIST"
+echo "✅ Build completado exitosamente con versión: $VERSION"
+echo "🚀 Listo para producción en /dist/"
